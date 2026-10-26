@@ -70,6 +70,53 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "name": cityName,
       "description": `Job vacancies and tech hiring in ${cityName}`
     };
+  } else if (prefix === 'jobs' && secondary) {
+    if (secondary.includes('-in-')) {
+      const parts = secondary.split('-in-');
+      const roleName = formatTitle(parts[0]);
+      const cityName = formatTitle(parts.slice(1).join('-in-'));
+      title = `${roleName} Jobs in ${cityName} 2026 | TalentXcel`;
+      description = `Explore active ${roleName} jobs, tech vacancies, salary benchmarks (₹4.5L - ₹18L PA), and hiring companies in ${cityName}. 1-Click apply on TalentXcel.`;
+      canonical = `https://talentxcel.in/jobs/${secondary}`;
+      h1 = `${roleName} Jobs in ${cityName}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment Corridor in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Discover verified ${escapeHtml(roleName)} job openings, hiring companies, and compensation percentiles in ${escapeHtml(cityName)}. Complete your ATS resume scan to match direct hiring requirements.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">IndexNow Sync</span><span class="font-semibold text-blue-400">Real-Time Indexed</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs/${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Occupation",
+        "name": roleName,
+        "occupationLocation": {
+          "@type": "City",
+          "name": cityName
+        },
+        "description": `${roleName} employment opportunities in ${cityName}`
+      };
+    } else {
+      const jobTitle = formatTitle(secondary);
+      title = `${jobTitle} Opening | Verified Tech Careers | TalentXcel`;
+      description = `View requirements, salary, and direct application details for ${jobTitle} on TalentXcel.`;
+      canonical = `https://talentxcel.in/jobs/${secondary}`;
+      h1 = jobTitle;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(jobTitle)}</h2>
+          <p class="text-slate-300 text-sm">Verified career opening on TalentXcel. Instant apply with ATS resume matching.</p>
+        </section>
+      `;
+    }
   } else if (prefix === 'compare' && secondary) {
     const compParts = secondary.split('-vs-');
     const nameA = formatTitle(compParts[0] || 'College A');

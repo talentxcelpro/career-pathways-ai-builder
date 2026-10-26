@@ -35,6 +35,7 @@ import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
 import { EmployerHiringBadgeGenerator } from '@/components/employer/EmployerHiringBadgeGenerator';
+import { PopularRoleCityLinks } from '@/components/seo/PopularRoleCityLinks';
 
 const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'));
 
@@ -548,6 +549,14 @@ export default function JobDetails() {
               </div>
             </div>
           </main>
+
+          {/* Programmatic SEO Internal Linking Mesh (Anti-Orphan & Crawl Budget Multiplier) */}
+          <div className="mt-12">
+            <PopularRoleCityLinks
+              currentRole={job.title}
+              currentCity={job.location}
+            />
+          </div>
         </div>
       </div>
     </>

@@ -10,8 +10,9 @@
  * - Automatic protocol propagation across Microsoft Bing, Yandex, Seznam, and Naver
  * - Strict protocol batching at 10,000 URLs per HTTP payload (IndexNow spec)
  * - Memory & Payload Safety: Never dumps raw submittedUrls array in JSON (prevents OOM / 55MB crash)
- * - Cursor / Page Batching (?page=1&limit=50000) for processing up to 50k URLs per serverless invocation
- * - Combinatorial Programmatic SEO Matrix (Role x City, Role x Experience x City, Active Database Jobs)
+ * - Complete Pagination Telemetry: page, pageSize, totalUrlsInPage, hasNextPage, nextPage
+ * - Automated Cursor/Worker-ready loop (?page=2&limit=50000)
+ * - Synchronized with sitemap.xml via src/lib/seo/pseoTaxonomy
  * - Dry-run preview support (?dryRun=true)
  * - Optional sample preview (?sample=true, outputs 10 URLs)
  * - Optional Google Indexing API integration for /jobs/* URLs (?google=true)
@@ -23,6 +24,12 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { createClient } from '@supabase/supabase-js';
+import {
+  CANONICAL_ROLES,
+  CANONICAL_CITIES,
+  CORE_STATIC_ROUTES,
+  generateProgrammaticRoleCityUrls,
+} from '../../src/lib/seo/pseoTaxonomy';
 
 export const config = {
   runtime: 'nodejs',
@@ -30,6 +37,7 @@ export const config = {
 };
 
 const HOST = 'talentxcel.in';
+const BASE_ORIGIN = `https://${HOST}`;
 const KEY = process.env.INDEXNOW_KEY || 'e8f4a1b2c3d54e6f9a0b1c2d3e4f5a6b';
 const KEY_LOCATION = `https://${HOST}/${KEY}.txt`;
 
@@ -44,61 +52,6 @@ const SUPABASE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.VITE_SUPABASE_ANON_KEY ||
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-
-// High-Priority Canonical Roles for Programmatic Faceted Matrix
-const TOP_ROLES = [
-  'software-engineer', 'full-stack-developer', 'frontend-developer', 'backend-developer',
-  'react-developer', 'node-js-developer', 'python-developer', 'java-developer',
-  'golang-developer', 'ios-developer', 'android-developer', 'flutter-developer',
-  'devops-engineer', 'cloud-architect', 'aws-solutions-architect', 'site-reliability-engineer',
-  'ai-engineer', 'machine-learning-engineer', 'data-scientist', 'data-engineer',
-  'data-analyst', 'cybersecurity-analyst', 'product-manager', 'technical-product-manager',
-  'ui-ux-designer', 'product-designer', 'blockchain-developer', 'qa-automation-engineer',
-  'scrum-master', 'solutions-architect', 'marketing-manager', 'growth-marketer',
-  'digital-marketing-specialist', 'financial-analyst', 'talent-acquisition-specialist',
-  'hr-manager', 'operations-manager', 'project-manager'
-];
-
-// Top High-Intent Cities
-const TOP_CITIES = [
-  'bangalore', 'hyderabad', 'pune', 'mumbai', 'delhi-ncr', 'noida', 'gurgaon',
-  'chennai', 'kolkata', 'ahmedabad', 'chandigarh', 'jaipur', 'kochi', 'coimbatore',
-  'indore', 'bhubaneswar', 'patna', 'lucknow', 'nagpur', 'surat', 'vadodara',
-  'visakhapatnam', 'dubai', 'london', 'singapore'
-];
-
-// Top High-Intent Static Routes
-const CORE_STATIC_ROUTES = [
-  '/',
-  '/jobs',
-  '/colleges',
-  '/learning',
-  '/resume',
-  '/resume/build',
-  '/resume/ats-check',
-  '/resume/cover-letter',
-  '/resume/interview-prep',
-  '/career-insights',
-  '/hire',
-  '/network',
-  '/passport',
-  '/rankings',
-  '/services',
-  '/companies',
-  '/about',
-  '/contact',
-  '/faq',
-  '/terms',
-  '/privacypolicy',
-  '/colleges/global-programs',
-  '/colleges/scholarships',
-  '/colleges/career-pathway',
-  '/uae',
-  '/uk',
-  '/usa',
-  '/europe',
-  '/world',
-];
 
 export interface BatchSubmissionResult {
   batchIndex: number;
@@ -160,7 +113,7 @@ async function submitBatchWithFailover(urlList: string[], batchIndex: number, ho
         durationMs: Date.now() - start,
       };
     }
-  } catch (err: any) {
+  } catch {
     // Primary timed out or errored -> proceed immediately to failover
   }
 
@@ -198,75 +151,82 @@ async function submitBatchWithFailover(urlList: string[], batchIndex: number, ho
 }
 
 /**
- * Generate Combinatorial Programmatic SEO URLs & Active Database Jobs
+ * Generate Combinatorial Programmatic SEO URLs & Active Database Jobs with Pagination
  */
-async function assembleFacetedPseoUrls(host: string, page = 1, pageSize = 10000): Promise<string[]> {
+async function assembleFacetedPseoUrls(
+  host: string,
+  page = 1,
+  limit = 50000
+): Promise<{ urls: string[]; hasNextPage: boolean; totalInventoryCount: number }> {
   const origin = `https://${host}`;
-  const allUrls: string[] = [];
+  const catalogUrls: string[] = [];
 
-  // Page 1 includes core static entrypoints
-  if (page === 1) {
-    for (const route of CORE_STATIC_ROUTES) {
-      allUrls.push(route === '/' ? `${origin}/` : `${origin}${route}`);
-    }
-
-    // Role landing pages
-    for (const role of TOP_ROLES) {
-      allUrls.push(`${origin}/careers/${role}`);
-    }
-
-    // City landing pages
-    for (const city of TOP_CITIES) {
-      allUrls.push(`${origin}/locations/${city}`);
-    }
+  // 1. Core static entrypoints
+  for (const route of CORE_STATIC_ROUTES) {
+    catalogUrls.push(route === '/' ? `${origin}/` : `${origin}${route}`);
   }
 
-  // Combinatorial Role x City Matrix (e.g. /jobs/react-developer-in-noida)
-  // Generates 38 roles x 25 cities = 950 high-intent faceted hubs
-  for (const role of TOP_ROLES) {
-    for (const city of TOP_CITIES) {
-      allUrls.push(`${origin}/jobs/${role}-in-${city}`);
-      allUrls.push(`${origin}/jobs/${role}/${city}`);
-    }
+  // 2. Role landing pages (/careers/[role])
+  for (const role of CANONICAL_ROLES) {
+    catalogUrls.push(`${origin}/careers/${role}`);
   }
 
-  // Query live verified active jobs from Supabase
+  // 3. City landing pages (/locations/[city])
+  for (const city of CANONICAL_CITIES) {
+    catalogUrls.push(`${origin}/locations/${city.slug}`);
+  }
+
+  // 4. Role x City Faceted Matrix (/jobs/[role]-in-[city] and /jobs/[role]/[city])
+  const roleCityUrls = generateProgrammaticRoleCityUrls(origin);
+  catalogUrls.push(...roleCityUrls);
+
+  // 5. Query verified active jobs from database
   try {
     const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
       auth: { persistSession: false },
     });
 
-    const offset = Math.max(0, (page - 1) * 200);
-    const { data: jobs } = await supabase
-      .from('jobs')
-      .select('id, seo_slug')
-      .eq('is_active', true)
-      .eq('job_status', 'open')
-      .range(offset, offset + 300);
+    let offset = 0;
+    let keepFetching = true;
+    while (keepFetching && catalogUrls.length < 100000) {
+      const { data: jobs, error } = await supabase
+        .from('jobs')
+        .select('id, seo_slug')
+        .eq('is_active', true)
+        .eq('job_status', 'open')
+        .range(offset, offset + 999);
 
-    if (jobs && Array.isArray(jobs)) {
-      for (const j of jobs) {
-        const slug = j.seo_slug || j.id;
-        if (slug) {
-          allUrls.push(`${origin}/jobs/${slug}`);
+      if (error || !jobs || jobs.length === 0) {
+        keepFetching = false;
+      } else {
+        for (const j of jobs) {
+          const slug = j.seo_slug || j.id;
+          if (slug) {
+            catalogUrls.push(`${origin}/jobs/${slug}`);
+          }
         }
+        if (jobs.length < 1000) keepFetching = false;
+        else offset += 1000;
       }
     }
   } catch {
     // Non-blocking fallback
   }
 
-  // Deduplicate
-  const uniqueUrls = Array.from(new Set(allUrls));
+  // Deduplicate entire catalog
+  const uniqueUrls = Array.from(new Set(catalogUrls));
+  const totalInventoryCount = uniqueUrls.length;
 
-  // Apply pagination window
-  const startIndex = (page - 1) * pageSize;
-  if (startIndex >= uniqueUrls.length) {
-    // If requesting beyond unique list, return paginated slice
-    return uniqueUrls.slice(0, Math.min(pageSize, uniqueUrls.length));
-  }
+  // Compute cursor pagination window
+  const startIndex = (page - 1) * limit;
+  const pagedSlice = uniqueUrls.slice(startIndex, startIndex + limit);
+  const hasNextPage = startIndex + limit < totalInventoryCount;
 
-  return uniqueUrls.slice(startIndex, startIndex + pageSize);
+  return {
+    urls: pagedSlice,
+    hasNextPage,
+    totalInventoryCount,
+  };
 }
 
 /**
@@ -323,7 +283,7 @@ async function publishToGoogleIndexing(jobUrls: string[]): Promise<{ submitted: 
       return { submitted: 0, status: 'Failed to obtain Google access token' };
     }
 
-    // Broadcast up to 50 URLs (Google daily quota limit per call)
+    // Broadcast up to 50 URLs per call
     const urlsToPush = jobUrls.slice(0, 50);
     let successfulGooglePushes = 0;
 
@@ -385,21 +345,30 @@ export default async function handler(req: any, res: any) {
     const runGoogle = body.google === true || query.google === 'true';
 
     const page = Math.max(1, parseInt(body.page || query.page || '1', 10));
-    const limit = Math.min(Math.max(parseInt(body.limit || query.limit || '10000', 10), 1), 50000);
+    const limit = Math.min(Math.max(parseInt(body.limit || query.limit || '50000', 10), 1), 50000);
 
-    // 1. Determine Candidate URLs
+    // 1. Determine Candidate URLs & Pagination Bounds
     let candidateUrls: string[] = [];
+    let hasNextPage = false;
+    let totalInventoryCount = 0;
 
     if (Array.isArray(body.urls) && body.urls.length > 0) {
       candidateUrls = body.urls;
+      totalInventoryCount = candidateUrls.length;
     } else if (typeof body.urls === 'string' && body.urls.trim()) {
       candidateUrls = body.urls.split(',').map((u: string) => u.trim());
+      totalInventoryCount = candidateUrls.length;
     } else if (typeof query.urls === 'string' && query.urls.trim()) {
       candidateUrls = query.urls.split(',').map((u: string) => u.trim());
+      totalInventoryCount = candidateUrls.length;
     } else if (typeof query.url === 'string' && query.url.trim()) {
       candidateUrls = [query.url.trim()];
+      totalInventoryCount = 1;
     } else {
-      candidateUrls = await assembleFacetedPseoUrls(host, page, limit);
+      const generated = await assembleFacetedPseoUrls(host, page, limit);
+      candidateUrls = generated.urls;
+      hasNextPage = generated.hasNextPage;
+      totalInventoryCount = generated.totalInventoryCount;
     }
 
     // Filter, validate, and deduplicate URLs for this host
@@ -429,6 +398,15 @@ export default async function handler(req: any, res: any) {
     // 2. Chunk into batches of 10,000 (IndexNow Protocol Standard)
     const batches = chunkArray(sanitizedUrls, MAX_URLS_PER_BATCH);
 
+    const paginationMetadata = {
+      page,
+      pageSize: limit,
+      totalUrlsInPage: sanitizedUrls.length,
+      hasNextPage,
+      nextPage: hasNextPage ? `${BASE_ORIGIN}/api/seo/indexnow?page=${page + 1}&limit=${limit}` : null,
+      totalInventoryCount,
+    };
+
     // 3. Dry-Run Mode Preview (zero network overhead, instant schema verification)
     if (dryRun) {
       return res.status(200).json({
@@ -436,8 +414,7 @@ export default async function handler(req: any, res: any) {
         dryRun: true,
         host,
         keyLocation: `https://${host}/${KEY}.txt`,
-        page,
-        totalUrls: sanitizedUrls.length,
+        ...paginationMetadata,
         totalBatches: batches.length,
         maxUrlsPerBatch: MAX_URLS_PER_BATCH,
         sampleUrls: sanitizedUrls.slice(0, 10),
@@ -462,14 +439,13 @@ export default async function handler(req: any, res: any) {
       }
     }
 
-    // 6. Safe Production Response (Never dumps raw millions of URLs!)
+    // 6. Safe Production Response with Full Automation Pagination
     return res.status(200).json({
       success: successfulBatches === batches.length,
       message: `Processed ${sanitizedUrls.length} URLs across ${batches.length} batch(es) via IndexNow mesh network.`,
       host,
       keyLocation: `https://${host}/${KEY}.txt`,
-      page,
-      totalUrls: sanitizedUrls.length,
+      ...paginationMetadata,
       totalBatches: batches.length,
       successfulBatches,
       failedBatches: batches.length - successfulBatches,

@@ -9,6 +9,7 @@ import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatal
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService';
 import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles';
 import { BLOG_POSTS } from '../src/data/blogPostsData';
+import { CANONICAL_ROLES } from '../src/lib/seo/pseoTaxonomy';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -51,33 +52,6 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/faq', changefreq: 'monthly', priority: '0.5' },
   { path: '/terms', changefreq: 'monthly', priority: '0.3' },
   { path: '/privacypolicy', changefreq: 'monthly', priority: '0.3' },
-];
-
-const CANONICAL_ROLES = [
-  'software-engineer', 'full-stack-developer', 'frontend-developer', 'backend-developer',
-  'react-developer', 'node-js-developer', 'python-developer', 'java-developer',
-  'golang-developer', 'ios-developer', 'android-developer', 'flutter-developer',
-  'react-native-developer', 'devops-engineer', 'cloud-architect', 'aws-solutions-architect',
-  'azure-cloud-engineer', 'gcp-cloud-architect', 'site-reliability-engineer',
-  'database-administrator', 'sql-developer', 'postgresql-dba', 'security-engineer',
-  'cybersecurity-analyst', 'qa-automation-engineer', 'sdet-engineer', 'blockchain-developer',
-  'smart-contract-developer', 'web3-architect', 'embedded-systems-engineer',
-  'ai-engineer', 'machine-learning-engineer', 'data-scientist', 'data-engineer',
-  'data-analyst', 'prompt-engineer', 'llm-engineer', 'computer-vision-engineer',
-  'nlp-engineer', 'business-intelligence-analyst', 'deep-learning-researcher',
-  'ai-product-manager', 'mlops-engineer', 'big-data-architect',
-  'product-manager', 'technical-product-manager', 'growth-product-manager',
-  'ui-ux-designer', 'product-designer', 'graphic-designer', 'interaction-designer',
-  'ux-researcher', 'design-systems-lead',
-  'marketing-manager', 'digital-marketing-specialist', 'seo-specialist', 'growth-marketer',
-  'content-writer', 'copywriter', 'social-media-manager', 'performance-marketing-manager',
-  'email-marketing-specialist', 'brand-manager', 'community-manager',
-  'business-analyst', 'management-consultant', 'sales-manager', 'account-executive',
-  'business-development-executive', 'inside-sales-specialist', 'customer-success-manager',
-  'solutions-architect', 'pre-sales-consultant',
-  'hr-manager', 'talent-acquisition-specialist', 'technical-recruiter', 'hr-business-partner',
-  'financial-analyst', 'chartered-accountant', 'investment-banker', 'finance-manager',
-  'operations-manager', 'scrum-master', 'agile-coach', 'project-manager'
 ];
 
 function escapeXml(unsafe: string): string {
@@ -467,7 +441,7 @@ export async function generateProductionSitemaps() {
     },
   ];
 
-  const SITEMAP_MAX_URLS = 50_000;
+  const SITEMAP_MAX_URLS = 25_000;
   const validSitemapsForIndex: { filename: string; count: number }[] = [];
 
   sitemapConfig.forEach(({ filename, entries, origin }) => {

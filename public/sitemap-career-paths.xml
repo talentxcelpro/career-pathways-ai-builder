@@ -141,16 +141,6 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/web3-architect</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/embedded-systems-engineer</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://careers.talentxcel.in/colleges/career-pathway/ai-engineer</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
@@ -186,41 +176,6 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/computer-vision-engineer</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/nlp-engineer</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/business-intelligence-analyst</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/deep-learning-researcher</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/ai-product-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/mlops-engineer</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/big-data-architect</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://careers.talentxcel.in/colleges/career-pathway/product-manager</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
@@ -246,27 +201,22 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/graphic-designer</loc>
+    <loc>https://careers.talentxcel.in/colleges/career-pathway/scrum-master</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/interaction-designer</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/ux-researcher</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/design-systems-lead</loc>
+    <loc>https://careers.talentxcel.in/colleges/career-pathway/solutions-architect</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://careers.talentxcel.in/colleges/career-pathway/marketing-manager</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://careers.talentxcel.in/colleges/career-pathway/growth-marketer</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
@@ -277,11 +227,6 @@
   </url>
   <url>
     <loc>https://careers.talentxcel.in/colleges/career-pathway/seo-specialist</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/growth-marketer</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
@@ -301,72 +246,7 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/performance-marketing-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/email-marketing-specialist</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/brand-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/community-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/business-analyst</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/management-consultant</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/sales-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/account-executive</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/business-development-executive</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/inside-sales-specialist</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/customer-success-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/solutions-architect</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/pre-sales-consultant</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/hr-manager</loc>
+    <loc>https://careers.talentxcel.in/colleges/career-pathway/financial-analyst</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
@@ -381,42 +261,12 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/hr-business-partner</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/financial-analyst</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/chartered-accountant</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/investment-banker</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/finance-manager</loc>
+    <loc>https://careers.talentxcel.in/colleges/career-pathway/hr-manager</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://careers.talentxcel.in/colleges/career-pathway/operations-manager</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/scrum-master</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/colleges/career-pathway/agile-coach</loc>
     <changefreq>daily</changefreq>
     <priority>0.85</priority>
   </url>

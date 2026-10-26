@@ -176,16 +176,6 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/career-map/web3-architect</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/embedded-systems-engineer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://careers.talentxcel.in/career-map/ai-engineer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -221,41 +211,6 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/career-map/computer-vision-engineer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/nlp-engineer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/business-intelligence-analyst</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/deep-learning-researcher</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/ai-product-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/mlops-engineer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/big-data-architect</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
     <loc>https://careers.talentxcel.in/career-map/product-manager</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
@@ -281,27 +236,22 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/career-map/graphic-designer</loc>
+    <loc>https://careers.talentxcel.in/career-map/scrum-master</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/career-map/interaction-designer</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/ux-researcher</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/design-systems-lead</loc>
+    <loc>https://careers.talentxcel.in/career-map/solutions-architect</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://careers.talentxcel.in/career-map/marketing-manager</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://careers.talentxcel.in/career-map/growth-marketer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -312,11 +262,6 @@
   </url>
   <url>
     <loc>https://careers.talentxcel.in/career-map/seo-specialist</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/growth-marketer</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -336,72 +281,7 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/career-map/performance-marketing-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/email-marketing-specialist</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/brand-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/community-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/business-analyst</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/management-consultant</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/sales-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/account-executive</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/business-development-executive</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/inside-sales-specialist</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/customer-success-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/solutions-architect</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/pre-sales-consultant</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/hr-manager</loc>
+    <loc>https://careers.talentxcel.in/career-map/financial-analyst</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
@@ -416,42 +296,12 @@
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://careers.talentxcel.in/career-map/hr-business-partner</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/financial-analyst</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/chartered-accountant</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/investment-banker</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/finance-manager</loc>
+    <loc>https://careers.talentxcel.in/career-map/hr-manager</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://careers.talentxcel.in/career-map/operations-manager</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/scrum-master</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://careers.talentxcel.in/career-map/agile-coach</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>

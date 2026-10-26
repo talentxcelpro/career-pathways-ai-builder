@@ -23,6 +23,7 @@ import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimen
 import { ResumeQuickScanWidget } from '@/components/conversion/ResumeQuickScanWidget';
 import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
+import { PopularRoleCityLinks } from '@/components/seo/PopularRoleCityLinks';
 
 interface Job {
   id: string;
@@ -799,6 +800,9 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
             </Link>
           </div>
         </section>
+
+        {/* Programmatic SEO Internal Linking Mesh (PageRank Passing & Anti-Orphan Engine) */}
+        <PopularRoleCityLinks currentRole={roleSlug} currentCity={citySlug} className="mt-12" />
 
         {/* Contextual Cross-Subdomain Mesh */}
         <section className="mt-12 pt-8 border-t border-border">
