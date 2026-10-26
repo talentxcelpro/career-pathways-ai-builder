@@ -398,8 +398,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const includeSample = body.sample === true || query.sample === 'true';
     const runGoogle = body.google === true || query.google === 'true';
 
-    const page = Math.max(1, parseInt(body.page || query.page || '1', 10));
-    const limit = Math.min(Math.max(parseInt(body.limit || query.limit || '50000', 10), 1), 50000);
+    const rawPage = body.page || query.page || '1';
+    const parsedPage = typeof rawPage === 'number' ? rawPage : parseInt(String(rawPage).match(/\d+/)?.[0] || '1', 10);
+    const page = isNaN(parsedPage) || parsedPage < 1 ? 1 : parsedPage;
+
+    const rawLimit = body.limit || query.limit || '50000';
+    const parsedLimit = typeof rawLimit === 'number' ? rawLimit : parseInt(String(rawLimit).match(/\d+/)?.[0] || '50000', 10);
+    const limit = Math.min(Math.max(isNaN(parsedLimit) ? 50000 : parsedLimit, 1), 50000);
 
     // 1. Determine Candidate URLs & Pagination Bounds
     let candidateUrls: string[] = [];
@@ -457,7 +462,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       pageSize: limit,
       totalUrlsInPage: sanitizedUrls.length,
       hasNextPage,
-      nextPage: hasNextPage ? `${BASE_ORIGIN}/api/seo/indexnow?page=${page + 1}&limit=${limit}` : null,
+      nextPage: hasNextPage ? page + 1 : null,
+      nextPageUrl: hasNextPage ? `${BASE_ORIGIN}/api/seo/indexnow?page=${page + 1}&limit=${limit}` : null,
       totalInventoryCount,
     };
 
