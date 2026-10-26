@@ -36,6 +36,8 @@ import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
 import { EmployerHiringBadgeGenerator } from '@/components/employer/EmployerHiringBadgeGenerator';
 
+const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'));
+
 export default function JobDetails() {
   const { slugOrId = '' } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
@@ -153,6 +155,24 @@ export default function JobDetails() {
   }
 
   if (!job) {
+    // Programmatic Faceted Route Resolver (Role x City Matrix, e.g. /jobs/react-developer-in-noida)
+    if (slugOrId && slugOrId.includes('-in-')) {
+      const parts = slugOrId.split('-in-');
+      const extractedRole = parts[0];
+      const extractedCity = parts.slice(1).join('-in-');
+      return (
+        <React.Suspense
+          fallback={
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+        >
+          <JobsByRoleCity roleOverride={extractedRole} cityOverride={extractedCity} />
+        </React.Suspense>
+      );
+    }
+
     const rawRole = slugOrId ? slugOrId.replace(/[-_]+/g, ' ') : 'Career';
     const roleCapitalized = rawRole.replace(/\b\w/g, (c) => c.toUpperCase());
     const canonical = getPublicJobUrl(slugOrId);

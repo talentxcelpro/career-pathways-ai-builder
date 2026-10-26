@@ -452,17 +452,46 @@ export async function generateProductionSitemaps() {
     { filename: 'sitemap-companies.xml', entries: companyEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-services.xml', entries: serviceEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-rankings.xml', entries: rankingsEntries, origin: 'https://talentxcel.in' },
+    {
+      filename: 'sitemap-role-city-matrix.xml',
+      entries: deduplicate(
+        CANONICAL_ROLES.flatMap((role) =>
+          LOCATION_HUBS.map((hub) => ({
+            path: `/jobs/${role}-in-${hub.slug}`,
+            changefreq: 'daily' as const,
+            priority: '0.85',
+          }))
+        )
+      ),
+      origin: 'https://talentxcel.in',
+    },
   ];
 
+  const SITEMAP_MAX_URLS = 50_000;
   const validSitemapsForIndex: { filename: string; count: number }[] = [];
 
   sitemapConfig.forEach(({ filename, entries, origin }) => {
-    if (entries.length > 0) {
+    if (entries.length === 0) return;
+
+    if (entries.length <= SITEMAP_MAX_URLS) {
       const xml = buildUrlSetXml(entries, origin);
       writeFileSync(resolve(publicDir, filename), xml, 'utf-8');
       validSitemapsForIndex.push({ filename, count: entries.length });
       entries.forEach(e => globalSeenLocs.add(`${origin || PRODUCTION_ORIGIN}${e.path}`));
       console.log(`✓ Generated ${filename}: ${entries.length.toLocaleString()} URLs (Origin: ${origin || PRODUCTION_ORIGIN})`);
+    } else {
+      // Automatic 50,000-URL Sharding Protocol Engine
+      const totalShards = Math.ceil(entries.length / SITEMAP_MAX_URLS);
+      const nameWithoutExt = filename.replace(/\.xml$/, '');
+      for (let i = 0; i < totalShards; i++) {
+        const shardEntries = entries.slice(i * SITEMAP_MAX_URLS, (i + 1) * SITEMAP_MAX_URLS);
+        const shardFilename = `${nameWithoutExt}-${i + 1}.xml`;
+        const xml = buildUrlSetXml(shardEntries, origin);
+        writeFileSync(resolve(publicDir, shardFilename), xml, 'utf-8');
+        validSitemapsForIndex.push({ filename: shardFilename, count: shardEntries.length });
+        shardEntries.forEach(e => globalSeenLocs.add(`${origin || PRODUCTION_ORIGIN}${e.path}`));
+        console.log(`✓ Generated Sharded Sitemap ${shardFilename}: ${shardEntries.length.toLocaleString()} URLs (Origin: ${origin || PRODUCTION_ORIGIN})`);
+      }
     }
   });
 

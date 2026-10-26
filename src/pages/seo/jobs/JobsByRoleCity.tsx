@@ -143,9 +143,27 @@ function resolveCityHub(citySlug: string) {
 
 // ─── Main Mini Career Hub Component ──────────────────────────────────────────
 
-export const JobsByRoleCity: React.FC = () => {
-  const { role, city } = useParams<{ role: string; city: string }>();
+interface JobsByRoleCityProps {
+  roleOverride?: string;
+  cityOverride?: string;
+}
+
+export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, cityOverride }) => {
+  const params = useParams<{ role?: string; city?: string; slugOrId?: string }>();
   const navigate = useNavigate();
+
+  let initialRole = roleOverride || params.role;
+  let initialCity = cityOverride || params.city;
+
+  if ((!initialRole || !initialCity) && params.slugOrId && params.slugOrId.includes('-in-')) {
+    const parts = params.slugOrId.split('-in-');
+    initialRole = initialRole || parts[0];
+    initialCity = initialCity || parts.slice(1).join('-in-');
+  }
+
+  const role = initialRole || 'software-engineer';
+  const city = initialCity || 'bangalore';
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

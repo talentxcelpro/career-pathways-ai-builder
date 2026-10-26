@@ -57,4 +57,7 @@
   <sitemap>
     <loc>https://talentxcel.in/sitemap-rankings.xml</loc>
   </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-role-city-matrix.xml</loc>
+  </sitemap>
 </sitemapindex>
