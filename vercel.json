@@ -161,6 +161,21 @@
       "permanent": true
     },
     {
+      "source": "/salaries/:path*",
+      "destination": "https://talentxcel.in/salary",
+      "permanent": true
+    },
+    {
+      "source": "/colleges/:slug/(admissions|campus|courses|cutoffs|fees|placements|rankings|reviews|scholarships)",
+      "destination": "https://talentxcel.in/colleges/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/jobs/company/:path*",
+      "destination": "https://talentxcel.in/jobs",
+      "permanent": true
+    },
+    {
       "source": "/college/:path*",
       "destination": "https://talentxcel.in/colleges",
       "permanent": true
@@ -172,11 +187,6 @@
     },
     {
       "source": "/category/:path*",
-      "destination": "https://talentxcel.in/learning",
-      "permanent": true
-    },
-    {
-      "source": "/courses/:path*",
       "destination": "https://talentxcel.in/learning",
       "permanent": true
     },

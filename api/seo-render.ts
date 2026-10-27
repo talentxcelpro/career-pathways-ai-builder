@@ -77,6 +77,29 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "name": cityName,
       "description": `Job vacancies and tech hiring in ${cityName}`
     };
+  } else if (cleanPath === 'jobs' || (prefix === 'jobs' && !secondary)) {
+    title = 'Verified Tech Jobs, Engineering Openings & Direct Recruiter Applications 2026 | TalentXcel';
+    description = 'Search over 500+ verified active openings for software engineers, product managers, data scientists, and DevOps leaders across India. Free 1-click apply with ATS resume matching.';
+    canonical = 'https://talentxcel.in/jobs';
+    h1 = 'Explore Verified Technology & Engineering Jobs (2026)';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-white">Active Technology Corridors &amp; Openings</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Discover verified engineering, data, and product jobs across top tech hubs in India including Bangalore, Hyderabad, Pune, Mumbai, and Delhi-NCR. Fast 1-click ATS application workflow.</p>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+          <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer in Bangalore</a>
+          <a href="/jobs/full-stack-developer-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Full Stack Developer in Hyderabad</a>
+          <a href="/jobs/data-scientist-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Scientist in Pune</a>
+          <a href="/jobs/devops-engineer-in-mumbai" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">DevOps Engineer in Mumbai</a>
+        </div>
+      </section>
+    `;
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "Verified Technology & Engineering Jobs",
+      "url": canonical
+    };
   } else if (prefix === 'jobs' && secondary) {
     if (secondary.includes('-in-')) {
       const parts = secondary.split('-in-');
@@ -218,117 +241,192 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         </div>
       </section>
     `;
-  } else if (cleanPath.startsWith('career-insights/salary/')) {
-    const slug = cleanPath.replace('career-insights/salary/', '');
-    const cleanSlug = slug.replace('-salary', '');
-    const parts = cleanSlug.split('-in-');
-    const roleName = formatTitle(parts[0] || 'Tech Role');
-    const cityName = parts[1] ? formatTitle(parts[1]) : 'Global Hubs';
-    title = `${roleName} Salary in ${cityName} (2026 Compensation & Pay Scale) | TalentXcel`;
-    description = `Explore verified ${roleName} salary percentiles, base pay ranges (₹4.5L - ₹24L PA), cash bonuses, and compensation curves in ${cityName} on TalentXcel.`;
-    canonical = `https://talentxcel.in/career-insights/salary/${slug}`;
-    h1 = `${roleName} Salary Benchmarks in ${cityName}`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Compensation Benchmark for ${escapeHtml(roleName)} in ${escapeHtml(cityName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Verified compensation percentiles for ${escapeHtml(roleName)} based on real tech hiring data in ${escapeHtml(cityName)}. Benchmark your current CTC against the 25th, 50th, and 90th market percentiles.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median Base Pay</span><span class="font-semibold text-emerald-400">₹8.5L - ₹18L PA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Top 10% (Staff/Lead)</span><span class="font-semibold text-white">₹28L - ₹45L PA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Market Demand</span><span class="font-semibold text-blue-400">High / Fast Growth</span></div>
-        </div>
-        <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
-          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Resume Scan &rarr;</a>
-        </div>
-      </section>
-    `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "Occupation",
-      "name": roleName,
-      "occupationLocation": { "@type": "City", "name": cityName },
-      "estimatedSalary": [
-        {
-          "@type": "MonetaryAmountDistribution",
-          "name": "base",
-          "currency": "INR",
-          "median": 1200000
-        }
-      ]
-    };
-  } else if (cleanPath.startsWith('resume/interview-prep/')) {
-    const slug = cleanPath.replace('resume/interview-prep/', '');
-    const cleanRole = slug.replace(/-interview-questions-and-answers.*/, '');
-    const roleName = formatTitle(cleanRole || 'Software Engineer');
-    title = `${roleName} Interview Questions & Answers (2026 Technical Prep) | TalentXcel`;
-    description = `Ace your ${roleName} technical interview with verified questions, coding challenges, system design scenarios, and ATS behavioral prep on TalentXcel.`;
-    canonical = `https://talentxcel.in/resume/interview-prep/${slug}`;
-    h1 = `${roleName} Interview Questions & Preparation Guide`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Top Technical & Behavioral Questions for ${escapeHtml(roleName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Comprehensive interview guide curated from real screening processes at top tier-1 tech companies and high-growth startups for ${escapeHtml(roleName)} roles.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Interview Rounds</span><span class="font-semibold text-purple-400">Coding, System Design, HR</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Prep Time</span><span class="font-semibold text-white">2 - 4 Weeks</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Success Rate</span><span class="font-semibold text-emerald-400">84% ATS Cleared</span></div>
-        </div>
-        <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/resume/interview-prep" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Start Interactive Mock Interview &rarr;</a>
-          <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Build Matching ATS Resume &rarr;</a>
-        </div>
-      </section>
-    `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": `What are the core technical skills needed for ${roleName}?`,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": `Candidates for ${roleName} roles are expected to demonstrate proficiency in core data structures, algorithms, system architecture, and domain-specific tooling.`
+  } else if (cleanPath === 'salary' || cleanPath === 'salaries' || cleanPath.startsWith('salary/') || cleanPath.startsWith('career-insights/salary/')) {
+    if (cleanPath === 'salary' || cleanPath === 'salaries') {
+      title = 'Tech Salaries in India 2026 — Compensation Percentiles & Benchmarks | TalentXcel';
+      description = 'Verified tech compensation benchmarks for 30+ engineering roles across Indian metro cities. Compare 25th, 50th, and 90th percentile salaries, cash bonuses, and stock grants.';
+      canonical = 'https://talentxcel.in/salary';
+      h1 = 'Technology Compensation Percentiles & Salary Curves (2026)';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Verified Tech Salary Guides by Specialization</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Benchmark your compensation against real hiring data in Bangalore, Hyderabad, Pune, Mumbai, and Delhi-NCR. Discover market trends and promotion velocity.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/career-insights/salary/software-engineer-salary-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer Bangalore</a>
+            <a href="/career-insights/salary/data-scientist-salary-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Scientist Pune</a>
+            <a href="/directory/salaries-by-role" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Salaries by Role Index</a>
+            <a href="/resume/ats-check" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Free ATS Salary Match</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Tech Salary Benchmarks & Pay Scales",
+        "url": canonical
+      };
+    } else {
+      const slug = cleanPath.replace(/^(career-insights\/salary\/|salary\/)/, '');
+      const cleanSlug = slug.replace('-salary', '');
+      const parts = cleanSlug.split('-in-');
+      const roleName = formatTitle(parts[0] || 'Tech Role');
+      const cityName = parts[1] ? formatTitle(parts[1]) : 'Global Hubs';
+      title = `${roleName} Salary in ${cityName} (2026 Compensation & Pay Scale) | TalentXcel`;
+      description = `Explore verified ${roleName} salary percentiles, base pay ranges (₹4.5L - ₹24L PA), cash bonuses, and compensation curves in ${cityName} on TalentXcel.`;
+      canonical = `https://talentxcel.in/career-insights/salary/${slug}`;
+      h1 = `${roleName} Salary Benchmarks in ${cityName}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Compensation Benchmark for ${escapeHtml(roleName)} in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Verified compensation percentiles for ${escapeHtml(roleName)} based on real tech hiring data in ${escapeHtml(cityName)}. Benchmark your current CTC against the 25th, 50th, and 90th market percentiles.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median Base Pay</span><span class="font-semibold text-emerald-400">₹8.5L - ₹18L PA</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Top 10% (Staff/Lead)</span><span class="font-semibold text-white">₹28L - ₹45L PA</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Market Demand</span><span class="font-semibold text-blue-400">High / Fast Growth</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Resume Scan &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Occupation",
+        "name": roleName,
+        "occupationLocation": { "@type": "City", "name": cityName },
+        "estimatedSalary": [
+          {
+            "@type": "MonetaryAmountDistribution",
+            "name": "base",
+            "currency": "INR",
+            "median": 1200000
           }
+        ]
+      };
+    }
+  } else if (cleanPath === 'resume' || cleanPath.startsWith('resume/')) {
+    if (cleanPath === 'resume' || !cleanPath.startsWith('resume/interview-prep/')) {
+      title = 'Free ATS Resume Scanner, AI Resume Builder & Templates 2026 | TalentXcel';
+      description = 'Scan your resume against ATS algorithms for free. Real-time ATS match score, keyword gap detection, and expert interview prep guides on TalentXcel.';
+      canonical = 'https://talentxcel.in/resume';
+      h1 = 'AI Resume Builder & Free ATS Scanner (2026)';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">ATS Optimization &amp; Interview Preparation</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Optimize your resume for modern applicant tracking systems (Taleo, Workday, Greenhouse) and prepare for technical interviews with company-specific questions.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/resume/ats-check" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Free ATS Scanner</a>
+            <a href="/resume/build" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">AI Resume Builder</a>
+            <a href="/resume/interview-prep/software-engineer-interview-questions-and-answers" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer Prep</a>
+            <a href="/resume/interview-prep/react-developer-interview-questions-and-answers" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">React Interview Prep</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "ATS Resume Builder & Tools",
+        "url": canonical
+      };
+    } else {
+      const slug = cleanPath.replace('resume/interview-prep/', '');
+      const cleanRole = slug.replace(/-interview-questions-and-answers.*/, '');
+      const roleName = formatTitle(cleanRole || 'Software Engineer');
+      title = `${roleName} Interview Questions & Answers (2026 Technical Prep) | TalentXcel`;
+      description = `Ace your ${roleName} technical interview with verified questions, coding challenges, system design scenarios, and ATS behavioral prep on TalentXcel.`;
+      canonical = `https://talentxcel.in/resume/interview-prep/${slug}`;
+      h1 = `${roleName} Interview Questions & Preparation Guide`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Top Technical & Behavioral Questions for ${escapeHtml(roleName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Comprehensive interview guide curated from real screening processes at top tier-1 tech companies and high-growth startups for ${escapeHtml(roleName)} roles.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Interview Rounds</span><span class="font-semibold text-purple-400">Coding, System Design, HR</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Prep Time</span><span class="font-semibold text-white">2 - 4 Weeks</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Success Rate</span><span class="font-semibold text-emerald-400">84% ATS Cleared</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/resume/interview-prep" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Start Interactive Mock Interview &rarr;</a>
+            <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Build Matching ATS Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": `What are the core technical skills needed for ${roleName}?`,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": `Candidates for ${roleName} roles are expected to demonstrate proficiency in core data structures, algorithms, system architecture, and domain-specific tooling.`
+            }
+          }
+        ]
+      };
+    }
+  } else if (cleanPath === 'learning' || cleanPath.startsWith('courses/')) {
+    if (cleanPath === 'learning') {
+      title = 'Tech Courses, Skill Certifications & Career Tracks 2026 | TalentXcel Academy';
+      description = 'Explore industry-vetted courses and hands-on skill certifications in Python, React, Cloud, DevOps, AI, and Machine Learning. Accelerate your career with verified credentials.';
+      canonical = 'https://talentxcel.in/learning';
+      h1 = 'Tech Skill Certifications & Career Tracks (2026)';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">In-Demand Technology Certifications</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Master high-demand technical capabilities with project-based tracks. Each course includes direct ATS resume integration and skill passport validation.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/courses/python-courses-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Python in Hyderabad</a>
+            <a href="/courses/react-courses-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">React in Bangalore</a>
+            <a href="/courses/aws-courses-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">AWS Cloud in Pune</a>
+            <a href="/courses/machine-learning-courses-in-delhi-ncr" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">ML in Delhi-NCR</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Tech Courses & Certifications",
+        "url": canonical
+      };
+    } else {
+      const slug = cleanPath.replace('courses/', '');
+      const cleanCourse = slug.replace(/-courses-in-.*/, '');
+      const courseName = formatTitle(cleanCourse);
+      const cityMatch = slug.match(/-courses-in-(.*)/);
+      const cityName = cityMatch ? formatTitle(cityMatch[1]) : 'Online & Hybrid';
+      title = `Best ${courseName} Courses in ${cityName} (2026 Certification & Training) | TalentXcel`;
+      description = `Discover verified ${courseName} programs, syllabus, tuition fees, and career pathways in ${cityName}. 1-Click ATS skill match on TalentXcel.`;
+      canonical = `https://talentxcel.in/courses/${slug}`;
+      h1 = `${courseName} Courses & Training in ${cityName}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(courseName)} Career & Certification Track</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Upgrade your technical credentials with verified ${escapeHtml(courseName)} courses in ${escapeHtml(cityName)}. Gain hands-on project experience and benchmark your TalentScore directly for hiring teams.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Learning Format</span><span class="font-semibold text-emerald-400">Self-Paced / Mentor-Led</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Credential</span><span class="font-semibold text-white">Verified Career Passport</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Placement Support</span><span class="font-semibold text-blue-400">Direct Recruiter Matching</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/learning" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore Course Catalog &rarr;</a>
+            <a href="/passport" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Unlock Career Passport &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Course",
+        "name": courseName,
+        "description": `Professional certification and training in ${courseName}`,
+        "provider": {
+          "@type": "Organization",
+          "name": "TalentXcel Academy"
         }
-      ]
-    };
-  } else if (cleanPath.startsWith('courses/')) {
-    const slug = cleanPath.replace('courses/', '');
-    const cleanCourse = slug.replace(/-courses-in-.*/, '');
-    const courseName = formatTitle(cleanCourse);
-    const cityMatch = slug.match(/-courses-in-(.*)/);
-    const cityName = cityMatch ? formatTitle(cityMatch[1]) : 'Online & Hybrid';
-    title = `Best ${courseName} Courses in ${cityName} (2026 Certification & Training) | TalentXcel`;
-    description = `Discover verified ${courseName} programs, syllabus, tuition fees, and career pathways in ${cityName}. 1-Click ATS skill match on TalentXcel.`;
-    canonical = `https://talentxcel.in/courses/${slug}`;
-    h1 = `${courseName} Courses & Training in ${cityName}`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">${escapeHtml(courseName)} Career & Certification Track</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Upgrade your technical credentials with verified ${escapeHtml(courseName)} courses in ${escapeHtml(cityName)}. Gain hands-on project experience and benchmark your TalentScore directly for hiring teams.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Learning Format</span><span class="font-semibold text-emerald-400">Self-Paced / Mentor-Led</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Credential</span><span class="font-semibold text-white">Verified Career Passport</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Placement Support</span><span class="font-semibold text-blue-400">Direct Recruiter Matching</span></div>
-        </div>
-        <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/learning" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore Course Catalog &rarr;</a>
-          <a href="/passport" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Unlock Career Passport &rarr;</a>
-        </div>
-      </section>
-    `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "Course",
-      "name": courseName,
-      "description": `Professional certification and training in ${courseName}`,
-      "provider": {
-        "@type": "Organization",
-        "name": "TalentXcel Academy"
-      }
-    };
+      };
+    }
   } else if (cleanPath.startsWith('careers/')) {
     const slug = cleanPath.replace('careers/', '');
     const cleanRole = slug.replace(/-roadmap.*/, '');
@@ -358,35 +456,60 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "name": roleName,
       "description": `Career pathway and progression roadmap for ${roleName}`
     };
-  } else if (cleanPath.startsWith('colleges/')) {
-    const slug = cleanPath.replace('colleges/', '');
-    const cleanCollege = slug.replace(/-campus.*/, '');
-    const collegeName = formatTitle(cleanCollege);
-    title = `${collegeName} Admissions, Placements, Fees & Cutoffs (2026) | TalentXcel`;
-    description = `Forensic institutional dossier for ${collegeName}. Tuition fees, median placement packages (₹6.5L - ₹22L PA), NIRF rankings, and alumni network verified on TalentXcel.`;
-    canonical = `https://talentxcel.in/colleges/${slug}`;
-    h1 = `${collegeName} Institutional Overview`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Academic & Placement Profile: ${escapeHtml(collegeName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Explore verified placement statistics, corporate recruitment partners, NIRF ranking, eligibility criteria, and fee structures for ${escapeHtml(collegeName)} on the TalentXcel higher education network.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median CTC</span><span class="font-semibold text-emerald-400">₹8.5 LPA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Placement Rate</span><span class="font-semibold text-white">92% Verified Placed</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Accreditation</span><span class="font-semibold text-blue-400">NAAC A++ / NIRF Top 50</span></div>
-        </div>
-        <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/colleges" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Compare With Other Colleges &rarr;</a>
-          <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Build Campus Placement Resume &rarr;</a>
-        </div>
-      </section>
-    `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "EducationalOrganization",
-      "name": collegeName,
-      "description": `Higher education programs and placement data for ${collegeName}`
-    };
+  } else if (cleanPath === 'colleges' || cleanPath.startsWith('colleges/')) {
+    if (cleanPath === 'colleges') {
+      title = 'Top Colleges in India 2026 — NIRF Rankings, Cutoffs, Fees & Placements | TalentXcel';
+      description = 'Forensic database of 10,250+ accredited Indian higher education institutions. Compare annual tuition fees, NIRF ranks, highest placement CTCs, and cutoffs on TalentXcel.';
+      canonical = 'https://talentxcel.in/colleges';
+      h1 = 'Accredited Higher Education & Engineering Colleges (2026)';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Higher Education Directories &amp; Institutional Profiles</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Compare accredited engineering, technology, and management institutions across India with real verified placement packages, fee schedules, and admission eligibility.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/colleges/delhi-institute-of-technology" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Delhi Institute of Technology</a>
+            <a href="/compare/indian-institute-of-technology-bombay-vs-indian-institute-of-technology-delhi" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">IIT Bombay vs IIT Delhi</a>
+            <a href="/directory/colleges-a-z" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Colleges A-Z Index</a>
+            <a href="/resume/build" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Campus Placement Resume</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Accredited Colleges & Higher Education",
+        "url": canonical
+      };
+    } else {
+      const slug = cleanPath.replace('colleges/', '');
+      const cleanCollege = slug.replace(/-campus.*/, '');
+      const collegeName = formatTitle(cleanCollege);
+      title = `${collegeName} Admissions, Placements, Fees & Cutoffs (2026) | TalentXcel`;
+      description = `Forensic institutional dossier for ${collegeName}. Tuition fees, median placement packages (₹6.5L - ₹22L PA), NIRF rankings, and alumni network verified on TalentXcel.`;
+      canonical = `https://talentxcel.in/colleges/${slug}`;
+      h1 = `${collegeName} Institutional Overview`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Academic & Placement Profile: ${escapeHtml(collegeName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Explore verified placement statistics, corporate recruitment partners, NIRF ranking, eligibility criteria, and fee structures for ${escapeHtml(collegeName)} on the TalentXcel higher education network.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median CTC</span><span class="font-semibold text-emerald-400">₹8.5 LPA</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Placement Rate</span><span class="font-semibold text-white">92% Verified Placed</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Accreditation</span><span class="font-semibold text-blue-400">NAAC A++ / NIRF Top 50</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/colleges" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Compare With Other Colleges &rarr;</a>
+            <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Build Campus Placement Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": collegeName,
+        "description": `Higher education programs and placement data for ${collegeName}`
+      };
+    }
   } else if (prefix === 'passport') {
     if (cleanPath.startsWith('passport/proof/')) {
       const proofId = cleanPath.replace('passport/proof/', '');
@@ -503,6 +626,34 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         </section>
       `;
     }
+  } else if ((prefix === 'company' || prefix === 'companies') && secondary) {
+    const compSlug = secondary;
+    const compName = formatTitle(compSlug);
+    title = `${compName} — Careers, Tech Stack & Hiring Openings | TalentXcel`;
+    description = `Explore open jobs, engineering culture, verified compensation benchmarks, and recruitment opportunities at ${compName} on TalentXcel.`;
+    canonical = `https://talentxcel.in/company/${compSlug}`;
+    h1 = `${compName} — Corporate Profile & Hiring Hub`;
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-white">${escapeHtml(compName)} Overview &amp; Talent Ecosystem</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(compName)} is an active hiring partner on TalentXcel. Explore verified job postings, engineering roles, and apply directly with 1-click ATS resume matching.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-emerald-400">Actively Hiring</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Employer Verification</span><span class="font-semibold text-white">Verified Organization</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Direct Recruiter Access</span><span class="font-semibold text-blue-400">Enabled</span></div>
+        </div>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Active Vacancies &rarr;</a>
+          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan Resume for Match &rarr;</a>
+        </div>
+      </section>
+    `;
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": compName,
+      "url": canonical
+    };
   } else if (prefix === 'posts' || prefix === 'post') {
     const postSlug = secondary || cleanPath.replace(/^posts?\/?/, '');
     const cleanTopic = postSlug.replace(/-market-trends-and-insights.*/, '').replace(/-edition-.*/, '');

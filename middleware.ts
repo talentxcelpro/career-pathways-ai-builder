@@ -39,6 +39,7 @@ function getCanonicalForRoute(pathname: string, host: string): string {
   const clean = pathname.toLowerCase();
   const sub = host.split('.')[0];
 
+  // If visiting the root of a specific subdomain, keep the subdomain root canonical
   if (clean === '/' || clean === '') {
     if (sub && sub !== 'talentxcel' && sub !== 'www') {
       return `https://${sub === 'employer' ? 'employers' : sub}.talentxcel.in/`;
@@ -46,33 +47,8 @@ function getCanonicalForRoute(pathname: string, host: string): string {
     return 'https://talentxcel.in/';
   }
 
-  if (clean.startsWith('/jobs') || clean.startsWith('/locations') || clean.startsWith('/roles') || clean.startsWith('/industries')) {
-    return `https://jobs.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/salary') || clean.startsWith('/tools/salary-analyzer')) {
-    return `https://salary.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/career-map') || clean.startsWith('/ai-career-hub') || clean.startsWith('/career-intelligence') || clean.startsWith('/how-to-become')) {
-    return `https://careers.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/resume') || clean.startsWith('/tools/ats-checker') || clean.startsWith('/tools/resume-checker') || clean.startsWith('/resume-builder')) {
-    return `https://resume.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/learning') || clean.startsWith('/courses') || clean.startsWith('/course')) {
-    return `https://learning.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/colleges')) {
-    return `https://colleges.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/employers') || clean.startsWith('/recruiters') || clean.startsWith('/companies') || clean.startsWith('/company') || clean.startsWith('/hire') || clean.startsWith('/employer')) {
-    return `https://employers.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/government-jobs')) {
-    return `https://government.talentxcel.in${pathname}`;
-  }
-  if (clean.startsWith('/passport') || clean.startsWith('/public-passport')) {
-    return `https://passport.talentxcel.in${pathname}`;
-  }
+  // All catalog, entity, job, college, salary, and content routes strictly consolidate onto apex talentxcel.in
+  // This eliminates 44,000+ duplicate canonical conflicts between subdomains and apex
   return `https://talentxcel.in${pathname}`;
 }
 
@@ -209,105 +185,40 @@ export default async function middleware(req: Request) {
   const slug = pathParts[pathParts.length - 1];
   if (!slug) return;
 
-  // 4. Eliminate phantom salary matrix URLs with HTTP 410 Gone
+  // 4. Redirect legacy salary matrix URLs to /salary via 301 Permanent Redirect
   if (section === 'salaries') {
-    return new Response(
-      `<!DOCTYPE html><html lang="en"><head><title>410 Gone | TalentXcel</title><meta name="robots" content="noindex, nofollow" /></head><body style="font-family:sans-serif;background:#090d16;color:#e2e8f0;padding:40px;text-align:center;"><h1>410 Gone</h1><p>This automated salary estimate has been retired in favor of verified compensation data.</p><p><a href="/jobs" style="color:#38bdf8;">Explore Live Jobs</a></p></body></html>`,
-      { status: 410, headers: { 'content-type': 'text/html; charset=utf-8' } }
-    );
+    return Response.redirect('https://talentxcel.in/salary', 301);
   }
 
-  // 5. Eliminate phantom company hiring matrix URLs with HTTP 410 Gone
+  // 5. Redirect legacy company hiring matrix URLs to /jobs via 301 Permanent Redirect
   if (section === 'jobs' && pathParts.length > 2 && pathParts[1] === 'company') {
-    return new Response(
-      `<!DOCTYPE html><html lang="en"><head><title>410 Gone | TalentXcel</title><meta name="robots" content="noindex, nofollow" /></head><body style="font-family:sans-serif;background:#090d16;color:#e2e8f0;padding:40px;text-align:center;"><h1>410 Gone</h1><p>This company hiring matrix permutation is no longer active.</p><p><a href="/jobs" style="color:#38bdf8;">Browse Verified Jobs</a></p></body></html>`,
-      { status: 410, headers: { 'content-type': 'text/html; charset=utf-8' } }
-    );
+    return Response.redirect('https://talentxcel.in/jobs', 301);
   }
 
-  let title = 'TalentXcel — AI Career Platform for Jobs, Skills & Hiring';
-  let description = 'Search verified jobs, build an ATS-ready resume, prepare for interviews and grow your skills on TalentXcel.';
-  let image = 'https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
-  let canonicalUrl = getCanonicalForRoute(url.pathname, host);
+  // 6. Redirect legacy college facet subtabs (/colleges/:slug/fees, /courses, etc.) to the primary college dossier
+  // This permanently eliminates 92,250 legacy duplicate & soft 404 crawl errors in Google Search Console
+  if (section === 'colleges' && pathParts.length > 2) {
+    const collegeSlug = pathParts[1];
+    return Response.redirect(`https://talentxcel.in/colleges/${collegeSlug}`, 301);
+  }
 
-  if (section === 'jobs') {
-    if (pathParts.length > 1) {
-      const jobSlug = pathParts[1];
-      
-      // If it's a known static hub, allow standard rendering
-      if (!VALID_STATIC_JOB_ROUTES.has(jobSlug.toLowerCase())) {
-        const job = await fetchJobForMeta(jobSlug);
-        if (job) {
-          title = `${job.title} at ${job.company_name || 'Hiring Employer'} | TalentXcel Jobs`;
-          description = job.description?.slice(0, 180) || `Apply now for ${job.title} on TalentXcel. Free 1-click application with instant ATS resume score.`;
-          canonicalUrl = getCanonicalForRoute(`/jobs/${job.seo_slug || jobSlug}`, host);
-        } else {
-          // Nonexistent or expired job requested by search bot -> HTTP 410 Gone
-          return new Response(
-            `<!DOCTYPE html><html lang="en"><head><title>410 Gone - Job Listing Removed | TalentXcel</title><meta name="robots" content="noindex, nofollow" /></head><body style="font-family:sans-serif;background:#090d16;color:#e2e8f0;padding:40px;text-align:center;"><h1>410 Gone</h1><p>This job vacancy or search permutation is no longer active.</p><p><a href="/jobs" style="color:#38bdf8;">Browse 500+ Verified Active Openings</a></p></body></html>`,
-            { status: 410, headers: { 'content-type': 'text/html; charset=utf-8' } }
-          );
-        }
+  // 7. For individual expired job UUIDs, permanently redirect to /jobs (resolves GSC 404 validation)
+  if (section === 'jobs' && pathParts.length === 2) {
+    const jobSlug = pathParts[1];
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobSlug);
+    if (isUuid) {
+      const job = await fetchJobForMeta(jobSlug);
+      if (!job) {
+        return Response.redirect('https://talentxcel.in/jobs', 301);
       }
     }
-  } else if (section === 'colleges') {
-    if (pathParts.length > 2) {
-      // Facet subtab (e.g. /colleges/iit-delhi/fees) -> Canonicalize strictly to primary entity
-      const collegeSlug = pathParts[1];
-      const formattedCollege = collegeSlug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-      title = `${formattedCollege} — Courses, Admissions, Fees & Placements | TalentXcel`;
-      description = `Comprehensive dossier for ${formattedCollege}: courses, fee structures, cutoff scores, placements, and career pathways.`;
-      canonicalUrl = getCanonicalForRoute(`/colleges/${collegeSlug}`, host);
-    } else if (pathParts.length === 2) {
-      const formattedCollege = slug.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-      title = `${formattedCollege} — Courses, Admissions, Fees & Placements | TalentXcel`;
-      description = `Comprehensive guide to ${formattedCollege}: courses, fee structures, cutoff scores, placements, and career pathways.`;
-      canonicalUrl = getCanonicalForRoute(`/colleges/${slug}`, host);
-    }
-  } else if (section === 'company') {
-    const company = await fetchCompanyForMeta(slug);
-    if (company) {
-      title = `${company.name} — AI Product Leaderboard | TalentXcel Rankings`;
-      description = company.tagline || company.description || `${company.name} is ranked on the TalentXcel Global AI Product Leaderboard.`;
-      if (company.logo_url) image = company.logo_url;
-      canonicalUrl = getCanonicalForRoute(`/company/${slug}`, host);
-    }
-  } else if (section === 'passport') {
-    const profile = await fetchProfileForMeta(slug);
-    if (profile) {
-      title = `${profile.name} — ${profile.headline || profile.title || 'Professional Career Passport'} | TalentXcel`;
-      description = profile.summary?.slice(0, 200) || `${profile.name}'s verified professional passport on TalentXcel.`;
-      if (profile.photoUrl) image = profile.photoUrl;
-      canonicalUrl = getCanonicalForRoute(`/passport/public/${slug}`, host);
-    }
   }
 
-  // Fetch the real index.html Vercel would have served, then patch it.
-  const originRes = await fetch(new URL('/index.html', req.url).toString());
-  if (!originRes.ok) return;
-  let html = await originRes.text();
-
-  html = html
-    .replace(/<title>.*?<\/title>/i, `<title>${escapeHtml(title)}</title>`)
-    .replace(/(<meta\s+name=["']description["']\s+content=")[^"]*(")/i, `$1${escapeHtml(description)}$2`)
-    .replace(/(<meta\s+property=["']og:title["']\s+content=")[^"]*(")/i, `$1${escapeHtml(title)}$2`)
-    .replace(/(<meta\s+property=["']og:description["']\s+content=")[^"]*(")/i, `$1${escapeHtml(description)}$2`)
-    .replace(/(<meta\s+property=["']og:image["']\s+content=")[^"]*(")/i, `$1${image}$2`)
-    .replace(/(<meta\s+property=["']og:url["']\s+content=")[^"]*(")/i, `$1${canonicalUrl}$2`)
-    .replace(/(<meta\s+name=["']twitter:title["']\s+content=")[^"]*(")/i, `$1${escapeHtml(title)}$2`)
-    .replace(/(<meta\s+name=["']twitter:description["']\s+content=")[^"]*(")/i, `$1${escapeHtml(description)}$2`)
-    .replace(/(<meta\s+name=["']twitter:image["']\s+content=")[^"]*(")/i, `$1${image}$2`);
-
-  // Explicitly update or inject canonical tag so Googlebot indexes the exact route URL
-  if (/<link\s+rel=["']canonical["'][^>]*>/i.test(html)) {
-    html = html.replace(/<link\s+rel=["']canonical["'][^>]*>/i, `<link rel="canonical" href="${canonicalUrl}" />`);
-  } else {
-    html = html.replace('</head>', `<link rel="canonical" href="${canonicalUrl}" />\n</head>`);
-  }
-
-  return new Response(html, {
-    headers: { 'content-type': 'text/html; charset=utf-8' },
-  });
+  // 8. For ALL active catalog, programmatic corridor, entity, and content routes:
+  // Allow request to pass through (return;) so vercel.json rewrites crawlers directly to /api/seo-render.
+  // /api/seo-render serves 100% complete semantic pre-rendered HTML with H1, JSON-LD schema,
+  // rich content, and strictly unified apex canonicals (https://talentxcel.in/...).
+  return;
 }
 
 async function fetchJobForMeta(slug: string) {
@@ -335,63 +246,4 @@ async function fetchJobForMeta(slug: string) {
   } catch {
     return null;
   }
-}
-
-async function fetchCompanyForMeta(slug: string) {
-  const SUPABASE_URL = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
-
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/claim1_entities?slug=eq.${encodeURIComponent(slug)}&select=name,tagline,description,logo_url`,
-      {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-      }
-    );
-    if (!res.ok) return null;
-    const rows = await res.json();
-    return rows?.[0] || null;
-  } catch {
-    return null;
-  }
-}
-
-async function fetchProfileForMeta(username: string) {
-  const SUPABASE_URL = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
-
-  const cleaned = username.startsWith('@') ? username.slice(1) : username;
-
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/profiles?or=(username.ilike.${encodeURIComponent(cleaned)},custom_url_slug.ilike.${encodeURIComponent(cleaned)},slug.ilike.${encodeURIComponent(cleaned)})&select=full_name,title,headline,about,profile_picture_url`,
-      {
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        },
-      }
-    );
-    if (!res.ok) return null;
-    const rows = await res.json();
-    if (!rows?.length) return null;
-
-    const row = rows[0];
-    return {
-      name: row.full_name || cleaned,
-      title: row.title || '',
-      headline: row.headline || row.title || 'Verified Professional',
-      summary: row.about || row.headline || '',
-      photoUrl: row.profile_picture_url || '',
-    };
-  } catch {
-    return null;
-  }
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
