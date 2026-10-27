@@ -11,6 +11,13 @@ export default async function handler(req: Request) {
   const pathParam = url.searchParams.get('path') || url.pathname.replace(/^\/api\/seo-render\/?/, '') || '/';
   const cleanPath = pathParam.replace(/^\//, '').replace(/\/$/, '');
 
+  if (cleanPath.endsWith('.xml') || cleanPath.includes('sitemap') || cleanPath.includes('feed')) {
+    return new Response('<?xml version="1.0" encoding="UTF-8"?><error>XML route - not HTML</error>', {
+      status: 404,
+      headers: { 'Content-Type': 'application/xml; charset=utf-8' },
+    });
+  }
+
   const html = generateDynamicSeoHtml(cleanPath);
 
   return new Response(html, {
