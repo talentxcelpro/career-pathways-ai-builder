@@ -172,6 +172,37 @@ export default function JobDetails() {
   }
 
   if (!job) {
+    if (slugOrId === 'freshers' || slugOrId === 'fresher') {
+      return (
+        <React.Suspense
+          fallback={
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+        >
+          <JobsByRoleCity roleOverride="software-engineer" cityOverride="bangalore" />
+        </React.Suspense>
+      );
+    }
+
+    if (slugOrId && slugOrId.includes('/')) {
+      const parts = slugOrId.split('/');
+      const extractedRole = parts[0];
+      const extractedCity = parts[1];
+      return (
+        <React.Suspense
+          fallback={
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+              <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+        >
+          <JobsByRoleCity roleOverride={extractedRole} cityOverride={extractedCity} />
+        </React.Suspense>
+      );
+    }
+
     // Programmatic Faceted Route Resolver (Role x City Matrix, e.g. /jobs/react-developer-in-noida)
     if (slugOrId && slugOrId.includes('-in-')) {
       const parts = slugOrId.split('-in-');

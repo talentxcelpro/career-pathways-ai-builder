@@ -20859,7 +20859,28 @@ for (const loc of JOB_LOCATIONS) {
 export function getLocationBySlug(slug: string): JobLocationConfig | undefined {
   if (!slug) return undefined;
   const clean = slug.toLowerCase().trim();
-  return LOCATION_SLUG_MAP.get(clean) || ALIAS_MAP.get(clean);
+  const existing = LOCATION_SLUG_MAP.get(clean) || ALIAS_MAP.get(clean);
+  if (existing) return existing;
+
+  const cityName = clean
+    .split(/[-_]+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+
+  return {
+    slug: clean,
+    cityName,
+    stateName: 'India',
+    countryName: 'India',
+    countryCode: 'IN',
+    continent: 'asia',
+    tier: 2,
+    aliases: [clean],
+    currency: 'INR',
+    timezone: 'Asia/Kolkata',
+    active: true,
+    seoEligible: true
+  };
 }
 
 export function getRelatedCities(current: JobLocationConfig, limit: number = 6): JobLocationConfig[] {

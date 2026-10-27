@@ -358,6 +358,10 @@
       "destination": "/index-passport.html"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-root.xml"
+    },
+    {
       "source": "/robots.txt",
       "destination": "/robots-root.txt"
     },

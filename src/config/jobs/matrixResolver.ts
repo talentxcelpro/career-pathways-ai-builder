@@ -37,6 +37,9 @@ export function resolveMatrixParams(
       l => (l.slug === cleanCity || l.cityName.toLowerCase() === cleanCity) &&
            (l.countryCode.toLowerCase() === cleanCountry || l.countryName.toLowerCase().replace(/\s+/g, '-') === cleanCountry)
     );
+    if (!location) {
+      location = getLocationBySlug(cleanCity);
+    }
   } else {
     location = getLocationBySlug(citySlug);
   }

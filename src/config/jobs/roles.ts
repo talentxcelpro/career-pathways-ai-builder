@@ -502,7 +502,24 @@ for (const r of JOB_ROLES) {
 export function getRoleBySlug(slug: string): JobRoleConfig | undefined {
   if (!slug) return undefined;
   const clean = slug.toLowerCase().trim();
-  return ROLE_SLUG_MAP.get(clean) || ROLE_SYNONYM_MAP.get(clean);
+  const existing = ROLE_SLUG_MAP.get(clean) || ROLE_SYNONYM_MAP.get(clean);
+  if (existing) return existing;
+
+  // Synthetic fallback for programmatic taxonomy combinations (e.g. design-systems-lead, web3, marketing-manager)
+  const title = clean
+    .split(/[-_]+/)
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+
+  return {
+    slug: clean,
+    title,
+    category: 'Engineering & Tech',
+    synonyms: [title.toLowerCase()],
+    skills: [title, 'System Architecture', 'Problem Solving', 'Leadership'],
+    relatedRoleSlugs: ['software-engineer', 'frontend-developer', 'full-stack-developer'],
+    description: `Explore high-impact career opportunities for ${title} on TalentXcel.`
+  };
 }
 
 export function getRelatedRoles(role: JobRoleConfig): JobRoleConfig[] {

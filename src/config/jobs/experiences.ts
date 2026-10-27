@@ -58,8 +58,8 @@ for (const exp of JOB_EXPERIENCES) {
   EXPERIENCE_MAP.set(exp.slug, exp);
 }
 
-// Synonyms mapping
 EXPERIENCE_MAP.set('fresher', JOB_EXPERIENCES[0]);
+EXPERIENCE_MAP.set('freshers', JOB_EXPERIENCES[0]);
 EXPERIENCE_MAP.set('entry-level', JOB_EXPERIENCES[0]);
 EXPERIENCE_MAP.set('0-1-years', JOB_EXPERIENCES[0]);
 EXPERIENCE_MAP.set('junior', JOB_EXPERIENCES[1]);
@@ -68,9 +68,29 @@ EXPERIENCE_MAP.set('senior', JOB_EXPERIENCES[3]);
 EXPERIENCE_MAP.set('senior-level', JOB_EXPERIENCES[3]);
 EXPERIENCE_MAP.set('executive', JOB_EXPERIENCES[3]);
 EXPERIENCE_MAP.set('lead', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('director', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('experienced', JOB_EXPERIENCES[2]);
+EXPERIENCE_MAP.set('principal', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('manager', JOB_EXPERIENCES[2]);
+EXPERIENCE_MAP.set('vp', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('head', JOB_EXPERIENCES[3]);
+EXPERIENCE_MAP.set('jobs', JOB_EXPERIENCES[1]);
 
 export function getExperienceBySlug(slug: string): JobExperienceConfig | undefined {
   if (!slug) return undefined;
-  return EXPERIENCE_MAP.get(slug.toLowerCase().trim());
+  const clean = slug.toLowerCase().trim();
+  const existing = EXPERIENCE_MAP.get(clean);
+  if (existing) return existing;
+
+  const label = clean.split(/[-_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  return {
+    slug: clean,
+    label: `${label} Level`,
+    badgeLabel: `${label} Roles`,
+    minYears: 2,
+    maxYears: 10,
+    description: `Career opportunities tailored for ${label} professionals across tech and corporate industries.`,
+    careerAdvice: `Demonstrate proven expertise in ${label} responsibilities, leadership, and project execution.`
+  };
 }
 

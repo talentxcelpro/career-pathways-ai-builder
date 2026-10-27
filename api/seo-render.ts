@@ -149,7 +149,43 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "url": canonical
     };
   } else if (prefix === 'jobs' && secondary) {
-    if (parts.length >= 3) {
+    if (parts.length >= 4) {
+      const roleSlug = parts[1];
+      const expSlug = parts[2];
+      const citySlug = parts[parts.length - 1];
+      const roleName = formatTitle(roleSlug);
+      const expName = formatTitle(expSlug);
+      const cityName = formatTitle(citySlug);
+      title = `${roleName} Jobs (${expName}) in ${cityName} 2026 | TalentXcel`;
+      description = `Explore active ${roleName} jobs for ${expName} professionals, corporate vacancies, salary benchmarks, and hiring companies in ${cityName}. 1-Click apply on TalentXcel.`;
+      canonical = `https://talentxcel.in/${cleanPath}`;
+      h1 = `${roleName} Jobs (${expName}) in ${cityName}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} (${escapeHtml(expName)}) Employment Hub in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Discover verified ${escapeHtml(roleName)} job openings for ${escapeHtml(expName)} professionals in ${escapeHtml(cityName)}. Complete your ATS resume scan to match direct hiring requirements.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Experience Tier</span><span class="font-semibold text-purple-400">${escapeHtml(expName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Occupation",
+        "name": roleName,
+        "occupationLocation": {
+          "@type": "City",
+          "name": cityName
+        },
+        "description": `${roleName} (${expName}) employment opportunities in ${cityName}`
+      };
+    } else if (parts.length === 3) {
       const roleSlug = parts[1];
       const citySlug = parts[2];
       const roleName = formatTitle(roleSlug);
