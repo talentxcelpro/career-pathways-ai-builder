@@ -30,6 +30,54 @@ export default async function handler(req: Request) {
   });
 }
 
+const FALLBACK_JOBS_MAP: Record<string, { title: string; company_name: string; location: string; salary_min: number; salary_max: number; employment_type: string; description: string }> = {
+  'job-fin-01': {
+    title: 'Senior Financial Analyst',
+    company_name: 'JPMorgan Chase & Co.',
+    location: 'Mumbai • Hybrid',
+    salary_min: 1400000,
+    salary_max: 2200000,
+    employment_type: 'Full-time',
+    description: 'Lead quarterly financial forecasting, valuation modeling, and capital expenditure analysis for Asia-Pacific operations.'
+  },
+  'job-hsp-01': {
+    title: 'Hotel Operations Manager',
+    company_name: 'Taj Hotels & Resorts',
+    location: 'New Delhi • On-site',
+    salary_min: 1200000,
+    salary_max: 1800000,
+    employment_type: 'Full-time',
+    description: 'Manage luxury resort operations, guest satisfaction metrics, room inventory logistics, and front office teams.'
+  },
+  'job-hr-01': {
+    title: 'HR Analytics Specialist',
+    company_name: 'Deloitte Consulting',
+    location: 'Bangalore • Hybrid',
+    salary_min: 1100000,
+    salary_max: 1600000,
+    employment_type: 'Full-time',
+    description: 'Transform workforce data into strategic insights using Power BI turnover dashboards, compensation models, and retention analytics.'
+  },
+  'job-hlth-01': {
+    title: 'Healthcare Operations Administrator',
+    company_name: 'Apollo Hospitals Group',
+    location: 'Hyderabad • On-site',
+    salary_min: 900000,
+    salary_max: 1400000,
+    employment_type: 'Full-time',
+    description: 'Oversee hospital department workflow, patient discharge efficiency, clinical quality audit compliance, and facility staffing.'
+  },
+  'job-cld-01': {
+    title: 'Cloud Solutions Architect',
+    company_name: 'Amazon Web Services (AWS)',
+    location: 'Remote • India',
+    salary_min: 2800000,
+    salary_max: 4200000,
+    employment_type: 'Full-time',
+    description: 'Architect enterprise cloud migration blueprints, multi-region failover solutions, and serverless backends on AWS.'
+  }
+};
+
 function escapeHtml(str: string): string {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -101,7 +149,110 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "url": canonical
     };
   } else if (prefix === 'jobs' && secondary) {
-    if (secondary.includes('-in-')) {
+    if (parts.length >= 3) {
+      const roleSlug = parts[1];
+      const citySlug = parts[2];
+      const roleName = formatTitle(roleSlug);
+      const cityName = formatTitle(citySlug);
+      title = `${roleName} Jobs in ${cityName} 2026 | TalentXcel`;
+      description = `Explore active ${roleName} jobs, tech vacancies, salary benchmarks (₹4.5L - ₹18L PA), and hiring companies in ${cityName}. 1-Click apply on TalentXcel.`;
+      canonical = `https://talentxcel.in/jobs/${roleSlug}/${citySlug}`;
+      h1 = `${roleName} Jobs in ${cityName}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment Corridor in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Discover verified ${escapeHtml(roleName)} job openings, corporate hiring partners, and compensation percentiles in ${escapeHtml(cityName)}. Complete your ATS resume scan to match direct hiring requirements.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-blue-400">Actively Hiring</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs/${escapeHtml(roleSlug)}-in-${escapeHtml(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Occupation",
+        "name": roleName,
+        "occupationLocation": {
+          "@type": "City",
+          "name": cityName
+        },
+        "description": `${roleName} employment opportunities in ${cityName}`
+      };
+    } else if (secondary === 'freshers' || secondary === 'fresher') {
+      title = 'Fresher Jobs in India 2026 — Entry Level Hiring, Trainee & Graduate Openings | TalentXcel';
+      description = 'Explore thousands of verified entry-level vacancies, graduate trainee programs, and junior developer positions across Bangalore, Hyderabad, Pune, Mumbai, and Remote India.';
+      canonical = 'https://talentxcel.in/jobs/freshers';
+      h1 = 'Fresher Jobs & Entry Level Career Opportunities (2026)';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Entry-Level Trainee &amp; Fresher Recruitment Drive</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Launch your career with verified opportunities across India\'s leading technology companies, consulting firms, and public enterprises. Complete your profile and apply with 1-click ATS resume scanning.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Junior Software Engineer</a>
+            <a href="/jobs/data-analyst-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Graduate Data Analyst</a>
+            <a href="/jobs/qa-engineer-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">QA Automation Trainee</a>
+            <a href="/resume/build" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Build Fresher Resume</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Fresher Jobs & Graduate Careers",
+        "url": canonical
+      };
+    } else if (FALLBACK_JOBS_MAP[secondary]) {
+      const fb = FALLBACK_JOBS_MAP[secondary];
+      title = `${fb.title} at ${fb.company_name} | Verified Opening | TalentXcel`;
+      description = fb.description;
+      canonical = `https://talentxcel.in/jobs/${secondary}`;
+      h1 = `${fb.title} — ${fb.company_name}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center gap-3">
+            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-semibold">Active Opening</span>
+            <span class="text-xs text-slate-400">${escapeHtml(fb.location)}</span>
+          </div>
+          <h2 class="text-xl font-bold text-white">${escapeHtml(fb.title)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(fb.description)}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Company</span><span class="font-semibold text-white">${escapeHtml(fb.company_name)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Compensation</span><span class="font-semibold text-emerald-400">₹${(fb.salary_min / 100000).toFixed(1)}L - ₹${(fb.salary_max / 100000).toFixed(1)}L PA</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Employment</span><span class="font-semibold text-blue-400">${escapeHtml(fb.employment_type)}</span></div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="https://talentxcel.in/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Apply for Role &rarr;</a>
+            <a href="https://talentxcel.in/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Score ATS Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "JobPosting",
+        "title": fb.title,
+        "description": fb.description,
+        "datePosted": "2026-01-01T00:00:00.000Z",
+        "validThrough": "2027-12-31T23:59:59.000Z",
+        "employmentType": "FULL_TIME",
+        "hiringOrganization": {
+          "@type": "Organization",
+          "name": fb.company_name
+        },
+        "jobLocation": {
+          "@type": "Place",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": fb.location,
+            "addressCountry": "IN"
+          }
+        }
+      };
+    } else if (secondary.includes('-in-')) {
       const parts = secondary.split('-in-');
       const roleName = formatTitle(parts[0]);
       const cityName = formatTitle(parts.slice(1).join('-in-'));
@@ -147,6 +298,47 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         </section>
       `;
     }
+  } else if ((prefix === 'industries' || prefix === 'industry') && secondary) {
+    const indName = formatTitle(secondary);
+    title = `${indName} Jobs & Career Opportunities 2026 | TalentXcel`;
+    description = `Explore high-growth careers, hiring trends, top employers, and salary benchmarks in the ${indName} industry on TalentXcel.`;
+    canonical = `https://talentxcel.in/industries/${secondary}`;
+    h1 = `${indName} Industry Careers & Job Openings (2026)`;
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-white">${escapeHtml(indName)} Employment Hub &amp; Industry Trends</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Discover top corporate recruiters, competitive compensation ranges, and in-demand skills within the ${escapeHtml(indName)} sector across India.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Sector</span><span class="font-semibold text-emerald-400">${escapeHtml(indName)}</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Market Demand</span><span class="font-semibold text-white">High Growth</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-blue-400">Actively Recruiting</span></div>
+        </div>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(indName)} Jobs &rarr;</a>
+          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+        </div>
+      </section>
+    `;
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": `${indName} Industry Careers`,
+      "url": canonical
+    };
+  } else if (prefix === 'auth') {
+    title = 'TalentXcel Account Registration & Sign In | Professional Talent Network';
+    description = 'Join TalentXcel to access verified career pathways, 1-click ATS resume scoring, and direct corporate recruitment.';
+    canonical = 'https://talentxcel.in/auth/register';
+    h1 = 'TalentXcel Professional Network';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 class="text-xl font-bold text-white">Verified Candidate &amp; Employer Ecosystem</h2>
+        <p class="text-slate-300 text-sm">Join over 100,000+ verified professionals worldwide. Access personalized career tracks and job matching.</p>
+        <div class="pt-4">
+          <a href="https://talentxcel.in/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore Live Openings &rarr;</a>
+        </div>
+      </section>
+    `;
   } else if (prefix === 'compare' && secondary) {
     const compParts = secondary.split('-vs-');
     const nameA = formatTitle(compParts[0] || 'College A');

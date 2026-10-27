@@ -36,6 +36,7 @@ import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
 import { EmployerHiringBadgeGenerator } from '@/components/employer/EmployerHiringBadgeGenerator';
 import { PopularRoleCityLinks } from '@/components/seo/PopularRoleCityLinks';
+import { FALLBACK_JOBS } from '@/hooks/useJobsCriticalPath';
 
 const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'));
 
@@ -48,6 +49,21 @@ export default function JobDetails() {
     queryKey: ['job-details', slugOrId],
     queryFn: async () => {
       if (!slugOrId) return null;
+
+      // Strategy 0: Check hardcoded high-authority FALLBACK_JOBS
+      const fallbackMatch = (FALLBACK_JOBS as any[]).find(
+        (j) => j.id === slugOrId || j.seo_slug === slugOrId
+      );
+      if (fallbackMatch) {
+        return {
+          ...fallbackMatch,
+          is_active: true,
+          job_status: 'open',
+          salary_currency: 'INR',
+          created_at: fallbackMatch.posted_at || new Date().toISOString(),
+          apply_url: 'https://talentxcel.in/jobs',
+        };
+      }
 
       // Strategy 1: Try exact SEO slug match
       const { data: exactSlugJob } = await supabase
@@ -183,7 +199,7 @@ export default function JobDetails() {
         <Helmet>
           <title>Position Closed | Verified Active Jobs | TalentXcel</title>
           <meta name="description" content="This position has concluded or is no longer active. Browse 500+ live verified jobs and career matches on TalentXcel." />
-          <meta name="robots" content="noindex, nofollow" />
+          <meta name="robots" content="index, follow" />
         </Helmet>
 
         <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4">

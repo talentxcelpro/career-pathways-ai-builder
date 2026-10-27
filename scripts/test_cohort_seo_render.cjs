@@ -1,4 +1,6 @@
 const https = require('https');
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
 
 const sampleCohortUrls = [
   'https://talentxcel.in/jobs/software-engineer-in-bangalore',
