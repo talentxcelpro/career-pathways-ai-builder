@@ -22,18 +22,34 @@ export function loadRazorpayScript(): Promise<boolean> {
     if (typeof window === 'undefined') return resolve(false);
     if (window.Razorpay) return resolve(true);
 
+    let finished = false;
+    const timeout = setTimeout(() => {
+      if (!finished) {
+        finished = true;
+        resolve(false);
+      }
+    }, 6000);
+
+    const onDone = (ok: boolean) => {
+      if (!finished) {
+        finished = true;
+        clearTimeout(timeout);
+        resolve(ok);
+      }
+    };
+
     const existingScript = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
     if (existingScript) {
-      existingScript.addEventListener('load', () => resolve(true));
-      existingScript.addEventListener('error', () => resolve(false));
+      existingScript.addEventListener('load', () => onDone(true));
+      existingScript.addEventListener('error', () => onDone(false));
       return;
     }
 
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
     script.async = true;
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
+    script.onload = () => onDone(true);
+    script.onerror = () => onDone(false);
     document.body.appendChild(script);
   });
 }

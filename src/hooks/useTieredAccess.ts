@@ -49,9 +49,10 @@ export const useTieredAccess = () => {
       // check_user_subscription is defined in migration 20250722153623 and reads
       // from public.subscribers — the authoritative entitlement source.
       // The dropped user_features table is NOT used here.
-      const { data: subscription, error: subError } = await supabase
-        .rpc('check_user_subscription', { user_uuid: user.id })
-        .maybeSingle();
+      const { data: subscriptionRows, error: subError } = await supabase
+        .rpc('check_user_subscription', { user_uuid: user.id });
+
+      const subscription = Array.isArray(subscriptionRows) ? subscriptionRows[0] : subscriptionRows;
 
       if (subError) {
         console.error('[useTieredAccess] check_user_subscription error:', subError);

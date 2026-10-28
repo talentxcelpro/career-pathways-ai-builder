@@ -4,8 +4,8 @@ import { Navigate } from 'react-router-dom';
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from 'react-error-boundary';
 import { LandingPage } from '@/components/landing/LandingPage';
-import { FinalLaunchRunner } from '@/components/deployment/FinalLaunchRunner';
-import { LaunchStatusSummary } from '@/components/admin/LaunchStatusSummary';
+const FinalLaunchRunner = lazy(() => import('@/components/deployment/FinalLaunchRunner').then(m => ({ default: m.FinalLaunchRunner })));
+const LaunchStatusSummary = lazy(() => import('@/components/admin/LaunchStatusSummary').then(m => ({ default: m.LaunchStatusSummary })));
 import { useAuth } from '@/contexts/AuthContext';
 import { getCurrentUniverse } from '@/config/domainArchitecture';
 
@@ -34,13 +34,11 @@ const Index = () => {
     }, 100);
   }, []);
 
-  if (loading) {
-    return null; // Let auth load first
-  }
+  // Do not block initial paint waiting for async auth verification
 
   const renderContent = () => {
-    if (showFinalLaunch) return <FinalLaunchRunner />;
-    if (showLaunchStatus) return <LaunchStatusSummary />;
+    if (showFinalLaunch) return <Suspense fallback={null}><FinalLaunchRunner /></Suspense>;
+    if (showLaunchStatus) return <Suspense fallback={null}><LaunchStatusSummary /></Suspense>;
 
     if (universe === 'JOBS') {
       return (

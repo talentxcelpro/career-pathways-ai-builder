@@ -321,6 +321,7 @@ export const Navbar = () => {
                 {/* Direct Messages Icon Link */}
                 <Link
                   to="/messages"
+                  aria-label="Direct messages"
                   className="p-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-white/10 transition-colors relative"
                   title="Messages"
                 >
@@ -335,7 +336,7 @@ export const Navbar = () => {
                 {/* User Dropdown Avatar */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0 border border-slate-700 hover:border-slate-500">
+                    <Button variant="ghost" aria-label="User account menu" className="relative h-8 w-8 rounded-full p-0 border border-slate-700 hover:border-slate-500">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={profile?.profile_picture_url && !profile.profile_picture_url.includes('chatr.chat') ? profile.profile_picture_url : undefined} />
                         <AvatarFallback className="bg-slate-800 text-white font-extrabold text-xs">

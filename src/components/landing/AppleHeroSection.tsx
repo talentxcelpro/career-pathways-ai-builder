@@ -4,7 +4,9 @@ import {
   ChevronRight, Play, Building2, Sparkles, Briefcase, 
   GraduationCap, FileText, CheckCircle2, ArrowRight, Zap, ShieldCheck 
 } from 'lucide-react';
-import { TXCProductVideoModal } from '@/components/video/TXCProductVideoModal';
+const TXCProductVideoModal = React.lazy(() => 
+  import('@/components/video/TXCProductVideoModal').then(m => ({ default: m.TXCProductVideoModal }))
+);
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { recordUserIntent } from '@/utils/intentRouting';
 
@@ -211,11 +213,15 @@ export const AppleHeroSection = () => {
 
       </div>
 
-      <TXCProductVideoModal
-        isOpen={isVideoModalOpen}
-        onClose={() => setIsVideoModalOpen(false)}
-        initialVideoId={activeVideoId}
-      />
+      {isVideoModalOpen && (
+        <React.Suspense fallback={null}>
+          <TXCProductVideoModal
+            isOpen={isVideoModalOpen}
+            onClose={() => setIsVideoModalOpen(false)}
+            initialVideoId={activeVideoId}
+          />
+        </React.Suspense>
+      )}
     </div>
   );
 };

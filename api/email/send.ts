@@ -31,13 +31,13 @@ const SUPABASE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.VITE_SUPABASE_ANON_KEY ||
   process.env.SUPABASE_ANON_KEY ||
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+  '';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TEMPLATE ENGINE & HTML LAYOUT
 // ─────────────────────────────────────────────────────────────────────────────
 
-function escapeHtml(unsafe: any): string {
+export function escapeHtml(unsafe: any): string {
   if (unsafe === null || unsafe === undefined) return '';
   return String(unsafe)
     .replace(/&/g, '&amp;')
@@ -47,7 +47,7 @@ function escapeHtml(unsafe: any): string {
     .replace(/'/g, '&#039;');
 }
 
-function renderButton(label: string, url: string): string {
+export function renderButton(label: string, url: string): string {
   return `
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin: 28px auto; text-align: center;">
       <tr>
@@ -61,7 +61,7 @@ function renderButton(label: string, url: string): string {
   `;
 }
 
-function wrapInBaseLayout(options: {
+export function wrapInBaseLayout(options: {
   title: string;
   preheader: string;
   contentHtml: string;
@@ -175,7 +175,7 @@ function wrapInBaseLayout(options: {
 </html>`;
 }
 
-function renderTemplate(template: string, vars: Record<string, any>, recipientEmail: string): {
+export function renderTemplate(template: string, vars: Record<string, any>, recipientEmail: string): {
   subject: string;
   preheader: string;
   html: string;
@@ -234,6 +234,82 @@ function renderTemplate(template: string, vars: Record<string, any>, recipientEm
         ${renderButton('Track Your Application', ctaUrl)}
       `;
       plainText = `Hi ${vars.firstName || 'there'},\n\nYour application for ${vars.jobTitle} at ${vars.companyName} has been received.\n\nTrack: ${ctaUrl}`;
+      break;
+
+    case 'activation_network_intro':
+      category = 'engagement';
+      subject = vars.subject || `Discover verified career opportunities on TalentXcel`;
+      preheader = vars.preheader || 'Explore curated roles, benchmark your ATS resume score, and connect with top teams.';
+      contentHtml = `
+        <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #0f172a;">
+          Discover Verified Career Opportunities on TalentXcel
+        </h2>
+        <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 24px; color: #334155;">
+          Hi ${name}, welcome to TalentXcel — India's verified professional network and career discovery platform.
+        </p>
+        <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 24px; color: #334155;">
+          Over 2,200+ active roles from verified hiring organizations are live on our platform. Here is how you can accelerate your job search:
+        </p>
+        <div style="background-color: #f1f5f9; border-radius: 8px; padding: 18px 20px; margin: 20px 0;">
+          <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #475569; line-height: 22px;">
+            <li><strong>Verified open positions</strong> with real salary benchmarks and requirements</li>
+            <li><strong>Instant ATS Resume Scoring</strong> to test keyword compatibility</li>
+            <li><strong>Career Passport</strong> to gain direct visibility with verified recruiters</li>
+          </ul>
+        </div>
+        ${renderButton('Explore Live Opportunities', ctaUrl)}
+        <p style="margin: 24px 0 0 0; font-size: 14px; color: #64748b; line-height: 20px;">
+          Best regards,<br>
+          <strong>The TalentXcel Team</strong>
+        </p>
+      `;
+      plainText = `Discover Verified Career Opportunities on TalentXcel\n\nHi ${name},\n\nExplore 2,200+ verified roles, benchmark your ATS resume score, and connect with hiring teams.\n\nExplore now: ${ctaUrl}\n\nUnsubscribe: ${CANONICAL_URL}/unsubscribe?email=${encodeURIComponent(recipientEmail)}`;
+      break;
+
+    case 'activation_profile_claim':
+      category = 'engagement';
+      subject = vars.subject || `Action required: Review and claim your TalentXcel profile`;
+      preheader = vars.preheader || 'Confirm your professional details and unlock direct recruiter matching.';
+      contentHtml = `
+        <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #0f172a;">
+          Claim Your Professional Profile on TalentXcel
+        </h2>
+        <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 24px; color: #334155;">
+          Hi ${name}, a professional profile draft has been prepared for your review on the TalentXcel Network.
+        </p>
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px 20px; margin: 20px 0;">
+          <div style="font-weight: 600; font-size: 14px; color: #0f172a; margin-bottom: 6px;">Your Reserved Profile Preview:</div>
+          <div style="font-size: 14px; color: #475569;">Target Role: <strong>${escapeHtml(vars.headline || vars.role || 'Professional')}</strong></div>
+          ${vars.skills ? `<div style="font-size: 14px; color: #475569; margin-top: 4px;">Skills: <strong>${escapeHtml(Array.isArray(vars.skills) ? vars.skills.join(', ') : vars.skills)}</strong></div>` : ''}
+        </div>
+        <p style="margin: 0 0 16px 0; font-size: 14px; line-height: 22px; color: #64748b;">
+          <strong>Security Notice:</strong> Your information is completely private and is not published until you verify and explicitly approve your details. This link expires in 14 days.
+        </p>
+        ${renderButton('Review & Claim Profile', vars.claimUrl || ctaUrl)}
+        <p style="margin: 20px 0 0 0; font-size: 12px; color: #94a3b8; text-align: center;">
+          Not your profile? <a href="${vars.optOutUrl || `${CANONICAL_URL}/unsubscribe?email=${encodeURIComponent(recipientEmail)}`}" style="color: #64748b; text-decoration: underline;">Opt-out and delete this record</a>.
+        </p>
+      `;
+      plainText = `Claim Your Professional Profile on TalentXcel\n\nHi ${name},\n\nA profile draft has been prepared for your review.\n\nReview & claim: ${vars.claimUrl || ctaUrl}\n\nOpt-out / delete: ${vars.optOutUrl || `${CANONICAL_URL}/unsubscribe?email=${encodeURIComponent(recipientEmail)}`}`;
+      break;
+
+    case 'activation_claim_followup':
+      category = 'engagement';
+      subject = vars.subject || `Reminder: Your TalentXcel profile invitation expires soon`;
+      preheader = vars.preheader || 'New hiring teams and matching opportunities were added this week.';
+      contentHtml = `
+        <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #0f172a;">
+          Your Profile Invitation Expires Soon
+        </h2>
+        <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 24px; color: #334155;">
+          Hi ${name}, this is a gentle reminder that your reservation to claim your profile on TalentXcel will expire shortly.
+        </p>
+        <p style="margin: 0 0 16px 0; font-size: 15px; line-height: 24px; color: #334155;">
+          Claiming your profile gives you full control over your career visibility, verified recruiter matching, and free ATS assessment tools.
+        </p>
+        ${renderButton('Claim Your Profile Now', vars.claimUrl || ctaUrl)}
+      `;
+      plainText = `Reminder: Your TalentXcel profile invitation expires soon\n\nHi ${name},\n\nClaim your profile before the invitation expires: ${vars.claimUrl || ctaUrl}\n\nUnsubscribe: ${CANONICAL_URL}/unsubscribe?email=${encodeURIComponent(recipientEmail)}`;
       break;
 
     default:
@@ -300,6 +376,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Authorization check for non-GET dispatch requests
+  const authHeader = req.headers.authorization;
+  const apiKeyHeader = req.headers['x-api-key'];
+  const serviceKey = process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const cronSecret = process.env.CRON_SECRET;
+  const isVercelCron = req.headers['x-vercel-cron'] === '1';
+
+  const isAuthorized =
+    isVercelCron ||
+    (serviceKey && (authHeader === `Bearer ${serviceKey}` || apiKeyHeader === serviceKey)) ||
+    (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
+    (process.env.NODE_ENV === 'test' && authHeader === 'Bearer test-secret-token');
+
+  if (!isAuthorized) {
+    return res.status(401).json({
+      success: false,
+      error: 'Unauthorized: Valid service role key, API key, or cron secret required.'
+    });
+  }
+
   const startTime = Date.now();
 
   try {
@@ -323,15 +419,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       auth: { persistSession: false }
     });
 
-    // 1. Check suppression list (bounces / complaints)
+    // 1. Render deterministic HTML template
+    const rendered = renderTemplate(template, variables, cleanEmail);
+
+    // 2. Check suppression list (bounces / complaints)
     try {
-      const { data: suppressed } = await supabase
+      const { data: suppressed, error: suppErr } = await supabase
         .from('email_suppression_list')
-        .select('id, reason')
-        .eq('email', cleanEmail)
+        .select('id, reason, is_active')
+        .eq('email_address', cleanEmail)
+        .eq('is_active', true)
         .maybeSingle();
 
-      if (suppressed) {
+      if (suppErr) {
+        console.warn('⚠️ Suppression query check error:', suppErr.message);
+      } else if (suppressed) {
         return res.status(400).json({
           success: false,
           status: 'suppressed',
@@ -342,8 +444,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.warn('⚠️ Suppression check warning:', suppErr?.message);
     }
 
-    // 2. Render deterministic HTML template
-    const rendered = renderTemplate(template, variables, cleanEmail);
+    // 3. Check user preferences for non-transactional emails
+    if (rendered.category !== 'transactional') {
+      try {
+        const { data: prefs, error: prefErr } = await supabase
+          .from('email_user_preferences')
+          .select('unsubscribed_all_non_essential, email_marketing, email_product_updates')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (prefs) {
+          if (prefs.unsubscribed_all_non_essential) {
+            return res.status(400).json({
+              success: false,
+              status: 'preference_blocked',
+              error: `Recipient address ${cleanEmail} has unsubscribed from all non-essential communications`
+            });
+          }
+          if (rendered.category === 'marketing' && prefs.email_marketing === false) {
+            return res.status(400).json({
+              success: false,
+              status: 'preference_blocked',
+              error: `Recipient address ${cleanEmail} has opted out of marketing communications`
+            });
+          }
+        }
+      } catch (prefErr: any) {
+        console.warn('⚠️ Preference check warning:', prefErr?.message);
+      }
+    }
 
     // 3. Environment Resolution: Determine SES vs Console mode
     const emailMode = (process.env.EMAIL_MODE || 'console').toLowerCase();

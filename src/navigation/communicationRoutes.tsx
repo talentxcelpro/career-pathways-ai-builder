@@ -1,20 +1,24 @@
-import React from 'react';
-import { lazy, Suspense } from 'react';
-import DirectMessaging from "@/components/communication/DirectMessaging";
-import VideoConsultations from "@/components/communication/VideoConsultations";
-import GroupChatSystem from "@/components/communication/GroupChatSystem";
+import React, { lazy, Suspense } from 'react';
+
+const DirectMessaging = lazy(() => import("@/components/communication/DirectMessaging"));
+const VideoConsultations = lazy(() => import("@/components/communication/VideoConsultations"));
+const GroupChatSystem = lazy(() => import("@/components/communication/GroupChatSystem"));
+
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const communicationRoutes = [
   {
     path: "/communication/messages",
-    element: <DirectMessaging />
+    element: <S><DirectMessaging /></S>
   },
   {
     path: "/communication/video",
-    element: <VideoConsultations />
+    element: <S><VideoConsultations /></S>
   },
   {
     path: "/communication/groups",
-    element: <GroupChatSystem />
+    element: <S><GroupChatSystem /></S>
   }
 ];

@@ -1,64 +1,69 @@
+import React, { lazy, Suspense } from "react";
 import { Briefcase, PlusCircle, Copy, XCircle, Star, Edit, Eye, Brain, Users, Calendar, MessageSquare, BarChart3, Activity, PieChart } from "lucide-react";
 
 // Job Posting Flow
-import JobPost from "../../pages/jobs/JobPost";
-import JobPostAI from "../../pages/employer/jobs/JobPostAI";
-import JobPostPreview from "../../pages/employer/jobs/JobPostPreview";
-import JobPostSuccess from "../../pages/employer/jobs/JobPostSuccess";
+const JobPost = lazy(() => import("../../pages/jobs/JobPost"));
+const JobPostAI = lazy(() => import("../../pages/employer/jobs/JobPostAI"));
+const JobPostPreview = lazy(() => import("../../pages/employer/jobs/JobPostPreview"));
+const JobPostSuccess = lazy(() => import("../../pages/employer/jobs/JobPostSuccess"));
 
 // Job Management
-import JobsManage from "../../pages/jobs/Manage";
-import JobView from "../../pages/employer/jobs/JobView";
-import JobEdit from "../../pages/employer/jobs/JobEdit";
-import JobDuplicate from "../../pages/employer/jobs/JobDuplicate";
-import JobClose from "../../pages/employer/jobs/JobClose";
-import JobPromote from "../../pages/employer/jobs/JobPromote";
+const JobsManage = lazy(() => import("../../pages/jobs/Manage"));
+const JobView = lazy(() => import("../../pages/employer/jobs/JobView"));
+const JobEdit = lazy(() => import("../../pages/employer/jobs/JobEdit"));
+const JobDuplicate = lazy(() => import("../../pages/employer/jobs/JobDuplicate"));
+const JobClose = lazy(() => import("../../pages/employer/jobs/JobClose"));
+const JobPromote = lazy(() => import("../../pages/employer/jobs/JobPromote"));
 
 // Candidate Management
-import JobApplicants from "../../pages/jobs/JobApplicants";
-import ApplicantDetail from "../../pages/jobs/ApplicantDetail";
-import CandidateNotes from "../../pages/employer/candidates/CandidateNotes";
+const JobApplicants = lazy(() => import("../../pages/jobs/JobApplicants"));
+const ApplicantDetail = lazy(() => import("../../pages/jobs/ApplicantDetail"));
+const CandidateNotes = lazy(() => import("../../pages/employer/candidates/CandidateNotes"));
 
 // AI & Smart Tools
-import SmartRecommend from "../../pages/employer/ai/SmartRecommend";
-import AIInsights from "../../pages/employer/ai/AIInsights";
-import AIShortlist from "../../pages/employer/ai/AIShortlist";
+const SmartRecommend = lazy(() => import("../../pages/employer/ai/SmartRecommend"));
+const AIInsights = lazy(() => import("../../pages/employer/ai/AIInsights"));
+const AIShortlist = lazy(() => import("../../pages/employer/ai/AIShortlist"));
 
 // Interview & Communication
-import InterviewSchedule from "../../pages/employer/interview/InterviewSchedule";
-import InterviewTestLink from "../../pages/employer/interview/InterviewTestLink";
-import InterviewNotes from "../../pages/employer/interview/InterviewNotes";
-import CommunicationResponses from "../../pages/employer/communication/CommunicationResponses";
+const InterviewSchedule = lazy(() => import("../../pages/employer/interview/InterviewSchedule"));
+const InterviewTestLink = lazy(() => import("../../pages/employer/interview/InterviewTestLink"));
+const InterviewNotes = lazy(() => import("../../pages/employer/interview/InterviewNotes"));
+const CommunicationResponses = lazy(() => import("../../pages/employer/communication/CommunicationResponses"));
 
 // Analytics
-import JobAnalytics from "../../pages/employer/analytics/JobAnalytics";
-import JobAnalyticsHeatmap from "../../pages/employer/analytics/JobAnalyticsHeatmap";
-import JobAnalyticsSourceBreakdown from "../../pages/employer/analytics/JobAnalyticsSourceBreakdown";
+const JobAnalytics = lazy(() => import("../../pages/employer/analytics/JobAnalytics"));
+const JobAnalyticsHeatmap = lazy(() => import("../../pages/employer/analytics/JobAnalyticsHeatmap"));
+const JobAnalyticsSourceBreakdown = lazy(() => import("../../pages/employer/analytics/JobAnalyticsSourceBreakdown"));
+
+const S = ({ children }: { children: React.ReactNode }) => (
+  <Suspense fallback={null}>{children}</Suspense>
+);
 
 export const employerJobRoutes = [
   // Job Posting Flow
   {
     title: "Post Job",
     to: "/jobs/post",
-    page: <JobPost />,
+    page: <S><JobPost /></S>,
     isPublic: true,
   },
   {
     title: "AI Job Post",
     to: "/jobs/post/ai",
-    page: <JobPostAI />,
+    page: <S><JobPostAI /></S>,
     isPublic: true,
   },
   {
     title: "Job Preview",
     to: "/jobs/post/preview",
-    page: <JobPostPreview />,
+    page: <S><JobPostPreview /></S>,
     isPublic: true,
   },
   {
     title: "Job Posted Success",
     to: "/jobs/post/success",
-    page: <JobPostSuccess />,
+    page: <S><JobPostSuccess /></S>,
     isPublic: true,
   },
 
@@ -66,37 +71,37 @@ export const employerJobRoutes = [
   {
     title: "Manage Jobs",
     to: "/jobs/manage",
-    page: <JobsManage />,
+    page: <S><JobsManage /></S>,
     isPublic: true,
   },
   {
     title: "View Job",
     to: "/jobs/manage/:id",
-    page: <JobView />,
+    page: <S><JobView /></S>,
     isPublic: true,
   },
   {
     title: "Edit Job",
     to: "/jobs/manage/:id/edit",
-    page: <JobEdit />,
+    page: <S><JobEdit /></S>,
     isPublic: true,
   },
   {
     title: "Duplicate Job",
     to: "/jobs/manage/:id/duplicate",
-    page: <JobDuplicate />,
+    page: <S><JobDuplicate /></S>,
     isPublic: true,
   },
   {
     title: "Close Job",
     to: "/jobs/manage/:id/close",
-    page: <JobClose />,
+    page: <S><JobClose /></S>,
     isPublic: true,
   },
   {
     title: "Promote Job",
     to: "/jobs/manage/:id/promote",
-    page: <JobPromote />,
+    page: <S><JobPromote /></S>,
     isPublic: true,
   },
 
@@ -104,19 +109,19 @@ export const employerJobRoutes = [
   {
     title: "Job Applicants",
     to: "/jobs/manage/:id/applicants",
-    page: <JobApplicants />,
+    page: <S><JobApplicants /></S>,
     isPublic: true,
   },
   {
     title: "Applicant Detail",
     to: "/jobs/manage/:jobId/applicants/:applicantId",
-    page: <ApplicantDetail />,
+    page: <S><ApplicantDetail /></S>,
     isPublic: true,
   },
   {
     title: "Candidate Notes",
     to: "/jobs/manage/:jobId/applicants/:applicantId/notes",
-    page: <CandidateNotes />,
+    page: <S><CandidateNotes /></S>,
     isPublic: true,
   },
 
@@ -124,19 +129,19 @@ export const employerJobRoutes = [
   {
     title: "Smart Recommend",
     to: "/jobs/manage/:id/smart-recommend",
-    page: <SmartRecommend />,
+    page: <S><SmartRecommend /></S>,
     isPublic: true,
   },
   {
     title: "AI Insights",
     to: "/jobs/manage/:id/ai-insights",
-    page: <AIInsights />,
+    page: <S><AIInsights /></S>,
     isPublic: true,
   },
   {
     title: "AI Shortlist",
     to: "/jobs/manage/:id/ai-shortlist",
-    page: <AIShortlist />,
+    page: <S><AIShortlist /></S>,
     isPublic: true,
   },
 
@@ -144,37 +149,37 @@ export const employerJobRoutes = [
   {
     title: "Interview Schedule",
     to: "/employer/interview/schedule",
-    page: <InterviewSchedule />,
+    page: <S><InterviewSchedule /></S>,
     isPublic: true,
   },
   {
     title: "Interview Schedule for Job",
     to: "/employer/interview/schedule/:id",
-    page: <InterviewSchedule />,
+    page: <S><InterviewSchedule /></S>,
     isPublic: true,
   },
   {
     title: "Interview Schedule (Legacy)",
     to: "/jobs/manage/:id/interview",
-    page: <InterviewSchedule />,
+    page: <S><InterviewSchedule /></S>,
     isPublic: true,
   },
   {
     title: "Interview Test Link",
     to: "/jobs/manage/:id/interview/test-link",
-    page: <InterviewTestLink />,
+    page: <S><InterviewTestLink /></S>,
     isPublic: true,
   },
   {
     title: "Interview Notes",
     to: "/jobs/manage/:id/interview/notes",
-    page: <InterviewNotes />,
+    page: <S><InterviewNotes /></S>,
     isPublic: true,
   },
   {
     title: "Communication Responses",
     to: "/jobs/manage/:id/responses",
-    page: <CommunicationResponses />,
+    page: <S><CommunicationResponses /></S>,
     isPublic: true,
   },
 
@@ -182,19 +187,19 @@ export const employerJobRoutes = [
   {
     title: "Job Analytics",
     to: "/jobs/manage/:id/analytics",
-    page: <JobAnalytics />,
+    page: <S><JobAnalytics /></S>,
     isPublic: true,
   },
   {
     title: "Analytics Heatmap",
     to: "/jobs/manage/:id/analytics/heatmap",
-    page: <JobAnalyticsHeatmap />,
+    page: <S><JobAnalyticsHeatmap /></S>,
     isPublic: true,
   },
   {
     title: "Analytics Source Breakdown",
     to: "/jobs/manage/:id/analytics/source-breakdown",
-    page: <JobAnalyticsSourceBreakdown />,
+    page: <S><JobAnalyticsSourceBreakdown /></S>,
     isPublic: true,
   },
 ];

@@ -19,7 +19,7 @@ interface SafeRealtimeProviderProps {
 }
 
 /**
- * Safe Realtime Provider that handles React dispatcher issues gracefully
+ * Safe Realtime Provider that connects to user channels only when authenticated
  */
 export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
   children, 
@@ -46,33 +46,49 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
     }
   });
 
-
-  // Toast is optional - only use if showToasts is enabled
-  const { toast } = showToasts ? require('@/hooks/use-toast') : { toast: () => {} };
-
   useEffect(() => {
     let mounted = true;
-    console.log('🎯 Safe TalentXcel Realtime Provider initializing...');
-    
-    // Check authentication safely
-    const initAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log('🔍 Safe auth session for realtime:', session ? 'authenticated' : 'not authenticated');
-      } catch (error) {
-        console.warn('Auth session check failed:', error);
-      }
+    let statusInterval: ReturnType<typeof setInterval> | null = null;
+    let hasInitializedRealtime = false;
+
+    // Toast helper
+    let toastFn: ((opts: any) => void) | null = null;
+    if (showToasts) {
+      import('@/hooks/use-toast').then(mod => {
+        toastFn = mod.toast;
+      }).catch(() => {});
+    }
+
+    const startStatusInterval = () => {
+      if (statusInterval) return;
+      statusInterval = setInterval(() => {
+        if (!mounted) return;
+        try {
+          const status = realtimeManager.getStatus();
+          const connectedChannels = Object.values(status).filter(s => s === 'SUBSCRIBED').length;
+          setState(prev => ({
+            ...prev,
+            connectionStatus: status,
+            isConnected: connectedChannels > 0
+          }));
+        } catch (error) {
+          console.error('Status interval error:', error);
+        }
+      }, 5000);
     };
 
-    initAuth();
+    const stopStatusInterval = () => {
+      if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
+      }
+    };
 
     // Safe update callback with error handling
     const onUpdateCallback = (table: WatchedTable, payload: RealtimePayload) => {
       if (!mounted) return;
       
       try {
-        console.log(`🔄 Safe global realtime update - ${table}:`, payload);
-        
         setState(prev => ({
           ...prev,
           lastUpdate: { table, payload },
@@ -80,7 +96,6 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
           usePollingFallback: false
         }));
 
-        // Update connection status safely
         try {
           const status = realtimeManager.getStatus();
           setState(prev => ({ ...prev, connectionStatus: status }));
@@ -88,12 +103,11 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
           console.warn('Failed to get realtime status:', statusError);
         }
 
-        // Show toast notifications safely
-        if (showToasts) {
+        if (showToasts && toastFn) {
           try {
             const message = getUpdateMessage(table, payload);
             if (message) {
-              toast({
+              toastFn({
                 title: "Real-time Update",
                 description: message,
                 duration: 3000,
@@ -112,38 +126,59 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
     const initWithRetry = async (attempt = 1) => {
       try {
         await initTalentXcelRealtime(onUpdateCallback);
-        console.log('🎯 Realtime initialized successfully');
+        hasInitializedRealtime = true;
+        startStatusInterval();
       } catch (initError) {
         console.error(`Realtime initialization failed (attempt ${attempt}):`, initError);
-        
-        // Retry up to 3 times with exponential backoff
-        if (attempt < 3) {
-          const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
-          console.log(`🔄 Retrying realtime init in ${delay}ms...`);
+        if (attempt < 3 && mounted) {
+          const delay = Math.pow(2, attempt) * 1000;
           setTimeout(() => {
             if (mounted) initWithRetry(attempt + 1);
           }, delay);
-        } else {
-          console.error('🚫 Realtime initialization failed after 3 attempts');
+        } else if (mounted) {
           setState(prev => ({ ...prev, usePollingFallback: true }));
         }
       }
     };
 
-    initWithRetry();
+    // Check auth session before connecting to realtime channels
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
+        if (session?.user) {
+          initWithRetry();
+        }
+      } catch (error) {
+        console.warn('Auth session check failed:', error);
+      }
+    };
 
-    // Safe auth listener
+    initAuth();
+
+    // Safe auth listener: connect when user logs in, disconnect on logout
     let authListener: any = null;
     try {
-      const { data } = supabase.auth.onAuthStateChange(() => {
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
         if (!mounted) return;
-        
-        console.log('🔐 Safe auth state changed - reinitializing realtime');
-        try {
-          cleanupRealtime();
-          initTalentXcelRealtime(onUpdateCallback);
-        } catch (error) {
-          console.error('Auth state change reinit failed:', error);
+        if (session?.user) {
+          try {
+            cleanupRealtime();
+            initWithRetry();
+          } catch (error) {
+            console.error('Auth state change reinit failed:', error);
+          }
+        } else {
+          stopStatusInterval();
+          try {
+            cleanupRealtime();
+          } catch (e) {}
+          hasInitializedRealtime = false;
+          setState(prev => ({
+            ...prev,
+            isConnected: false,
+            connectionStatus: {}
+          }));
         }
       });
       authListener = data;
@@ -152,13 +187,14 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
     }
 
     // Safe online handler
-    const onlineHandler = () => {
+    const onlineHandler = async () => {
       if (!mounted) return;
-      
-      console.log('🌐 Safe network online - reinitializing realtime');
       try {
-        cleanupRealtime();
-        initTalentXcelRealtime(onUpdateCallback);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          cleanupRealtime();
+          initWithRetry();
+        }
       } catch (error) {
         console.error('Online handler reinit failed:', error);
       }
@@ -166,65 +202,21 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
 
     window.addEventListener('online', onlineHandler);
 
-    // Safe status check interval
-    const statusInterval = setInterval(() => {
-      if (!mounted) return;
-      
-      try {
-        const status = realtimeManager.getStatus();
-        const connectedChannels = Object.values(status).filter(s => s === 'SUBSCRIBED').length;
-        
-        setState(prev => ({
-          ...prev,
-          connectionStatus: status,
-          isConnected: connectedChannels > 0
-        }));
-        
-        // Enable polling fallback after delay if realtime isn't working
-        if (connectedChannels === 0 && !state.usePollingFallback) {
-          setTimeout(() => {
-            if (!mounted) return;
-            
-            try {
-              const currentStatus = realtimeManager.getStatus();
-              const currentConnected = Object.values(currentStatus).filter(s => s === 'SUBSCRIBED').length;
-              if (currentConnected === 0) {
-                console.log('🔄 Safe realtime not working, enabling polling fallback...');
-                setState(prev => ({ ...prev, usePollingFallback: true }));
-                
-                if (showToasts) {
-                  toast({
-                    title: "Connection Status",
-                    description: "Using polling for updates while realtime reconnects...",
-                    duration: 3000,
-                  });
-                }
-              }
-            } catch (error) {
-              console.error('Polling fallback check failed:', error);
-            }
-          }, 10000);
-        }
-      } catch (error) {
-        console.error('Status interval error:', error);
-      }
-    }, 3000);
-
     // Cleanup function
     return () => {
       mounted = false;
-      console.log('🧹 Cleaning up Safe TalentXcel Realtime Provider...');
-      
-      try {
-        clearInterval(statusInterval);
-        window.removeEventListener('online', onlineHandler);
-        authListener?.subscription?.unsubscribe();
-        cleanupRealtime();
-      } catch (error) {
-        console.error('Cleanup error:', error);
+      stopStatusInterval();
+      window.removeEventListener('online', onlineHandler);
+      authListener?.subscription?.unsubscribe();
+      if (hasInitializedRealtime) {
+        try {
+          cleanupRealtime();
+        } catch (error) {
+          console.error('Cleanup error:', error);
+        }
       }
     };
-  }, [showToasts, state.usePollingFallback]);
+  }, [showToasts]);
 
   const contextValue: RealtimeContextType = {
     isConnected: state.isConnected,
@@ -276,8 +268,6 @@ export function useSafeRealtimeContext(): RealtimeContextType {
   const context = useContext(RealtimeContext);
   
   if (!context) {
-    // Return safe fallback instead of throwing error
-    console.warn('useSafeRealtimeContext called outside provider, returning fallback');
     return {
       isConnected: false,
       lastUpdate: null,
