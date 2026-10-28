@@ -594,6 +594,9 @@ const App = () => {
                 <Route path="/directory/salaries-by-role" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Salary Directory...</div>}><SalariesRoleDirectory /></Suspense>} />
                 <Route path="/directory/jobs-by-city" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading City Job Directory...</div>}><JobsCityDirectory /></Suspense>} />
 
+                {/* Professional Activation: Single-use Secure Claim Flow */}
+                <Route path="/claim" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Verification...</div>}><ClaimProfilePage /></Suspense>} />
+
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/recruiters" element={
                   <Suspense fallback={

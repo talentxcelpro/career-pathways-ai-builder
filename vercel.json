@@ -455,6 +455,10 @@
       "destination": "/api/email/:path*"
     },
     {
+      "source": "/api/claim/:path*",
+      "destination": "/api/claim/:path*"
+    },
+    {
       "source": "/api/seo-render",
       "destination": "/api/seo-render"
     },
@@ -488,6 +492,12 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/email/process-queue",
+      "schedule": "*/10 * * * *"
     }
   ]
 }
