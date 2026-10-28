@@ -59,8 +59,39 @@ export const useComprehensiveATS = () => {
         }
       });
 
-      if (error) throw error;
-      if (!data.success) throw new Error(data.error || 'Analysis failed');
+      if (error) {
+        let errBody: any = null;
+        try {
+          if ((error as any).context && typeof (error as any).context.json === 'function') {
+            errBody = await (error as any).context.json();
+          }
+        } catch (_) {}
+
+        if (errBody?.code === 'QUOTA_EXCEEDED' || errBody?.error?.includes('limit')) {
+          toast.error(errBody?.error || 'Monthly ATS check quota reached.', {
+            description: 'Upgrade your plan to unlock more scans.',
+            action: {
+              label: 'Upgrade Plan',
+              onClick: () => { window.location.href = '/pro/subscription'; }
+            },
+            duration: 8000
+          });
+          return null;
+        }
+
+        if (errBody?.code === 'UNAUTHENTICATED' || errBody?.error?.includes('Authentication')) {
+          toast.error('Please log in to run AI ATS checks.', {
+            action: {
+              label: 'Sign In',
+              onClick: () => { window.location.href = '/auth/login?redirect=/resume/ats-check'; }
+            }
+          });
+          return null;
+        }
+
+        throw error;
+      }
+      if (!data?.success) throw new Error(data?.error || 'Analysis failed');
 
       setAnalysis(data.analysis);
       
@@ -73,9 +104,9 @@ export const useComprehensiveATS = () => {
       }
 
       return data.analysis;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Comprehensive ATS analysis error:', error);
-      toast.error('Failed to analyze resume');
+      toast.error(error?.message || 'Failed to analyze resume');
       return null;
     } finally {
       setIsAnalyzing(false);

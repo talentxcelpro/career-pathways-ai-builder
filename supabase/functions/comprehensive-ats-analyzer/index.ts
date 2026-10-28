@@ -1,12 +1,9 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// supabase/functions/comprehensive-ats-analyzer/index.ts
+// Deep ATS analysis (Gemini 2.5 Pro) — requires ats_check quota (same bucket as ats-analyzer)
+import 'https://deno.land/x/xhr@0.1.0/mod.ts';
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { getCorsHeaders } from '../_shared/cors.ts';
+import { enforceEntitlement } from '../_shared/entitlement.ts';
 
 interface ComprehensiveATSResult {
   overallScore: number;
@@ -42,18 +39,32 @@ interface ComprehensiveATSResult {
 }
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ── Entitlement guard — before body parsing or AI call ──────────────────
+  const access = await enforceEntitlement(req, 'ats_check');
+  if (!access.allowed) {
+    return new Response(access.errorBody, {
+      status: access.httpStatus,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  const userId = access.userId!;
+
   try {
     const { resumeData, jobDescription, targetRole, industry } = await req.json();
 
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      throw new Error('AI backend not configured. Contact support.');
     }
 
-    console.log('Starting comprehensive ATS analysis...');
+    console.log(`[comprehensive-ats] user=${userId} tier=${access.tier}`);
 
     const resumeText = buildDetailedResumeText(resumeData);
 
@@ -170,14 +181,15 @@ Return comprehensive analysis as JSON following this structure exactly.`;
       analysis = generateFallbackAnalysis(resumeData);
     }
 
-    console.log(`✅ Comprehensive ATS analysis completed. Score: ${analysis.overallScore}/100`);
+    console.log(`[comprehensive-ats] Complete. user=${userId} score=${analysis.overallScore}/100 remaining=${access.remaining}`);
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
-        analysis
+        analysis,
+        entitlement: { tier: access.tier, remaining: access.remaining },
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );
 
   } catch (error) {

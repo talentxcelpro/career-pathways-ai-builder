@@ -1,5 +1,8 @@
 // supabase/functions/razorpay-verify-payment/index.ts
-// Cryptographically Secured Razorpay Payment Verification with Replay Protection & Constant-Time Validation
+// Dual-Mode Razorpay Payment Verification & Webhook Lifecycle Engine
+// Modes:
+//   1. Client Checkout Verification (POST with Bearer user token + razorpay_order_id, razorpay_payment_id, razorpay_signature)
+//   2. Webhook Lifecycle Handler (POST with x-razorpay-signature header from Razorpay)
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -40,15 +43,7 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const razorpayKeySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
-
-    // 1. FAIL CLOSED: If gateway secret or DB credentials are missing, strictly abort
-    if (!razorpayKeySecret) {
-      console.error("FATAL: RAZORPAY_KEY_SECRET is not configured in Supabase environment secrets.");
-      return new Response(
-        JSON.stringify({ success: false, error: "Payment gateway configuration error. Secret key missing." }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    const webhookSecret = Deno.env.get("RAZORPAY_WEBHOOK_SECRET") || razorpayKeySecret;
 
     if (!supabaseUrl || !supabaseServiceKey) {
       return new Response(
@@ -57,7 +52,169 @@ serve(async (req) => {
       );
     }
 
-    // 2. Authenticate User Session
+    // ─────────────────────────────────────────────────────────────────────────
+    // MODE 1: RAZORPAY WEBHOOK LIFECYCLE HANDLER
+    // Detected by presence of 'x-razorpay-signature' header or ?mode=webhook
+    // ─────────────────────────────────────────────────────────────────────────
+    const webhookSignature = req.headers.get("x-razorpay-signature");
+    const isWebhookMode = Boolean(webhookSignature) || new URL(req.url).searchParams.get("mode") === "webhook";
+
+    if (isWebhookMode) {
+      if (!webhookSignature) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Missing x-razorpay-signature header for webhook." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      if (!webhookSecret) {
+        console.error("FATAL: RAZORPAY_WEBHOOK_SECRET / RAZORPAY_KEY_SECRET not set.");
+        return new Response(
+          JSON.stringify({ error: "Webhook secret not configured." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const rawBody = await req.text();
+      const expectedSignature = await createSignature(rawBody, webhookSecret);
+
+      if (!timingSafeEqualStr(expectedSignature, webhookSignature)) {
+        console.warn("Rejecting Razorpay webhook: signature mismatch");
+        return new Response(
+          JSON.stringify({ error: "Invalid webhook signature." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const event = JSON.parse(rawBody);
+      const eventType = event.event;
+      console.log(`[razorpay-webhook] Verified event: ${eventType} (id: ${event.id || 'N/A'})`);
+
+      const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+        auth: { persistSession: false },
+      });
+
+      const payload = event.payload || {};
+
+      switch (eventType) {
+        case "subscription.charged": {
+          const subEntity = payload.subscription?.entity;
+          const paymentEntity = payload.payment?.entity;
+          const subId = subEntity?.id;
+          const notes = subEntity?.notes || paymentEntity?.notes || {};
+          const userId = notes.user_id;
+
+          let query = supabaseClient.from("subscribers").update({
+            subscribed: true,
+            status: "active",
+            last_payment_date: new Date().toISOString(),
+            last_payment_id: paymentEntity?.id || null,
+            next_billing_date: subEntity?.charge_at 
+              ? new Date(subEntity.charge_at * 1000).toISOString()
+              : null,
+            subscription_end: subEntity?.current_end 
+              ? new Date(subEntity.current_end * 1000).toISOString()
+              : new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString(),
+            updated_at: new Date().toISOString(),
+          });
+
+          if (subId) {
+            await query.eq("razorpay_subscription_id", subId);
+          } else if (userId) {
+            await query.eq("user_id", userId);
+          }
+          break;
+        }
+
+        case "payment.captured": {
+          const paymentEntity = payload.payment?.entity;
+          const notes = paymentEntity?.notes || {};
+          const userId = notes.user_id;
+          const paymentId = paymentEntity?.id;
+
+          if (userId && paymentId) {
+            const tier = notes.tier || "Pro";
+            const planName = notes.plan_name || `Career ${tier}`;
+            const subEnd = new Date();
+            subEnd.setMonth(subEnd.getMonth() + 1);
+
+            await supabaseClient.from("subscribers").upsert({
+              user_id: userId,
+              email: paymentEntity.email,
+              subscribed: true,
+              subscription_plan: planName,
+              subscription_tier: tier,
+              status: "active",
+              last_payment_date: new Date().toISOString(),
+              last_payment_id: paymentId,
+              subscription_start: new Date().toISOString(),
+              subscription_end: subEnd.toISOString(),
+              updated_at: new Date().toISOString(),
+            }, { onConflict: "user_id" });
+          }
+          break;
+        }
+
+        case "payment.failed": {
+          const paymentEntity = payload.payment?.entity;
+          const notes = paymentEntity?.notes || {};
+          const userId = notes.user_id;
+          if (userId) {
+            await supabaseClient.from("subscribers")
+              .update({ status: "past_due", updated_at: new Date().toISOString() })
+              .eq("user_id", userId);
+          }
+          break;
+        }
+
+        case "subscription.halted": {
+          const subEntity = payload.subscription?.entity;
+          const subId = subEntity?.id;
+          if (subId) {
+            await supabaseClient.from("subscribers")
+              .update({ status: "past_due", subscribed: false, updated_at: new Date().toISOString() })
+              .eq("razorpay_subscription_id", subId);
+          }
+          break;
+        }
+
+        case "subscription.cancelled": {
+          const subEntity = payload.subscription?.entity;
+          const subId = subEntity?.id;
+          if (subId) {
+            await supabaseClient.from("subscribers")
+              .update({ status: "cancelled", subscribed: false, updated_at: new Date().toISOString() })
+              .eq("razorpay_subscription_id", subId);
+          }
+          break;
+        }
+
+        case "refund.processed": {
+          const refundEntity = payload.refund?.entity;
+          const paymentId = refundEntity?.payment_id;
+          if (paymentId) {
+            await supabaseClient.from("subscribers")
+              .update({ status: "refunded", subscribed: false, updated_at: new Date().toISOString() })
+              .eq("last_payment_id", paymentId);
+          }
+          break;
+        }
+
+        default:
+          console.log(`[razorpay-webhook] Unhandled event: ${eventType}`);
+          break;
+      }
+
+      return new Response(JSON.stringify({ received: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // MODE 2: CLIENT CHECKOUT VERIFICATION
+    // Requires Bearer token from user session
+    // ─────────────────────────────────────────────────────────────────────────
     const authHeader = req.headers.get("Authorization");
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new Response(
@@ -81,7 +238,6 @@ serve(async (req) => {
 
     const authenticatedUser = userData.user;
 
-    // 3. Parse and Validate Payment Parameters
     let body: any = {};
     try {
       body = await req.json();
@@ -94,24 +250,79 @@ serve(async (req) => {
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body;
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    if (!razorpay_order_id || !razorpay_payment_id) {
       return new Response(
-        JSON.stringify({ success: false, error: "Missing required payment verification parameters (order_id, payment_id, signature)." }),
+        JSON.stringify({ success: false, error: "Missing required payment parameters (order_id, payment_id)." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // 4. PAYMENT REPLAY PROTECTION: Verify payment_id has not already been registered
+    // Sandbox / Demo order handling
+    if (razorpay_order_id.startsWith("demo_order_") && !razorpayKeySecret) {
+      console.log(`Verifying demo payment for user ${authenticatedUser.id}`);
+      const targetTier = body.tier || "Pro";
+      const targetPlan = body.planName || `Career ${targetTier}`;
+      const subscriptionStart = new Date();
+      const subscriptionEnd = new Date();
+      subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
+
+      await supabaseClient
+        .from("subscribers")
+        .upsert({
+          user_id: authenticatedUser.id,
+          email: authenticatedUser.email,
+          subscribed: true,
+          subscription_plan: targetPlan,
+          subscription_tier: targetTier,
+          subscription_start: subscriptionStart.toISOString(),
+          subscription_end: subscriptionEnd.toISOString(),
+          next_billing_date: subscriptionEnd.toISOString(),
+          status: 'active',
+          last_payment_date: new Date().toISOString(),
+          last_payment_id: razorpay_payment_id,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          demo: true,
+          message: `Demo order verified. ${targetPlan} activated.`,
+          subscription: {
+            tier: targetTier,
+            plan: targetPlan,
+            status: 'active',
+            ends_at: subscriptionEnd.toISOString(),
+          }
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
+      );
+    }
+
+    if (!razorpayKeySecret) {
+      console.error("FATAL: RAZORPAY_KEY_SECRET is not configured in Supabase environment secrets.");
+      return new Response(
+        JSON.stringify({ success: false, error: "Payment gateway configuration error. Secret key missing." }),
+        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (!razorpay_signature) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Missing required payment signature." }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Replay Protection
     const { data: existingPayment } = await supabaseClient
       .from("subscribers")
-      .select("user_id, subscription_tier, status, subscription_end, last_payment_id")
+      .select("user_id, subscription_plan, subscription_tier, status, subscription_end, last_payment_id")
       .eq("last_payment_id", razorpay_payment_id)
       .maybeSingle();
 
     if (existingPayment) {
-      // If already processed for THIS user, return existing entitlement idempotently without extending
       if (existingPayment.user_id === authenticatedUser.id) {
-        console.log(`Idempotent replay detected for payment ${razorpay_payment_id} by user ${authenticatedUser.id}`);
         return new Response(
           JSON.stringify({
             success: true,
@@ -119,6 +330,7 @@ serve(async (req) => {
             message: "Payment already verified and subscription is active.",
             subscription: {
               tier: existingPayment.subscription_tier,
+              plan: existingPayment.subscription_plan,
               status: existingPayment.status,
               ends_at: existingPayment.subscription_end,
             }
@@ -126,7 +338,6 @@ serve(async (req) => {
           { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
         );
       } else {
-        // Payment ID was claimed by another user account: FRAUD ATTEMPT
         console.error(`SECURITY ALERT: Payment ${razorpay_payment_id} previously used by ${existingPayment.user_id}, replay attempted by ${authenticatedUser.id}`);
         return new Response(
           JSON.stringify({ success: false, error: "Payment transaction has already been registered to another account." }),
@@ -135,33 +346,50 @@ serve(async (req) => {
       }
     }
 
-    // 6. CRYPTOGRAPHIC SIGNATURE VERIFICATION
+    // Cryptographic signature check
     const payloadToSign = `${razorpay_order_id}|${razorpay_payment_id}`;
     const expectedSignature = await createSignature(payloadToSign, razorpayKeySecret);
 
     if (!timingSafeEqualStr(expectedSignature, razorpay_signature)) {
-      console.warn(`Cryptographic signature mismatch for order ${razorpay_order_id}. Provided: ${razorpay_signature}, Expected: ${expectedSignature}`);
+      console.warn(`Signature mismatch for order ${razorpay_order_id}. Provided: ${razorpay_signature}`);
       return new Response(
         JSON.stringify({ success: false, error: "Invalid payment signature. Verification failed." }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    console.log(`Payment signature cryptographically verified for order ${razorpay_order_id} (payment: ${razorpay_payment_id})`);
+    // Resolve Tier & Plan
+    const { data: pendingSubscriber } = await supabaseClient
+      .from("subscribers")
+      .select("subscription_plan, subscription_tier, amount")
+      .eq("user_id", authenticatedUser.id)
+      .maybeSingle();
 
-    // 7. ACTIVATE SUBSCRIPTION
+    let targetTier = body.tier || pendingSubscriber?.subscription_tier || "Pro";
+    const rawTier = targetTier.toLowerCase();
+    if (rawTier.includes("premium") || rawTier.includes("elite")) {
+      targetTier = "Premium";
+    } else if (rawTier.includes("starter") || rawTier.includes("basic")) {
+      targetTier = "Starter";
+    } else {
+      targetTier = "Pro";
+    }
+
+    const targetPlan = body.planName || pendingSubscriber?.subscription_plan || `Career ${targetTier}`;
+
+    // Activate subscription
     const subscriptionStart = new Date();
     const subscriptionEnd = new Date();
-    subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1); // 1 month Pro subscription
+    subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
 
-    // Upsert / update subscriber status in database
     const { error: updateError } = await supabaseClient
       .from("subscribers")
       .upsert({
         user_id: authenticatedUser.id,
         email: authenticatedUser.email,
         subscribed: true,
-        subscription_tier: 'Pro',
+        subscription_plan: targetPlan,
+        subscription_tier: targetTier,
         subscription_start: subscriptionStart.toISOString(),
         subscription_end: subscriptionEnd.toISOString(),
         next_billing_date: subscriptionEnd.toISOString(),
@@ -179,43 +407,30 @@ serve(async (req) => {
       );
     }
 
-    // Audit log successful payment verification
-    await supabaseClient
-      .from("function_health_logs")
-      .insert({
-        function_name: "razorpay-verify-payment",
-        status: "success",
-        request_count: 1,
-        error_details: `Verified payment ${razorpay_payment_id} for user ${authenticatedUser.id}`
-      });
+    console.log(`Subscription activated successfully: user=${authenticatedUser.id} tier=${targetTier}`);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: "Payment cryptographically verified and Pro subscription activated.",
+        message: `Payment cryptographically verified and ${targetPlan} activated.`,
         subscription: {
-          tier: 'Pro',
+          tier: targetTier,
+          plan: targetPlan,
           status: 'active',
           ends_at: subscriptionEnd.toISOString(),
         }
       }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
-      }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
 
   } catch (error: any) {
-    console.error("Payment verification uncaught error:", error);
+    console.error("Payment verification error:", error);
     return new Response(
       JSON.stringify({
         success: false,
         error: error?.message || "Internal payment verification error"
       }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     );
   }
 });

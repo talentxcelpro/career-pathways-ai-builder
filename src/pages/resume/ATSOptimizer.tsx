@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText, ArrowRight, Sparkles, RefreshCw, Wand2, ShieldCheck, Check, Share2 } from 'lucide-react';
+import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText, ArrowRight, Sparkles, RefreshCw, Wand2, ShieldCheck, Check, Share2, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -15,6 +15,7 @@ import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { ViralShareModal } from '@/components/viral/ViralShareModal';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTieredAccess } from '@/hooks/useTieredAccess';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { supabase } from '@/integrations/supabase/client';
 import { recordUserIntent } from '@/utils/intentRouting';
@@ -81,6 +82,7 @@ export const ATSOptimizer: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
+  const { currentTier } = useTieredAccess();
   const [activeTab, setActiveTab] = useState<'scanner' | 'job-match'>('scanner');
   const [isScanning, setIsScanning] = useState(false);
   const [report, setReport] = useState<ATSReport | null>(null);
@@ -592,6 +594,60 @@ export const ATSOptimizer: React.FC = () => {
                           </div>
                         ))}
                       </div>
+
+                      {/* ==================================================
+                          CAREER ACCELERATOR UPGRADE BRIDGE (CONVERSION FUNNEL)
+                          ================================================== */}
+                      {currentTier === 'free' && (
+                        <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/60 dark:from-blue-950/30 dark:via-slate-900 dark:to-indigo-950/30 shadow-sm space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Crown className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                              <span className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                                Career Accelerator Pro
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-blue-600 bg-blue-100/70 dark:bg-blue-950/80 px-2 py-0.5 rounded">
+                              ₹499 / mo
+                            </span>
+                          </div>
+
+                          <div>
+                            <h4 className="text-sm font-bold text-foreground">
+                              Turn This {report.score}/100 Score Into an Interview Magnet
+                            </h4>
+                            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                              Pro unlocks AI resume tailoring that automatically incorporates missing keywords ({report.missingKeywords.slice(0, 3).join(', ')}...) into high-impact, quantified bullet points.
+                            </p>
+                          </div>
+
+                          <div className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                              <span>15 Job-Tailored AI Resume Rewrites per month</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                              <span>Unlimited ATS Scans &amp; Real-Time Feedback</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <CheckCircle className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                              <span>Interactive AI Interview Simulator with Model Answers</span>
+                            </div>
+                          </div>
+
+                          <Button
+                            onClick={() => {
+                              conversionTelemetry.track('ats_upgrade_clicked', { score: report.score, missingCount: report.missingKeywords.length });
+                              navigate('/pro/subscription?source=ats_report');
+                            }}
+                            className="w-full h-10 text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-md gap-2"
+                          >
+                            <Zap className="h-4 w-4" />
+                            Upgrade to Career Pro (₹499) →
+                          </Button>
+                        </div>
+                      )}
 
                       {/* ==================================================
                           LIVE SI JOB MATCHES (THE ACTIVATION BRIDGE)
