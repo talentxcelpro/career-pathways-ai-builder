@@ -1,21 +1,18 @@
-
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { DEFAULT_TITLE, DEFAULT_DESCRIPTION } from '@/config/seo';
-import { PLATFORM_METRICS } from '@/config/platformMetrics';
 import { AppleHeroSection } from './AppleHeroSection';
-import { FeaturesSection } from './FeaturesSection';
-import { ProductVideoSection } from './ProductVideoSection';
-import { WhyTalentXcel } from './WhyTalentXcel';
-import { CTABanner } from './CTABanner';
 import { SEOJobCategories } from '@/components/seo/SEOJobCategories';
 import { SEOLandingPageLinks } from '@/components/seo/SEOLandingPageLinks';
-import { ChatrServiceSection } from './ChatrServiceSection';
 import { LandingFooter } from './LandingFooter';
 import { AboutTalentXcelSEO } from './AboutTalentXcelSEO';
 
-// Lazy load news widget for faster initial load
-const NewsLatestWidget = React.lazy(() => 
+// Below-the-fold sections lazy loaded to optimize mobile LCP & JS execution time
+const FeaturesSection = lazy(() => import('./FeaturesSection').then(m => ({ default: m.FeaturesSection })));
+const ProductVideoSection = lazy(() => import('./ProductVideoSection').then(m => ({ default: m.ProductVideoSection })));
+const ChatrServiceSection = lazy(() => import('./ChatrServiceSection').then(m => ({ default: m.ChatrServiceSection })));
+const CTABanner = lazy(() => import('./CTABanner').then(m => ({ default: m.CTABanner })));
+const NewsLatestWidget = lazy(() => 
   import('@/components/news/NewsLatestWidget').then(module => ({ default: module.NewsLatestWidget }))
 );
 
@@ -24,15 +21,28 @@ export const LandingPage = () => {
     <div className="min-h-screen w-full max-w-full overflow-x-hidden">
       <SEOHead title={DEFAULT_TITLE} description={DEFAULT_DESCRIPTION} canonical="https://talentxcel.in/" type="website" />
       <AppleHeroSection />
-      <FeaturesSection />
-      <ProductVideoSection />
-      <ChatrServiceSection />
+      
+      <Suspense fallback={null}>
+        <FeaturesSection />
+      </Suspense>
+      
+      <Suspense fallback={null}>
+        <ProductVideoSection />
+      </Suspense>
+      
+      <Suspense fallback={null}>
+        <ChatrServiceSection />
+      </Suspense>
+      
       <SEOJobCategories />
       <SEOLandingPageLinks />
+      
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-3">
-            <CTABanner />
+            <Suspense fallback={null}>
+              <CTABanner />
+            </Suspense>
           </div>
           <div className="lg:col-span-1">
             <Suspense fallback={
@@ -53,11 +63,9 @@ export const LandingPage = () => {
           </div>
         </div>
       </div>
+      
       <AboutTalentXcelSEO />
       <LandingFooter />
     </div>
   );
 };
-
-
-
