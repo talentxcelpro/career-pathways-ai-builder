@@ -665,14 +665,14 @@ async function runSeoCiGate() {
       source: string;
       headers: Array<{ key: string; value: string }>;
     }>;
-    const hasPrivateNoindexHeader = vercelHeaders.some((rule) =>
-      rule.source.includes('admin') && rule.source.includes('dashboard') && rule.source.includes('settings') &&
+    const hasPrivateNoindexHeader = (route: string) => vercelHeaders.some((rule) =>
+      rule.source === `${route}/:path*` &&
       rule.headers.some((header) => header.key.toLowerCase() === 'x-robots-tag' && header.value.includes('noindex'))
     );
     record('Robots', 'Sitemap Declaration', content.includes('Sitemap: https://talentxcel.in/sitemap.xml'), 'robots.txt declares sitemap.xml');
-    record('Robots', 'Admin Route Protection', hasPrivateNoindexHeader && !content.includes('Disallow: /admin/'), 'admin URLs are crawlable so X-Robots-Tag noindex can be read');
-    record('Robots', 'Dashboard Protection', hasPrivateNoindexHeader && !content.includes('Disallow: /dashboard'), 'dashboard URLs are crawlable so X-Robots-Tag noindex can be read');
-    record('Robots', 'Private Settings Protection', hasPrivateNoindexHeader && !content.includes('Disallow: /settings'), 'settings URLs are crawlable so X-Robots-Tag noindex can be read');
+    record('Robots', 'Admin Route Protection', hasPrivateNoindexHeader('/admin') && !content.includes('Disallow: /admin/'), 'admin URLs are crawlable so X-Robots-Tag noindex can be read');
+    record('Robots', 'Dashboard Protection', hasPrivateNoindexHeader('/dashboard') && !content.includes('Disallow: /dashboard'), 'dashboard URLs are crawlable so X-Robots-Tag noindex can be read');
+    record('Robots', 'Private Settings Protection', hasPrivateNoindexHeader('/settings') && !content.includes('Disallow: /settings'), 'settings URLs are crawlable so X-Robots-Tag noindex can be read');
     record('Robots', 'Parameter URL Disallow', content.includes('Disallow: /*?*utm_'), 'robots.txt blocks parameter spam');
   } else {
     record('Robots', 'File Exists', false, 'public/robots.txt not found', { severity: 'CRITICAL' });

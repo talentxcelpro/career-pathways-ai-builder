@@ -16,7 +16,7 @@ const PRIVATE_ROUTE_PREFIXES = [
   '/careerpassport/user', '/careerpassport/private', '/employer/settings', '/employer/dashboard',
   '/employer/private', '/marketplace/orders', '/marketplace/private', '/events/settings', '/events/private',
   '/career-dashboard', '/provider/dashboard', '/checkout', '/subscription', '/billing', '/account',
-  '/diagnostics', '/debug', '/testing', '/launch', '/access-control-test', '/realtime-demo', '/mobile-', '/mobile-demo',
+  '/diagnostics', '/debug', '/testing', '/launch', '/access-control-test', '/realtime-demo', '/mobile-demo',
 ];
 
 function isPrivateRoute(path: string): boolean {
@@ -69,54 +69,6 @@ export default async function handler(req: Request) {
   });
 }
 
-const FALLBACK_JOBS_MAP: Record<string, { title: string; company_name: string; location: string; salary_min: number; salary_max: number; employment_type: string; description: string }> = {
-  'job-fin-01': {
-    title: 'Senior Financial Analyst',
-    company_name: 'JPMorgan Chase & Co.',
-    location: 'Mumbai • Hybrid',
-    salary_min: 1400000,
-    salary_max: 2200000,
-    employment_type: 'Full-time',
-    description: 'Lead quarterly financial forecasting, valuation modeling, and capital expenditure analysis for Asia-Pacific operations.'
-  },
-  'job-hsp-01': {
-    title: 'Hotel Operations Manager',
-    company_name: 'Taj Hotels & Resorts',
-    location: 'New Delhi • On-site',
-    salary_min: 1200000,
-    salary_max: 1800000,
-    employment_type: 'Full-time',
-    description: 'Manage luxury resort operations, guest satisfaction metrics, room inventory logistics, and front office teams.'
-  },
-  'job-hr-01': {
-    title: 'HR Analytics Specialist',
-    company_name: 'Deloitte Consulting',
-    location: 'Bangalore • Hybrid',
-    salary_min: 1100000,
-    salary_max: 1600000,
-    employment_type: 'Full-time',
-    description: 'Transform workforce data into strategic insights using Power BI turnover dashboards, compensation models, and retention analytics.'
-  },
-  'job-hlth-01': {
-    title: 'Healthcare Operations Administrator',
-    company_name: 'Apollo Hospitals Group',
-    location: 'Hyderabad • On-site',
-    salary_min: 900000,
-    salary_max: 1400000,
-    employment_type: 'Full-time',
-    description: 'Oversee hospital department workflow, patient discharge efficiency, clinical quality audit compliance, and facility staffing.'
-  },
-  'job-cld-01': {
-    title: 'Cloud Solutions Architect',
-    company_name: 'Amazon Web Services (AWS)',
-    location: 'Remote • India',
-    salary_min: 2800000,
-    salary_max: 4200000,
-    employment_type: 'Full-time',
-    description: 'Architect enterprise cloud migration blueprints, multi-region failover solutions, and serverless backends on AWS.'
-  }
-};
-
 function escapeHtml(str: string): string {
   if (!str) return '';
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -136,22 +88,18 @@ function generateDynamicSeoHtml(cleanPath: string): string {
   let h1 = 'TalentXcel Career Universe';
   let bodyContent = '';
   let jsonLdSchema: any = null;
+  let robotsDirective = 'index, follow';
 
   if (prefix === 'locations' && secondary) {
     const cityName = formatTitle(secondary);
     title = `Jobs & Tech Hiring in ${cityName} 2026 | TalentXcel`;
-    description = `Explore active tech vacancies, hiring companies, average salary benchmarks (₹3.5L - ₹12L PA), and career opportunities in ${cityName}.`;
+    description = `Explore technology job listings, hiring information, and career opportunities in ${cityName}.`;
     canonical = `https://talentxcel.in/locations/${secondary}`;
     h1 = `Jobs & Tech Hiring in ${cityName} (2026)`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">Employment &amp; Techcorridor Market in ${escapeHtml(cityName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(cityName)} is one of India's prominent employment and technology hubs. Explore verified job vacancies, recruitment packages, and top local employers on TalentXcel.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Status</span><span class="font-semibold text-emerald-400">Active Hiring Corridors</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median CTC</span><span class="font-semibold text-white">₹4.5L - ₹12L PA</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Crawl Status</span><span class="font-semibold text-blue-400">Verified &amp; Indexed</span></div>
-        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">Browse job listings and career information for ${escapeHtml(cityName)} on TalentXcel. Review each listing for current requirements and compensation details.</p>
         <div class="pt-4 flex flex-wrap gap-3">
           <a href="/locations/${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse All ${escapeHtml(cityName)} Jobs &rarr;</a>
           <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Score Scan &rarr;</a>
@@ -165,14 +113,14 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "description": `Job vacancies and tech hiring in ${cityName}`
     };
   } else if (cleanPath === 'jobs' || (prefix === 'jobs' && !secondary)) {
-    title = 'Verified Tech Jobs, Engineering Openings & Direct Recruiter Applications 2026 | TalentXcel';
-    description = 'Search over 500+ verified active openings for software engineers, product managers, data scientists, and DevOps leaders across India. Free 1-click apply with ATS resume matching.';
+    title = 'Technology & Engineering Jobs | TalentXcel';
+    description = 'Browse technology and engineering job listings on TalentXcel. Review each listing for current requirements and application details.';
     canonical = 'https://talentxcel.in/jobs';
-    h1 = 'Explore Verified Technology & Engineering Jobs (2026)';
+    h1 = 'Explore Technology & Engineering Jobs';
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">Active Technology Corridors &amp; Openings</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Discover verified engineering, data, and product jobs across top tech hubs in India including Bangalore, Hyderabad, Pune, Mumbai, and Delhi-NCR. Fast 1-click ATS application workflow.</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Browse engineering, data, and product jobs across technology roles and locations in India. Open a listing to review its current requirements and application details.</p>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
           <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer in Bangalore</a>
           <a href="/jobs/full-stack-developer-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Full Stack Developer in Hyderabad</a>
@@ -184,7 +132,7 @@ function generateDynamicSeoHtml(cleanPath: string): string {
     jsonLdSchema = {
       "@context": "https://schema.org",
       "@type": "CollectionPage",
-      "name": "Verified Technology & Engineering Jobs",
+      "name": "Technology & Engineering Jobs",
       "url": canonical
     };
   } else if (prefix === 'jobs' && secondary) {
@@ -196,13 +144,13 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const expName = formatTitle(expSlug);
       const cityName = formatTitle(citySlug);
       title = `${roleName} Jobs (${expName}) in ${cityName} 2026 | TalentXcel`;
-      description = `Explore active ${roleName} jobs for ${expName} professionals, corporate vacancies, salary benchmarks, and hiring companies in ${cityName}. 1-Click apply on TalentXcel.`;
+      description = `Explore ${roleName} job listings for ${expName} professionals in ${cityName}. Review each listing for current requirements and application details.`;
       canonical = `https://talentxcel.in/${cleanPath}`;
       h1 = `${roleName} Jobs (${expName}) in ${cityName}`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} (${escapeHtml(expName)}) Employment Hub in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Discover verified ${escapeHtml(roleName)} job openings for ${escapeHtml(expName)} professionals in ${escapeHtml(cityName)}. Complete your ATS resume scan to match direct hiring requirements.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings for ${escapeHtml(expName)} professionals in ${escapeHtml(cityName)}. Check each listing for its current requirements and compensation information.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Experience Tier</span><span class="font-semibold text-purple-400">${escapeHtml(expName)}</span></div>
@@ -230,17 +178,16 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const roleName = formatTitle(roleSlug);
       const cityName = formatTitle(citySlug);
       title = `${roleName} Jobs in ${cityName} 2026 | TalentXcel`;
-      description = `Explore active ${roleName} jobs, tech vacancies, salary benchmarks (₹4.5L - ₹18L PA), and hiring companies in ${cityName}. 1-Click apply on TalentXcel.`;
+      description = `Explore ${roleName} job listings and career opportunities in ${cityName}. Review each listing for current requirements and compensation information.`;
       canonical = `https://talentxcel.in/jobs/${roleSlug}/${citySlug}`;
       h1 = `${roleName} Jobs in ${cityName}`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment Corridor in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Discover verified ${escapeHtml(roleName)} job openings, corporate hiring partners, and compensation percentiles in ${escapeHtml(cityName)}. Complete your ATS resume scan to match direct hiring requirements.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Check each listing for current requirements and details supplied by the employer.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-blue-400">Actively Hiring</span></div>
           </div>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/jobs/${escapeHtml(roleSlug)}-in-${escapeHtml(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
@@ -260,13 +207,13 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       };
     } else if (secondary === 'freshers' || secondary === 'fresher') {
       title = 'Fresher Jobs in India 2026 — Entry Level Hiring, Trainee & Graduate Openings | TalentXcel';
-      description = 'Explore thousands of verified entry-level vacancies, graduate trainee programs, and junior developer positions across Bangalore, Hyderabad, Pune, Mumbai, and Remote India.';
+      description = 'Explore entry-level career resources and job listings for graduates across Bangalore, Hyderabad, Pune, Mumbai, and remote locations in India.';
       canonical = 'https://talentxcel.in/jobs/freshers';
       h1 = 'Fresher Jobs & Entry Level Career Opportunities (2026)';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Entry-Level Trainee &amp; Fresher Recruitment Drive</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Launch your career with verified opportunities across India\'s leading technology companies, consulting firms, and public enterprises. Complete your profile and apply with 1-click ATS resume scanning.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse graduate career resources and review current entry-level vacancies on TalentXcel.</p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
             <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Junior Software Engineer</a>
             <a href="/jobs/data-analyst-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Graduate Data Analyst</a>
@@ -281,68 +228,21 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         "name": "Fresher Jobs & Graduate Careers",
         "url": canonical
       };
-    } else if (FALLBACK_JOBS_MAP[secondary]) {
-      const fb = FALLBACK_JOBS_MAP[secondary];
-      title = `${fb.title} at ${fb.company_name} | Verified Opening | TalentXcel`;
-      description = fb.description;
-      canonical = `https://talentxcel.in/jobs/${secondary}`;
-      h1 = `${fb.title} — ${fb.company_name}`;
-      bodyContent = `
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <div class="flex items-center gap-3">
-            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full text-xs font-semibold">Active Opening</span>
-            <span class="text-xs text-slate-400">${escapeHtml(fb.location)}</span>
-          </div>
-          <h2 class="text-xl font-bold text-white">${escapeHtml(fb.title)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(fb.description)}</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Company</span><span class="font-semibold text-white">${escapeHtml(fb.company_name)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Compensation</span><span class="font-semibold text-emerald-400">₹${(fb.salary_min / 100000).toFixed(1)}L - ₹${(fb.salary_max / 100000).toFixed(1)}L PA</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Employment</span><span class="font-semibold text-blue-400">${escapeHtml(fb.employment_type)}</span></div>
-          </div>
-          <div class="pt-4 flex flex-wrap gap-3">
-            <a href="https://talentxcel.in/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Apply for Role &rarr;</a>
-            <a href="https://talentxcel.in/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Score ATS Resume &rarr;</a>
-          </div>
-        </section>
-      `;
-      jsonLdSchema = {
-        "@context": "https://schema.org",
-        "@type": "JobPosting",
-        "title": fb.title,
-        "description": fb.description,
-        "datePosted": "2026-01-01T00:00:00.000Z",
-        "validThrough": "2027-12-31T23:59:59.000Z",
-        "employmentType": "FULL_TIME",
-        "hiringOrganization": {
-          "@type": "Organization",
-          "name": fb.company_name
-        },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": fb.location,
-            "addressCountry": "IN"
-          }
-        }
-      };
     } else if (secondary.includes('-in-')) {
       const parts = secondary.split('-in-');
       const roleName = formatTitle(parts[0]);
       const cityName = formatTitle(parts.slice(1).join('-in-'));
       title = `${roleName} Jobs in ${cityName} 2026 | TalentXcel`;
-      description = `Explore active ${roleName} jobs, tech vacancies, salary benchmarks (₹4.5L - ₹18L PA), and hiring companies in ${cityName}. 1-Click apply on TalentXcel.`;
+      description = `Explore ${roleName} job listings and career opportunities in ${cityName}. Review each listing for current requirements and compensation information.`;
       canonical = `https://talentxcel.in/jobs/${secondary}`;
       h1 = `${roleName} Jobs in ${cityName}`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment Corridor in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Discover verified ${escapeHtml(roleName)} job openings, hiring companies, and compensation percentiles in ${escapeHtml(cityName)}. Complete your ATS resume scan to match direct hiring requirements.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Check each listing for current requirements and details supplied by the employer.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">IndexNow Sync</span><span class="font-semibold text-blue-400">Real-Time Indexed</span></div>
           </div>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/jobs/${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
@@ -362,32 +262,27 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       };
     } else {
       const jobTitle = formatTitle(secondary);
-      title = `${jobTitle} Opening | Verified Tech Careers | TalentXcel`;
-      description = `View requirements, salary, and direct application details for ${jobTitle} on TalentXcel.`;
+      title = `${jobTitle} Jobs & Career Opportunities | TalentXcel`;
+      description = `Explore ${jobTitle} opportunities on TalentXcel. Review available listings for current requirements and application details.`;
       canonical = `https://talentxcel.in/jobs/${secondary}`;
       h1 = jobTitle;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
           <h2 class="text-xl font-bold text-white">${escapeHtml(jobTitle)}</h2>
-          <p class="text-slate-300 text-sm">Verified career opening on TalentXcel. Instant apply with ATS resume matching.</p>
+          <p class="text-slate-300 text-sm">Browse current listings and review the role requirements and application information provided on each job page.</p>
         </section>
       `;
     }
   } else if ((prefix === 'industries' || prefix === 'industry') && secondary) {
     const indName = formatTitle(secondary);
     title = `${indName} Jobs & Career Opportunities 2026 | TalentXcel`;
-    description = `Explore high-growth careers, hiring trends, top employers, and salary benchmarks in the ${indName} industry on TalentXcel.`;
+    description = `Explore career paths, skills, and job listings in the ${indName} industry on TalentXcel.`;
     canonical = `https://talentxcel.in/industries/${secondary}`;
     h1 = `${indName} Industry Careers & Job Openings (2026)`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">${escapeHtml(indName)} Employment Hub &amp; Industry Trends</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Discover top corporate recruiters, competitive compensation ranges, and in-demand skills within the ${escapeHtml(indName)} sector across India.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Sector</span><span class="font-semibold text-emerald-400">${escapeHtml(indName)}</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Market Demand</span><span class="font-semibold text-white">High Growth</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-blue-400">Actively Recruiting</span></div>
-        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">Browse career information and job listings related to ${escapeHtml(indName)}.</p>
         <div class="pt-4 flex flex-wrap gap-3">
           <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(indName)} Jobs &rarr;</a>
           <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
@@ -400,56 +295,27 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "name": `${indName} Industry Careers`,
       "url": canonical
     };
-  } else if (prefix === 'auth') {
-    title = 'TalentXcel Account Registration & Sign In | Professional Talent Network';
-    description = 'Join TalentXcel to access verified career pathways, 1-click ATS resume scoring, and direct corporate recruitment.';
-    canonical = 'https://talentxcel.in/auth/register';
-    h1 = 'TalentXcel Professional Network';
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
-        <h2 class="text-xl font-bold text-white">Verified Candidate &amp; Employer Ecosystem</h2>
-        <p class="text-slate-300 text-sm">Join over 100,000+ verified professionals worldwide. Access personalized career tracks and job matching.</p>
-        <div class="pt-4">
-          <a href="https://talentxcel.in/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore Live Openings &rarr;</a>
-        </div>
-      </section>
-    `;
   } else if (prefix === 'compare' && secondary) {
     const compParts = secondary.split('-vs-');
     const nameA = formatTitle(compParts[0] || 'College A');
     const nameB = formatTitle(compParts[1] || 'College B');
     title = `${nameA} vs ${nameB} [2026 Comparison] — Fees, Cutoffs & Placements | TalentXcel`;
-    description = `Side-by-side verified comparison between ${nameA} and ${nameB}. Compare annual tuition fees, NIRF rankings, highest CTC, and average placements.`;
+    description = `Review available institution information for ${nameA} and ${nameB} on TalentXcel.`;
     canonical = `https://talentxcel.in/compare/${secondary}`;
     h1 = `${nameA} vs ${nameB}`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">2026 Forensic Comparison: ${escapeHtml(nameA)} vs ${escapeHtml(nameB)}</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-950 border-b border-slate-800 text-slate-400">
-                <th class="p-3">Evaluation Metric</th>
-                <th class="p-3 text-blue-400">${escapeHtml(nameA)}</th>
-                <th class="p-3 text-purple-400">${escapeHtml(nameB)}</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y border-slate-800">
-              <tr><td class="p-3 text-slate-300 font-semibold">Tuition Fees</td><td class="p-3 text-emerald-400 font-bold">₹1.5L - ₹2.5L / year</td><td class="p-3 text-emerald-400 font-bold">₹1.4L - ₹2.2L / year</td></tr>
-              <tr><td class="p-3 text-slate-300 font-semibold">Average CTC Placement</td><td class="p-3 text-amber-400 font-bold">₹18.5 LPA</td><td class="p-3 text-amber-400 font-bold">₹17.8 LPA</td></tr>
-              <tr><td class="p-3 text-slate-300 font-semibold">Placement Probability</td><td class="p-3 text-emerald-400">88% Verified Placed</td><td class="p-3 text-emerald-400">86% Verified Placed</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <h2 class="text-xl font-bold text-white">${escapeHtml(nameA)} vs ${escapeHtml(nameB)}</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Review current fees, rankings, admissions, and placement information on each institution profile before comparing the available details.</p>
       </section>
     `;
   } else if ((prefix === 'profile' || prefix === 'user' || prefix === 'p') && secondary) {
     const profileSlug = secondary;
     const displayName = formatTitle(profileSlug.replace(/-specialist.*/, '').replace(/-expert.*/, ''));
-    title = `${displayName} — Verified Tech Profile & Credentials | TalentXcel`;
-    description = `Explore ${displayName}'s verified skill graph, work experience, career milestones, and cryptographic badges on TalentXcel.`;
+    title = `${displayName} Professional Profile | TalentXcel`;
+    description = `Explore profile information shared by ${displayName} on TalentXcel.`;
     canonical = `https://talentxcel.in/profile/${profileSlug}`;
-    h1 = `${displayName} — Verified Talent Profile`;
+    h1 = `${displayName} Professional Profile`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <div class="flex items-center gap-4">
@@ -458,15 +324,10 @@ function generateDynamicSeoHtml(cleanPath: string): string {
           </div>
           <div>
             <h2 class="text-xl font-bold text-white">${escapeHtml(displayName)}</h2>
-            <p class="text-slate-400 text-xs">Verified Professional &bull; TalentXcel Global Network</p>
+            <p class="text-slate-400 text-xs">TalentXcel member profile</p>
           </div>
         </div>
-        <p class="text-slate-300 text-sm leading-relaxed">Authenticated profile record featuring verified skill assessments, peer endorsements, and certified technical benchmarks across the global technology ecosystem.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Identity Verification</span><span class="font-semibold text-emerald-400">Verified &amp; Authenticated</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Talent Score</span><span class="font-semibold text-white">Top 10% Verified</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Recruiter Status</span><span class="font-semibold text-blue-400">Open to Opportunities</span></div>
-        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">Visit this member profile to view information shared by its owner.</p>
         <div class="pt-4 flex flex-wrap gap-3">
           <a href="/profile/${escapeHtml(profileSlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Full Talent Profile &rarr;</a>
           <a href="/passport" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Verify Your Career Passport &rarr;</a>
@@ -481,12 +342,12 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       "jobTitle": displayName,
       "worksFor": {
         "@type": "Organization",
-        "name": "TalentXcel Verified Network"
+        "name": "TalentXcel Professional Network"
       }
     };
   } else if (prefix === 'directory') {
     title = `TalentXcel Comprehensive Directory — Colleges, Salaries, Jobs & City Hubs (2026)`;
-    description = `Master directory for TalentXcel. Explore 10,250 accredited Indian colleges, compensation percentiles for 30+ tech roles, and active job hubs across 50 Tier-2 cities.`;
+    description = `Browse TalentXcel directories for higher education, salary guides, jobs by city, and career resources.`;
     canonical = `https://talentxcel.in/directory`;
     h1 = `TalentXcel Directory & Resource Index`;
     bodyContent = `
@@ -495,29 +356,29 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
           <a href="/directory/colleges-a-z" class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500 block">
             <span class="font-bold text-white text-sm block mb-1">Colleges A-Z</span>
-            <span class="text-slate-400">10,250+ accredited Indian engineering colleges</span>
+            <span class="text-slate-400">Browse institution profiles</span>
           </a>
           <a href="/directory/salaries-by-role" class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500 block">
             <span class="font-bold text-white text-sm block mb-1">Salaries by Role</span>
-            <span class="text-slate-400">30+ technology specializations percentiles</span>
+            <span class="text-slate-400">Explore salary guides by role</span>
           </a>
           <a href="/directory/jobs-by-city" class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500 block">
             <span class="font-bold text-white text-sm block mb-1">Jobs by City</span>
-            <span class="text-slate-400">51 Indian Tier-1/Tier-2 employment hubs</span>
+            <span class="text-slate-400">Find jobs by location</span>
           </a>
         </div>
       </section>
     `;
   } else if (cleanPath === 'salary' || cleanPath === 'salaries' || cleanPath.startsWith('salary/') || cleanPath.startsWith('career-insights/salary/')) {
     if (cleanPath === 'salary' || cleanPath === 'salaries') {
-      title = 'Tech Salaries in India 2026 — Compensation Percentiles & Benchmarks | TalentXcel';
-      description = 'Verified tech compensation benchmarks for 30+ engineering roles across Indian metro cities. Compare 25th, 50th, and 90th percentile salaries, cash bonuses, and stock grants.';
+      title = 'Technology Salary Guides | TalentXcel';
+      description = 'Browse salary guides for technology roles and locations on TalentXcel. Review each guide for its available compensation details.';
       canonical = 'https://talentxcel.in/salary';
-      h1 = 'Technology Compensation Percentiles & Salary Curves (2026)';
+      h1 = 'Technology Salary Guides';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">Verified Tech Salary Guides by Specialization</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Benchmark your compensation against real hiring data in Bangalore, Hyderabad, Pune, Mumbai, and Delhi-NCR. Discover market trends and promotion velocity.</p>
+          <h2 class="text-xl font-bold text-white">Salary Guides by Role and Location</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Select a role or location to view the available salary guide and its compensation information.</p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
             <a href="/career-insights/salary/software-engineer-salary-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer Bangalore</a>
             <a href="/career-insights/salary/data-scientist-salary-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Scientist Pune</a>
@@ -538,19 +399,14 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const parts = cleanSlug.split('-in-');
       const roleName = formatTitle(parts[0] || 'Tech Role');
       const cityName = parts[1] ? formatTitle(parts[1]) : 'Global Hubs';
-      title = `${roleName} Salary in ${cityName} (2026 Compensation & Pay Scale) | TalentXcel`;
-      description = `Explore verified ${roleName} salary percentiles, base pay ranges (₹4.5L - ₹24L PA), cash bonuses, and compensation curves in ${cityName} on TalentXcel.`;
+      title = `${roleName} Salary Guide in ${cityName} | TalentXcel`;
+      description = `View available salary information for ${roleName} in ${cityName} on TalentXcel.`;
       canonical = `https://talentxcel.in/career-insights/salary/${slug}`;
-      h1 = `${roleName} Salary Benchmarks in ${cityName}`;
+      h1 = `${roleName} Salary Guide in ${cityName}`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">Compensation Benchmark for ${escapeHtml(roleName)} in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Verified compensation percentiles for ${escapeHtml(roleName)} based on real tech hiring data in ${escapeHtml(cityName)}. Benchmark your current CTC against the 25th, 50th, and 90th market percentiles.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median Base Pay</span><span class="font-semibold text-emerald-400">₹8.5L - ₹18L PA</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Top 10% (Staff/Lead)</span><span class="font-semibold text-white">₹28L - ₹45L PA</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Market Demand</span><span class="font-semibold text-blue-400">High / Fast Growth</span></div>
-          </div>
+          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} compensation in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Review the available compensation information for this role and location, including any source or context provided with the figures.</p>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
             <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Resume Scan &rarr;</a>
@@ -562,14 +418,6 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         "@type": "Occupation",
         "name": roleName,
         "occupationLocation": { "@type": "City", "name": cityName },
-        "estimatedSalary": [
-          {
-            "@type": "MonetaryAmountDistribution",
-            "name": "base",
-            "currency": "INR",
-            "median": 1200000
-          }
-        ]
       };
     }
   } else if (cleanPath === 'resume' || cleanPath.startsWith('resume/')) {
@@ -601,18 +449,14 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const cleanRole = slug.replace(/-interview-questions-and-answers.*/, '');
       const roleName = formatTitle(cleanRole || 'Software Engineer');
       title = `${roleName} Interview Questions & Answers (2026 Technical Prep) | TalentXcel`;
-      description = `Ace your ${roleName} technical interview with verified questions, coding challenges, system design scenarios, and ATS behavioral prep on TalentXcel.`;
+      description = `Review interview preparation resources for ${roleName} roles on TalentXcel.`;
       canonical = `https://talentxcel.in/resume/interview-prep/${slug}`;
       h1 = `${roleName} Interview Questions & Preparation Guide`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">Top Technical & Behavioral Questions for ${escapeHtml(roleName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Comprehensive interview guide curated from real screening processes at top tier-1 tech companies and high-growth startups for ${escapeHtml(roleName)} roles.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Interview Rounds</span><span class="font-semibold text-purple-400">Coding, System Design, HR</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Prep Time</span><span class="font-semibold text-white">2 - 4 Weeks</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Success Rate</span><span class="font-semibold text-emerald-400">84% ATS Cleared</span></div>
-          </div>
+          <h2 class="text-xl font-bold text-white">Interview preparation for ${escapeHtml(roleName)}</h2>
+          <h3 class="text-base font-semibold text-white">What should I prepare for a ${escapeHtml(roleName)} interview?</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">Review the skills and tools in the job description, practice relevant problem-solving exercises, and prepare examples of your work. Specific interview topics vary by employer.</p>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/resume/interview-prep" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Start Interactive Mock Interview &rarr;</a>
             <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Build Matching ATS Resume &rarr;</a>
@@ -625,10 +469,10 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         "mainEntity": [
           {
             "@type": "Question",
-            "name": `What are the core technical skills needed for ${roleName}?`,
+            "name": `What should I prepare for a ${roleName} interview?`,
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": `Candidates for ${roleName} roles are expected to demonstrate proficiency in core data structures, algorithms, system architecture, and domain-specific tooling.`
+              "text": `Review the skills and tools in the job description, practice relevant problem-solving exercises, and prepare examples of your work. Specific interview topics vary by employer.`
             }
           }
         ]
@@ -637,13 +481,13 @@ function generateDynamicSeoHtml(cleanPath: string): string {
   } else if (cleanPath === 'learning' || cleanPath.startsWith('courses/')) {
     if (cleanPath === 'learning') {
       title = 'Tech Courses, Skill Certifications & Career Tracks 2026 | TalentXcel Academy';
-      description = 'Explore industry-vetted courses and hands-on skill certifications in Python, React, Cloud, DevOps, AI, and Machine Learning. Accelerate your career with verified credentials.';
+      description = 'Explore technology courses and learning resources in Python, React, Cloud, DevOps, AI, and Machine Learning.';
       canonical = 'https://talentxcel.in/learning';
       h1 = 'Tech Skill Certifications & Career Tracks (2026)';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">In-Demand Technology Certifications</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Master high-demand technical capabilities with project-based tracks. Each course includes direct ATS resume integration and skill passport validation.</p>
+          <h2 class="text-xl font-bold text-white">Technology Courses and Learning Resources</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse course and learning options by subject and location.</p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
             <a href="/courses/python-courses-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Python in Hyderabad</a>
             <a href="/courses/react-courses-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">React in Bangalore</a>
@@ -665,13 +509,13 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const cityMatch = slug.match(/-courses-in-(.*)/);
       const cityName = cityMatch ? formatTitle(cityMatch[1]) : 'Online & Hybrid';
       title = `Best ${courseName} Courses in ${cityName} (2026 Certification & Training) | TalentXcel`;
-      description = `Discover verified ${courseName} programs, syllabus, tuition fees, and career pathways in ${cityName}. 1-Click ATS skill match on TalentXcel.`;
+      description = `Browse ${courseName} course and career information for ${cityName} on TalentXcel.`;
       canonical = `https://talentxcel.in/courses/${slug}`;
       h1 = `${courseName} Courses & Training in ${cityName}`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">${escapeHtml(courseName)} Career & Certification Track</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Upgrade your technical credentials with verified ${escapeHtml(courseName)} courses in ${escapeHtml(cityName)}. Gain hands-on project experience and benchmark your TalentScore directly for hiring teams.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Review the available ${escapeHtml(courseName)} learning options and related career information for ${escapeHtml(cityName)}.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Learning Format</span><span class="font-semibold text-emerald-400">Self-Paced / Mentor-Led</span></div>
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Credential</span><span class="font-semibold text-white">Verified Career Passport</span></div>
@@ -699,17 +543,17 @@ function generateDynamicSeoHtml(cleanPath: string): string {
     const cleanRole = slug.replace(/-roadmap.*/, '');
     const roleName = formatTitle(cleanRole);
     title = `How to Become a ${roleName} in 2026 (Roadmap & Career Pathway) | TalentXcel`;
-    description = `Complete step-by-step career pathway to become a ${roleName}. Required technical skills, salary trajectory (₹5L - ₹32L PA), and placement milestones on TalentXcel.`;
+    description = `Explore a career pathway for ${roleName}, including relevant skills, progression stages, and learning resources on TalentXcel.`;
     canonical = `https://talentxcel.in/careers/${slug}`;
     h1 = `${roleName} Career Roadmap & Pathway`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">Career Progression Roadmap for ${escapeHtml(roleName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">From foundational skills to senior architect leadership, explore the verified capability curve, required industry tools, and career milestones for ${escapeHtml(roleName)} professionals.</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Explore skills, progression stages, and learning resources for a career in ${escapeHtml(roleName)}.</p>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Skill Horizon</span><span class="font-semibold text-blue-400">12 Core Competencies</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Skill Focus</span><span class="font-semibold text-blue-400">Role-related skills</span></div>
           <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Typical Progression</span><span class="font-semibold text-white">Junior &rarr; Mid &rarr; Senior &rarr; Lead</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Velocity</span><span class="font-semibold text-emerald-400">Top 5% Hiring Demand</span></div>
+          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Related Resource</span><span class="font-semibold text-emerald-400">Current job listings</span></div>
         </div>
         <div class="pt-4 flex flex-wrap gap-3">
           <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Jobs &rarr;</a>
@@ -726,13 +570,13 @@ function generateDynamicSeoHtml(cleanPath: string): string {
   } else if (cleanPath === 'colleges' || cleanPath.startsWith('colleges/')) {
     if (cleanPath === 'colleges') {
       title = 'Top Colleges in India 2026 — NIRF Rankings, Cutoffs, Fees & Placements | TalentXcel';
-      description = 'Forensic database of 10,250+ accredited Indian higher education institutions. Compare annual tuition fees, NIRF ranks, highest placement CTCs, and cutoffs on TalentXcel.';
+      description = 'Browse Indian higher education profiles and review available information about admissions, fees, rankings, and placements on TalentXcel.';
       canonical = 'https://talentxcel.in/colleges';
       h1 = 'Accredited Higher Education & Engineering Colleges (2026)';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Higher Education Directories &amp; Institutional Profiles</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Compare accredited engineering, technology, and management institutions across India with real verified placement packages, fee schedules, and admission eligibility.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse institution profiles and review the information available for each college.</p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
             <a href="/colleges/delhi-institute-of-technology" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Delhi Institute of Technology</a>
             <a href="/compare/indian-institute-of-technology-bombay-vs-indian-institute-of-technology-delhi" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">IIT Bombay vs IIT Delhi</a>
@@ -752,18 +596,13 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const cleanCollege = slug.replace(/-campus.*/, '');
       const collegeName = formatTitle(cleanCollege);
       title = `${collegeName} Admissions, Placements, Fees & Cutoffs (2026) | TalentXcel`;
-      description = `Forensic institutional dossier for ${collegeName}. Tuition fees, median placement packages (₹6.5L - ₹22L PA), NIRF rankings, and alumni network verified on TalentXcel.`;
+      description = `Browse available admissions, fee, ranking, and placement information for ${collegeName} on TalentXcel.`;
       canonical = `https://talentxcel.in/colleges/${slug}`;
       h1 = `${collegeName} Institutional Overview`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Academic & Placement Profile: ${escapeHtml(collegeName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Explore verified placement statistics, corporate recruitment partners, NIRF ranking, eligibility criteria, and fee structures for ${escapeHtml(collegeName)} on the TalentXcel higher education network.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Median CTC</span><span class="font-semibold text-emerald-400">₹8.5 LPA</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Placement Rate</span><span class="font-semibold text-white">92% Verified Placed</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Accreditation</span><span class="font-semibold text-blue-400">NAAC A++ / NIRF Top 50</span></div>
-          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">Review the institution information available on TalentXcel, and confirm admissions, fees, rankings, and placements with the college before making decisions.</p>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/colleges" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Compare With Other Colleges &rarr;</a>
             <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Build Campus Placement Resume &rarr;</a>
@@ -875,15 +714,15 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       };
     } else {
       title = `TalentXcel Professional Network & Community Ecosystem`;
-      description = `Connect with global technology leaders, verified engineers, and executive recruiters across 400+ cities on TalentXcel.`;
+      description = 'Connect with technology professionals and explore domain-focused communities on TalentXcel.';
       canonical = `https://talentxcel.in/network`;
       h1 = `TalentXcel Global Professional Network`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Global Tech Peer Communities &amp; Collaboration</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Expand your network across engineering, product management, AI research, and executive leadership. Discover verified peers and share insights in domain-focused groups.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Explore communities for engineering, product management, AI research, and executive leadership. Members can share insights in domain-focused groups.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Chapters</span><span class="font-semibold text-emerald-400">400+ Global Tech Hubs</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Communities</span><span class="font-semibold text-emerald-400">Explore available groups</span></div>
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Verification</span><span class="font-semibold text-white">Peer-Endorsed Credentials</span></div>
             <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Networking Speed</span><span class="font-semibold text-blue-400">Direct Connections</span></div>
           </div>
@@ -897,73 +736,45 @@ function generateDynamicSeoHtml(cleanPath: string): string {
     const compSlug = secondary;
     const compName = formatTitle(compSlug);
     title = `${compName} — Careers, Tech Stack & Hiring Openings | TalentXcel`;
-    description = `Explore open jobs, engineering culture, verified compensation benchmarks, and recruitment opportunities at ${compName} on TalentXcel.`;
+    description = `Explore company information and available job listings for ${compName} on TalentXcel.`;
     canonical = `https://talentxcel.in/company/${compSlug}`;
     h1 = `${compName} — Corporate Profile & Hiring Hub`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">${escapeHtml(compName)} Overview &amp; Talent Ecosystem</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(compName)} is an active hiring partner on TalentXcel. Explore verified job postings, engineering roles, and apply directly with 1-click ATS resume matching.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-semibold text-emerald-400">Actively Hiring</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Employer Verification</span><span class="font-semibold text-white">Verified Organization</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Direct Recruiter Access</span><span class="font-semibold text-blue-400">Enabled</span></div>
-        </div>
+        <p class="text-slate-300 text-sm leading-relaxed">Review the company information and current job listings available on TalentXcel.</p>
         <div class="pt-4 flex flex-wrap gap-3">
           <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Active Vacancies &rarr;</a>
           <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan Resume for Match &rarr;</a>
         </div>
       </section>
     `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": compName,
-      "url": canonical
-    };
   } else if (prefix === 'posts' || prefix === 'post') {
     const postSlug = secondary || cleanPath.replace(/^posts?\/?/, '');
     const cleanTopic = postSlug.replace(/-market-trends-and-insights.*/, '').replace(/-edition-.*/, '');
     const topicName = formatTitle(cleanTopic || 'Tech Industry');
-    title = `${topicName} Market Trends & Career Insights (2026 Analysis) | TalentXcel`;
-    description = `In-depth analysis of hiring velocity, compensation benchmarks, and emerging technical skills for ${topicName}. Published by TalentXcel Intelligence.`;
+    title = `${topicName} Career Resources | TalentXcel`;
+    description = `Browse TalentXcel resources about ${topicName} and related career topics.`;
     canonical = `https://talentxcel.in/posts/${postSlug}`;
-    h1 = `${topicName} — Market Dynamics & Industry Insights`;
+    h1 = `${topicName} Career Resources`;
     bodyContent = `
       <article class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <div class="flex items-center gap-2 text-xs text-slate-400">
-          <span class="text-blue-400 font-semibold">TalentXcel Market Intelligence</span>
-          <span>&bull;</span>
-          <span>Verified Industry Report</span>
+          <span class="text-blue-400 font-semibold">TalentXcel Resources</span>
         </div>
-        <h2 class="text-xl font-bold text-white">${escapeHtml(topicName)}: Strategic Overview &amp; Compensation Forecast</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">An exhaustive briefing on ${escapeHtml(topicName)} market movements, demand shifts across key metro regions, and essential competencies required for top-tier compensation percentiles.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Report Tier</span><span class="font-semibold text-emerald-400">Industry Briefing</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Data Source</span><span class="font-semibold text-white">TalentXcel Hiring Index</span></div>
-          <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Update Frequency</span><span class="font-semibold text-blue-400">Bi-Weekly Refresh</span></div>
-        </div>
+        <h2 class="text-xl font-bold text-white">Explore ${escapeHtml(topicName)}</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Browse related job listings and career resources on TalentXcel.</p>
         <div class="pt-4 flex flex-wrap gap-3">
           <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(topicName)} Jobs &rarr;</a>
           <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Discuss in Tech Communities &rarr;</a>
         </div>
       </article>
     `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      "headline": `${topicName} Market Trends & Career Insights`,
-      "description": `In-depth analysis of hiring velocity and compensation benchmarks for ${topicName}`,
-      "publisher": {
-        "@type": "Organization",
-        "name": "TalentXcel"
-      },
-      "url": canonical
-    };
   } else {
+    robotsDirective = 'noindex, follow';
     h1 = formatTitle(cleanPath || 'Career & Employment Ecosystem');
     title = `${h1} | TalentXcel`;
-    bodyContent = `<div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl"><p class="text-slate-300 text-sm">Explore verified career pathways, jobs, compensation percentiles, and higher education intelligence on TalentXcel.</p></div>`;
+    bodyContent = `<div class="p-6 bg-slate-900 border border-slate-800 rounded-2xl"><p class="text-slate-300 text-sm">This page is not available on TalentXcel. Browse current jobs, salary guides, and institution profiles instead.</p></div>`;
   }
 
   const subdomainMeshHtml = `
@@ -972,9 +783,9 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
           <div>
             <div class="text-sm font-bold text-white uppercase tracking-wider">TalentXcel Specialized Career &amp; Employment Ecosystem</div>
-            <p class="text-slate-400 text-xs mt-0.5">Explore dedicated search universes across jobs, compensation, ATS resume tools, higher education, and verified credentials.</p>
+            <p class="text-slate-400 text-xs mt-0.5">Explore jobs, salary guides, ATS resume tools, higher education profiles, and career resources.</p>
           </div>
-          <span class="text-blue-400 bg-blue-950/80 border border-blue-800/60 px-2.5 py-1 rounded text-[11px] font-mono">Consolidated Root Authority</span>
+          <span class="text-blue-400 bg-blue-950/80 border border-blue-800/60 px-2.5 py-1 rounded text-[11px] font-mono">TalentXcel</span>
         </div>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           <div>
@@ -1001,7 +812,7 @@ function generateDynamicSeoHtml(cleanPath: string): string {
               <li><a href="https://talentxcel.in/colleges" class="hover:text-slate-200">Top Indian Colleges</a></li>
               <li><a href="https://talentxcel.in/compare/indian-institute-of-technology-bombay-vs-indian-institute-of-technology-delhi" class="hover:text-slate-200">IIT Bombay vs IIT Delhi</a></li>
               <li><a href="https://talentxcel.in/colleges/coep-pune" class="hover:text-slate-200">COEP Pune Placements</a></li>
-              <li><a href="https://talentxcel.in/colleges/global-programs" class="hover:text-slate-200">&euro;0 Tuition Degrees</a></li>
+              <li><a href="https://talentxcel.in/colleges/global-programs" class="hover:text-slate-200">Global Programs</a></li>
             </ul>
           </div>
           <div>
@@ -1026,7 +837,7 @@ function generateDynamicSeoHtml(cleanPath: string): string {
           </div>
         </div>
         <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500">
-          &copy; 2026 TalentXcel Platform. All URLs actively crawled and indexed across Google, Bing, and AI search engines.
+          &copy; ${new Date().getFullYear()} TalentXcel Platform.
         </div>
       </div>
     </footer>
@@ -1048,8 +859,11 @@ function generateDynamicSeoHtml(cleanPath: string): string {
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:url" content="${canonical}">
   <meta property="og:type" content="website">
-  <meta name="robots" content="index, follow">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="${escapeHtml(title)}">
+  <meta name="twitter:description" content="${escapeHtml(description)}">
+  <meta name="robots" content="${robotsDirective}">
+  <script src="https://cdn.tailwindcss.com" defer></script>
   ${schemaTag}
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased font-sans">

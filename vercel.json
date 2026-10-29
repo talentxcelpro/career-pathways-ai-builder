@@ -89,7 +89,925 @@
       ]
     },
     {
-      "source": "/(auth(?:/.*)?|admin(?:/.*)?|company-os(?:/.*)?|dashboard(?:/.*)?|settings(?:/.*)?|onboarding(?:/.*)?|my-applications(?:/.*)?|jobs/(apply|dashboard|my-applications)(?:/.*)?|companies/(admin|settings)(?:/.*)?|network/(messages|notifications|settings)(?:/.*)?|resume/(user|private|edit|my-resumes|dashboard)(?:/.*)?|profile/(edit|settings)(?:/.*)?|tools/(internal|private)(?:/.*)?|learning/(my-courses|my-progress|progress|dashboard)(?:/.*)?|colleges/(admin|private)(?:/.*)?|careermap/(private|user)(?:/.*)?|careerpassport/(user|private)(?:/.*)?|employer/(settings|dashboard|private)(?:/.*)?|marketplace/(orders|private)(?:/.*)?|events/(settings|private)(?:/.*)?|career-dashboard(?:/.*)?|provider/dashboard(?:/.*)?|checkout(?:/.*)?|subscription(?:/.*)?|billing(?:/.*)?|account(?:/.*)?|diagnostics(?:/.*)?|debug(?:/.*)?|testing(?:/.*)?|launch(?:/.*)?|access-control-test(?:/.*)?|realtime-demo(?:/.*)?|mobile-(?:.*)?)",
+      "source": "/auth/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/company-os/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/settings/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/onboarding/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/employer/dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/employer/settings/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/employer/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/profile/edit/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/profile/settings/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/my-applications/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/jobs/apply/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/jobs/dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/jobs/my-applications/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/companies/admin/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/companies/settings/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/network/messages/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/network/notifications/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/network/settings/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/resume/user/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/resume/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/resume/edit/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/resume/my-resumes/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/resume/dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/tools/internal/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/tools/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/learning/my-courses/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/learning/my-progress/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/learning/progress/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/learning/dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/colleges/admin/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/colleges/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/careermap/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/careermap/user/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/careerpassport/user/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/careerpassport/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/marketplace/orders/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/marketplace/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/events/settings/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/events/private/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/career-dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/provider/dashboard/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/checkout/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/subscription/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/billing/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/account/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/diagnostics/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/debug/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/testing/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/launch/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/mobile-/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/realtime-demo/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/mobile-demo/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "private, no-cache, max-age=0, must-revalidate"
+        },
+        {
+          "key": "CDN-Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/access-control-test/:path*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -218,147 +1136,292 @@
   "rewrites": [
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-jobs.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
       "destination": "/robots-jobs.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "learning.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "learning.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-learning.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "learning.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "learning.talentxcel.in"
+        }
+      ],
       "destination": "/robots-learning.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "resume.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "resume.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-resume.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "resume.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "resume.talentxcel.in"
+        }
+      ],
       "destination": "/robots-resume.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "careers.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "careers.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-careers.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "careers.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "careers.talentxcel.in"
+        }
+      ],
       "destination": "/robots-careers.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "salary.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "salary.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-salary.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "salary.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "salary.talentxcel.in"
+        }
+      ],
       "destination": "/robots-salary.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "colleges.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-colleges.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "colleges.talentxcel.in"
+        }
+      ],
       "destination": "/robots-colleges.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "government.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "government.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-government.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "government.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "government.talentxcel.in"
+        }
+      ],
       "destination": "/robots-government.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "employers.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "employers.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-employers.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "employers.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "employers.talentxcel.in"
+        }
+      ],
       "destination": "/robots-employers.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "passport.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "passport.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-passport.xml"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "passport.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "passport.talentxcel.in"
+        }
+      ],
       "destination": "/robots-passport.txt"
     },
     {
       "source": "/robots.txt",
-      "has": [{ "type": "host", "value": "employer.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "employer.talentxcel.in"
+        }
+      ],
       "destination": "/robots-employer-alias.txt"
     },
     {
       "source": "/sitemap.xml",
-      "has": [{ "type": "host", "value": "employer.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "employer.talentxcel.in"
+        }
+      ],
       "destination": "/sitemap-employers.xml"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "jobs.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
       "destination": "/index-jobs.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "salary.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "salary.talentxcel.in"
+        }
+      ],
       "destination": "/index-salary.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "careers.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "careers.talentxcel.in"
+        }
+      ],
       "destination": "/index-careers.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "resume.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "resume.talentxcel.in"
+        }
+      ],
       "destination": "/index-resume.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "learning.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "learning.talentxcel.in"
+        }
+      ],
       "destination": "/index-learning.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "colleges.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "colleges.talentxcel.in"
+        }
+      ],
       "destination": "/index-colleges.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "employers.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "employers.talentxcel.in"
+        }
+      ],
       "destination": "/index-employers.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "government.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "government.talentxcel.in"
+        }
+      ],
       "destination": "/index-government.html"
     },
     {
       "source": "/",
-      "has": [{ "type": "host", "value": "passport.talentxcel.in" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "passport.talentxcel.in"
+        }
+      ],
       "destination": "/index-passport.html"
     },
     {
