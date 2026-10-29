@@ -13,7 +13,7 @@
  * Run with: npx tsx scripts/test-stage1-remediation.ts
  */
 
-import { renderTemplate, escapeHtml } from '../api/email/send';
+import { renderTemplate, escapeHtml } from '../api/email';
 
 interface TestResult {
   id: string;
