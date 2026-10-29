@@ -11,6 +11,17 @@ import { useProfileLinking } from '@/hooks/useProfileLinking';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
+const safeFormatDistance = (dateStr?: string) => {
+  if (!dateStr) return 'recently';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return 'recently';
+    return formatDistanceToNow(d, { addSuffix: true });
+  } catch {
+    return 'recently';
+  }
+};
+
 interface EnhancedNotificationCenterProps {
   className?: string;
   variant?: 'header' | 'mobile' | 'sidebar';
@@ -35,7 +46,7 @@ export const EnhancedNotificationCenter: React.FC<EnhancedNotificationCenterProp
     deleteNotification,
   } = useCrossModuleNotifications();
 
-  const { getProfile, goToProfile } = useProfileLinking();
+  const { getProfile } = useProfileLinking();
 
   // Filter notifications
   const filteredNotifications = notifications.filter(notification => {
@@ -151,7 +162,7 @@ export const EnhancedNotificationCenter: React.FC<EnhancedNotificationCenterProp
                   {notification.source_module}
                 </Badge>
                 <span className="text-xs text-gray-500">
-                  {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                  {safeFormatDistance(notification.created_at)}
                 </span>
                 {notification.priority === 'urgent' && (
                   <Badge variant="destructive" className="text-xs">
