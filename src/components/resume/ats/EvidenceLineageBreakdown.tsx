@@ -120,7 +120,7 @@ export const EvidenceLineageBreakdown: React.FC<EvidenceLineageBreakdownProps> =
             </div>
             {result.evidenceStats.decayedEvidenceCount > 0 && (
               <div className="flex justify-between text-amber-600 font-medium">
-                <span>Decayed Evidence (>24mo):</span>
+                <span>Decayed Evidence (&gt;24mo):</span>
                 <span>{result.evidenceStats.decayedEvidenceCount}</span>
               </div>
             )}

@@ -56,6 +56,7 @@ export const PostComments: React.FC<PostCommentsProps> = ({
   // Fetch comments
   const { data: comments = [], isLoading } = useQuery({
     queryKey: ['post-comments', postId],
+    queryFn: async () => {
       const { data: commentsData, error } = await supabase
         .from('post_comments')
         .select('*')

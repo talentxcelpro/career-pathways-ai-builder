@@ -80,9 +80,6 @@ export const useEmailAutomation = () => {
       setIsProcessing(false);
     }
   };
-      setIsProcessing(false);
-    }
-  };
 
   // Predefined automation triggers
   const triggerWelcomeEmail = async (userEmail: string, firstName: string) => {

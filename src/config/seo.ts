@@ -24,17 +24,51 @@ export const DEFAULT_OG_IMAGE = `${PRODUCTION_ORIGIN}/lovable-uploads/711de76d-0
 export const NOINDEX_PREFIXES = [
   '/auth',
   '/admin',
+  '/company-os',
   '/dashboard',
+  '/settings',
   '/onboarding',
-  '/employer',
+  '/employer/dashboard',
+  '/employer/settings',
+  '/employer/private',
   '/profile/edit',
   '/profile/settings',
   '/my-applications',
+  '/jobs/apply',
+  '/jobs/dashboard',
+  '/jobs/my-applications',
+  '/companies/admin',
+  '/companies/settings',
   '/network/messages',
   '/network/notifications',
   '/network/settings',
+  '/resume/user',
+  '/resume/private',
+  '/resume/edit',
+  '/resume/my-resumes',
+  '/resume/dashboard',
+  '/tools/internal',
+  '/tools/private',
   '/learning/my-courses',
   '/learning/my-progress',
+  '/learning/progress',
+  '/learning/dashboard',
+  '/colleges/admin',
+  '/colleges/private',
+  '/careermap/private',
+  '/careermap/user',
+  '/careerpassport/user',
+  '/careerpassport/private',
+  '/marketplace/orders',
+  '/marketplace/private',
+  '/events/settings',
+  '/events/private',
+  '/career-dashboard',
+  '/provider/dashboard',
+  '/checkout',
+  '/subscription',
+  '/billing',
+  '/account',
   '/diagnostics',
   '/debug',
   '/testing',
@@ -136,8 +170,14 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
 ];
 
 /** True when a path should carry noindex. */
-export const isNoindexPath = (pathname: string): boolean =>
-  NOINDEX_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(prefix));
+export const isNoindexPath = (pathname: string): boolean => {
+  const normalized = (pathname || '').toLowerCase();
+  return NOINDEX_PREFIXES.some((prefix) => {
+    if (normalized === prefix) return true;
+    const prefixBoundary = prefix.endsWith('/') || prefix.endsWith('-') ? prefix : `${prefix}/`;
+    return normalized.startsWith(prefixBoundary);
+  });
+};
 
 /** Absolute production URL for an app path or absolute URL. */
 export const absoluteUrl = (pathOrUrl = '/'): string => {

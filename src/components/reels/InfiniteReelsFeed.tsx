@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { useReelsData } from '@/hooks/useReelsData';
 import { ReelCard } from './ReelCard';
 import { Button } from '@/components/ui/button';
-import { Plus, Upload, RefreshCw, ChevronUp, ChevronDown, UserCheck } from 'lucide-react';
-import { useIntersectionObserverCallback } from '@/hooks/useIntersectionObserver';
+import { Plus, Upload, RefreshCw, ChevronUp, ChevronDown } from 'lucide-react';
 import { useFollow } from '@/hooks/useFollow';
 
 interface InfiniteReelsFeedProps {
@@ -140,10 +138,10 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
 
   if (isLoading) {
     return (
-      <div className="w-full h-screen bg-black flex items-center justify-center">
+      <div className="w-full h-full bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-white">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-          <p>Loading amazing reels...</p>
+          <p className="text-sm text-white/80">Loading amazing reels...</p>
         </div>
       </div>
     );
@@ -151,9 +149,9 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
 
   if (error) {
     return (
-      <div className="w-full h-screen bg-black flex items-center justify-center">
+      <div className="w-full h-full bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 text-white text-center p-6">
-          <div className="text-6xl mb-4">😞</div>
+          <div className="text-6xl mb-4">🎬</div>
           <h3 className="text-xl font-semibold">Oops! Something went wrong</h3>
           <p className="text-gray-300 mb-6">We couldn't load the reels right now</p>
           <Button 
@@ -171,7 +169,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   if (!reels.length) {
     if (feedType === 'following') {
       return (
-        <div className="w-full h-screen bg-black flex items-center justify-center p-4 text-white overflow-y-auto">
+        <div className="w-full h-full bg-black flex items-center justify-center p-4 text-white overflow-y-auto">
           <div className="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 text-center space-y-4 shadow-2xl backdrop-blur-md">
             <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center mx-auto text-2xl shadow-lg">
               ✨
@@ -219,7 +217,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
     }
 
     return (
-      <div className="w-full h-screen bg-black flex items-center justify-center">
+      <div className="w-full h-full bg-black flex items-center justify-center">
         <div className="flex flex-col items-center gap-6 text-white text-center p-6">
           <div className="text-8xl mb-4">🎬</div>
           <h3 className="text-2xl font-bold mb-2">No Reels Yet!</h3>
@@ -239,12 +237,12 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
   }
 
   return (
-    <div className="relative w-full h-screen bg-black">
+    <div className="relative w-full h-full bg-black">
       {/* Scrollable Feed Container */}
       <div 
         ref={containerRef}
         className={cn(
-          "w-full h-screen overflow-y-scroll snap-y snap-mandatory scrollbar-none",
+          "w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none",
           className
         )}
         onScroll={handleScroll}
@@ -255,10 +253,10 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
       >
         {reels.map((reel, index) => (
           <div
-            key={reel.id}
+            key={`${reel.id}-${index}`}
             ref={setObserverRef(index)}
             data-index={index}
-            className="w-full h-screen snap-start snap-always flex-shrink-0"
+            className="w-full h-full snap-start snap-always flex-shrink-0"
           >
             <ReelCard
               reel={reel}
@@ -272,7 +270,7 @@ export const InfiniteReelsFeed: React.FC<InfiniteReelsFeedProps> = ({
         {hasNextPage && (
           <div 
             ref={loadMoreRef}
-            className="h-screen w-full bg-black flex items-center justify-center snap-start"
+            className="h-full w-full bg-black flex items-center justify-center snap-start py-8"
           >
             <div className="flex flex-col items-center gap-4 text-white">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>

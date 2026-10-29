@@ -4,7 +4,7 @@ import { InfiniteReelsFeed } from '@/components/reels/InfiniteReelsFeed';
 import { ReelsUploadModal } from '@/components/mobile/ReelsUploadModal';
 import { ReelsHeader } from '@/components/mobile/ReelsHeader';
 import { Button } from '@/components/ui/button';
-import { Plus, Home, Search, User, Heart, MessageCircle } from 'lucide-react';
+import { Plus, Home, Search, User, Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { realtimeManager } from '@/lib/realtimeManager';
@@ -49,8 +49,8 @@ export const MobileReels = () => {
       </Helmet>
       
       {/* Centered responsive container (9:16 on desktop, 100% on mobile) */}
-      <div className="w-full h-screen overflow-hidden bg-slate-950 flex justify-center">
-        <div className="w-full max-w-[480px] h-screen relative bg-black shadow-2xl border-x border-slate-900/60 overflow-hidden">
+      <div className="w-full h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 flex justify-center">
+        <div className="w-full max-w-[480px] h-full relative bg-black shadow-2xl border-x border-slate-900/60 overflow-hidden">
           {/* Header with Tab switcher and Category pills */}
           <ReelsHeader
             activeTab={activeTab}
@@ -136,3 +136,5 @@ export const MobileReels = () => {
     </>
   );
 };
+
+export default MobileReels;

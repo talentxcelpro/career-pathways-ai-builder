@@ -10,6 +10,17 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
+const safeFormatDistance = (dateStr?: string) => {
+  if (!dateStr) return 'recently';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return 'recently';
+    return formatDistanceToNow(d, { addSuffix: true });
+  } catch {
+    return 'recently';
+  }
+};
+
 interface ReelCommentsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -146,7 +157,7 @@ export const ReelCommentsModal: React.FC<ReelCommentsModalProps> = ({
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-semibold text-sm">{comment.user_name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                        {safeFormatDistance(comment.created_at)}
                       </span>
                     </div>
                     <p className="text-sm leading-relaxed text-foreground break-words">

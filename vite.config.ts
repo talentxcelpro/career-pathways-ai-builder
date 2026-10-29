@@ -71,7 +71,11 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/docx')) {
             return 'docx-vendor';
           }
-          // 4. Keep all React core runtime and vendor libraries in a unified vendor chunk
+          // 4. Vite internal helpers, dynamic import preloader, and synthetic modules
+          if (id.includes('vite/') || id.includes('commonjsHelpers') || id.startsWith('\0')) {
+            return 'vendor';
+          }
+          // 5. Keep all React core runtime and vendor libraries in a unified vendor chunk
           // to prevent cross-chunk circular dependencies and uninitialized createContext calls
           if (id.includes('node_modules')) {
             return 'vendor';

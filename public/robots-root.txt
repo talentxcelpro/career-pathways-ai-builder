@@ -128,74 +128,13 @@ User-agent: *
 Allow: /
 
 # ------------------------------
-# Private / Restricted Areas
+# Private app routes are crawlable so search engines can read their noindex
+# response headers. Application authentication remains the access control.
 # ------------------------------
 
-Disallow: /auth/
 Disallow: /api/auth/
 Disallow: /api/user/
 Disallow: /api/private/
-
-Disallow: /onboarding
-Disallow: /dashboard
-Disallow: /settings
-Disallow: /my-applications
-
-Disallow: /jobs/apply/
-Disallow: /jobs/dashboard/
-Disallow: /jobs/my-applications/
-
-Disallow: /companies/admin/
-Disallow: /companies/settings/
-
-Disallow: /network/messages/
-Disallow: /network/notifications/
-Disallow: /network/settings/
-
-Disallow: /resume/user/
-Disallow: /resume/private/
-Disallow: /resume/edit/
-Disallow: /resume/my-resumes/
-
-Disallow: /profile/edit/
-Disallow: /profile/settings/
-
-Disallow: /tools/internal/
-Disallow: /tools/private/
-
-Disallow: /learning/my-courses
-Disallow: /learning/my-progress
-Disallow: /learning/progress/
-Disallow: /learning/dashboard/
-
-Disallow: /colleges/admin/
-Disallow: /colleges/private/
-
-Disallow: /careermap/private/
-Disallow: /careermap/user/
-
-Disallow: /careerpassport/user/
-Disallow: /careerpassport/private/
-
-Disallow: /employer/settings/
-Disallow: /employer/dashboard/
-Disallow: /employer/private/
-
-Disallow: /marketplace/orders/
-Disallow: /marketplace/private/
-
-Disallow: /events/private/
-Disallow: /events/settings/
-
-Disallow: /company-os/
-Disallow: /admin/
-Disallow: /diagnostics
-Disallow: /debug
-Disallow: /testing
-Disallow: /launch/
-Disallow: /access-control-test
-Disallow: /realtime-demo
-Disallow: /mobile-demo
 
 # Allow search engine rendering assets
 Allow: /assets/

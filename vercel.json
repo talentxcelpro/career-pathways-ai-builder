@@ -89,7 +89,7 @@
       ]
     },
     {
-      "source": "/(dashboard|settings|onboarding|my-applications|profile(?:/.*)?|resume/edit|resume/my-resumes|employer/dashboard|employer/settings|admin(?:/.*)?)",
+      "source": "/(auth(?:/.*)?|admin(?:/.*)?|company-os(?:/.*)?|dashboard(?:/.*)?|settings(?:/.*)?|onboarding(?:/.*)?|my-applications(?:/.*)?|jobs/(apply|dashboard|my-applications)(?:/.*)?|companies/(admin|settings)(?:/.*)?|network/(messages|notifications|settings)(?:/.*)?|resume/(user|private|edit|my-resumes|dashboard)(?:/.*)?|profile/(edit|settings)(?:/.*)?|tools/(internal|private)(?:/.*)?|learning/(my-courses|my-progress|progress|dashboard)(?:/.*)?|colleges/(admin|private)(?:/.*)?|careermap/(private|user)(?:/.*)?|careerpassport/(user|private)(?:/.*)?|employer/(settings|dashboard|private)(?:/.*)?|marketplace/(orders|private)(?:/.*)?|events/(settings|private)(?:/.*)?|career-dashboard(?:/.*)?|provider/dashboard(?:/.*)?|checkout(?:/.*)?|subscription(?:/.*)?|billing(?:/.*)?|account(?:/.*)?|diagnostics(?:/.*)?|debug(?:/.*)?|testing(?:/.*)?|launch(?:/.*)?|access-control-test(?:/.*)?|realtime-demo(?:/.*)?|mobile-(?:.*)?)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -98,6 +98,10 @@
         {
           "key": "CDN-Cache-Control",
           "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
         }
       ]
     }

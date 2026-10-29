@@ -6,10 +6,49 @@ export const config = {
   runtime: 'edge',
 };
 
+const PRIVATE_ROUTE_PREFIXES = [
+  '/auth', '/admin', '/company-os', '/dashboard', '/settings', '/onboarding', '/my-applications',
+  '/jobs/apply', '/jobs/dashboard', '/jobs/my-applications', '/companies/admin', '/companies/settings',
+  '/network/messages', '/network/notifications', '/network/settings', '/resume/user', '/resume/private',
+  '/resume/edit', '/resume/my-resumes', '/resume/dashboard', '/profile/edit', '/profile/settings',
+  '/tools/internal', '/tools/private', '/learning/my-courses', '/learning/my-progress', '/learning/progress',
+  '/learning/dashboard', '/colleges/admin', '/colleges/private', '/careermap/private', '/careermap/user',
+  '/careerpassport/user', '/careerpassport/private', '/employer/settings', '/employer/dashboard',
+  '/employer/private', '/marketplace/orders', '/marketplace/private', '/events/settings', '/events/private',
+  '/career-dashboard', '/provider/dashboard', '/checkout', '/subscription', '/billing', '/account',
+  '/diagnostics', '/debug', '/testing', '/launch', '/access-control-test', '/realtime-demo', '/mobile-', '/mobile-demo',
+];
+
+function isPrivateRoute(path: string): boolean {
+  const normalized = `/${path.split('/').filter(Boolean).join('/').toLowerCase()}`;
+  return PRIVATE_ROUTE_PREFIXES.some((prefix) =>
+    normalized === prefix || normalized.startsWith(prefix.endsWith('-') ? prefix : `${prefix}/`)
+  );
+}
+
+function privateRouteResponse(): Response {
+  const html = `<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>TalentXcel Account</title>
+<meta name="description" content="This restricted TalentXcel page is unavailable in search results."></head>
+<body><main><h1>TalentXcel</h1><p>This page is restricted and is not available in search results.</p></main></body></html>`;
+  return new Response(html, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'private, no-store, max-age=0',
+      'X-Robots-Tag': 'noindex, nofollow',
+      'X-Render-Engine': 'TalentXcel-Private-Route-Guard',
+    },
+  });
+}
+
 export default async function handler(req: Request) {
   const url = new URL(req.url);
   const pathParam = url.searchParams.get('path') || url.pathname.replace(/^\/api\/seo-render\/?/, '') || '/';
   const cleanPath = pathParam.replace(/^\//, '').replace(/\/$/, '');
+
+  if (isPrivateRoute(cleanPath)) return privateRouteResponse();
 
   if (cleanPath.endsWith('.xml') || cleanPath.includes('sitemap') || cleanPath.includes('feed')) {
     return new Response('<?xml version="1.0" encoding="UTF-8"?><error>XML route - not HTML</error>', {

@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +6,7 @@ import { ReelEngagementActions } from './ReelEngagementActions';
 import { ReelCommentsModal } from './ReelCommentsModal';
 import { ReelData, useReelViewTracking } from '@/hooks/useReelsData';
 import { useReelsEngagement } from '@/hooks/useReelsEngagement';
-import { formatDistanceToNow } from 'date-fns';
-import { MapPin, Verified, Briefcase, Sparkles, ChevronRight } from 'lucide-react';
+import { MapPin, Verified, Briefcase, ChevronRight } from 'lucide-react';
 
 interface ReelCardProps {
   reel: ReelData;
@@ -48,7 +46,7 @@ export const ReelCard: React.FC<ReelCardProps> = ({
   }, [likeReel, reel.id, reel.has_liked]);
 
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden select-none">
+    <div className="relative w-full h-full bg-black overflow-hidden select-none">
       {/* High-Performance Autoplay Video Engine */}
       <VideoReelPlayer
         videoUrl={reel.video_url}

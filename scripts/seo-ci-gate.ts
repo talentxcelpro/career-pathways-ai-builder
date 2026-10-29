@@ -661,10 +661,18 @@ async function runSeoCiGate() {
   const robotsPath = resolve('public/robots.txt');
   if (existsSync(robotsPath)) {
     const content = readFileSync(robotsPath, 'utf-8');
+    const vercelHeaders = JSON.parse(readFileSync(resolve('vercel.json'), 'utf-8')).headers as Array<{
+      source: string;
+      headers: Array<{ key: string; value: string }>;
+    }>;
+    const hasPrivateNoindexHeader = vercelHeaders.some((rule) =>
+      rule.source.includes('admin') && rule.source.includes('dashboard') && rule.source.includes('settings') &&
+      rule.headers.some((header) => header.key.toLowerCase() === 'x-robots-tag' && header.value.includes('noindex'))
+    );
     record('Robots', 'Sitemap Declaration', content.includes('Sitemap: https://talentxcel.in/sitemap.xml'), 'robots.txt declares sitemap.xml');
-    record('Robots', 'Admin Route Protection', content.includes('Disallow: /admin/'), 'robots.txt blocks /admin/');
-    record('Robots', 'Dashboard Protection', content.includes('Disallow: /dashboard'), 'robots.txt blocks /dashboard');
-    record('Robots', 'Private Settings Protection', content.includes('Disallow: /settings'), 'robots.txt blocks /settings');
+    record('Robots', 'Admin Route Protection', hasPrivateNoindexHeader && !content.includes('Disallow: /admin/'), 'admin URLs are crawlable so X-Robots-Tag noindex can be read');
+    record('Robots', 'Dashboard Protection', hasPrivateNoindexHeader && !content.includes('Disallow: /dashboard'), 'dashboard URLs are crawlable so X-Robots-Tag noindex can be read');
+    record('Robots', 'Private Settings Protection', hasPrivateNoindexHeader && !content.includes('Disallow: /settings'), 'settings URLs are crawlable so X-Robots-Tag noindex can be read');
     record('Robots', 'Parameter URL Disallow', content.includes('Disallow: /*?*utm_'), 'robots.txt blocks parameter spam');
   } else {
     record('Robots', 'File Exists', false, 'public/robots.txt not found', { severity: 'CRITICAL' });
@@ -3780,6 +3788,117 @@ async function runSeoCiGate() {
 
   } catch (err: any) {
     record('Combinatorial_Syndication', 'Combinatorial & External Syndication Invariants', false, `Error: ${err.message}`, { severity: 'HIGH' });
+  }
+
+  // =========================================================================
+  // SECTION 27: HIRING QUERY & PAA INTENT CLASSIFICATION INVARIANTS (6 INVARIANTS)
+  // =========================================================================
+  console.log('\n--- Auditing Section 27: Hiring Query & PAA Intent Classification Pipeline ---');
+  try {
+    const {
+      classifyHiringQuery,
+      classifyQuestionIntent,
+      normalizeQuery,
+    } = await import('../src/lib/seo/hiringQueryClassifier.js');
+
+    // 27.1 PAA_Question_Intent_Classifier: Standalone question intent classification
+    const qCheck1 = classifyQuestionIntent('Which is the best hiring platform in India?');
+    const qCheck2 = classifyQuestionIntent('Why is Gen Z struggling to get jobs?');
+    const qCheck3 = classifyQuestionIntent('software engineer jobs in bangalore');
+    record(
+      'Hiring_Query_PAA',
+      '1. PAA_Question_Intent_Classifier: Interrogative queries correctly recognized with question archetypes',
+      qCheck1.isQuestion && qCheck1.questionType === 'which' &&
+      qCheck2.isQuestion && qCheck2.questionType === 'why' &&
+      !qCheck3.isQuestion && qCheck3.questionType === null,
+      'Validated question parser: Which... -> which, Why... -> why, statement -> isQuestion: false'
+    );
+
+    // 27.2 Hiring_Platform_And_Competitor_Coverage: Covers recruitment, ATS, AI hiring, and competitor comparison
+    const hiringPlatforms = [
+      { q: 'talent discovery platform', expIntent: 'commercial', expPage: '/talent' },
+      { q: 'recruitment software for small business', expIntent: 'commercial', expPage: '/hire' },
+      { q: 'applicant tracking system for free', expIntent: 'commercial', expPage: '/hire' },
+      { q: 'AI recruitment software', expIntent: 'commercial', expPage: '/hire' },
+      { q: 'free recruiting app', expIntent: 'commercial', expPage: '/hire' },
+      { q: 'Naukri alternative', expIntent: 'comparison', expPage: '/hire' },
+    ];
+    const allPlatformsPass = hiringPlatforms.every(({ q, expIntent, expPage }) => {
+      const res = classifyHiringQuery(q);
+      return res.intent === expIntent && res.page === expPage;
+    });
+    record(
+      'Hiring_Query_PAA',
+      '2. Hiring_Platform_And_Competitor_Coverage: Platforms, talent discovery, ATS, and Naukri alternatives covered',
+      allPlatformsPass,
+      'All 6 platform archetypes (talent discovery, ATS, recruitment software, AI hiring, free app, competitor) pass'
+    );
+
+    // 27.3 Screenshot_PAA_PASF_Grounding: All 13 Google Search screenshot queries mapped to verified routes
+    const screenshotCases = [
+      { q: 'Which is the best hiring platform in India?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'What is the best app to find talent?', expIntent: 'comparison', expPage: '/talent' },
+      { q: 'What are the best recruitment software options in India?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'How do I earn Rs 30,000 per month from home?', expIntent: 'careers', expPage: '/jobs' },
+      { q: 'Why is Gen Z struggling to get jobs?', expIntent: 'informational', expPage: '/resources' },
+      { q: 'What apps can I get paid daily?', expIntent: 'informational', expPage: '/resources' },
+      { q: 'Which is better than Naukri?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'What is the best free recruiting app?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'What are the top 5 recruitment companies in India?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'Which ATS is best for HR?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'Which AI is best for recruitment?', expIntent: 'comparison', expPage: '/hire' },
+      { q: 'TalentXcel salary', expIntent: 'branded', expPage: '/salary' },
+      { q: 'TalentXcel careers', expIntent: 'branded', expPage: '/careers' },
+    ];
+    const screenshotAllPass = screenshotCases.every(({ q, expIntent, expPage }) => {
+      const res = classifyHiringQuery(q);
+      return res.intent === expIntent && res.page === expPage;
+    });
+    record(
+      'Hiring_Query_PAA',
+      '3. Screenshot_PAA_PASF_Grounding: 100% of Google screenshot opportunities mapped to verified surfaces',
+      screenshotAllPass,
+      'Verified 13/13 screenshot queries mapped correctly to existing canonical routes'
+    );
+
+    // 27.4 Anti_Doorway_Zero_Fabrication: eligibleForIndexablePage strictly false for non-original matches
+    const allZeroDoorways = screenshotCases.every(({ q }) => {
+      const res = classifyHiringQuery(q);
+      return res.eligibleForIndexablePage === false && res.reason.length > 0;
+    });
+    record(
+      'Hiring_Query_PAA',
+      '4. Anti_Doorway_Zero_Fabrication: No thin programmatic doorway generation for query matches',
+      allZeroDoorways,
+      'Verified zero programmatic doorway creation: demand routed exclusively to existing verified pages'
+    );
+
+    // 27.5 Exclusion_Of_Irrelevant_Queries: Non-domain and fake prediction queries strictly marked unrelated
+    const excludedCases = ['weather tomorrow', 'best salary prediction tool', 'how to bake chocolate cake', 'fifa world cup schedule'];
+    const excludedAllPass = excludedCases.every((q) => {
+      const res = classifyHiringQuery(q);
+      return res.intent === 'unrelated' && res.page === null && res.eligibleForIndexablePage === false;
+    });
+    record(
+      'Hiring_Query_PAA',
+      '5. Exclusion_Of_Irrelevant_Queries: Out-of-domain and fake prediction queries excluded cleanly',
+      excludedAllPass,
+      'Verified 4/4 irrelevant queries returned intent: unrelated and page: null'
+    );
+
+    // 27.6 Typo_And_Punctuation_Resilience: Normalization handles casing, punctuation, and common misspellings
+    const typoCheck1 = normalizeQuery('Naukri alternatives!!!') === 'naukri alternatives';
+    const typoCheck2 = normalizeQuery('recuitment softwere') === 'recruitment software';
+    const typoCheck3 = normalizeQuery('talant discovery platfrom') === 'talent discovery platform';
+    const typoCheck4 = classifyHiringQuery('WHICH IS THE BEST HIRING PLATFORM IN INDIA!!!').page === '/hire';
+    record(
+      'Hiring_Query_PAA',
+      '6. Typo_And_Punctuation_Resilience: Punctuation and common spelling errors resolved accurately',
+      typoCheck1 && typoCheck2 && typoCheck3 && typoCheck4,
+      'Verified normalization across casing, exclamation marks, and domain-specific typos'
+    );
+  } catch (err: any) {
+    record('Hiring_Query_PAA', 'Hiring Query & PAA Classification Invariants', false, "Error: " + err.message, { severity: 'HIGH' });
   }
 
   // --- Dynamic Summary & Invariant Report ---

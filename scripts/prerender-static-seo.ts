@@ -22,6 +22,7 @@ import {
   resolveHashtagDestination,
 } from '../src/lib/seo/postSeoModel.js';
 import { formatCanonicalUrl } from '../src/config/domainArchitecture.js';
+import { DEFAULT_TITLE, DEFAULT_DESCRIPTION } from '../src/config/seo.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -142,15 +143,25 @@ async function prerender() {
         .join('\n');
     }
 
-    const ogInjections = `
-    <meta property="og:title" content="${escapeHtml(meta.title)}" />
-    <meta property="og:description" content="${escapeHtml(meta.description)}" />
-    <meta property="og:url" content="${meta.canonical}" />
-    <meta property="og:type" content="website" />
-    ${schemaScripts}
-    `;
+    // Update the existing social tags in-place so prerendered pages have one
+    // authoritative value per property instead of duplicate OG declarations.
+    const replaceMetaProperty = (property: string, content: string) => {
+      const pattern = new RegExp(`(<meta\\s+property=["']${property}["']\\s+content=["'])[^"']*(["'][^>]*>)`, 'i');
+      pageHtml = pageHtml.replace(pattern, `$1${escapeHtml(content)}$2`);
+    };
+    const replaceMetaName = (name: string, content: string) => {
+      const pattern = new RegExp(`(<meta\\s+name=["']${name}["']\\s+content=["'])[^"']*(["'][^>]*>)`, 'i');
+      pageHtml = pageHtml.replace(pattern, `$1${escapeHtml(content)}$2`);
+    };
+    replaceMetaProperty('og:title', meta.title);
+    replaceMetaProperty('og:description', meta.description);
+    replaceMetaProperty('og:url', meta.canonical);
+    replaceMetaName('twitter:title', meta.title);
+    replaceMetaName('twitter:description', meta.description);
 
-    pageHtml = pageHtml.replace('</head>', `${ogInjections}\n</head>`);
+    if (schemaScripts) {
+      pageHtml = pageHtml.replace('</head>', `${schemaScripts}\n</head>`);
+    }
 
     // 5. Semantic Pre-rendered DOM Injection into div#root
     if (meta.bodyContentHtml) {
@@ -232,8 +243,8 @@ async function prerender() {
   const coreHubs = [
     {
       route: '/',
-      title: 'TalentXcel — The Global Professional Talent Network',
-      desc: 'Connect with Tech & Leadership Professionals worldwide across UAE, Europe, the Americas, and Asia. Build your Career Passport, get verified by TalentScore, discover global opportunities, and let top hiring teams discover you.',
+      title: DEFAULT_TITLE,
+      desc: DEFAULT_DESCRIPTION,
       h1: 'The Global Professional Talent Network',
       bodyHtml: `
         <div class="space-y-8">
