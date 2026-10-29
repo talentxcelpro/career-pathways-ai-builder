@@ -13,18 +13,25 @@ import { TopLoadingBar } from '@/components/navigation/TopLoadingBar';
 import { ScrollRestoration } from '@/components/navigation/ScrollRestoration';
 import { PageFallbackSkeleton } from '@/components/navigation/PageFallbackSkeleton';
 import { RouteTransition } from '@/components/navigation/RouteTransition';
+import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
 import { VoicePlayerProvider } from "@/contexts/VoicePlayerContext";
-const VoiceMiniPlayer = lazy(() => import("@/components/voice/VoiceMiniPlayer").then(m => ({ default: m.VoiceMiniPlayer })));
-const FinalLaunchChecklist = lazy(() => import('@/components/deployment/FinalLaunchChecklist').then(m => ({ default: m.FinalLaunchChecklist })));
+import { VoiceMiniPlayer } from "@/components/voice/VoiceMiniPlayer";
+import { TXCAutoMiner } from '@/components/txc/TXCAutoMiner';
+import { FinalLaunchChecklist } from '@/components/deployment/FinalLaunchChecklist';
+import { AuthErrorRecovery } from "./components/auth/AuthErrorRecovery";
+import { AuthErrorBoundary } from "./components/auth/AuthErrorBoundary";
 import { BundleErrorFallback } from "./components/BundleErrorFallback";
 import { ErrorBoundary } from "react-error-boundary";
+import { MetaTags } from '@/components/seo/MetaTags';
 import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
+import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
 import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
-const IOSInstallPrompt = lazy(() => import('@/components/pwa/IOSInstallPrompt').then(m => ({ default: m.IOSInstallPrompt })));
-const ChromePWAPrompt = lazy(() => import('@/components/pwa/ChromePWAPrompt').then(m => ({ default: m.ChromePWAPrompt })));
+import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
+import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
+import { ChromePWAPrompt } from '@/components/pwa/ChromePWAPrompt';
 import { CopilotProvider } from "@/components/ai/CopilotProvider";
 import { SafeRealtimeProvider } from "@/components/realtime/SafeRealtimeProvider";
 import { SitemapRedirect } from "@/components/seo/SitemapRedirect";
@@ -42,7 +49,7 @@ const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
 const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
 const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
 const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
-const UDXDiscoveryDashboard = lazy(() => import("@/pages/discovery/UDXDiscoveryDashboard"));
+import UDXDiscoveryDashboard from "@/pages/discovery/UDXDiscoveryDashboard";
 import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
 const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
 const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
@@ -63,9 +70,15 @@ const DirectoryHubPage = lazy(() => import('@/pages/directory/DirectoryHubPage')
 const IndiaTechSalaryReport2026 = lazy(() => import('@/pages/benchmarks/IndiaTechSalaryReport2026'));
 const Tier2CityJobsIndex2026 = lazy(() => import('@/pages/benchmarks/Tier2CityJobsIndex2026'));
 
+import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
+import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
 import { GoogleOneTapLogin } from "./components/auth/GoogleOneTapLogin";
+import { useOptimizedAuth } from "./hooks/useOptimizedAuth";
+import { SilentAuthHandler } from "./components/auth/SilentAuthHandler";
+import { MobileAppInitializer } from "./components/MobileAppInitializer";
+import { MobileAppWrapper } from "./components/mobile/MobileAppWrapper";
 
 // ── Lazy-loaded page chunks ────────────────────────────────────────────────
 // Each lazy() call creates a separate JS chunk that is only downloaded when
@@ -218,7 +231,6 @@ const RankingsHub = lazy(() => import('./pages/claim1/RankingsHub'));
 const LeaderboardPage = lazy(() => import('./pages/claim1/LeaderboardPage'));
 const CompanyRankingProfile = lazy(() => import('./pages/claim1/CompanyRankingProfile'));
 const WatchPage = lazy(() => import('./pages/claim1/WatchPage'));
-const ClaimProfilePage = lazy(() => import('./pages/claim/ClaimProfilePage'));
 const CommandCenter = lazy(() => import('./pages/CommandCenter'));
 const TalentScorePage = lazy(() => import('./pages/TalentScorePage'));
 const GovernmentJobs = lazy(() => import('./pages/GovernmentJobs'));
@@ -237,7 +249,8 @@ import { getCurrentUniverse } from '@/config/domainArchitecture';
 // ── Infrastructure imports (kept static — tiny, needed on every page) ─────
 import { turboCore } from "@/utils/turboCore";
 import { advancedPerformanceMonitor } from "@/utils/advancedPerformanceMonitor";
-const MobileStatusBar = lazy(() => import("@/components/mobile/MobileStatusBar").then(m => ({ default: m.MobileStatusBar })));
+import { ConnectionStatusIndicator } from "@/components/realtime/ConnectionStatusIndicator";
+import { MobileStatusBar } from "@/components/mobile/MobileStatusBar";
 import { PhaseInitializer } from "@/components/PhaseInitializer";
 import { communicationRoutes } from "./navigation/communicationRoutes";
 import { claim1Routes } from "./navigation/claim1Routes";
@@ -579,9 +592,6 @@ const App = () => {
                 <Route path="/directory/colleges-a-z" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Colleges Directory...</div>}><CollegesAzDirectory /></Suspense>} />
                 <Route path="/directory/salaries-by-role" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Salary Directory...</div>}><SalariesRoleDirectory /></Suspense>} />
                 <Route path="/directory/jobs-by-city" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading City Job Directory...</div>}><JobsCityDirectory /></Suspense>} />
-
-                {/* Professional Activation: Single-use Secure Claim Flow */}
-                <Route path="/claim" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Verification...</div>}><ClaimProfilePage /></Suspense>} />
 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
                 <Route path="/recruiters" element={
@@ -1120,19 +1130,17 @@ const App = () => {
                     <PageSpecificBottomNav />
                   </Suspense>
                     </NotificationProvider>
-                    <Suspense fallback={null}>
-                      <VoiceMiniPlayer />
-                    </Suspense>
+                    <VoiceMiniPlayer />
                   </VoicePlayerProvider>
                   </OptimizedAuthProvider>
               </BrowserRouter>
            </HelmetProvider>
-           {/* Mobile Status Bar & PWA Prompts (Loaded on-demand) */}
-           <Suspense fallback={null}>
-             <MobileStatusBar />
-             <ChromePWAPrompt />
-             <IOSInstallPrompt />
-           </Suspense>
+           {/* Mobile Status Bar - Shows offline/battery status */}
+           <MobileStatusBar />
+            {/* Real-time Connection Status indicator removed per UX request */}
+           {/* PWA Install Prompts */}
+           <ChromePWAPrompt />
+           <IOSInstallPrompt />
            <Toaster richColors position="top-right" />
          </QueryClientProvider>
      </ErrorBoundary>

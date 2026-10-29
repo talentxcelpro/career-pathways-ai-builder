@@ -1,4 +1,4 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -27,7 +27,7 @@ import {
   Send,
   Grid3X3
 } from 'lucide-react';
-const ModulesLauncher = lazy(() => import('@/components/mobile/ModulesLauncher').then(m => ({ default: m.ModulesLauncher })));
+import { ModulesLauncher } from '@/components/mobile/ModulesLauncher';
 
 export interface BottomNavItem {
   icon: React.ComponentType<{ className?: string }>;
@@ -477,13 +477,18 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Open modules launcher"
           onClick={() => setShowModulesLauncher(true)}
           className="fixed top-4 right-4 z-50 bg-black/20 backdrop-blur-sm border border-white/20 rounded-full p-3 text-white hover:bg-black/30 transition-all duration-300"
         >
           <Grid3X3 className="h-5 w-5" />
         </Button>
       )}
+
+      {/* Modules Launcher Modal */}
+      <ModulesLauncher 
+        isOpen={showModulesLauncher} 
+        onClose={() => setShowModulesLauncher(false)} 
+      />
 
       <div className={cn(
         "fixed bottom-0 left-0 right-0 z-[999] bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
@@ -498,7 +503,6 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
                 key={index}
                 variant="ghost"
                 size="icon"
-                aria-label={item.label}
                 onClick={item.action}
                 className={cn(
                   "flex flex-col items-center gap-1 transition-all duration-200 min-h-[44px] touch-target",
@@ -522,14 +526,10 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
       </div>
 
       {/* Modules Launcher Modal */}
-      {showModulesLauncher && (
-        <Suspense fallback={null}>
-          <ModulesLauncher 
-            isOpen={showModulesLauncher}
-            onClose={() => setShowModulesLauncher(false)}
-          />
-        </Suspense>
-      )}
+      <ModulesLauncher 
+        isOpen={showModulesLauncher}
+        onClose={() => setShowModulesLauncher(false)}
+      />
     </>
   );
 };

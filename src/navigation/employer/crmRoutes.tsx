@@ -1,43 +1,44 @@
-import { lazy, Suspense } from "react";
 
-// CRM & Collaboration (Lazy loaded to reduce initial bundle)
-const CRMCandidates = lazy(() => import("../../pages/employer/crm/CRMCandidates"));
-const CRMCandidateDetail = lazy(() => import("../../pages/employer/crm/CRMCandidateDetail"));
-const CRMNotes = lazy(() => import("../../pages/employer/crm/CRMNotes"));
-const CRMTeam = lazy(() => import("../../pages/employer/crm/CRMTeam"));
-const CRMReminders = lazy(() => import("../../pages/employer/crm/CRMReminders"));
-const CRMEmailTemplate = lazy(() => import("../../pages/employer/crm/CRMEmailTemplate"));
+import { Users, User, FileText, Bell, Mail } from "lucide-react";
+
+// CRM & Collaboration
+import CRMCandidates from "../../pages/employer/crm/CRMCandidates";
+import CRMCandidateDetail from "../../pages/employer/crm/CRMCandidateDetail";
+import CRMNotes from "../../pages/employer/crm/CRMNotes";
+import CRMTeam from "../../pages/employer/crm/CRMTeam";
+import CRMReminders from "../../pages/employer/crm/CRMReminders";
+import CRMEmailTemplate from "../../pages/employer/crm/CRMEmailTemplate";
 
 export const employerCRMRoutes = [
   // CRM & Collaboration
   {
     title: "CRM Candidates",
     to: "/employer/crm/candidates",
-    page: <Suspense fallback={null}><CRMCandidates /></Suspense>,
+    page: <CRMCandidates />,
   },
   {
     title: "CRM Candidate Detail",
     to: "/employer/crm/:candidateId",
-    page: <Suspense fallback={null}><CRMCandidateDetail /></Suspense>,
+    page: <CRMCandidateDetail />,
   },
   {
     title: "CRM Notes",
     to: "/employer/crm/notes",
-    page: <Suspense fallback={null}><CRMNotes /></Suspense>,
+    page: <CRMNotes />,
   },
   {
     title: "CRM Team",
     to: "/employer/crm/team",
-    page: <Suspense fallback={null}><CRMTeam /></Suspense>,
+    page: <CRMTeam />,
   },
   {
     title: "CRM Reminders",
     to: "/employer/crm/reminders",
-    page: <Suspense fallback={null}><CRMReminders /></Suspense>,
+    page: <CRMReminders />,
   },
   {
     title: "CRM Email Template",
     to: "/employer/crm/email-template",
-    page: <Suspense fallback={null}><CRMEmailTemplate /></Suspense>,
+    page: <CRMEmailTemplate />,
   },
 ];

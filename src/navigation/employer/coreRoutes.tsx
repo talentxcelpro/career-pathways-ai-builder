@@ -1,16 +1,18 @@
-import { lazy, Suspense } from "react";
-import { Navigate } from "react-router-dom";
-import { Building2, Users, BarChart3 } from "lucide-react";
 
-// Main Employer Dashboard & Profile (Lazy loaded to reduce initial bundle)
-const EmployerProfile = lazy(() => import("../../pages/employer/Profile"));
-const EmployerSettings = lazy(() => import("../../pages/employer/Settings"));
-const EmployerTeam = lazy(() => import("../../pages/employer/Team"));
-const TeamManagement = lazy(() => import("../../pages/employer/TeamManagement"));
-const EmployerAnalytics = lazy(() => import("../../pages/employer/analytics/EmployerAnalytics"));
-const EmployerApplications = lazy(() => import("../../pages/employer/Applications"));
-const CompanyAccessRequestPage = lazy(() => import("../../pages/employer/CompanyAccessRequest"));
-const AcceptInvitation = lazy(() => import("../../pages/employer/AcceptInvitation"));
+import { Navigate } from "react-router-dom";
+import { Building2, Users, Settings, BarChart3 } from "lucide-react";
+
+// Main Employer Dashboard & Profile
+import EmployerDashboard from "../../pages/employer/Dashboard";
+import EmployerProfile from "../../pages/employer/Profile";
+import EmployerSettings from "../../pages/employer/Settings";
+import EmployerTeam from "../../pages/employer/Team";
+import TeamManagement from "../../pages/employer/TeamManagement";
+import EmployerAnalytics from "../../pages/employer/analytics/EmployerAnalytics";
+import EmployerApplications from "../../pages/employer/Applications";
+import CompanyAccessRequestPage from "../../pages/employer/CompanyAccessRequest";
+import AcceptInvitation from "../../pages/employer/AcceptInvitation";
+import { EmployerAccessGuard } from "../../components/employer/EmployerAccessGuard";
 
 export const employerCoreRoutes = [
   // Main Employer Routes
@@ -24,51 +26,51 @@ export const employerCoreRoutes = [
   {
     title: "Employer Profile",
     to: "/employer/profile",
-    page: <Suspense fallback={null}><EmployerProfile /></Suspense>,
+    page: <EmployerProfile />,
     isPublic: true,
   },
   {
     title: "Employer Settings",
     to: "/employer/settings",
-    page: <Suspense fallback={null}><EmployerSettings /></Suspense>,
+    page: <EmployerSettings />,
     isPublic: true,
   },
   {
     title: "Team Management",
     to: "/employer/team",
-    page: <Suspense fallback={null}><TeamManagement /></Suspense>,
+    page: <TeamManagement />,
     isPublic: true,
   },
   {
     title: "Legacy Team Management",
     to: "/employer/team/legacy",
-    page: <Suspense fallback={null}><EmployerTeam /></Suspense>,
+    page: <EmployerTeam />,
     isPublic: true,
   },
   {
     title: "Company Access Requests",
     to: "/employer/company-access",
-    page: <Suspense fallback={null}><CompanyAccessRequestPage /></Suspense>,
+    page: <CompanyAccessRequestPage />,
     isPublic: true,
   },
   {
     title: "Applications",
     to: "/employer/applications",
     icon: <Users className="h-4 w-4" />,
-    page: <Suspense fallback={null}><EmployerApplications /></Suspense>,
+    page: <EmployerApplications />,
     isPublic: true,
   },
   {
     title: "Employer Analytics",
     to: "/employer/analytics",
     icon: <BarChart3 className="h-4 w-4" />,
-    page: <Suspense fallback={null}><EmployerAnalytics /></Suspense>,
+    page: <EmployerAnalytics />,
     isPublic: true,
   },
   {
     title: "Accept Team Invitation",
     to: "/employer/team/accept/:token",
-    page: <Suspense fallback={null}><AcceptInvitation /></Suspense>,
+    page: <AcceptInvitation />,
     isPublic: true,
   },
 ];

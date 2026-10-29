@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 import { useViralMechanics } from '@/hooks/useViralMechanics';
 import { useStreaks } from '@/hooks/useStreaks';
-import { useAuth } from '@/contexts/AuthContext';
 
 export const PhaseInitializer: React.FC = () => {
-  const { user } = useAuth();
   const { trackConversion } = useViralMechanics();
   const { updateStreak } = useStreaks();
 
@@ -16,11 +14,9 @@ export const PhaseInitializer: React.FC = () => {
       trackConversion(refCode);
     }
     
-    // Update daily streak on app load only for authenticated users
-    if (user) {
-      updateStreak();
-    }
-  }, [user, trackConversion, updateStreak]);
+    // Update daily streak on app load
+    updateStreak();
+  }, [trackConversion, updateStreak]);
 
   return null; // This component doesn't render anything
 };

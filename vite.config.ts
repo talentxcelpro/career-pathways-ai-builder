@@ -51,7 +51,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('indianInstitutionsCatalog') || id.includes('indianEducationService')) {
             return 'indian-education-catalog';
           }
-          // 2. Heavy standalone PDF & media compute engines (loaded strictly on-demand)
+          // 2. Heavy standalone PDF engines (loaded strictly on-demand for PDF generation)
           if (id.includes('node_modules/pdfjs-dist')) {
             return 'pdfjs-vendor';
           }
@@ -61,6 +61,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/html2canvas')) {
             return 'html2canvas-vendor';
           }
+          // 3. Standalone heavy compute/rendering engines (loaded only when their specific route/tool is active)
           if (id.includes('node_modules/fabric')) {
             return 'fabric-vendor';
           }
@@ -70,58 +71,8 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/docx')) {
             return 'docx-vendor';
           }
-          if (id.includes('node_modules/@react-pdf')) {
-            return 'react-pdf-vendor';
-          }
-          // 3. Isolated heavy 3D, Graph, and Visualization engines
-          if (id.includes('node_modules/three') || id.includes('node_modules/@react-three')) {
-            return 'three-vendor';
-          }
-          if (id.includes('node_modules/@xyflow')) {
-            return 'xyflow-vendor';
-          }
-          if (id.includes('node_modules/recharts')) {
-            return 'recharts-vendor';
-          }
-          // 4. Large UI animation and drag-and-drop frameworks
-          if (id.includes('node_modules/framer-motion')) {
-            return 'motion-vendor';
-          }
-          if (id.includes('node_modules/@dnd-kit') || id.includes('node_modules/@hello-pangea/dnd')) {
-            return 'dnd-vendor';
-          }
-          // 5. Utility & platform libraries
-          if (id.includes('node_modules/@capacitor')) {
-            return 'capacitor-vendor';
-          }
-          if (id.includes('node_modules/date-fns')) {
-            return 'date-fns-vendor';
-          }
-          if (id.includes('node_modules/canvas-confetti')) {
-            return 'confetti-vendor';
-          }
-          if (id.includes('node_modules/@supabase')) {
-            return 'supabase-vendor';
-          }
-          if (id.includes('node_modules/@tanstack/react-query')) {
-            return 'query-vendor';
-          }
-          if (id.includes('node_modules/lucide-react')) {
-            return 'lucide-vendor';
-          }
-          if (id.includes('node_modules/@radix-ui')) {
-            return 'radix-vendor';
-          }
-          // 6. Core React runtime
-          if (
-            id.includes('node_modules/react/') ||
-            id.includes('node_modules/react-dom/') ||
-            id.includes('node_modules/react-router-dom/') ||
-            id.includes('node_modules/react-router/')
-          ) {
-            return 'react-core';
-          }
-          // 7. General vendor fallback
+          // 4. Keep all React core runtime and vendor libraries in a unified vendor chunk
+          // to prevent cross-chunk circular dependencies and uninitialized createContext calls
           if (id.includes('node_modules')) {
             return 'vendor';
           }
@@ -131,7 +82,7 @@ export default defineConfig(({ mode }) => ({
         assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
-    chunkSizeWarningLimit: 2000,
+    chunkSizeWarningLimit: 3000,
     sourcemap: false,
     minify: 'terser',
     terserOptions: {
@@ -140,6 +91,7 @@ export default defineConfig(({ mode }) => ({
         drop_debugger: true,
         pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
       },
+      maxWorkers: 1,
     },
     cssCodeSplit: true,
     assetsInlineLimit: 4096,

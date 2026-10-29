@@ -53,7 +53,6 @@ export function IOSInstallPrompt() {
           <Button
             variant="ghost"
             size="sm"
-            aria-label="Close"
             onClick={handleDismiss}
             className="text-white hover:bg-white/20 -mt-2"
           >

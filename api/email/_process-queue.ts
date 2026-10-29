@@ -9,7 +9,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { renderTemplate } from './_send';
+import { renderTemplate } from './send';
 
 const DOMAIN = 'talentxcel.in';
 const DEFAULT_REGION = 'us-east-1';
