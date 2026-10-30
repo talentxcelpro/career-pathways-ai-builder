@@ -7,8 +7,6 @@ import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog';
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService';
-import { FOUNDATION_NEWS_ARTICLES } from '../src/data/newsArticles';
-import { BLOG_POSTS } from '../src/data/blogPostsData';
 import { CANONICAL_ROLES } from '../src/lib/seo/pseoTaxonomy';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
@@ -43,7 +41,6 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/services', changefreq: 'weekly', priority: '0.8' },
   { path: '/employer', changefreq: 'weekly', priority: '0.8' },
   { path: '/resume', changefreq: 'daily', priority: '0.9' },
-  { path: '/resume/build', changefreq: 'daily', priority: '0.9' },
   { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
   { path: '/resume/cover-letter', changefreq: 'daily', priority: '0.9' },
   { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
@@ -292,35 +289,20 @@ export async function generateProductionSitemaps() {
     }))
   ]);
 
-  // 11. Authoritative Blog Articles (26 verified articles + /blog)
+  // Keep editorial detail pages out until their claims have supporting source records.
   const blogEntries = deduplicate([
-    { path: '/blog', changefreq: 'daily', priority: '0.9' },
-    ...BLOG_POSTS.map(p => ({
-      path: `/blog/${p.slug}`,
-      changefreq: 'weekly',
-      priority: '0.85',
-      lastmod: p.date ? new Date(p.date).toISOString().split('T')[0] : undefined
-    }))
+    { path: '/blog', changefreq: 'weekly', priority: '0.6' },
   ]);
 
-  // 12. Authoritative News & PR Publications (20 verified articles + /news)
+  // Keep news detail pages out until their claims have supporting source records.
   const newsEntries = deduplicate([
-    { path: '/news', changefreq: 'daily', priority: '0.9' },
-    ...FOUNDATION_NEWS_ARTICLES.map(a => ({
-      path: `/news/${a.slug}`,
-      changefreq: 'weekly',
-      priority: '0.85',
-      lastmod: (a.updatedAt || a.publishedAt || '').split('T')[0] || undefined
-    }))
+    { path: '/news', changefreq: 'weekly', priority: '0.6' },
   ]);
 
   // 13. Dedicated Subdomain Specific URL Clusters
-  const TOP_SALARY_LOCATIONS = ['bangalore', 'hyderabad', 'pune', 'mumbai', 'delhi-ncr', 'chennai', 'dubai', 'london', 'united-states', 'remote'];
-  
   const resumeEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/resume', changefreq: 'daily', priority: '1.0' },
-    { path: '/resume/build', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/cover-letter', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
@@ -338,18 +320,6 @@ export async function generateProductionSitemaps() {
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/salary', changefreq: 'daily', priority: '1.0' },
     { path: '/tools/salary-analyzer', changefreq: 'daily', priority: '0.9' },
-    ...CANONICAL_ROLES.slice(0, 30).map((role) => ({
-      path: `/salary/${role}`,
-      changefreq: 'weekly' as const,
-      priority: '0.9',
-    })),
-    ...CANONICAL_ROLES.slice(0, 15).flatMap((role) =>
-      TOP_SALARY_LOCATIONS.map((loc) => ({
-        path: `/salary/${role}/${loc}`,
-        changefreq: 'weekly' as const,
-        priority: '0.85',
-      }))
-    ),
   ]);
 
   const careersEntries = deduplicate([
@@ -416,7 +386,7 @@ export async function generateProductionSitemaps() {
     { filename: 'sitemap-employers.xml', entries: employerEntries, origin: 'https://employers.talentxcel.in' },
     { filename: 'sitemap-colleges.xml', entries: collegeOverviewEntries, origin: 'https://colleges.talentxcel.in' },
     { filename: 'sitemap-careers.xml', entries: careersEntries, origin: 'https://careers.talentxcel.in' },
-    { filename: 'sitemap-salary.xml', entries: salaryEntries, origin: 'https://salary.talentxcel.in' },
+    { filename: 'sitemap-salary.xml', entries: salaryEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-resume.xml', entries: resumeEntries, origin: 'https://resume.talentxcel.in' },
     { filename: 'sitemap-career-paths.xml', entries: pathwayEntries, origin: 'https://careers.talentxcel.in' },
     { filename: 'sitemap-locations.xml', entries: locationEntries, origin: 'https://talentxcel.in' },

@@ -16,7 +16,7 @@ export const SITE_NAME = 'TalentXcel';
 export const DEFAULT_TITLE = 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
 
 export const DEFAULT_DESCRIPTION =
-  'Connect with Tech & Leadership Professionals worldwide. Build your Career Passport, verify skills with TalentScore, discover jobs and connect with hiring teams.';
+  'TalentXcel brings together professional profiles, job listings, career resources, resume tools, and hiring services.';
 
 export const DEFAULT_OG_IMAGE = `${PRODUCTION_ORIGIN}/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png`;
 
@@ -45,6 +45,13 @@ export const NOINDEX_PREFIXES = [
   '/resume/user',
   '/resume/private',
   '/resume/edit',
+  '/resume/build',
+  '/resume-builder',
+  '/resume/builder',
+  '/resume/portfolio',
+  '/resume/upload',
+  '/upload',
+  '/build',
   '/resume/my-resumes',
   '/resume/dashboard',
   '/tools/internal',
@@ -77,6 +84,13 @@ export const NOINDEX_PREFIXES = [
   '/realtime-demo',
   '/mobile-demo',
   '/access-control-test',
+  '/talent',
+  '/directory/salaries-by-role',
+];
+
+const NOINDEX_PATH_PATTERNS = [
+  /^\/(?:blog|news)\/[^/]+\/?$/,
+  /^\/salary\/[^/]+(?:\/[^/]+)?\/?$/,
 ];
 
 /**
@@ -93,7 +107,6 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
   { path: '/', changefreq: 'daily', priority: '1.0' },
   { path: '/network', changefreq: 'daily', priority: '1.0' },
   { path: '/jobs', changefreq: 'daily', priority: '0.9' },
-  { path: '/talent', changefreq: 'daily', priority: '0.9' },
   { path: '/reels', changefreq: 'daily', priority: '0.9' },
   { path: '/communities', changefreq: 'daily', priority: '0.8' },
   { path: '/recruiters', changefreq: 'daily', priority: '0.9' },
@@ -172,7 +185,7 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
 /** True when a path should carry noindex. */
 export const isNoindexPath = (pathname: string): boolean => {
   const normalized = (pathname || '').toLowerCase();
-  return NOINDEX_PREFIXES.some((prefix) => {
+  return NOINDEX_PATH_PATTERNS.some((pattern) => pattern.test(normalized)) || NOINDEX_PREFIXES.some((prefix) => {
     if (normalized === prefix) return true;
     const prefixBoundary = prefix.endsWith('/') || prefix.endsWith('-') ? prefix : `${prefix}/`;
     return normalized.startsWith(prefixBoundary);

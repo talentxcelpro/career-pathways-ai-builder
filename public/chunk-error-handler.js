@@ -9,6 +9,16 @@
     reloadAttempted = true;
     
     console.error('Critical loading error detected:', reason);
+
+    try {
+      var lastReload = parseInt(sessionStorage.getItem('t_chunk_reload_ts') || '0', 10);
+      var now = Date.now();
+      if (now - lastReload < 15000) {
+        console.warn('Suppressing reload loop: reloaded less than 15s ago');
+        return;
+      }
+      sessionStorage.setItem('t_chunk_reload_ts', String(now));
+    } catch (e) {}
     
     const cleanup = [];
     
@@ -47,6 +57,12 @@
     });
   }
 
+  // Vite specific preload error listener
+  window.addEventListener('vite:preloadError', function(event) {
+    event.preventDefault();
+    recoverFromError('Vite preload error: ' + (event.payload && event.payload.message ? event.payload.message : 'failed to fetch dynamically imported module'));
+  });
+
   // Handle chunk loading errors globally - ONLY catch actual chunk/module loading failures
   window.addEventListener('unhandledrejection', function(event) {
     const error = event.reason;
@@ -55,7 +71,10 @@
       (error.message && error.message.includes('Loading chunk')) ||
       (error.message && error.message.includes('Loading CSS chunk')) ||
       (error.message && error.message.includes('Failed to fetch dynamically imported module')) ||
-      (error.message && error.message.includes('Importing a module script failed'))
+      (error.message && error.message.includes('Importing a module script failed')) ||
+      (error.message && error.message.includes('Failed to load module script')) ||
+      (error.message && error.message.includes('Strict MIME type checking')) ||
+      (error.message && error.message.includes('MIME type of "text/html"'))
     )) {
       event.preventDefault();
       recoverFromError(error.message || 'Chunk load failure');
@@ -71,6 +90,12 @@
       if (target.src && target.src.includes('/assets/')) {
         recoverFromError('Script error: ' + target.src);
       }
+    } else if (event.message && (
+      event.message.includes('Failed to load module script') ||
+      event.message.includes('Strict MIME type checking') ||
+      event.message.includes('MIME type of "text/html"')
+    )) {
+      recoverFromError(event.message);
     }
   }, true);
   

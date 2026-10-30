@@ -28,7 +28,7 @@ export const useStreaks = () => {
           .eq('user_id', user.id)
           .maybeSingle();
 
-        if (error) {
+        if (error || !data) {
           return {
             current_streak: 1,
             longest_streak: 1,
@@ -38,17 +38,16 @@ export const useStreaks = () => {
           } as StreakData;
         }
 
-        if (!data) {
-          return {
-            current_streak: 1,
-            longest_streak: 1,
-            last_activity_date: new Date().toISOString(),
-            total_days_active: 1,
-            streak_milestones: [3, 7, 30]
-          } as StreakData;
-        }
+        const streakCount = Math.max(1, Number(data.streak_count || 1));
+        const lastDate = data.last_active_date || new Date().toISOString();
 
-        return data as StreakData;
+        return {
+          current_streak: streakCount,
+          longest_streak: streakCount,
+          last_activity_date: lastDate,
+          total_days_active: streakCount,
+          streak_milestones: [3, 7, 30]
+        } as StreakData;
       } catch {
         return {
           current_streak: 1,
@@ -91,20 +90,34 @@ export const useStreaks = () => {
         newStreak = 1;
       }
 
-      const { data, error } = await supabase
-        .from('user_streaks')
-        .update({
-          current_streak: newStreak,
-          longest_streak: Math.max(newStreak, streakData.longest_streak),
-          last_activity_date: new Date().toISOString(),
-          total_days_active: streakData.total_days_active + 1
-        })
-        .eq('user_id', user.id)
-        .select()
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('user_streaks')
+          .update({
+            streak_count: newStreak,
+            last_active_date: new Date().toISOString()
+          })
+          .eq('user_id', user.id)
+          .select('id, user_id, streak_count, last_active_date, created_at')
+          .maybeSingle();
 
-      if (error) throw error;
-      return data as StreakData;
+        if (error) {
+          console.warn('Could not update streak:', error.message);
+          return streakData;
+        }
+
+        const streakCount = Math.max(newStreak, Number(data?.streak_count || newStreak));
+        return {
+          current_streak: streakCount,
+          longest_streak: Math.max(streakCount, streakData.longest_streak),
+          last_activity_date: new Date().toISOString(),
+          total_days_active: streakData.total_days_active + 1,
+          streak_milestones: [3, 7, 30]
+        } as StreakData;
+      } catch (err) {
+        console.warn('Streak update skipped:', err);
+        return streakData;
+      }
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['streaks'] });

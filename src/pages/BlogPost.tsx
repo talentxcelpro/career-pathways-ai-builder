@@ -125,7 +125,7 @@ export const BlogPost = () => {
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-3">Article Not Found</h1>
           <p className="text-sm text-slate-400 mb-8 leading-relaxed">
-            The career guide you are looking for may have been moved or updated. Explore our full library of 26 intelligence reports.
+            The career guide you are looking for may have been moved or updated. Browse all {BLOG_POSTS.length} articles.
           </p>
           <Button asChild className="bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl">
             <Link to="/blog">

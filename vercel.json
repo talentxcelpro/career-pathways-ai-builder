@@ -63,11 +63,11 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+          "value": "public, max-age=0, must-revalidate"
         },
         {
           "key": "CDN-Cache-Control",
-          "value": "max-age=86400, stale-while-revalidate=604800"
+          "value": "max-age=0, must-revalidate"
         }
       ]
     },
@@ -76,11 +76,11 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+          "value": "public, max-age=0, must-revalidate"
         },
         {
           "key": "CDN-Cache-Control",
-          "value": "max-age=86400, stale-while-revalidate=604800"
+          "value": "max-age=0, must-revalidate"
         },
         {
           "key": "Content-Security-Policy",
@@ -461,6 +461,106 @@
           "value": "noindex, nofollow"
         }
       ]
+    },
+    {
+      "source": "/resume/build/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/resume/build",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/resume-builder/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/resume-builder",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/build/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/build",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/resume/portfolio",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/resume/upload",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/upload",
+      "headers": [
+        { "key": "Cache-Control", "value": "private, no-cache, max-age=0, must-revalidate" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
+    },
+    {
+      "source": "/talent",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/talent/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/directory/salaries-by-role",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/salary/:role",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/salary/:role/:location",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/blog/:slug",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/news/:slug",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
     },
     {
       "source": "/resume/edit/:path*",
@@ -956,7 +1056,7 @@
       ]
     },
     {
-      "source": "/mobile-/:path*",
+      "source": "/mobile-:path*",
       "headers": [
         {
           "key": "Cache-Control",
@@ -1045,6 +1145,11 @@
         }
       ],
       "destination": "https://employers.talentxcel.in/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/resources",
+      "destination": "/news",
       "permanent": true
     },
     {
@@ -1540,7 +1645,7 @@
       "destination": "/$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|api/|_next/|static/|public/).*)",
       "destination": "/index.html"
     }
   ]

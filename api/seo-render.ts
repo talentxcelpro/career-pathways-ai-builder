@@ -10,7 +10,8 @@ const PRIVATE_ROUTE_PREFIXES = [
   '/auth', '/admin', '/company-os', '/dashboard', '/settings', '/onboarding', '/my-applications',
   '/jobs/apply', '/jobs/dashboard', '/jobs/my-applications', '/companies/admin', '/companies/settings',
   '/network/messages', '/network/notifications', '/network/settings', '/resume/user', '/resume/private',
-  '/resume/edit', '/resume/my-resumes', '/resume/dashboard', '/profile/edit', '/profile/settings',
+  '/resume/edit', '/resume/build', '/resume-builder', '/resume/builder', '/resume/portfolio', '/resume/upload',
+  '/build', '/upload', '/resume/my-resumes', '/resume/dashboard', '/profile/edit', '/profile/settings',
   '/tools/internal', '/tools/private', '/learning/my-courses', '/learning/my-progress', '/learning/progress',
   '/learning/dashboard', '/colleges/admin', '/colleges/private', '/careermap/private', '/careermap/user',
   '/careerpassport/user', '/careerpassport/private', '/employer/settings', '/employer/dashboard',
@@ -372,25 +373,23 @@ function generateDynamicSeoHtml(cleanPath: string): string {
   } else if (cleanPath === 'salary' || cleanPath === 'salaries' || cleanPath.startsWith('salary/') || cleanPath.startsWith('career-insights/salary/')) {
     if (cleanPath === 'salary' || cleanPath === 'salaries') {
       title = 'Technology Salary Guides | TalentXcel';
-      description = 'Browse salary guides for technology roles and locations on TalentXcel. Review each guide for its available compensation details.';
+      description = 'Explore TalentXcel salary tools and review compensation information provided with current job listings.';
       canonical = 'https://talentxcel.in/salary';
       h1 = 'Technology Salary Guides';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Salary Guides by Role and Location</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Select a role or location to view the available salary guide and its compensation information.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Role and location guides are published only when source-backed compensation data is available. Use the salary tool or review employer-provided details in current job listings.</p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
-            <a href="/career-insights/salary/software-engineer-salary-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer Bangalore</a>
-            <a href="/career-insights/salary/data-scientist-salary-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Scientist Pune</a>
-            <a href="/directory/salaries-by-role" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Salaries by Role Index</a>
-            <a href="/resume/ats-check" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Free ATS Salary Match</a>
+            <a href="/tools/salary-analyzer" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Salary Analyzer</a>
+            <a href="/jobs" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Current Job Listings</a>
           </div>
         </section>
       `;
       jsonLdSchema = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        "name": "Tech Salary Benchmarks & Pay Scales",
+        "name": "TalentXcel Salary Tools and Information",
         "url": canonical
       };
     } else {
@@ -399,27 +398,36 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const parts = cleanSlug.split('-in-');
       const roleName = formatTitle(parts[0] || 'Tech Role');
       const cityName = parts[1] ? formatTitle(parts[1]) : 'Global Hubs';
-      title = `${roleName} Salary Guide in ${cityName} | TalentXcel`;
-      description = `View available salary information for ${roleName} in ${cityName} on TalentXcel.`;
-      canonical = `https://talentxcel.in/career-insights/salary/${slug}`;
+      title = `${roleName} Salary Information in ${cityName} | TalentXcel`;
+      description = `Source-backed salary information for ${roleName} in ${cityName} will be published when available.`;
+      canonical = `https://talentxcel.in/${cleanPath}`;
       h1 = `${roleName} Salary Guide in ${cityName}`;
+      robotsDirective = 'noindex, follow';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} compensation in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Review the available compensation information for this role and location, including any source or context provided with the figures.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">TalentXcel does not currently have a source-backed salary distribution to publish for this role and location. Review current job listings for compensation details supplied by employers.</p>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
             <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Resume Scan &rarr;</a>
           </div>
         </section>
       `;
-      jsonLdSchema = {
-        "@context": "https://schema.org",
-        "@type": "Occupation",
-        "name": roleName,
-        "occupationLocation": { "@type": "City", "name": cityName },
-      };
+      jsonLdSchema = null;
     }
+  } else if (cleanPath === 'talent') {
+    title = 'Talent Directory | TalentXcel';
+    description = 'Search member profiles that are marked public on TalentXcel.';
+    canonical = 'https://talentxcel.in/talent';
+    h1 = 'Public Talent Directory';
+    robotsDirective = 'noindex, follow';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 class="text-xl font-bold text-white">Search Public Member Profiles</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">The directory displays profile information members have marked public. Profile details and availability are supplied by members.</p>
+        <a href="/hire" class="inline-block px-5 py-2.5 bg-blue-600 text-white font-semibold text-xs rounded-xl">Explore employer tools &rarr;</a>
+      </section>
+    `;
   } else if (cleanPath === 'resume' || cleanPath.startsWith('resume/')) {
     if (cleanPath === 'resume' || !cleanPath.startsWith('resume/interview-prep/')) {
       title = 'Free ATS Resume Scanner, AI Resume Builder & Templates 2026 | TalentXcel';

@@ -6,6 +6,7 @@ import { discoveryVitePlugin } from "./src/lib/discovery/discoveryVitePlugin";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: '/',
   server: {
     host: "::",
     port: 8080,
@@ -47,11 +48,17 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // 1. High-volume static education catalog (isolated from core application)
+          // 1. Vite internal helpers, dynamic import preloader, and synthetic modules
+          // MUST ALWAYS be placed into core vendor first to prevent vendor subchunks
+          // (like jspdf-vendor) from stealing __vitePreload.
+          if (id.includes('vite/') || id.includes('commonjsHelpers') || id.startsWith('\0')) {
+            return 'vendor';
+          }
+          // 2. High-volume static education catalog (isolated from core application)
           if (id.includes('indianInstitutionsCatalog') || id.includes('indianEducationService')) {
             return 'indian-education-catalog';
           }
-          // 2. Heavy standalone PDF engines (loaded strictly on-demand for PDF generation)
+          // 3. Heavy standalone PDF engines (loaded strictly on-demand for PDF generation)
           if (id.includes('node_modules/pdfjs-dist')) {
             return 'pdfjs-vendor';
           }
@@ -61,7 +68,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/html2canvas')) {
             return 'html2canvas-vendor';
           }
-          // 3. Standalone heavy compute/rendering engines (loaded only when their specific route/tool is active)
+          // 4. Standalone heavy compute/rendering engines (loaded only when their specific route/tool is active)
           if (id.includes('node_modules/fabric')) {
             return 'fabric-vendor';
           }
@@ -70,10 +77,6 @@ export default defineConfig(({ mode }) => ({
           }
           if (id.includes('node_modules/docx')) {
             return 'docx-vendor';
-          }
-          // 4. Vite internal helpers, dynamic import preloader, and synthetic modules
-          if (id.includes('vite/') || id.includes('commonjsHelpers') || id.startsWith('\0')) {
-            return 'vendor';
           }
           // 5. Keep all React core runtime and vendor libraries in a unified vendor chunk
           // to prevent cross-chunk circular dependencies and uninitialized createContext calls

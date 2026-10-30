@@ -94,6 +94,7 @@ async function prerender() {
       title: string;
       description: string;
       canonical: string;
+      robots?: string;
       h1: string;
       bodyContentHtml: string;
       jsonLd?: object | object[];
@@ -131,6 +132,15 @@ async function prerender() {
       );
     } else {
       pageHtml = pageHtml.replace('</head>', `<link rel="canonical" href="${meta.canonical}" />\n</head>`);
+    }
+
+    if (meta.robots) {
+      const robotsTag = `<meta name="robots" content="${escapeHtml(meta.robots)}" />`;
+      if (/<meta\s+name=["']robots["'][^>]*>/i.test(pageHtml)) {
+        pageHtml = pageHtml.replace(/<meta\s+name=["']robots["'][^>]*>/i, robotsTag);
+      } else {
+        pageHtml = pageHtml.replace('</head>', `${robotsTag}\n</head>`);
+      }
     }
 
     // 4. OpenGraph & Schema
@@ -171,9 +181,8 @@ async function prerender() {
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
             <div>
               <div class="text-sm font-bold text-white uppercase tracking-wider">TalentXcel Specialized Career &amp; Employment Ecosystem</div>
-              <p class="text-slate-400 text-xs mt-0.5">Explore dedicated search universes across jobs, compensation, ATS resume tools, higher education, and verified credentials.</p>
+            <p class="text-slate-400 text-xs mt-0.5">Explore TalentXcel job, salary, resume, education, and career sections.</p>
             </div>
-            <span class="text-blue-400 bg-blue-950/80 border border-blue-800/60 px-2.5 py-1 rounded text-[11px] font-mono">9 Live Subdomains</span>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
             <div>
@@ -186,11 +195,9 @@ async function prerender() {
               </ul>
             </div>
             <div>
-              <a href="https://salary.talentxcel.in" class="font-bold text-white hover:text-blue-400 block mb-2">Salary Intelligence &rarr;</a>
+              <a href="https://salary.talentxcel.in" class="font-bold text-white hover:text-blue-400 block mb-2">Salary Tools &rarr;</a>
               <ul class="space-y-1">
                 <li><a href="https://salary.talentxcel.in/salary" class="hover:text-slate-200">Salary Guides &amp; Curves</a></li>
-                <li><a href="https://salary.talentxcel.in/salary/software-engineer/bangalore" class="hover:text-slate-200">Software Engineer Pay</a></li>
-                <li><a href="https://salary.talentxcel.in/salary/devops-engineer/pune" class="hover:text-slate-200">DevOps Engineer Pay</a></li>
                 <li><a href="https://salary.talentxcel.in/tools/salary-analyzer" class="hover:text-slate-200">Salary Benchmark Tool</a></li>
               </ul>
             </div>
@@ -223,7 +230,7 @@ async function prerender() {
             </div>
           </div>
           <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500">
-            &copy; 2026 TalentXcel Platform. All URLs actively crawled and indexed across Google, Bing, and AI search engines.
+            &copy; 2026 TalentXcel Platform.
           </div>
         </div>
       </footer>`;
@@ -250,11 +257,11 @@ async function prerender() {
         <div class="space-y-8">
           <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-slate-900 border border-blue-800/40 rounded-3xl p-8 text-center space-y-4">
             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
-              Global Network • UAE • Europe • Americas • Asia
+              Profiles • Jobs • Career Tools • Hiring
             </span>
             <h2 class="text-2xl md:text-3xl font-extrabold text-white">Connect. Discover. Grow. Get Hired.</h2>
             <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed">
-              Where professionals build their career identity, discover opportunities, share knowledge through Reels, and get discovered by top hiring teams worldwide.
+              Explore professional profiles, job listings, career resources, and tools for resumes and hiring.
             </p>
             <div class="flex flex-wrap justify-center gap-3 pt-2">
               <a href="/network" class="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg">Join the Network &rarr;</a>
@@ -265,17 +272,17 @@ async function prerender() {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
               <h3 class="text-lg font-bold text-white mb-2">Global Tech & Leadership Jobs</h3>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified career opportunities across UAE, Europe, the Americas, and Asia with transparent compensation.</p>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Browse job listings and review the role and compensation details supplied by employers.</p>
               <a href="/jobs" class="text-blue-400 text-xs font-semibold hover:underline">Explore Jobs &rarr;</a>
             </div>
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h3 class="text-lg font-bold text-white mb-2">Verified Career Passport</h3>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Benchmark your technical capabilities into a verified TalentScore recognized by leading international employers.</p>
+              <h3 class="text-lg font-bold text-white mb-2">Career Passport</h3>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Create a professional profile and record career experience and skills with TalentXcel tools.</p>
               <a href="/careerpassport" class="text-blue-400 text-xs font-semibold hover:underline">Build Career Passport &rarr;</a>
             </div>
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
               <h3 class="text-lg font-bold text-white mb-2">Recruiter OS & Candidate 360</h3>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Search 12,000+ pre-vetted engineers, AI architects, and leaders with forensic capability scoring.</p>
+              <p class="text-slate-300 text-sm leading-relaxed mb-4">Use recruiter tools to explore public member profiles and manage hiring workflows.</p>
               <a href="/hire" class="text-blue-400 text-xs font-semibold hover:underline">Access Recruiter OS &rarr;</a>
             </div>
           </div>
@@ -285,13 +292,13 @@ async function prerender() {
     {
       route: '/career-insights',
       title: 'AI Career Operating System & Career Insights — Global Tech Telemetry | TalentXcel',
-      desc: 'The AI Career Operating System: Benchmark compensation bands, explore 245+ verified industry sectors, tax arbitrage telemetry, and career progression intelligence across US, Dubai, Europe, and India.',
+      desc: 'Explore career resources and tools for comparing roles, planning skills, and navigating career transitions.',
       h1: 'AI Career Operating System & Progression Terminal',
       bodyHtml: `
         <div class="space-y-8">
           <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
             <h2 class="text-xl font-bold text-white mb-2">AI Career Operating System &amp; Industry Telemetry</h2>
-            <p class="text-slate-300 text-sm leading-relaxed mb-4">Empowering modern professionals with real-time compensation intelligence, cross-border tax arbitrage calculators, and industry telemetry across 245+ sectors in the United States, Dubai, Europe, and India.</p>
+            <p class="text-slate-300 text-sm leading-relaxed mb-4">Use TalentXcel career resources to explore roles, skills, and available planning tools.</p>
             <div class="flex flex-wrap gap-2 text-xs">
               <a href="/career-insights?region=us" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">United States Market</a>
               <a href="/career-insights?region=ae" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Dubai &amp; UAE Corridor</a>
@@ -305,12 +312,12 @@ async function prerender() {
     {
       route: '/reels',
       title: 'TalentXcel Reels — Global Tech, AI & Career Stories',
-      desc: 'Watch short-form video stories, system design deep-dives, RAG AI architectures, and salary negotiation strategies from verified tech leaders worldwide across UAE, Europe, Americas, and Asia.',
+      desc: 'Browse short-form videos and career discussions shared on TalentXcel Reels.',
       h1: 'Global Professional Reels & Tech Architecture Stories',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <h2 class="text-xl font-bold text-white mb-3">Short-Form Professional Knowledge & Engineering Breakdowns</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore bite-sized video insights from global tech architects, engineering managers, and recruitment leaders across UAE, Europe, Americas, and Asia.</p>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore videos and discussions shared by members on TalentXcel.</p>
           <div class="flex flex-wrap gap-2 text-xs">
             <a href="/reels?category=ai" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">AI & Machine Learning</a>
             <a href="/reels?category=systemdesign" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">System Design</a>
@@ -323,13 +330,13 @@ async function prerender() {
     {
       route: '/about',
       title: 'About TalentXcel — The Global Professional Talent Network',
-      desc: 'TalentXcel is the Global Professional Talent Network connecting verified tech & leadership talent, recruiters, and companies worldwide across UAE, Europe, the Americas, and Asia.',
+      desc: 'Learn about TalentXcel, a platform for professional profiles, job listings, career resources, and hiring tools.',
       h1: 'About TalentXcel: The Global Professional Talent Network',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
           <h2 class="text-xl font-bold text-white">Connect. Discover. Grow. Get Hired.</h2>
           <p class="text-slate-300 text-sm leading-relaxed">
-            TalentXcel transforms professional discovery from static keyword matching into a living talent graph powered by Career Passports, verified TalentScore capability indexing, and video Reels.
+            TalentXcel provides professional profiles, job listings, career resources, and tools for resumes and hiring.
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 text-xs">
             <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700">
@@ -354,13 +361,13 @@ async function prerender() {
     },
     {
       route: '/jobs',
-      title: 'Global Tech & Executive Jobs — UAE, Europe, Americas, Asia | TalentXcel',
-      desc: 'Explore verified tech, engineering, AI, product, and leadership jobs across UAE & Middle East, Europe, North & South America, and Asia with transparent compensation and direct recruiter discovery.',
-      h1: 'Verified Global Tech & Executive Job Openings',
+      title: 'Job Listings | TalentXcel',
+      desc: 'Browse job listings on TalentXcel and review role details supplied by employers.',
+      h1: 'Job Listings',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <h2 class="text-xl font-bold text-white mb-3">Explore Global Employment Opportunities</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Search thousands of verified jobs across top international tech hubs with transparent compensation and direct recruiter connections.</p>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Search current job listings and review the requirements, location, and compensation information provided by each employer.</p>
           <div class="flex flex-wrap gap-2 text-xs">
             <a href="/jobs?role=software-engineer" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Software Engineer Jobs</a>
             <a href="/jobs?role=data-scientist" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Data Scientist Jobs</a>
@@ -373,14 +380,27 @@ async function prerender() {
       `,
     },
     {
+      route: '/talent',
+      title: 'Talent Directory | TalentXcel',
+      desc: 'Search member profiles that are marked public on TalentXcel.',
+      h1: 'Public Talent Directory',
+      bodyHtml: `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <h2 class="text-xl font-bold text-white mb-3">Search Public Member Profiles</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">The directory displays profile information members have marked public. Profile details and availability are supplied by members.</p>
+          <a href="/hire" class="text-blue-400 text-xs font-semibold hover:underline">Explore employer tools &rarr;</a>
+        </div>
+      `,
+    },
+    {
       route: '/companies',
       title: 'Top Global Tech Employers & Enterprises | TalentXcel Directory',
-      desc: 'Discover verified technology companies, high-growth startups, and global enterprises hiring across UAE, Europe, the Americas, and Asia.',
-      h1: 'Verified Global Companies & Enterprise Employers',
+      desc: 'Browse company profiles and related job listings available on TalentXcel.',
+      h1: 'Companies on TalentXcel',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
           <h2 class="text-xl font-bold text-white mb-3">Global Employers & Hiring Organizations</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Discover verified companies across FinTech, HealthTech, AI/ML, SaaS, and Enterprise IT hiring on TalentXcel worldwide.</p>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Review company information and related job listings available on TalentXcel.</p>
           <a href="/company/talentxcel" class="text-blue-400 text-xs font-semibold hover:underline">TalentXcel Services Entity Profile &rarr;</a>
         </div>
       `,
@@ -557,13 +577,13 @@ async function prerender() {
     },
     {
       route: '/employer',
-      title: 'Employer Hiring Solutions & Talent Acquisition Platform | TalentXcel',
-      desc: 'Hire pre-vetted tech, sales, and management talent with AI-assisted candidate matching, automated screening, and flexible RPO staffing pods.',
-      h1: 'Employer Talent Acquisition & Staffing Solutions',
+      title: 'Employer Hiring Tools | TalentXcel',
+      desc: 'Explore TalentXcel tools for managing job listings and recruiting workflows.',
+      h1: 'Employer Hiring Tools',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">Accelerate Your Engineering & Executive Hiring</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Source high-performing candidates with algorithmic matching and dedicated recruitment specialists.</p>
+          <h2 class="text-xl font-bold text-white mb-3">Manage Hiring on TalentXcel</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore tools for posting roles and managing recruiting workflows.</p>
           <a href="/services/staffing-recruitment" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Explore Staffing Services &rarr;</a>
         </div>
       `,
@@ -588,6 +608,7 @@ async function prerender() {
       title: hub.title,
       description: hub.desc,
       canonical,
+      robots: hub.route === '/talent' ? 'noindex, follow' : undefined,
       h1: hub.h1,
       bodyContentHtml: hub.bodyHtml,
       jsonLd: [webPageSchema, breadcrumbSchema],
@@ -2265,50 +2286,38 @@ async function prerender() {
   // 12. Pre-render Role x City Salary Intelligence Hubs (/salary/:role/:city)
   console.log('Pre-rendering Role x City Salary Hubs...');
   const CORE_SALARY_ROLES = [
-    { slug: 'software-engineer', name: 'Software Engineer', baseLpa: 12.5 },
-    { slug: 'frontend-developer', name: 'Frontend Developer', baseLpa: 10.5 },
-    { slug: 'backend-developer', name: 'Backend Developer', baseLpa: 13.0 },
-    { slug: 'full-stack-developer', name: 'Full Stack Developer', baseLpa: 12.0 },
-    { slug: 'devops-engineer', name: 'DevOps Engineer', baseLpa: 14.5 },
-    { slug: 'data-analyst', name: 'Data Analyst', baseLpa: 7.5 },
-    { slug: 'data-scientist', name: 'Data Scientist', baseLpa: 15.0 },
-    { slug: 'qa-automation-engineer', name: 'QA Automation Engineer', baseLpa: 9.5 }
+    { slug: 'software-engineer', name: 'Software Engineer' },
+    { slug: 'frontend-developer', name: 'Frontend Developer' },
+    { slug: 'backend-developer', name: 'Backend Developer' },
+    { slug: 'full-stack-developer', name: 'Full Stack Developer' },
+    { slug: 'devops-engineer', name: 'DevOps Engineer' },
+    { slug: 'data-analyst', name: 'Data Analyst' },
+    { slug: 'data-scientist', name: 'Data Scientist' },
+    { slug: 'qa-automation-engineer', name: 'QA Automation Engineer' }
   ];
 
   const KEY_HUBS = [
-    { slug: 'bangalore', name: 'Bangalore', mult: 1.15 },
-    { slug: 'noida', name: 'Noida', mult: 1.0 },
-    { slug: 'pune', name: 'Pune', mult: 1.05 },
-    { slug: 'hyderabad', name: 'Hyderabad', mult: 1.08 },
-    { slug: 'indore', name: 'Indore', mult: 0.9 },
-    { slug: 'patna', name: 'Patna', mult: 0.85 },
-    { slug: 'bhopal', name: 'Bhopal', mult: 0.85 },
-    { slug: 'varanasi', name: 'Varanasi', mult: 0.82 }
+    { slug: 'bangalore', name: 'Bangalore' },
+    { slug: 'noida', name: 'Noida' },
+    { slug: 'pune', name: 'Pune' },
+    { slug: 'hyderabad', name: 'Hyderabad' },
+    { slug: 'indore', name: 'Indore' },
+    { slug: 'patna', name: 'Patna' },
+    { slug: 'bhopal', name: 'Bhopal' },
+    { slug: 'varanasi', name: 'Varanasi' }
   ];
 
   for (const role of CORE_SALARY_ROLES) {
     for (const hub of KEY_HUBS) {
       const salCanonical = formatCanonicalUrl(`/salary/${role.slug}/${hub.slug}`);
-      const salTitle = `${role.name} Salary in ${hub.name} (2026 In-Hand Benchmarks) | TalentXcel`;
-      const salDesc = `Discover verified ${role.name} compensation percentiles in ${hub.name}. View entry-level P25, median P50, and senior P90 packages with local hiring demand.`;
-
-      const p50 = (role.baseLpa * hub.mult).toFixed(1);
-      const p25 = (role.baseLpa * hub.mult * 0.75).toFixed(1);
-      const p75 = (role.baseLpa * hub.mult * 1.3).toFixed(1);
-      const p90 = (role.baseLpa * hub.mult * 1.6).toFixed(1);
+      const salTitle = `${role.name} Salary Information for ${hub.name} | TalentXcel`;
+      const salDesc = `Source-backed salary information for ${role.name} in ${hub.name} will be published when available.`;
 
       const salBodyHtml = `
         <div class="space-y-8">
           <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
             <h2 class="text-2xl font-bold text-white">${escapeHtml(role.name)} Compensation in ${escapeHtml(hub.name)}</h2>
-            <p class="text-slate-300 text-sm leading-relaxed">Detailed compensation distribution for ${escapeHtml(role.name)} professionals based on verified 2026 payroll data, offer letters, and recruitment demand in ${escapeHtml(hub.name)}.</p>
-            
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="text-slate-400 block mb-1">P25 (Entry Tier)</span><span class="text-lg font-bold text-white">₹${p25} LPA</span></div>
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="text-slate-400 block mb-1">P50 (Median)</span><span class="text-lg font-bold text-emerald-400">₹${p50} LPA</span></div>
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="text-slate-400 block mb-1">P75 (Senior Tier)</span><span class="text-lg font-bold text-amber-400">₹${p75} LPA</span></div>
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800"><span class="text-slate-400 block mb-1">P90 (Staff / Lead)</span><span class="text-lg font-bold text-purple-400">₹${p90} LPA</span></div>
-            </div>
+            <p class="text-slate-300 text-sm leading-relaxed">TalentXcel does not currently have a source-backed salary distribution to publish for this role and location. Review current job listings for compensation details supplied by employers.</p>
 
             <div class="pt-4 flex flex-wrap gap-3">
               <a href="/jobs/${role.slug}/${hub.slug}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md">Browse ${escapeHtml(role.name)} Jobs in ${escapeHtml(hub.name)} &rarr;</a>
@@ -2331,6 +2340,7 @@ async function prerender() {
         canonical: salCanonical,
         h1: `${role.name} Salary in ${hub.name}`,
         bodyContentHtml: salBodyHtml,
+        robots: 'noindex, follow',
         jsonLd: [salBreadcrumb],
       });
     }
@@ -2341,25 +2351,25 @@ async function prerender() {
   const directoryPages = [
     {
       route: '/directory',
-      title: 'TalentXcel Comprehensive Directory — Colleges, Salaries, Jobs & City Hubs (2026)',
-      desc: 'Master directory for TalentXcel. Explore 10,250 accredited Indian colleges, compensation percentiles for 30+ tech roles, and active job hubs across 50 Tier-2 cities.',
+      title: 'TalentXcel Directory | Colleges, Jobs, Careers and Salary Guides',
+      desc: 'Browse TalentXcel directories for colleges, careers, jobs, and salary information.',
       h1: 'TalentXcel Comprehensive Directory',
       bodyHtml: `
         <div class="space-y-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-4">
               <h2 class="text-xl font-bold text-white">Higher Education &amp; Colleges A-Z</h2>
-              <p class="text-xs text-slate-400">10,250+ accredited Indian colleges, annual fees, and placement records.</p>
+              <p class="text-xs text-slate-400">Browse institution profiles and the information available for each college.</p>
               <a href="/directory/colleges-a-z" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">Colleges A-Z &rarr;</a>
             </div>
             <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-4">
               <h2 class="text-xl font-bold text-white">Salaries by Role &amp; City</h2>
-              <p class="text-xs text-slate-400">Compensation benchmarks across 30 roles and 50 Indian tech hubs.</p>
+              <p class="text-xs text-slate-400">Role and location salary information is published when source-backed data is available.</p>
               <a href="/directory/salaries-by-role" class="inline-block px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Salaries by Role &rarr;</a>
             </div>
             <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-4">
               <h2 class="text-xl font-bold text-white">Jobs by City &amp; Tier-2 Hubs</h2>
-              <p class="text-xs text-slate-400">Verified vacancies across 50 emerging Indian employment destinations.</p>
+              <p class="text-xs text-slate-400">Browse job listings by city and review details supplied by employers.</p>
               <a href="/directory/jobs-by-city" class="inline-block px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold">Jobs by City &rarr;</a>
             </div>
           </div>
@@ -2368,25 +2378,25 @@ async function prerender() {
     },
     {
       route: '/directory/index',
-      title: 'TalentXcel Comprehensive Directory — Colleges, Salaries, Jobs & City Hubs (2026)',
-      desc: 'Master directory for TalentXcel. Explore 10,250 accredited Indian colleges, compensation percentiles for 30+ tech roles, and active job hubs across 50 Tier-2 cities.',
+      title: 'TalentXcel Directory | Colleges, Jobs, Careers and Salary Guides',
+      desc: 'Browse TalentXcel directories for colleges, careers, jobs, and salary information.',
       h1: 'TalentXcel Comprehensive Directory Index',
       bodyHtml: `
         <div class="space-y-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-4">
               <h2 class="text-xl font-bold text-white">Higher Education &amp; Colleges A-Z</h2>
-              <p class="text-xs text-slate-400">10,250+ accredited Indian colleges, annual fees, and placement records.</p>
+              <p class="text-xs text-slate-400">Browse institution profiles and the information available for each college.</p>
               <a href="/directory/colleges-a-z" class="inline-block px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold">Colleges A-Z &rarr;</a>
             </div>
             <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-4">
               <h2 class="text-xl font-bold text-white">Salaries by Role &amp; City</h2>
-              <p class="text-xs text-slate-400">Compensation benchmarks across 30 roles and 50 Indian tech hubs.</p>
+              <p class="text-xs text-slate-400">Role and location salary information is published when source-backed data is available.</p>
               <a href="/directory/salaries-by-role" class="inline-block px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Salaries by Role &rarr;</a>
             </div>
             <div class="p-6 bg-slate-900 border border-slate-800 rounded-3xl space-y-4">
               <h2 class="text-xl font-bold text-white">Jobs by City &amp; Tier-2 Hubs</h2>
-              <p class="text-xs text-slate-400">Verified vacancies across 50 emerging Indian employment destinations.</p>
+              <p class="text-xs text-slate-400">Browse job listings by city and review details supplied by employers.</p>
               <a href="/directory/jobs-by-city" class="inline-block px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold">Jobs by City &rarr;</a>
             </div>
           </div>
@@ -2395,12 +2405,12 @@ async function prerender() {
     },
     {
       route: '/directory/colleges-a-z',
-      title: 'Indian Colleges & Universities Directory A-Z (10,250+ Institutions) | TalentXcel',
-      desc: 'Complete A-Z directory of 10,250+ accredited Indian colleges and universities. Explore fees, NIRF rankings, highest placements, cutoffs, and campus details.',
-      h1: 'Higher Education Directory: 10,250+ Indian Colleges A-Z',
+      title: 'Indian Colleges and Universities Directory A-Z | TalentXcel',
+      desc: 'Browse college and university profiles in the TalentXcel directory.',
+      h1: 'Higher Education Directory A-Z',
       bodyHtml: `
         <div class="space-y-6">
-          <p class="text-sm text-slate-300">Browse accredited universities, national institutes (IITs, NITs, IIMs, AIIMS), and state colleges across all 36 States &amp; Union Territories of India.</p>
+          <p class="text-sm text-slate-300">Browse college and university profiles available in the directory.</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
             ${INDIAN_INSTITUTIONS_CATALOG.slice(0, 48).map(inst => `
               <a href="/colleges/${inst.slug}" class="p-3 bg-slate-900 border border-slate-800 hover:border-blue-500 rounded-xl text-slate-200 block truncate">
@@ -2413,12 +2423,12 @@ async function prerender() {
     },
     {
       route: '/directory/salaries-by-role',
-      title: 'India Tech Salary Directory 2026 — 30 Roles Across 50 Cities | TalentXcel',
-      desc: 'Explore verified tech compensation percentiles (P25, P50, P75, P90) across 30 roles and 50 Indian cities including Bangalore, Pune, Hyderabad, Indore, Patna, and Jaipur.',
-      h1: 'Salary Intelligence Directory: Roles × Indian Cities Matrix',
+      title: 'Salary Guides by Role | TalentXcel',
+      desc: 'Browse TalentXcel salary guides by role. Role and location information is published when source-backed data is available.',
+      h1: 'Salary Guides by Role',
       bodyHtml: `
         <div class="space-y-6">
-          <p class="text-sm text-slate-300">Forensic compensation benchmarks across India's premier tech clusters and expanding Tier-2 hubs.</p>
+          <p class="text-sm text-slate-300">Role and location pages without source-backed salary data are excluded from search.</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
             ${CORE_SALARY_ROLES.map(r => `
               <a href="/salary/${r.slug}" class="p-3 bg-slate-900 border border-slate-800 hover:border-emerald-500 rounded-xl text-emerald-400 block font-semibold">
@@ -2431,12 +2441,12 @@ async function prerender() {
     },
     {
       route: '/directory/jobs-by-city',
-      title: 'India Jobs Directory by City (50+ Tier-1 & Tier-2 Hubs) | TalentXcel',
-      desc: 'Explore active job vacancies, hiring companies, and salary benchmarks across 50 Indian cities including Indore, Bhopal, Patna, Varanasi, Lucknow, and Coimbatore.',
-      h1: 'Indian Employment Hubs: Jobs Across 50 Cities',
+      title: 'Browse Jobs by City | TalentXcel',
+      desc: 'Explore job listings by city and review details supplied by employers.',
+      h1: 'Browse Jobs by City',
       bodyHtml: `
         <div class="space-y-6">
-          <p class="text-sm text-slate-300">Direct gateway to verified employment, local IT parks, manufacturing corridors, and hiring startups across 50 Indian cities.</p>
+          <p class="text-sm text-slate-300">Select a city to review job listings currently available on TalentXcel.</p>
           <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 text-xs">
             ${KEY_HUBS.map(h => `
               <a href="/locations/${h.slug}" class="p-3 bg-slate-900 border border-slate-800 hover:border-purple-500 rounded-xl text-purple-400 block font-semibold">
@@ -2461,6 +2471,7 @@ async function prerender() {
       title: dir.title,
       description: dir.desc,
       canonical: dirCanonical,
+      robots: dir.route === '/directory/salaries-by-role' ? 'noindex, follow' : undefined,
       h1: dir.h1,
       bodyContentHtml: dir.bodyHtml,
       jsonLd: [dirBreadcrumb],

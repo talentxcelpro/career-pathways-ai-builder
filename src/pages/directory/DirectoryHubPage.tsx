@@ -138,17 +138,6 @@ const HIGH_INTENT_JOB_HUBS = [
   { city: 'Bhubaneswar', path: '/locations/bhubaneswar', category: 'Eastern Tech Hub', roles: ['Java Engineer', 'Cloud Developer', 'Procurement'] }
 ];
 
-const POPULAR_SALARY_BENCHMARKS = [
-  { role: 'Software Engineer', path: 'https://salary.talentxcel.in/salary/software-engineer', avg: '₹8.5L' },
-  { role: 'Data Scientist', path: 'https://salary.talentxcel.in/salary/data-scientist', avg: '₹12.0L' },
-  { role: 'DevOps Engineer', path: 'https://salary.talentxcel.in/salary/devops-engineer', avg: '₹11.2L' },
-  { role: 'Frontend Engineer', path: 'https://salary.talentxcel.in/salary/frontend-engineer', avg: '₹7.8L' },
-  { role: 'Backend Engineer', path: 'https://salary.talentxcel.in/salary/backend-engineer', avg: '₹9.4L' },
-  { role: 'Product Manager', path: 'https://salary.talentxcel.in/salary/product-manager', avg: '₹16.5L' },
-  { role: 'AI / ML Engineer', path: 'https://salary.talentxcel.in/salary/ai-ml-engineer', avg: '₹14.0L' },
-  { role: 'Full Stack Developer', path: 'https://salary.talentxcel.in/salary/full-stack-developer', avg: '₹9.0L' }
-];
-
 export const DirectoryHubPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -167,11 +156,11 @@ export const DirectoryHubPage: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>All India Employment, College & Career Directory | TalentXcel Ecosystem</title>
-        <meta name="description" content="Official high-density index of 12,400+ career hubs, verified job centers, 10,250 higher education dossiers, salary guides, and ATS tools across TalentXcel." />
+        <title>College and Job Directories | TalentXcel</title>
+        <meta name="description" content="Browse selected college profiles and job listings by city on TalentXcel." />
         <link rel="canonical" href="https://talentxcel.in/directory" />
-        <meta property="og:title" content="All India Employment, College & Career Directory | TalentXcel" />
-        <meta property="og:description" content="Explore verified jobs, colleges, and salary benchmarks across India." />
+        <meta property="og:title" content="College and Job Directories | TalentXcel" />
+        <meta property="og:description" content="Browse selected college profiles and job listings by city on TalentXcel." />
         <meta property="og:url" content="https://talentxcel.in/directory" />
       </Helmet>
 
@@ -181,19 +170,16 @@ export const DirectoryHubPage: React.FC = () => {
           <div className="container mx-auto max-w-6xl space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="text-xs font-mono font-bold px-3 py-1 rounded-full bg-blue-600/30 text-blue-300 border border-blue-500/40">
-                12,431+ Verified Index Targets &bull; Subdomain Ecosystem
-              </span>
-              <span className="text-xs text-slate-400 font-mono">
-                Crawl Depth: ≤ 2 Clicks from Apex Root
+                College and Job Directories
               </span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
-              TalentXcel National Career &amp; Education Directory
+              Selected Indian College and Job Directories
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base max-w-3xl leading-relaxed">
-              Explore verified job centers, salary benchmarks, and 10,250+ higher education institutions categorized by State, Region, and Specialization.
+              Browse selected college profiles and job listings by city. Job availability and profile information vary by page.
             </p>
 
             {/* Live Filter Bar */}
@@ -211,12 +197,12 @@ export const DirectoryHubPage: React.FC = () => {
         </header>
 
         <main className="container mx-auto max-w-6xl px-4 py-12 space-y-12">
-          {/* Section 1: Verified Regional Job Hubs */}
+          {/* Section 1: Job Listings by City */}
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
                 <Briefcase className="w-6 h-6 text-blue-600" />
-                <h2 className="text-2xl font-black text-foreground">Verified Local Job Hubs &amp; Fresher Openings</h2>
+                <h2 className="text-2xl font-black text-foreground">Browse Jobs by City</h2>
               </div>
               <Link to="/jobs" className="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1">
                 View all jobs &rarr;
@@ -231,20 +217,12 @@ export const DirectoryHubPage: React.FC = () => {
                       <Link to={hub.path} className="text-base font-bold text-foreground hover:text-blue-600 transition-colors">
                         Jobs in {hub.city}
                       </Link>
-                      <span className="text-[10px] font-mono bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 px-2 py-0.5 rounded">
-                        Active
-                      </span>
                     </div>
-                    <span className="text-xs text-muted-foreground block mb-2">{hub.category}</span>
-                    <div className="space-y-1 text-xs text-slate-500">
-                      {hub.roles.map(r => (
-                        <div key={r} className="truncate">• {r} in {hub.city}</div>
-                      ))}
-                    </div>
+                    <span className="text-xs text-muted-foreground block mb-2">Browse listings currently available for this location.</span>
                   </div>
                   <div className="pt-3 mt-3 border-t">
                     <Link to={hub.path} className="text-xs font-bold text-blue-600 hover:underline flex items-center justify-between">
-                      <span>Explore Openings</span>
+                      <span>Browse listings</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
@@ -253,12 +231,12 @@ export const DirectoryHubPage: React.FC = () => {
             </div>
           </section>
 
-          {/* Section 2: 10,250 Higher Education Institutions by State */}
+          {/* Section 2: Selected College Profiles by Region */}
           <section className="space-y-6">
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
                 <GraduationCap className="w-6 h-6 text-emerald-600" />
-                <h2 className="text-2xl font-black text-foreground">10,250+ College Dossiers &amp; Placement Statistics</h2>
+                <h2 className="text-2xl font-black text-foreground">Selected College Profiles by Region</h2>
               </div>
               <a href="https://colleges.talentxcel.in/colleges" className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-1">
                 Browse College Engine &rarr;
@@ -280,7 +258,7 @@ export const DirectoryHubPage: React.FC = () => {
 
                   <div className="space-y-2">
                     <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
-                      Top Verified Institutions:
+                      College profiles:
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       {st.topColleges.map(c => (
@@ -304,78 +282,18 @@ export const DirectoryHubPage: React.FC = () => {
             <div className="flex items-center justify-between border-b pb-3">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-6 h-6 text-indigo-600" />
-                <h2 className="text-2xl font-black text-foreground">2026 Salary &amp; Compensation Benchmarks</h2>
+                <h2 className="text-2xl font-black text-foreground">Salary Tools and Information</h2>
               </div>
               <a href="https://salary.talentxcel.in/salary" className="text-xs font-semibold text-indigo-600 hover:underline flex items-center gap-1">
                 Open Salary Studio &rarr;
               </a>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {POPULAR_SALARY_BENCHMARKS.map(sal => (
-                <a
-                  key={sal.role}
-                  href={sal.path}
-                  className="p-4 rounded-xl border bg-card hover:border-indigo-500/60 transition-all shadow-sm block space-y-1"
-                >
-                  <span className="text-xs text-muted-foreground font-mono">Benchmark</span>
-                  <h4 className="text-sm font-bold text-foreground">{sal.role}</h4>
-                  <div className="text-base font-extrabold text-indigo-600 font-mono">{sal.avg} Avg</div>
-                </a>
-              ))}
-            </div>
-          </section>
-
-          {/* Section 4: Public Open-Data Research Studies & Datasets */}
-          <section className="space-y-6">
-            <div className="flex items-center justify-between border-b pb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-6 h-6 text-amber-500" />
-                <h2 className="text-2xl font-black text-foreground">Open-Data Research Studies &amp; Benchmark Reports</h2>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <a
-                href="/benchmarks/india-tech-salary-report-2026"
-                className="p-6 rounded-2xl border bg-gradient-to-br from-blue-500/5 via-card to-indigo-500/5 hover:border-blue-500/50 transition-all shadow-sm block space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-950/60 px-2.5 py-0.5 rounded-full">
-                    Dataset Search Indexed
-                  </span>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">India Tech Salary Report 2026</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Comprehensive compensation benchmarks across 25+ software engineering, AI, DevOps, and product roles in Bangalore, Delhi NCR, Hyderabad, Pune, and Tier-2 hubs. Includes CSV export and BibTeX citation.
-                </p>
-                <span className="text-xs font-semibold text-blue-600 flex items-center gap-1">
-                  Explore Full Benchmark Study &rarr;
-                </span>
-              </a>
-
-              <a
-                href="/benchmarks/tier-2-city-jobs-index-2026"
-                className="p-6 rounded-2xl border bg-gradient-to-br from-emerald-500/5 via-card to-teal-500/5 hover:border-emerald-500/50 transition-all shadow-sm block space-y-3"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full">
-                    Open Access Research
-                  </span>
-                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-bold text-foreground">Tier-2 City Jobs Growth Index 2026</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  In-depth analysis of IT and corporate decentralization across emerging centers like Indore, Varanasi, Jaipur, Coimbatore, and Kochi. Raw index data and citable schema.
-                </p>
-                <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
-                  Explore Tier-2 Index &rarr;
-                </span>
-              </a>
-            </div>
-          </section>
-        </main>
+            <p className="text-sm text-muted-foreground">Role and location salary distributions are published when source-backed data is available.</p>
+            <a href="https://talentxcel.in/tools/salary-analyzer" className="text-sm font-semibold text-indigo-600 hover:underline">
+              Open the salary analyzer &rarr;
+            </a>
+          </section></main>
 
         {/* Global Crawlable Subdomain Mesh Footer */}
         <SubdomainMeshFooter />

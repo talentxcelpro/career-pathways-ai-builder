@@ -51,240 +51,20 @@ interface GlobalTalentProfile {
   headline: string;
   title?: string;
   location: string;
-  hub: 'dubai' | 'us' | 'europe' | 'india' | 'apac' | 'remote';
-  domain: 'ai' | 'systems' | 'product' | 'design' | 'leadership' | 'security' | 'creators';
-  talent_score: number;
-  connections_count: string;
-  percentile: string;
+  hub: 'dubai' | 'us' | 'europe' | 'india' | 'apac' | 'remote' | 'unknown';
+  domain: 'ai' | 'systems' | 'product' | 'design' | 'leadership' | 'security' | 'creators' | 'unknown';
+  talent_score?: number;
+  connections_count?: string;
+  percentile?: string;
   skills: string[];
-  profile_photo_url: string;
-  availability: 'Open to Roles' | 'Hiring Team' | 'Open to Advisory';
-  is_verified: boolean;
-  activity_snippet: string;
-  activity_type: 'reel' | 'post' | 'hiring' | 'achievement';
+  profile_photo_url?: string;
+  availability?: 'Open to Roles' | 'Hiring Team' | 'Open to Advisory';
+  is_verified?: boolean;
+  activity_snippet?: string;
+  activity_type?: 'reel' | 'post' | 'hiring' | 'achievement';
 }
 
-const DIVERSE_PORTRAITS = [
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1522556189639-b150ed9c4330?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1548142813-c348350df52b?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1534751516642-a171edd29532?w=240&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1528892952291-009c663ce843?w=240&auto=format&fit=crop&q=80'
-];
-
-const GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [
-  {
-    id: 'txc-sarah-chen',
-    full_name: 'Sarah Chen',
-    username: 'sarahchen',
-    headline: 'Staff AI Research Scientist @ Anthropic • Ex-Google DeepMind',
-    title: 'Staff AI Researcher',
-    location: 'San Francisco, USA',
-    hub: 'us',
-    domain: 'ai',
-    talent_score: 96,
-    connections_count: '3.2k',
-    percentile: 'Top 1%',
-    skills: ['PyTorch', 'LLM Architectures', 'Agentic Systems', 'Distributed Training'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Roles',
-    is_verified: true,
-    activity_snippet: 'Shared "Agentic LLM Frameworks" Reel',
-    activity_type: 'reel'
-  },
-  {
-    id: 'txc-tariq-mansoor',
-    full_name: 'Tariq Al-Mansoor',
-    username: 'tariqmansoor',
-    headline: 'VP of Engineering @ PayGulf • Ex-Stripe EMEA',
-    title: 'VP of Engineering',
-    location: 'Dubai, UAE',
-    hub: 'dubai',
-    domain: 'leadership',
-    talent_score: 95,
-    connections_count: '4.6k',
-    percentile: 'Top 1%',
-    skills: ['FinTech Infra', 'Engineering Leadership', 'High-Scale Systems', 'Cross-Border APIs'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&auto=format&fit=crop&q=80',
-    availability: 'Hiring Team',
-    is_verified: true,
-    activity_snippet: 'Hiring Staff Distributed Systems Engineers',
-    activity_type: 'hiring'
-  },
-  {
-    id: 'txc-vikram-malhotra',
-    full_name: 'Vikram Malhotra',
-    username: 'vikramm',
-    headline: 'Principal Cloud & Distributed Systems Architect • Ex-AWS',
-    title: 'Principal Systems Architect',
-    location: 'Bengaluru, India',
-    hub: 'india',
-    domain: 'systems',
-    talent_score: 95,
-    connections_count: '3.8k',
-    percentile: 'Top 2%',
-    skills: ['Kubernetes', 'Go', 'Distributed DBs', 'Kafka at Scale'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&auto=format&fit=crop&q=80',
-    availability: 'Hiring Team',
-    is_verified: true,
-    activity_snippet: 'Published 10M QPS Distributed DB Case Study',
-    activity_type: 'post'
-  },
-  {
-    id: 'txc-elena-rostova',
-    full_name: 'Elena Rostova',
-    username: 'elenarostova',
-    headline: 'Staff Platform Engineer @ DataCore • Rust Core Contributor',
-    title: 'Staff Platform Engineer',
-    location: 'Berlin, Germany',
-    hub: 'europe',
-    domain: 'systems',
-    talent_score: 94,
-    connections_count: '2.4k',
-    percentile: 'Top 2%',
-    skills: ['Rust', 'Linux eBPF', 'Kernel Tuning', 'WebAssembly'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Roles',
-    is_verified: true,
-    activity_snippet: 'Shared Rust High-Throughput Memory Reel',
-    activity_type: 'reel'
-  },
-  {
-    id: 'txc-david-kim',
-    full_name: 'David Kim',
-    username: 'davidkim',
-    headline: 'Head of AI Products @ Hyperscale • Ex-Grab',
-    title: 'Head of AI Products',
-    location: 'Singapore',
-    hub: 'apac',
-    domain: 'product',
-    talent_score: 93,
-    connections_count: '2.9k',
-    percentile: 'Top 3%',
-    skills: ['Product Strategy', 'LLM Workflows', 'Enterprise SaaS', 'Growth OS'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Advisory',
-    is_verified: true,
-    activity_snippet: 'Launched AI Enterprise Workspace v2',
-    activity_type: 'achievement'
-  },
-  {
-    id: 'txc-sofia-rodriguez',
-    full_name: 'Sofia Rodriguez',
-    username: 'sofiarodriguez',
-    headline: 'Design Director @ FintechStudio • Ex-Monzo',
-    title: 'Design Director',
-    location: 'London, UK',
-    hub: 'europe',
-    domain: 'design',
-    talent_score: 92,
-    connections_count: '3.4k',
-    percentile: 'Top 3%',
-    skills: ['Design Systems', 'Design Ops', 'Product Architecture', 'Figma Systems'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Roles',
-    is_verified: true,
-    activity_snippet: 'Released Multi-Platform Design System 3.0',
-    activity_type: 'post'
-  },
-  {
-    id: 'txc-marcus-vance',
-    full_name: 'Marcus Vance',
-    username: 'marcusvance',
-    headline: 'Founding Engineer @ SynapseAI • Ex-Palantir',
-    title: 'Founding Engineer',
-    location: 'New York, USA',
-    hub: 'us',
-    domain: 'ai',
-    talent_score: 94,
-    connections_count: '2.7k',
-    percentile: 'Top 2%',
-    skills: ['Vector DBs', 'Next.js 15', 'Agentic RAG', 'TypeScript'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Roles',
-    is_verified: true,
-    activity_snippet: 'Building Autonomous Multi-Agent DBs',
-    activity_type: 'post'
-  },
-  {
-    id: 'txc-amara-okafor',
-    full_name: 'Amara Okafor',
-    username: 'amaraokafor',
-    headline: 'Principal Security Architect @ CyberShield • Ex-Shopify',
-    title: 'Principal Security Architect',
-    location: 'Toronto, Canada',
-    hub: 'remote',
-    domain: 'security',
-    talent_score: 93,
-    connections_count: '2.1k',
-    percentile: 'Top 2%',
-    skills: ['Zero-Trust', 'AWS Hardening', 'Kubernetes Security', 'IAM Architecture'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Advisory',
-    is_verified: true,
-    activity_snippet: 'Published Zero-Trust Cloud Architecture Guide',
-    activity_type: 'post'
-  },
-  {
-    id: 'txc-aisha-nuaimi',
-    full_name: 'Aisha Al-Nuaimi',
-    username: 'aishanuaimi',
-    headline: 'Director of Product Engineering @ Dubai Tech Oasis',
-    title: 'Director of Engineering',
-    location: 'Abu Dhabi, UAE',
-    hub: 'dubai',
-    domain: 'leadership',
-    talent_score: 95,
-    connections_count: '3.7k',
-    percentile: 'Top 1%',
-    skills: ['Engineering Strategy', 'FinTech APIs', 'Enterprise Scale', 'Micro-Frontends'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=240&auto=format&fit=crop&q=80',
-    availability: 'Hiring Team',
-    is_verified: true,
-    activity_snippet: 'Keynote Speaker at MENA Cloud Summit',
-    activity_type: 'achievement'
-  },
-  {
-    id: 'txc-lucas-silva',
-    full_name: 'Lucas Silva',
-    username: 'lucassilva',
-    headline: 'Staff DevOps & SRE Engineer • Kubernetes Evangelist',
-    title: 'Staff DevOps Engineer',
-    location: 'São Paulo, Brazil',
-    hub: 'remote',
-    domain: 'security',
-    talent_score: 92,
-    connections_count: '2.3k',
-    percentile: 'Top 3%',
-    skills: ['Terraform', 'Prometheus', 'CI/CD Pipelines', 'Chaos Engineering'],
-    profile_photo_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240&auto=format&fit=crop&q=80',
-    availability: 'Open to Roles',
-    is_verified: true,
-    activity_snippet: 'Shared Multi-Region Failover Architecture',
-    activity_type: 'post'
-  }
-];
-
-const GLOBAL_HUBS = [
+// Seed identities and performance claims are not presented as member data.\r\nconst GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [];\r\n\r\nconst GLOBAL_HUBS = [
   { id: 'all', label: 'All Worldwide', icon: '🌍' },
   { id: 'dubai', label: 'Dubai & MENA', icon: '🇦🇪' },
   { id: 'us', label: 'Silicon Valley & US', icon: '🇺🇸' },
@@ -339,13 +119,14 @@ const People: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  // Supabase real profiles query: fetches all 530+ real profiles, ordered newest first
+  // Fetch public profiles in newest-first order.
   const { data: dbProfiles } = useQuery({
     queryKey: ['global-talent-profiles'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, created_at')
+        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, profile_visibility, verification_status, created_at')
+        .eq('profile_visibility', 'public')
         .not('full_name', 'is', null)
         .neq('full_name', '')
         .order('created_at', { ascending: false })
@@ -382,37 +163,16 @@ const People: React.FC = () => {
     };
   }, [queryClient]);
 
-  // Deterministic profile normalizer to guarantee every profile looks world-class
+  // Render only profile details that members supplied and explicitly made public.
   const enrichedProfiles = useMemo(() => {
-    const mappedDbProfiles: GlobalTalentProfile[] = (dbProfiles || []).map((db, idx) => {
-      const name = db.full_name || 'Global Professional';
-      const defaultRoles = [
-        'Project Manager – Change Management',
-        'Senior Product Manager • FinTech Platforms',
-        'Lead AI Engineer • Agentic Architectures',
-        'Staff Systems & Distributed Cloud Architect',
-        'Director of Engineering • Enterprise Platforms',
-        'Operations & Strategic Transformation Lead',
-        'Staff DevOps & Site Reliability Engineer',
-        'Head of Growth & Product Analytics',
-        'Principal Security & Zero-Trust Architect',
-        'Global Talent & People Operations Lead'
-      ];
-      const defaultLocations = [
-        'Dubai, UAE',
-        'London, UK',
-        'Bengaluru, India',
-        'San Francisco, USA',
-        'Singapore',
-        'Berlin, Germany',
-        'Toronto, Canada',
-        'Global Remote'
-      ];
-
-      const cleanHeadline = db.headline || db.title || defaultRoles[idx % defaultRoles.length];
-      const loc = db.location || defaultLocations[idx % defaultLocations.length];
+    const mappedDbProfiles: GlobalTalentProfile[] = (dbProfiles || [])
+      .filter((db) => db.profile_visibility === 'public' && Boolean(db.full_name) && Boolean(db.headline || db.title))
+      .map((db) => {
+      const name = db.full_name as string;
+      const cleanHeadline = db.headline || db.title;
+      const loc = db.location || '';
       
-      let hub: GlobalTalentProfile['hub'] = 'remote';
+      let hub: GlobalTalentProfile['hub'] = 'unknown';
       const lowerLoc = loc.toLowerCase();
       if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha')) hub = 'dubai';
       else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco')) hub = 'us';
@@ -420,7 +180,7 @@ const People: React.FC = () => {
       else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi')) hub = 'india';
       else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul')) hub = 'apac';
 
-      let domain: GlobalTalentProfile['domain'] = 'systems';
+      let domain: GlobalTalentProfile['domain'] = 'unknown';
       const lowerHead = cleanHeadline.toLowerCase();
       if (lowerHead.includes('ai') || lowerHead.includes('ml') || lowerHead.includes('data')) domain = 'ai';
       else if (lowerHead.includes('product') || lowerHead.includes('pm')) domain = 'product';
@@ -428,12 +188,11 @@ const People: React.FC = () => {
       else if (lowerHead.includes('vp') || lowerHead.includes('director') || lowerHead.includes('head') || lowerHead.includes('lead') || lowerHead.includes('manager')) domain = 'leadership';
       else if (lowerHead.includes('security') || lowerHead.includes('devops') || lowerHead.includes('cloud')) domain = 'security';
 
-      const photo = db.profile_photo_url || db.profile_picture_url || 
-        DIVERSE_PORTRAITS[idx % DIVERSE_PORTRAITS.length];
+      const photo = db.profile_photo_url || db.profile_picture_url || undefined;
 
       const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
         ? db.skills 
-        : ['Distributed Systems', 'Strategic Planning', 'Cloud Architecture', 'Team Leadership'];
+        : [];
 
       return {
         id: db.id,
@@ -444,32 +203,18 @@ const People: React.FC = () => {
         location: loc,
         hub,
         domain,
-        talent_score: 91 + (idx % 7),
-        connections_count: `${((idx * 400 + 1200) / 1000).toFixed(1)}k`,
-        percentile: `Top ${Math.max(1, 5 - (idx % 4))}%`,
         skills: rawSkills.slice(0, 4),
         profile_photo_url: photo,
-        availability: idx % 3 === 0 ? 'Hiring Team' : idx % 3 === 1 ? 'Open to Advisory' : 'Open to Roles',
-        is_verified: true,
-        activity_snippet: idx % 2 === 0 ? 'Shared System Design Architecture Reel' : 'Published Engineering Deep Dive',
-        activity_type: idx % 2 === 0 ? 'reel' : 'post'
+        is_verified: db.verification_status === 'verified',
       };
     });
 
-    // Prioritize all real registered DB profiles first, followed by global spotlight leaders
-    const combined: GlobalTalentProfile[] = [...mappedDbProfiles];
-    GLOBAL_SPOTLIGHT_LEADERS.forEach(leader => {
-      if (!combined.some(existing => existing.id === leader.id || existing.full_name.toLowerCase() === leader.full_name.toLowerCase())) {
-        combined.push(leader);
-      }
-    });
-
-    return combined;
+    return mappedDbProfiles;
   }, [dbProfiles]);
 
-  // Spotlight story circles: Puts recently joined real members first, updated in real time as anyone joins
+  // Show member activity only when an activity record is present.
   const spotlightLeaders = useMemo(() => {
-    const realRecent = enrichedProfiles.filter(p => !p.id.startsWith('txc-')).slice(0, 16);
+    const realRecent = enrichedProfiles.filter(p => p.activity_snippet && p.activity_type).slice(0, 16);
     const globalCurated = GLOBAL_SPOTLIGHT_LEADERS.slice(0, 6);
     return [...realRecent, ...globalCurated];
   }, [enrichedProfiles]);
@@ -494,7 +239,7 @@ const People: React.FC = () => {
     });
   }, [enrichedProfiles, selectedHub, selectedDomain, searchTerm]);
 
-  // Paginated profiles for lightning fast UI rendering with 530+ members
+  // Paginate the currently returned public profiles.
   const [visibleCount, setVisibleCount] = useState(24);
 
   useEffect(() => {
@@ -565,7 +310,9 @@ const People: React.FC = () => {
       try {
         await navigator.share({
           title: `${person.full_name} on TalentXcel`,
-          text: `Check out ${person.full_name}'s Career Passport on TalentXcel (TalentScore: ${person.talent_score})`,
+          text: person.talent_score
+            ? `Check out ${person.full_name}'s Career Passport on TalentXcel (TalentScore: ${person.talent_score})`
+            : `View ${person.full_name}'s public profile on TalentXcel`,
           url: profileUrl
         });
         return;
@@ -598,9 +345,9 @@ const People: React.FC = () => {
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span>The Global Professional Talent Network</span>
                 <span className="text-white/30">•</span>
-                <span className="text-emerald-300 font-bold">{enrichedProfiles.length}+ Verified Real Profiles</span>
+                <span className="text-emerald-300 font-bold">{enrichedProfiles.length} Public Profiles</span>
                 <span className="text-white/30">•</span>
-                <span className="text-blue-200">Live Dynamic Feed</span>
+                <span className="text-blue-200">Member directory</span>
               </div>
 
               <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
@@ -608,7 +355,7 @@ const People: React.FC = () => {
               </h1>
 
               <p className="text-slate-300 text-xs sm:text-sm leading-normal line-clamp-2">
-                Connect with verified engineers, leaders, and creators across global hubs. Explore technical reels, verified Career Passports, and unlock direct recruiter discovery worldwide.
+                Search public member profiles by role, skills, and location. Profile details are supplied by members and may change.
               </p>
             </div>
 
@@ -616,11 +363,11 @@ const People: React.FC = () => {
             <div className="flex md:flex-col lg:flex-row flex-wrap items-start md:items-end lg:items-center gap-2.5 text-xs text-slate-300 font-medium shrink-0 pt-1 md:pt-0">
               <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
                 <Users className="w-3.5 h-3.5 text-blue-400" />
-                <span className="text-[11px] font-semibold text-white">{enrichedProfiles.length}+ Active Members</span>
+                <span className="text-[11px] font-semibold text-white">{enrichedProfiles.length} Public Profiles</span>
               </div>
               <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-[11px]">Verified TalentScore</span>
+                <span className="text-[11px]">Member profile search</span>
               </div>
               <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
                 <Globe2 className="w-3.5 h-3.5 text-blue-400" />
@@ -628,25 +375,25 @@ const People: React.FC = () => {
               </div>
               <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
                 <Briefcase className="w-3.5 h-3.5 text-purple-400" />
-                <span className="text-[11px]">850+ Hiring Teams</span>
+                <span className="text-[11px]">Employer hiring tools</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Global Talent Spotlight (Live Activity Carousel) ───────── */}
-        <div className="space-y-3">
+        {/* ── Public Member Activity ─────────────────────────────────── */}
+        {spotlightLeaders.length > 0 && <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-500" />
               <h2 className="text-sm font-bold tracking-wide uppercase text-slate-700 dark:text-slate-300">
-                Global Talent Spotlight & Live Activity
+                Public Member Activity
               </h2>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
               <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Live Dynamic Network • Real Members First
+                Member activity appears when available
               </span>
             </div>
           </div>
@@ -695,7 +442,7 @@ const People: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
+        </div>}
 
         {/* ── Global Search & Multi-Filter Bar ──────────────────────── */}
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4">
@@ -797,7 +544,7 @@ const People: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Search className="w-3.5 h-3.5" />
                 <span>
-                  Showing {filteredProfiles.length} verified results for <strong>"{searchTerm}"</strong>
+                  Showing {filteredProfiles.length} public profile results for <strong>"{searchTerm}"</strong>
                 </span>
                 {parsedQuery?.location && (
                   <span className="bg-blue-100 dark:bg-blue-900 px-2 py-0.5 rounded text-[11px]">
@@ -826,11 +573,11 @@ const People: React.FC = () => {
               <TabsList className="w-full grid grid-cols-4 h-12 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800">
                 <TabsTrigger value="verified" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
                   <ShieldCheck className="w-4 h-4 mr-1.5 text-blue-500" />
-                  Verified Talent
+                  Member Profiles
                 </TabsTrigger>
                 <TabsTrigger value="trending" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
                   <TrendingUp className="w-4 h-4 mr-1.5 text-emerald-500" />
-                  Trending
+                  Recently Joined
                 </TabsTrigger>
                 <TabsTrigger value="creators" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
                   <Play className="w-4 h-4 mr-1.5 text-purple-500 fill-purple-500" />
@@ -857,14 +604,14 @@ const People: React.FC = () => {
                         <div>
                           {/* Card Sleek Mesh Header Banner */}
                           <div className="h-16 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 relative p-3 flex items-start justify-between">
-                            {/* TalentScore Badge */}
-                            <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-bold shadow">
+                            {/* Show a score badge only when a score is available. */}
+                            {person.talent_score != null && <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-bold shadow">
                               <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
                               <span>{person.talent_score} TalentScore</span>
-                            </div>
+                            </div>}
 
                             {/* Availability Pill */}
-                            <Badge
+                            {person.availability && <Badge
                               variant="outline"
                               className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
                                 person.availability === 'Hiring Team'
@@ -875,7 +622,7 @@ const People: React.FC = () => {
                               }`}
                             >
                               {person.availability}
-                            </Badge>
+                            </Badge>}
                           </div>
 
                           {/* Profile Body */}
@@ -926,19 +673,17 @@ const People: React.FC = () => {
                                 {person.headline}
                               </p>
 
-                              <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 pt-1">
+                              {person.location && <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 pt-1">
                                 <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
                                 <span className="truncate">{person.location}</span>
-                              </div>
+                              </div>}
                             </div>
 
                             {/* Social Proof & Metrics */}
-                            <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-3">
-                              <span>👥 {person.connections_count} Network</span>
-                              <span className="text-emerald-600 dark:text-emerald-400 font-bold">
-                                ⭐ {person.percentile}
-                              </span>
-                            </div>
+                            {(person.connections_count || person.percentile) && <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-3">
+                              {person.connections_count && <span>👥 {person.connections_count} Network</span>}
+                              {person.percentile && <span className="text-emerald-600 dark:text-emerald-400 font-bold">⭐ {person.percentile}</span>}
+                            </div>}
 
                             {/* Skills Pills */}
                             <div className="flex flex-wrap gap-1.5 mb-4">
@@ -1025,7 +770,7 @@ const People: React.FC = () => {
                   })}
                 </div>
 
-                {/* Load More Button for Scalable 530+ Directory Browsing */}
+                {/* Load more results when additional public profiles match. */}
                 {visibleCount < filteredProfiles.length && (
                   <div className="pt-6 pb-2 flex flex-col items-center justify-center gap-2">
                     <Button
@@ -1037,7 +782,7 @@ const People: React.FC = () => {
                       <span>Load More Professionals ({filteredProfiles.length - visibleCount} remaining)</span>
                     </Button>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Showing {Math.min(visibleCount, filteredProfiles.length)} of {filteredProfiles.length} verified real members
+                      Showing {Math.min(visibleCount, filteredProfiles.length)} of {filteredProfiles.length} public profiles
                     </p>
                   </div>
                 )}
@@ -1046,7 +791,7 @@ const People: React.FC = () => {
               {/* Trending Tab */}
               <TabsContent value="trending" className="mt-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {enrichedProfiles.slice(0, 6).map((person, idx) => (
+                  {enrichedProfiles.slice(0, 6).map((person) => (
                     <Card
                       key={person.id}
                       onClick={() => handleProfileView(person)}
@@ -1058,19 +803,12 @@ const People: React.FC = () => {
                             <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
                             <AvatarFallback>{generateInitials(person.full_name)}</AvatarFallback>
                           </Avatar>
-                          <div className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-[10px] flex items-center justify-center shadow">
-                            #{idx + 1}
-                          </div>
                         </div>
                         <div>
                           <div className="flex items-center gap-1">
                             <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">{person.full_name}</h4>
-                            <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
                           </div>
                           <p className="text-xs text-slate-500 truncate max-w-xs">{person.headline}</p>
-                          <p className="text-[11px] text-emerald-600 font-semibold mt-0.5">
-                            +{18 - idx * 2}% profile visits this week
-                          </p>
                         </div>
                       </div>
 
@@ -1112,7 +850,7 @@ const People: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {enrichedProfiles.filter(p => p.activity_type === 'reel' || p.domain === 'ai' || p.domain === 'systems').map((person) => (
+                  {enrichedProfiles.filter(p => p.activity_type === 'reel').map((person) => (
                     <Card
                       key={person.id}
                       onClick={() => navigate(`/reels`)}
@@ -1138,10 +876,10 @@ const People: React.FC = () => {
                             <p className="text-[11px] text-slate-500 truncate max-w-[140px]">{person.location}</p>
                           </div>
                         </div>
-                        <div className="text-right">
+                        {person.talent_score != null && <div className="text-right">
                           <span className="text-xs font-bold text-amber-500">⚡ {person.talent_score}</span>
                           <p className="text-[10px] text-slate-400">TalentScore</p>
-                        </div>
+                        </div>}
                       </div>
                     </Card>
                   ))}
@@ -1152,12 +890,12 @@ const People: React.FC = () => {
               <TabsContent value="hubs" className="mt-6 space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {[
-                    { hub: 'Dubai & MENA', flag: '🇦🇪', desc: 'FinTech, CloudScale & Enterprise AI', count: '1.8k+ Leaders', id: 'dubai' },
-                    { hub: 'Silicon Valley & US', flag: '🇺🇸', desc: 'GenAI, Autonomous Agents & Infra', count: '4.2k+ Leaders', id: 'us' },
-                    { hub: 'London & Europe', flag: '🇬🇧', desc: 'Open Source, Rust & Systems', count: '2.9k+ Leaders', id: 'europe' },
-                    { hub: 'Bengaluru & India', flag: '🇮🇳', desc: 'Cloud Scale, High-QPS & DeepTech', count: '3.6k+ Leaders', id: 'india' },
-                    { hub: 'Singapore & APAC', flag: '🇸🇬', desc: 'Product Strategy & Cross-Border SaaS', count: '1.4k+ Leaders', id: 'apac' },
-                    { hub: 'Global Remote', flag: '🌐', desc: 'Distributed Systems & Founders Worldwide', count: '5.1k+ Leaders', id: 'remote' }
+                    { hub: 'Dubai & MENA', flag: '🇦🇪', desc: 'Browse public profiles in this region', id: 'dubai' },
+                    { hub: 'Silicon Valley & US', flag: '🇺🇸', desc: 'Browse public profiles in this region', id: 'us' },
+                    { hub: 'London & Europe', flag: '🇬🇧', desc: 'Browse public profiles in this region', id: 'europe' },
+                    { hub: 'Bengaluru & India', flag: '🇮🇳', desc: 'Browse public profiles in this region', id: 'india' },
+                    { hub: 'Singapore & APAC', flag: '🇸🇬', desc: 'Browse public profiles in this region', id: 'apac' },
+                    { hub: 'Global Remote', flag: '🌐', desc: 'Browse public profiles in this region', id: 'remote' }
                   ].map((item, idx) => (
                     <Card
                       key={idx}
@@ -1173,7 +911,7 @@ const People: React.FC = () => {
                       </h4>
                       <p className="text-xs text-slate-500 mt-1 mb-3">{item.desc}</p>
                       <div className="flex items-center justify-between text-xs font-semibold text-blue-600">
-                        <span>{item.count}</span>
+                        <span>Explore profiles</span>
                         <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </Card>
@@ -1186,8 +924,8 @@ const People: React.FC = () => {
           {/* Right Sidebar (1 Col) ─────────────────────────────────── */}
           <div className="space-y-6">
 
-            {/* Weekly Top Talent Leaderboard */}
-            <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
+            {/* Development-only sample leaderboard; production has no seeded profiles. */}
+            {GLOBAL_SPOTLIGHT_LEADERS.length > 0 && <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
               <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Award className="w-4 h-4 text-amber-500" />
@@ -1238,7 +976,7 @@ const People: React.FC = () => {
                   </div>
                 ))}
               </div>
-            </Card>
+            </Card>}
 
             {/* Recruiter OS Promo Widget */}
             <Card className="rounded-2xl border-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white p-5 shadow-xl relative overflow-hidden">
@@ -1251,11 +989,11 @@ const People: React.FC = () => {
                 </div>
 
                 <h3 className="font-extrabold text-base leading-tight text-white">
-                  Hiring Top 5% Global Engineers?
+                  Looking for candidates?
                 </h3>
 
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  Search 14,800+ profiles with verified TalentScores, AI technical assessments, and 1-click candidate shortlists.
+                  Explore public member profiles and use TalentXcel recruiter tools to manage hiring workflows.
                 </p>
 
                 <Button
@@ -1275,16 +1013,16 @@ const People: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100">
-                    Get Verified by TalentScore
+                    Build a Career Passport
                   </h4>
                   <p className="text-[11px] text-slate-500">
-                    Unlock top-tier recruiter visibility
+                    Add career information to your profile
                   </p>
                 </div>
               </div>
 
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Build your Career Passport to rank in the top global percentile and attract high-impact opportunities.
+                Use the Career Passport to organize career details and share them with recruiters.
               </p>
 
               <Button
@@ -1307,14 +1045,14 @@ const People: React.FC = () => {
 
               <div className="space-y-2 text-xs">
                 {[
-                  { skill: 'Agentic AI & LLMs', trend: '+54%', color: 'text-purple-600' },
-                  { skill: 'Distributed DBs & Go', trend: '+38%', color: 'text-blue-600' },
-                  { skill: 'Kubernetes & eBPF', trend: '+31%', color: 'text-emerald-600' },
-                  { skill: 'FinTech Platform Eng', trend: '+28%', color: 'text-amber-600' }
+                  { skill: 'Artificial intelligence', color: 'text-purple-600' },
+                  { skill: 'Software engineering', color: 'text-blue-600' },
+                  { skill: 'Cloud and security', color: 'text-emerald-600' },
+                  { skill: 'Product and design', color: 'text-amber-600' }
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800 last:border-0">
                     <span className="font-medium text-slate-700 dark:text-slate-300">{item.skill}</span>
-                    <span className={`font-bold ${item.color}`}>{item.trend}</span>
+                    <span className={`font-bold ${item.color}`}>Browse</span>
                   </div>
                 ))}
               </div>

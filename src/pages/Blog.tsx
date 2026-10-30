@@ -292,7 +292,7 @@ const Blog = () => {
                 <BookOpen className="w-12 h-12 text-slate-600 mx-auto mb-4" />
                 <h3 className="text-lg font-bold text-white">No articles matched your criteria</h3>
                 <p className="text-sm text-slate-400 mt-1 max-w-md mx-auto">
-                  Try clearing your search or switching categories to discover our full library of 26 career reports.
+                  Try clearing your search or switching categories to browse all {BLOG_POSTS.length} articles.
                 </p>
                 <Button 
                   onClick={() => { setSelectedCategory('All'); setSelectedTag(null); setSearchTerm(''); }}
@@ -445,9 +445,9 @@ const Blog = () => {
 
             {/* Newsletter / RSS Info */}
             <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400">
-              <div className="font-semibold text-white text-sm mb-1">Weekly Intelligence Dispatch</div>
+              <div className="font-semibold text-white text-sm mb-1">Career Articles</div>
               <p className="leading-relaxed mb-3">
-                Updated weekly with verified hiring trends, labor economics, and engineering benchmarks.
+                Browse articles about job search, resumes, interviews, skills, and careers.
               </p>
               <div className="text-[11px] text-slate-500">
                 Primary Publisher: <span className="text-slate-400">TalentXcel Services Private Limited</span>
