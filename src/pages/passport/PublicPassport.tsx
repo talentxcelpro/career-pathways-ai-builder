@@ -6,6 +6,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageShell } from "@/components/layout/PageShell";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,7 +45,9 @@ import {
   MessageCircle,
   Building2,
   Zap,
-  FolderGit2
+  FolderGit2,
+  Code,
+  Copy
 } from "lucide-react";
 import { computeTrustScore } from "./lib/trustScore";
 
@@ -68,6 +71,8 @@ const PublicPassport: React.FC = () => {
   const { identifier } = useParams<{ identifier: string }>();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
+  const [showEmbedModal, setShowEmbedModal] = useState(false);
+  const [badgeCopiedFormat, setBadgeCopiedFormat] = useState<'markdown' | 'html' | null>(null);
   const [activeTab, setActiveTab] = useState<"about" | "experience" | "services" | "projects" | "achievements" | "credentials" | "reviews">("about");
 
   const { data, isLoading } = useQuery({
@@ -140,7 +145,82 @@ const PublicPassport: React.FC = () => {
           <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
           <p className="text-muted-foreground font-medium text-sm">Loading Career Passport...</p>
         </div>
-      </PageShell>
+  
+      {/* ============================================================================ */}
+      {/* EMBEDDABLE BADGE & BACKLINK MODAL */}
+      {/* ============================================================================ */}
+      <Dialog open={showEmbedModal} onOpenChange={setShowEmbedModal}>
+        <DialogContent className="sm:max-w-md bg-slate-950 border border-slate-800 text-white p-6 rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold text-white flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-400" />
+              Embed Verified Career Badge
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Add your official verified TalentXcel credential badge to your GitHub README, portfolio, or blog.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Live Preview */}
+          <div className="p-4 rounded-xl bg-black/60 border border-slate-800 flex flex-col items-center justify-center gap-2">
+            <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Live Vector Badge Preview</span>
+            <img 
+              src={`https://talentxcel.in/api/badge?type=passport&user=${encodeURIComponent(username)}&score=88&grade=Top+5%25`} 
+              alt="TalentXcel Verified Badge" 
+              className="h-7 w-auto shadow-md"
+            />
+          </div>
+
+          <div className="space-y-3 pt-2">
+            {/* Markdown for GitHub README */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+                <span>GitHub Profile / README (Markdown)</span>
+                <button
+                  onClick={() => {
+                    const md = `[![TalentXcel Verified Passport](https://talentxcel.in/api/badge?type=passport&user=${encodeURIComponent(username)}&score=88&grade=Top+5%25)](${publicUrl})`;
+                    navigator.clipboard.writeText(md);
+                    setBadgeCopiedFormat('markdown');
+                    toast.success('Markdown badge copied for GitHub!');
+                    setTimeout(() => setBadgeCopiedFormat(null), 2000);
+                  }}
+                  className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                >
+                  {badgeCopiedFormat === 'markdown' ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                  {badgeCopiedFormat === 'markdown' ? 'Copied!' : 'Copy Markdown'}
+                </button>
+              </div>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 font-mono text-[11px] text-slate-300 select-all overflow-x-auto">
+                {`[![TalentXcel Verified Passport](https://talentxcel.in/api/badge?type=passport&user=${encodeURIComponent(username)}&score=88&grade=Top+5%25)](${publicUrl})`}
+              </div>
+            </div>
+
+            {/* HTML for Web Portfolios */}
+            <div className="space-y-1">
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+                <span>Personal Website / Blog (HTML)</span>
+                <button
+                  onClick={() => {
+                    const html = `<a href="${publicUrl}" target="_blank" rel="noopener noreferrer"><img src="https://talentxcel.in/api/badge?type=passport&user=${encodeURIComponent(username)}&score=88&grade=Top+5%25" alt="TalentXcel Verified Passport" /></a>`;
+                    navigator.clipboard.writeText(html);
+                    setBadgeCopiedFormat('html');
+                    toast.success('HTML badge embed copied!');
+                    setTimeout(() => setBadgeCopiedFormat(null), 2000);
+                  }}
+                  className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                >
+                  {badgeCopiedFormat === 'html' ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3" />}
+                  {badgeCopiedFormat === 'html' ? 'Copied!' : 'Copy HTML'}
+                </button>
+              </div>
+              <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800 font-mono text-[11px] text-slate-300 select-all overflow-x-auto">
+                {`<a href="${publicUrl}" target="_blank" rel="noopener noreferrer"><img src="https://talentxcel.in/api/badge?type=passport&user=${encodeURIComponent(username)}&score=88&grade=Top+5%25" alt="TalentXcel Verified Passport" /></a>`}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </PageShell>
     );
   }
 

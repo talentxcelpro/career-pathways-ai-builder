@@ -1782,6 +1782,10 @@
       "destination": "/api/seo/:path*"
     },
     {
+      "source": "/api/badge",
+      "destination": "/api/badge"
+    },
+    {
       "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap|sitemaps).*)",
       "has": [
         {
