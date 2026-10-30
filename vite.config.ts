@@ -91,9 +91,6 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/@aws-sdk')) {
             return 'aws-vendor';
           }
-          if (id.includes('node_modules/jszip')) {
-            return 'jszip-vendor';
-          }
           if (id.includes('node_modules/@dnd-kit') || id.includes('node_modules/@hello-pangea')) {
             return 'dnd-vendor';
           }

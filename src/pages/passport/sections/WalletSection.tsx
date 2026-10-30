@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import JSZip from "jszip";
 import { supabase } from "@/integrations/supabase/client";
 import { useOptimizedAuth } from "@/contexts/OptimizedAuthContext";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -179,6 +178,7 @@ const WalletSection: React.FC = () => {
     }
     setDownloading(true);
     try {
+      const JSZip = (await import("jszip")).default;
       const zip = new JSZip();
       const folder = zip.folder("proofs")!;
       const index: any[] = [];
