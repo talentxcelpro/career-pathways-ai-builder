@@ -137,42 +137,13 @@ const NewsPage: React.FC = () => {
       day: 'numeric'
     }) : '';
 
-    const newsArticleSchema = {
-      "@context": "https://schema.org",
-      "@type": "NewsArticle",
-      "headline": article.title,
-      "description": article.summary,
-      "image": [
-        `https://talentxcel.in${article.imageUrl || '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png'}`
-      ],
-      "datePublished": article.publishedAt,
-      "dateModified": article.updatedAt || article.publishedAt,
-      "author": {
-        "@type": "Person",
-        "name": article.author?.name || 'TalentXcel Editorial Desk',
-        "jobTitle": article.author?.role || 'Platform Intelligence'
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "TalentXcel",
-        "legalName": "TalentXcel Services Pvt Ltd",
-        "url": "https://talentxcel.in",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://talentxcel.in/talentxcel-official-logo.png"
-        }
-      },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": canonicalUrl
-      }
-    };
 
     return (
       <div className="min-h-screen bg-background pb-20">
         <Helmet>
           <title>{`${article.title} | TalentXcel News & Insights`}</title>
           <meta name="description" content={article.summary} />
+          <meta name="robots" content="noindex, follow" />
           <link rel="canonical" href={canonicalUrl} />
           
           <meta property="og:type" content="article" />
@@ -188,10 +159,6 @@ const NewsPage: React.FC = () => {
           <meta name="twitter:title" content={article.title} />
           <meta name="twitter:description" content={article.summary} />
           <meta name="twitter:image" content={`https://talentxcel.in${article.imageUrl}`} />
-
-          <script type="application/ld+json">
-            {JSON.stringify(newsArticleSchema)}
-          </script>
         </Helmet>
 
         {/* Top Breadcrumb Bar */}
@@ -257,20 +224,7 @@ const NewsPage: React.FC = () => {
             {article.summary}
           </p>
 
-          {/* Author Card */}
-          <div className="flex items-center justify-between p-4 rounded-xl bg-card border border-border/60 mb-8 shadow-sm">
-            <div className="flex items-center gap-3">
-              <img 
-                src={article.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
-                alt={article.author?.name || 'Author'}
-                className="w-11 h-11 rounded-full object-cover border border-primary/20"
-              />
-              <div>
-                <h2 className="text-sm font-bold text-foreground leading-none">{article.author?.name || 'TalentXcel Editorial Desk'}</h2>
-                <span className="text-xs text-muted-foreground font-medium">{article.author?.role || 'Platform Intelligence'}</span>
-              </div>
-            </div>
-
+          <div className="flex items-center justify-end p-4 rounded-xl bg-card border border-border/60 mb-8 shadow-sm">
             {/* Social Share actions */}
             <div className="flex items-center gap-2">
               <Button 
@@ -314,38 +268,7 @@ const NewsPage: React.FC = () => {
               </CardContent>
             </Card>
           )}
-
-          {/* Live Telemetry Data Snapshot */}
-          {article.metricsSnapshot && (
-            <div className="mb-8 p-4 rounded-2xl bg-card border border-border/80 shadow-xs">
-              <div className="flex items-center justify-between text-xs text-muted-foreground pb-3 mb-3 border-b border-border/60">
-                <span className="font-bold uppercase tracking-wider text-[10px] text-primary flex items-center gap-1.5">
-                  <RefreshCw className="h-3 w-3" /> Live Platform Telemetry & Verification Snapshot
-                </span>
-                <span className="text-[11px] font-medium text-muted-foreground">15-Day Rolling Cadence</span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                <div className="p-2.5 rounded-xl bg-muted/40">
-                  <div className="text-base sm:text-lg font-black text-foreground">10,250+</div>
-                  <div className="text-[11px] text-muted-foreground">Accredited Colleges</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-muted/40">
-                  <div className="text-base sm:text-lg font-black text-foreground">14,200+</div>
-                  <div className="text-[11px] text-muted-foreground">Verified Jobs</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-muted/40">
-                  <div className="text-base sm:text-lg font-black text-emerald-600">98.4%</div>
-                  <div className="text-[11px] text-muted-foreground">ATS Compliance</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-muted/40">
-                  <div className="text-base sm:text-lg font-black text-primary">37 GCC</div>
-                  <div className="text-[11px] text-muted-foreground">Active Hiring Signals</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Article Main Visual Banner */}
+{/* Article Main Visual Banner */}
           <NewsArticleBanner 
             slug={article.slug} 
             category={article.category} 
@@ -448,25 +371,6 @@ const NewsPage: React.FC = () => {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="News & Career Intelligence | TalentXcel" />
         <meta name="twitter:description" content="Official company announcements, hiring data, and education trends." />
-
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "TalentXcel News & Career Intelligence",
-            "description": "Official company announcements, hiring market data, and higher education trends from TalentXcel Services Pvt Ltd.",
-            "url": "https://talentxcel.in/news",
-            "mainEntity": {
-              "@type": "ItemList",
-              "itemListElement": articles.map((art, index) => ({
-                "@type": "ListItem",
-                "position": index + 1,
-                "url": `https://talentxcel.in/news/${art.slug}`,
-                "name": art.title
-              }))
-            }
-          })}
-        </script>
       </Helmet>
 
       {/* Hero Header Section */}

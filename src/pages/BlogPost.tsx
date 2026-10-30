@@ -1,8 +1,7 @@
 // src/pages/BlogPost.tsx
 // Individual Blog Article Page (/blog/:slug)
 // Supports live Supabase fetching with seamless local catalog fallback (BLOG_POSTS).
-// Renders rich hero banner, structured markdown, key takeaways, author bio,
-// related articles, and Schema.org BlogPosting structured data.
+// Renders rich hero banner, structured markdown, key takeaways, and related articles.
 
 import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
@@ -64,11 +63,6 @@ export const BlogPost = () => {
         title: supabaseBlog.title,
         excerpt: supabaseBlog.excerpt || '',
         content: supabaseBlog.content || '',
-        author: {
-          name: supabaseBlog.author || 'TalentXcel Editorial',
-          role: 'Career Research Team',
-          avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-        },
         date: supabaseBlog.published_at || new Date().toISOString(),
         readTime: `${supabaseBlog.read_time_minutes || 5} min read`,
         category: supabaseBlog.category || 'Career Intelligence',
@@ -138,33 +132,6 @@ export const BlogPost = () => {
     );
   }
 
-  // Schema.org BlogPosting JSON-LD
-  const articleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.excerpt,
-    image: post.imageUrl,
-    datePublished: post.date,
-    dateModified: post.date,
-    author: {
-      '@type': 'Person',
-      name: post.author.name,
-      jobTitle: post.author.role,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'TalentXcel',
-      url: 'https://talentxcel.in',
-      logo: 'https://talentxcel.in/assets/logo.png',
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `https://talentxcel.in/blog/${slug}`,
-    },
-    keywords: post.tags.join(', '),
-  };
-
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -183,19 +150,18 @@ export const BlogPost = () => {
       <Helmet>
         <title>{post.title} | TalentXcel Blog</title>
         <meta name="description" content={post.excerpt} />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href={`https://talentxcel.in/blog/${slug}`} />
         <meta property="og:title" content={`${post.title} | TalentXcel`} />
         <meta property="og:description" content={post.excerpt} />
         <meta property="og:type" content="article" />
         <meta property="og:image" content={post.imageUrl} />
         <meta property="og:url" content={`https://talentxcel.in/blog/${slug}`} />
-        <meta name="article:author" content={post.author.name} />
         <meta name="article:published_time" content={post.date} />
         <meta name="article:section" content={post.category} />
         {post.tags.map((tag) => (
           <meta key={tag} name="article:tag" content={tag} />
         ))}
-        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
       </Helmet>
 
       {/* Top Header / Breadcrumb */}
@@ -206,7 +172,7 @@ export const BlogPost = () => {
             className="inline-flex items-center text-xs font-semibold text-slate-400 hover:text-white transition-colors"
           >
             <ArrowLeft className="h-3.5 w-3.5 mr-1.5 text-blue-400" />
-            Back to All 26 Articles
+            Back to Blog
           </Link>
           <div className="flex items-center gap-2">
             <Button
@@ -244,20 +210,7 @@ export const BlogPost = () => {
             {post.excerpt}
           </p>
 
-          {/* Author Card */}
-          <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between flex-wrap gap-3">
-            <div className="flex items-center gap-3">
-              <img 
-                src={post.author.avatar} 
-                alt={post.author.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-blue-500/30" 
-              />
-              <div>
-                <div className="font-bold text-white text-sm">{post.author.name}</div>
-                <div className="text-xs text-slate-400">{post.author.role}</div>
-              </div>
-            </div>
-
+          <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-end flex-wrap gap-3">
             <div className="flex items-center gap-2 text-xs text-slate-400">
               <Calendar className="w-4 h-4 text-slate-500" />
               <span>Published on {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
