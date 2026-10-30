@@ -298,7 +298,7 @@ const Blog = () => {
                   onClick={() => { setSelectedCategory('All'); setSelectedTag(null); setSearchTerm(''); }}
                   className="mt-5 bg-blue-600 hover:bg-blue-500 text-white text-xs"
                 >
-                  View All 26 Articles
+                  View All {BLOG_POSTS.length} Articles
                 </Button>
               </div>
             ) : (
@@ -397,21 +397,21 @@ const Blog = () => {
                   to="/jobs"
                   className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-200 hover:border-blue-500/40 hover:text-white transition-colors"
                 >
-                  <span>Browse Verified Jobs</span>
+                  <span>Browse Job Listings</span>
                   <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
                 </Link>
                 <Link 
                   to="/career-map"
                   className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-200 hover:border-blue-500/40 hover:text-white transition-colors"
                 >
-                  <span>5-Year Career Map</span>
+                  <span>Career Map</span>
                   <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
                 </Link>
                 <Link 
                   to="/colleges"
                   className="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-200 hover:border-blue-500/40 hover:text-white transition-colors"
                 >
-                  <span>10,250+ College Hubs</span>
+                  <span>College Profiles</span>
                   <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
                 </Link>
               </div>

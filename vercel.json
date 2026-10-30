@@ -547,14 +547,6 @@
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
     },
     {
-      "source": "/salary/:role",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
-    },
-    {
-      "source": "/salary/:role/:location",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
-    },
-    {
       "source": "/blog/:slug",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
     },

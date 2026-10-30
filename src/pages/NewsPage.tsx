@@ -21,8 +21,7 @@ import {
   BookOpen,
   TrendingUp,
   X,
-  Layers,
-  RefreshCw
+  Layers
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -361,7 +360,7 @@ const NewsPage: React.FC = () => {
         <title>News & Career Intelligence | TalentXcel</title>
         <meta 
           name="description" 
-          content="Official company announcements, hiring market data, higher education trends, and platform milestones from TalentXcel Services Pvt Ltd." 
+          content="Browse career articles, education information, and company updates available on TalentXcel."
         />
         <link rel="canonical" href="https://talentxcel.in/news" />
         <meta property="og:title" content="News & Career Intelligence | TalentXcel" />
@@ -535,17 +534,17 @@ const NewsPage: React.FC = () => {
                   </div>
 
                   <div className="flex items-center justify-between pt-3.5 mt-3 border-t border-border/60">
-                    <div className="flex items-center gap-2.5">
-                      <img 
-                        src={featuredArticle.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png'} 
-                        alt={featuredArticle.author?.name || 'Author'}
+                    {featuredArticle.author?.name ? <div className="flex items-center gap-2.5">
+                      {featuredArticle.author.avatar && <img
+                        src={featuredArticle.author.avatar}
+                        alt={featuredArticle.author.name}
                         className="w-7 h-7 rounded-full border border-primary/20 object-cover"
-                      />
+                      />}
                       <div className="text-xs">
-                        <p className="font-bold text-foreground leading-none text-[11px]">{featuredArticle.author?.name || 'TalentXcel'}</p>
-                        <p className="text-muted-foreground text-[10px] mt-0.5">{featuredArticle.author?.role || 'Platform Intelligence'}</p>
+                        <p className="font-bold text-foreground leading-none text-[11px]">{featuredArticle.author.name}</p>
+                        {featuredArticle.author.role && <p className="text-muted-foreground text-[10px] mt-0.5">{featuredArticle.author.role}</p>}
                       </div>
-                    </div>
+                    </div> : <span />}
 
                     <span className="text-xs font-bold text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                       Read Full Publication <ArrowRight className="h-3.5 w-3.5" />
@@ -620,7 +619,7 @@ const NewsPage: React.FC = () => {
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {selectedArchetype !== 'All' 
                       ? ARCHETYPE_CONFIG[selectedArchetype]?.description 
-                      : 'Empirical data, verified institutional updates, and strategic platform capabilities.'}
+                      : 'Career articles, education information, and company updates available on TalentXcel.'}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -693,16 +692,16 @@ const NewsPage: React.FC = () => {
               Explore the TalentXcel Platform Ecosystem
             </h3>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Discover verified opportunities, build ATS-ready executive resumes, explore 10,250+ Indian colleges, and master high-demand skills.
+              Browse job listings, build resumes, explore college profiles, and find learning resources.
             </p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {[
-              { label: 'Jobs Discovery', sub: 'Verified Openings', icon: Building2, href: '/jobs' },
-              { label: 'Resume Builder', sub: '98% ATS Pass', icon: Newspaper, href: '/resume' },
-              { label: '10,250+ Colleges', sub: 'NIRF & Programs', icon: GraduationCap, href: '/colleges' },
-              { label: 'Free Learning', sub: '2,650+ Courses', icon: BookOpen, href: '/learning' },
+              { label: 'Jobs Discovery', sub: 'Job listings', icon: Building2, href: '/jobs' },
+              { label: 'Resume Builder', sub: 'Resume tools', icon: Newspaper, href: '/resume' },
+              { label: 'College Profiles', sub: 'Institutions and programs', icon: GraduationCap, href: '/colleges' },
+              { label: 'Learning', sub: 'Courses and resources', icon: BookOpen, href: '/learning' },
               { label: 'Career Passport', sub: 'Digital Identity', icon: ShieldCheck, href: '/passport' },
               { label: 'Network & Feed', sub: 'Connect & CHATR', icon: Globe, href: '/network' },
             ].map((hub) => {

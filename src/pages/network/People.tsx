@@ -36,8 +36,6 @@ import {
   Laptop
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
-import { usePeopleSearch } from '@/hooks/usePeopleSearch';
-import { useNaturalLanguageSearch } from '@/hooks/useNaturalLanguageSearch';
 import { useProfileViews } from '@/hooks/useProfileViews';
 import { useUserPresence } from '@/hooks/useUserPresence';
 import { RealTimePresence } from '@/components/network/RealTimePresence';
@@ -99,26 +97,17 @@ const People: React.FC = () => {
   const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set());
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
-  // Natural Language & People search hooks
-  const {
-    searchTerm,
-    setSearchTerm,
-    results: naturalSearchResults,
-    isLoading: naturalSearchLoading,
-    error: naturalSearchError,
-    parsedQuery,
-    suggestions,
-    selectSuggestion
-  } = useNaturalLanguageSearch();
-
-  const {
-    results: basicResults,
-    isLoading: basicLoading,
-    error: basicError,
-  } = usePeopleSearch();
-
-  const rawResults = searchTerm ? naturalSearchResults : basicResults;
-  const isLoading = searchTerm ? naturalSearchLoading : basicLoading;
+  const [searchTerm, setSearchTerm] = useState('');
+  const parsedQuery = useMemo(() => {
+    const locationMatch = searchTerm.match(/\bin\s+(.+)$/i);
+    return locationMatch ? { location: locationMatch[1].trim() } : null;
+  }, [searchTerm]);
+  const suggestions = useMemo(() => searchTerm.trim() ? [] : [
+    'Senior AI Engineer in Dubai',
+    'Product Designer in London',
+    'Cloud Engineer in Bengaluru',
+  ], [searchTerm]);
+  const selectSuggestion = useCallback((suggestion: string) => setSearchTerm(suggestion), []);
 
   const queryClient = useQueryClient();
 
@@ -153,9 +142,9 @@ const People: React.FC = () => {
         { event: '*', schema: 'public', table: 'profiles' },
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ['global-talent-profiles'] });
-          if (payload.eventType === 'INSERT') {
-            const newName = (payload.new as any)?.full_name || 'A new professional';
-            toast.success(`🎉 ${newName} just joined the TalentXcel Network!`);
+          const insertedProfile = payload.new as any;
+          if (payload.eventType === 'INSERT' && insertedProfile?.profile_visibility === 'public' && insertedProfile?.full_name) {
+            toast.success(`${insertedProfile.full_name} joined the public TalentXcel directory.`);
           }
         }
       )
@@ -231,16 +220,18 @@ const People: React.FC = () => {
         return false;
       }
       if (searchTerm.trim()) {
-        const query = searchTerm.toLowerCase();
-        const matchesName = profile.full_name.toLowerCase().includes(query);
-        const matchesHeadline = profile.headline.toLowerCase().includes(query);
-        const matchesLocation = profile.location.toLowerCase().includes(query);
-        const matchesSkills = profile.skills.some(s => s.toLowerCase().includes(query));
-        return matchesName || matchesHeadline || matchesLocation || matchesSkills;
+        const locationQuery = parsedQuery?.location?.toLowerCase();
+        const textQuery = locationQuery
+          ? searchTerm.slice(0, searchTerm.lastIndexOf(' in ')).trim().toLowerCase()
+          : searchTerm.trim().toLowerCase();
+        const searchText = [profile.full_name, profile.headline, profile.location, ...profile.skills].join(' ').toLowerCase();
+        const matchesTerms = textQuery.split(/\s+/).filter(Boolean).every(term => searchText.includes(term));
+        const matchesLocation = !locationQuery || profile.location.toLowerCase().includes(locationQuery);
+        return matchesTerms && matchesLocation;
       }
       return true;
     });
-  }, [enrichedProfiles, selectedHub, selectedDomain, searchTerm]);
+  }, [enrichedProfiles, selectedHub, selectedDomain, searchTerm, parsedQuery]);
 
   // Paginate the currently returned public profiles.
   const [visibleCount, setVisibleCount] = useState(24);
@@ -472,15 +463,13 @@ const People: React.FC = () => {
             {/* AI Match Button */}
             <Button
               onClick={() => {
-                if (!searchTerm) {
-                  setSearchTerm('Senior AI Engineer');
-                }
-                toast.success('AI Matching talent profiles across global hubs...');
+                if (!searchTerm) setSearchTerm('Senior AI Engineer');
+                toast.success('Filtered public profiles using your search.');
               }}
               className="w-full sm:w-auto h-11 px-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span>AI Match</span>
+              <span>Search Profiles</span>
             </Button>
           </div>
 

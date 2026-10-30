@@ -63,7 +63,7 @@ export const BlogPost = () => {
         title: supabaseBlog.title,
         excerpt: supabaseBlog.excerpt || '',
         content: supabaseBlog.content || '',
-        date: supabaseBlog.published_at || new Date().toISOString(),
+        date: supabaseBlog.published_at || '',
         readTime: `${supabaseBlog.read_time_minutes || 5} min read`,
         category: supabaseBlog.category || 'Career Intelligence',
         tags: (supabaseBlog.tags as string[]) || ['Career', 'Hiring'],
@@ -157,7 +157,7 @@ export const BlogPost = () => {
         <meta property="og:type" content="article" />
         <meta property="og:image" content={post.imageUrl} />
         <meta property="og:url" content={`https://talentxcel.in/blog/${slug}`} />
-        <meta name="article:published_time" content={post.date} />
+        {post.date && <meta name="article:published_time" content={post.date} />}
         <meta name="article:section" content={post.category} />
         {post.tags.map((tag) => (
           <meta key={tag} name="article:tag" content={tag} />
@@ -211,10 +211,10 @@ export const BlogPost = () => {
           </p>
 
           <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-end flex-wrap gap-3">
-            <div className="flex items-center gap-2 text-xs text-slate-400">
+            {post.date && <div className="flex items-center gap-2 text-xs text-slate-400">
               <Calendar className="w-4 h-4 text-slate-500" />
               <span>Published on {new Date(post.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-            </div>
+            </div>}
           </div>
         </header>
 

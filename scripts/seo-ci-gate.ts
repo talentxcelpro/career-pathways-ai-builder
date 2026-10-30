@@ -3075,17 +3075,17 @@ async function runSeoCiGate() {
     record('Blog_News_Separation', '2. /blog/:slug route exists in App and coreRoutes', appContents.includes('path="/blog/:slug"') && coreRoutesContent.includes('to: "/blog/:slug"'), 'Route /blog/:slug registered');
     record('Blog_News_Separation', '3. Blog articles use canonical /blog/:slug URLs', blogPostContent.includes('https://talentxcel.in/blog/${slug}'), 'Canonical /blog/:slug enforced');
     record('Blog_News_Separation', '4. Blog URLs are not redirected to /news', !coreRoutesContent.includes('to: "/blog",\n    page: <S><BlogRedirect /></S>'), '/blog routes to Blog component');
-    record('Blog_News_Separation', '5. Blog URLs appear only in Blog sitemap', sitemapBlogContent.includes('/blog/') && !sitemapBlogContent.includes('/news/'), 'Blog sitemap partitioned');
-    record('Blog_News_Separation', '6. Blog structured data is valid BlogPosting', blogPostContent.includes("'@type': 'BlogPosting'"), 'BlogPosting schema present');
+    record('Blog_News_Separation', '5. Blog collection is included while unsourced details stay out of the sitemap', sitemapBlogContent.includes('talentxcel.in/blog</loc>') && !sitemapBlogContent.includes('talentxcel.in/blog/'), 'Only the Blog collection is listed until detail sources are reviewed');
+    record('Blog_News_Separation', '6. Blog details are noindex and do not emit unsupported BlogPosting schema', blogPostContent.includes('noindex, follow') && !blogPostContent.includes('BlogPosting'), 'Unsourced Blog details are excluded from indexing and structured data');
     record('Blog_News_Separation', '7. Blog articles have required metadata', blogDataContent.includes('export interface BlogPostItem') && blogDataContent.includes('BLOG_POSTS'), 'Blog items typed with metadata');
 
     // NEWS Invariants
     record('Blog_News_Separation', '8. /news route exists in App', appContents.includes('NewsPage'), 'Route /news registered');
     record('Blog_News_Separation', '9. /news/:slug route exists in App', newsPageContent.includes('const { slug } = useParams'), 'News slug param handled');
     record('Blog_News_Separation', '10. News articles use canonical /news/:slug URLs', newsPageContent.includes('https://talentxcel.in/news/${article.slug}'), 'Canonical /news/:slug enforced');
-    record('Blog_News_Separation', '11. News URLs appear only in News sitemap', sitemapNewsContent.includes('/news/') && !sitemapNewsContent.includes('/blog/'), 'News sitemap partitioned');
-    record('Blog_News_Separation', '12. News structured data is valid NewsArticle', newsPageContent.includes('"@type": "NewsArticle"'), 'NewsArticle schema present');
-    record('Blog_News_Separation', '13. Research articles expose evidence metadata', newsPageContent.includes('methodology') || newsDataContent.includes('evidenceStatus') || newsDataContent.includes('claimStatus') || newsDataContent.includes('keyTakeaways'), 'Evidence & metadata exposed');
+    record('Blog_News_Separation', '11. News collection is included while unsourced details stay out of the sitemap', sitemapNewsContent.includes('talentxcel.in/news</loc>') && !sitemapNewsContent.includes('talentxcel.in/news/'), 'Only the News collection is listed until detail sources are reviewed');
+    record('Blog_News_Separation', '12. News details are noindex and do not emit unsupported NewsArticle schema', newsPageContent.includes('noindex, follow') && !newsPageContent.includes('"@type": "NewsArticle"') && !newsPageContent.includes("'@type': 'NewsArticle'"), 'Unsourced News details are excluded from indexing and structured data');
+    record('Blog_News_Separation', '13. Research detail pages remain excluded pending evidence review', newsPageContent.includes('noindex, follow'), 'Article details remain noindex pending source review');
 
     // SEPARATION Invariants
     record('Blog_News_Separation', '14. BLOG and NEWS have separate data catalogs', existsSync(blogDataPath) && existsSync(newsDataPath) && blogDataPath !== newsDataPath, 'Separate data catalogs');

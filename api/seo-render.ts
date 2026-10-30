@@ -346,10 +346,50 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         "name": "TalentXcel Professional Network"
       }
     };
+  } else if (prefix === 'blog' || prefix === 'news') {
+    const surface = prefix === 'blog' ? 'Career Articles' : 'News and Insights';
+    const isDetail = Boolean(secondary);
+    const articleTitle = formatTitle(cleanPath.split('/').slice(1).join(' '));
+    title = isDetail ? `${articleTitle} | TalentXcel ${surface}` : `${surface} | TalentXcel`;
+    description = isDetail
+      ? `This ${prefix === 'blog' ? 'article' : 'news item'} is available on TalentXcel. Editorial source and attribution details are being reviewed.`
+      : `Browse ${surface.toLowerCase()} published on TalentXcel.`;
+    canonical = `https://talentxcel.in/${cleanPath}`;
+    h1 = isDetail ? articleTitle : surface;
+    if (isDetail) {
+      robotsDirective = 'noindex, follow';
+      bodyContent = `<section class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white">${escapeHtml(articleTitle)}</h2><p class="text-slate-300 text-sm leading-relaxed">Editorial source and attribution details for this item are being reviewed. Browse the ${escapeHtml(surface.toLowerCase())} collection for other available content.</p><a href="/${prefix}" class="mt-4 inline-block text-blue-400 hover:underline">Return to ${escapeHtml(surface)} &rarr;</a></section>`;
+    } else {
+      bodyContent = `<section class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white">${escapeHtml(surface)}</h2><p class="text-slate-300 text-sm leading-relaxed">Browse the ${escapeHtml(surface.toLowerCase())} collection. Individual items remain out of search until their source and attribution details are reviewed.</p></section>`;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": title,
+        "description": description,
+        "url": canonical
+      };
+    }
+  } else if (prefix === 'rankings') {
+    const categoryName = formatTitle(parts[1] || 'Company and Product');
+    const scopeName = parts[2] ? formatTitle(parts[2]) : '';
+    title = scopeName
+      ? `${categoryName} Leaderboard — ${scopeName} | TalentXcel`
+      : `${categoryName} Leaderboards | TalentXcel`;
+    description = 'Browse participating company and product listings. Rank order and current bids are shown for each available board.';
+    canonical = `https://talentxcel.in/${cleanPath}`;
+    h1 = scopeName ? `${categoryName} Leaderboard: ${scopeName}` : `${categoryName} Leaderboards`;
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 class="text-xl font-bold text-white">Browse Available ${escapeHtml(categoryName)} Boards</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Boards display participating listings with rank and bid information from current marketplace records. Available entries vary by board and geographic scope.</p>
+        <a href="/rankings" class="text-blue-400 hover:underline">Browse all leaderboards &rarr;</a>
+      </section>
+    `;
   } else if (prefix === 'directory') {
     title = `TalentXcel Comprehensive Directory — Colleges, Salaries, Jobs & City Hubs (2026)`;
     description = `Browse TalentXcel directories for higher education, salary guides, jobs by city, and career resources.`;
     canonical = `https://talentxcel.in/directory`;
+    if (cleanPath === 'directory/salaries-by-role') robotsDirective = 'noindex, follow';
     h1 = `TalentXcel Directory & Resource Index`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
@@ -370,6 +410,19 @@ function generateDynamicSeoHtml(cleanPath: string): string {
         </div>
       </section>
     `;
+  } else if (['salary/scenarios', 'salary/negotiation', 'salary/goals', 'salary/skills-gap', 'salary/jobs'].includes(cleanPath)) {
+    const salaryToolNames: Record<string, string> = {
+      'salary/scenarios': 'Salary Scenario Planner',
+      'salary/negotiation': 'Salary Negotiation Tool',
+      'salary/goals': 'Salary Goals Planner',
+      'salary/skills-gap': 'Salary Skills Gap Tool',
+      'salary/jobs': 'Salary and Matching Jobs',
+    };
+    title = `${salaryToolNames[cleanPath]} | TalentXcel`;
+    description = 'Use TalentXcel salary planning tools to explore compensation scenarios, career goals, skills, and related job listings.';
+    canonical = `https://talentxcel.in/${cleanPath}`;
+    h1 = salaryToolNames[cleanPath];
+    bodyContent = `<section class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white">${escapeHtml(salaryToolNames[cleanPath])}</h2><p class="text-slate-300 text-sm leading-relaxed">Use the salary analyzer to organize compensation assumptions and compare them with details supplied in current job listings.</p><a href="/salary" class="mt-4 inline-block text-blue-400 hover:underline">Open salary analyzer &rarr;</a></section>`;
   } else if (cleanPath === 'salary' || cleanPath === 'salaries' || cleanPath.startsWith('salary/') || cleanPath.startsWith('career-insights/salary/')) {
     if (cleanPath === 'salary' || cleanPath === 'salaries') {
       title = 'Technology Salary Guides | TalentXcel';

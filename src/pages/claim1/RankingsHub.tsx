@@ -42,10 +42,11 @@ export default function RankingsHub() {
       <Helmet>
         <title>Rankings — TalentXcel Claim #1</title>
         <meta name="description"
-          content="Compete for #1 across verified global leaderboards. Real companies, transparent bidding, instant outbid notifications." />
-        <link rel="canonical" href="https://talentxcel.com/rankings" />
+          content="Browse company and product leaderboards on TalentXcel. Rank order and current bids are shown for each available board." />
+        <link rel="canonical" href="https://talentxcel.in/rankings" />
         <meta property="og:title" content="TalentXcel Claim #1 — Global Rankings" />
-        <meta property="og:url" content="https://talentxcel.com/rankings" />
+        <meta property="og:description" content="Browse company and product leaderboards on TalentXcel." />
+        <meta property="og:url" content="https://talentxcel.in/rankings" />
       </Helmet>
 
       <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">

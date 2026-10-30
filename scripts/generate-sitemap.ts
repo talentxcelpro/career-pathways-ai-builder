@@ -109,7 +109,7 @@ function buildSitemapIndexXml(sitemapFiles: { filename: string; count: number }[
 }
 
 export async function generateProductionSitemaps() {
-  console.log('🚀 Starting TalentXcel Clean 15K Quality Core Sitemap Generation...');
+  console.log('Generating TalentXcel XML sitemaps from configured public routes...');
   const publicDir = resolve(process.cwd(), 'public');
   if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
 
@@ -268,14 +268,15 @@ export async function generateProductionSitemaps() {
     ...EMPLOYER_SERVICES.map(s => ({ path: `/${s.slug}`, changefreq: 'weekly', priority: '0.8' })),
   ]);
 
-  // 9. Verified Rankings Leaderboards
+  // Public bid-based leaderboards backed by current Claim #1 records.
   const rankingsEntries = deduplicate([
-    { path: '/rankings', changefreq: 'daily', priority: '1.0' },
-    { path: '/rankings/ai-products', changefreq: 'daily', priority: '0.95' },
-    { path: '/rankings/ai-products/global', changefreq: 'daily', priority: '0.9' },
-    { path: '/rankings/ai-products/india', changefreq: 'daily', priority: '0.9' },
-    { path: '/rankings/ai-products/usa', changefreq: 'daily', priority: '0.9' },
-    { path: '/rankings/ai-products/uae', changefreq: 'daily', priority: '0.9' },
+    { path: '/rankings', changefreq: 'daily', priority: '0.9' },
+    { path: '/rankings/ai-products', changefreq: 'daily', priority: '0.8' },
+    ...['global', 'emerging', 'india', 'usa', 'uae', 'uk', 'singapore'].map((scope) => ({
+      path: `/rankings/ai-products/${scope}`,
+      changefreq: 'daily' as const,
+      priority: '0.7',
+    })),
   ]);
 
   // 10. Verified Courses
@@ -438,11 +439,6 @@ export async function generateProductionSitemaps() {
       }
     }
   });
-
-  // Append 41 Programmatic 50,000-URL Dynamic Shards for Googlebot (2,050,000 URLs)
-  for (let i = 1; i <= 41; i++) {
-    validSitemapsForIndex.push({ filename: `sitemaps/${i}.xml`, count: 50_000 });
-  }
 
   // Generate Master Index (sitemap.xml and sitemap-root.xml)
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);

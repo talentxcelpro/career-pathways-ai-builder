@@ -407,26 +407,26 @@ async function prerender() {
     },
     {
       route: '/rankings',
-      title: 'Rankings & Leaderboards — Companies, AI Products & Careers | TalentXcel',
-      desc: 'Authoritative ranking leaderboards for AI products, emerging startups, tech employers, and career tools evaluated on verified capability benchmarks.',
-      h1: 'Rankings & Industry Leaderboards',
+      title: 'Company and Product Leaderboards | TalentXcel',
+      desc: 'Browse company and product leaderboards on TalentXcel. Rank order and current bids are shown for each available board.',
+      h1: 'Company and Product Leaderboards',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">AI Product & Company Rankings</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Transparent ranking methodologies evaluating product performance, user adoption, and technological capabilities.</p>
-          <a href="/rankings/ai-products" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">AI Product Rankings Leaderboard &rarr;</a>
+          <h2 class="text-xl font-bold text-white mb-3">Browse Available Boards</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">Boards display participating company and product listings with rank and bid information from current marketplace records. Available entries vary by board.</p>
+          <a href="/rankings/ai-products" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">AI Product Board &rarr;</a>
         </div>
       `,
     },
     {
       route: '/rankings/ai-products',
-      title: 'AI Product Rankings & Industry Benchmark Leaderboard | TalentXcel',
-      desc: 'Top artificial intelligence software, developer tools, and machine learning platforms ranked by performance, capability, and user feedback.',
-      h1: 'AI Product & Software Rankings Leaderboard',
+      title: 'AI Product Leaderboard | TalentXcel',
+      desc: 'Browse the AI product leaderboard on TalentXcel. Rank order and current bids are shown when listings are available.',
+      h1: 'AI Product Leaderboard',
       bodyHtml: `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">Top Rated AI Tools & Platforms</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Verified rankings of generative AI models, autonomous agents, and developer tooling.</p>
+          <h2 class="text-xl font-bold text-white mb-3">AI Product Boards</h2>
+          <p class="text-slate-300 text-sm leading-relaxed mb-4">The live board displays participating listings and rank information based on current marketplace records. Listings vary by geographic scope.</p>
         </div>
       `,
     },

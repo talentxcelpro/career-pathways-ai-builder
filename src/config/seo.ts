@@ -85,12 +85,13 @@ export const NOINDEX_PREFIXES = [
   '/mobile-demo',
   '/access-control-test',
   '/talent',
+  '/claim1/watch',
   '/directory/salaries-by-role',
 ];
 
 const NOINDEX_PATH_PATTERNS = [
   /^\/(?:blog|news)\/[^/]+\/?$/,
-  /^\/salary\/[^/]+(?:\/[^/]+)?\/?$/,
+  /^\/salary\/(?!scenarios\/?$|negotiation\/?$|goals\/?$|skills-gap\/?$|jobs\/?$)[^/]+(?:\/[^/]+)?\/?$/,
 ];
 
 /**
@@ -145,7 +146,6 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
   { path: '/rankings/ai-products/uae', changefreq: 'daily', priority: '0.9' },
   { path: '/rankings/ai-products/uk', changefreq: 'daily', priority: '0.9' },
   { path: '/rankings/ai-products/singapore', changefreq: 'daily', priority: '0.9' },
-  { path: '/claim1/watch', changefreq: 'weekly', priority: '0.7' },
 
   // Candidate services
   { path: '/resume-builder', changefreq: 'weekly', priority: '0.9' },
