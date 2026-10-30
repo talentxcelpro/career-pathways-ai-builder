@@ -16,8 +16,14 @@ const hasActiveAuthSession = (): boolean => {
       const key = localStorage.key(i);
       if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
         const item = localStorage.getItem(key);
-        if (item && (item.includes('"access_token"') || item.includes('"user"'))) {
-          return true;
+        if (item) {
+          const parsed = JSON.parse(item);
+          if (parsed?.user) {
+            const now = Math.floor(Date.now() / 1000);
+            if (!parsed.expires_at || parsed.expires_at > now) {
+              return true;
+            }
+          }
         }
       }
     }
@@ -50,7 +56,7 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   disabled = false,
   autoSelect = true 
 }) => {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -61,19 +67,14 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
     }
   }, [user]);
 
-  // If user is authenticated in React state, localStorage session exists, or auth is still resolving, DO NOT SHOW
-  if (disabled || user || loading || hasActiveAuthSession()) {
+  // If user is authenticated in React state or an active unexpired session exists, DO NOT SHOW
+  if (disabled || user || hasActiveAuthSession()) {
     return null;
   }
 
   // If on an internal application route, DO NOT SHOW
   const isInternalRoute = APP_ROUTE_PREFIXES.some(prefix => location.pathname.startsWith(prefix));
   if (isInternalRoute) {
-    return null;
-  }
-
-  // If user dismissed One Tap during this browser session, respect their dismissal
-  if (typeof window !== 'undefined' && sessionStorage.getItem('txc_onetap_dismissed') === 'true') {
     return null;
   }
 

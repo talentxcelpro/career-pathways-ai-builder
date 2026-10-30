@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { isAllowedAuthHostname } from '@/config/domainArchitecture';
-import { GOOGLE_CLIENT_ID } from '@/config/googleAuth';
+import { GOOGLE_CLIENT_ID, loadGoogleIdentityServices } from '@/config/googleAuth';
 
 declare global {
   interface Window {
@@ -50,6 +50,28 @@ async function generateNonce(): Promise<{ rawNonce: string; hashedNonce: string 
   return { rawNonce: fallback, hashedNonce: fallback };
 }
 
+const hasActiveAuthSession = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        const item = localStorage.getItem(key);
+        if (item) {
+          const parsed = JSON.parse(item);
+          if (parsed?.user) {
+            const now = Math.floor(Date.now() / 1000);
+            if (!parsed.expires_at || parsed.expires_at > now) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+  } catch {}
+  return false;
+};
+
 export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
   onSuccess,
   autoSelect = true,
@@ -57,7 +79,6 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
 }) => {
   const { user } = useAuth();
   const initializedRef = useRef(false);
-  const scriptLoadedRef = useRef(false);
   const rawNonceRef = useRef<string | null>(null);
 
   const handleCredentialResponse = useCallback(async (response: any) => {
@@ -115,34 +136,12 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     }
   }, [onSuccess]);
 
-  const hasActiveAuthSession = (): boolean => {
-    if (typeof window === 'undefined') return false;
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('sb-') && key.endsWith('-auth-token')) {
-          const item = localStorage.getItem(key);
-          if (item && (item.includes('"access_token"') || item.includes('"user"'))) {
-            return true;
-          }
-        }
-      }
-    } catch {}
-    return false;
-  };
-
   const initializeGoogleOneTap = useCallback(async () => {
-    if (!window.google || disabled || user || hasActiveAuthSession() || initializedRef.current) {
+    if (disabled || user || hasActiveAuthSession() || initializedRef.current) {
       if (user && window.google?.accounts?.id?.cancel) {
         window.google.accounts.id.cancel();
       }
       return;
-    }
-
-    if (typeof window !== 'undefined') {
-      if (sessionStorage.getItem('txc_onetap_dismissed') === 'true' || sessionStorage.getItem('txc_onetap_shown') === 'true') {
-        return;
-      }
     }
 
     const hostname = window.location.hostname;
@@ -152,10 +151,19 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     }
 
     try {
-      initializedRef.current = true;
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('txc_onetap_shown', 'true');
+      // Ensure Google Identity Services SDK is ready (ultra-fast check)
+      await loadGoogleIdentityServices();
+
+      if (!window.google?.accounts?.id) {
+        console.warn('Google Identity Services not ready on window');
+        return;
       }
+
+      if (disabled || user || hasActiveAuthSession() || initializedRef.current) {
+        return;
+      }
+
+      initializedRef.current = true;
 
       // Generate cryptographically secure nonce pair
       const { rawNonce, hashedNonce } = await generateNonce();
@@ -175,45 +183,26 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
       // Show the One Tap prompt immediately
       window.google.accounts.id.prompt((notification: any) => {
         if (notification.isNotDisplayed()) {
+          console.log('[GoogleOneTap] Prompt not displayed:', notification.getNotDisplayedReason?.() || 'unknown');
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'not_displayed' });
         } else if (notification.isSkippedMoment()) {
+          console.log('[GoogleOneTap] Prompt skipped:', notification.getSkippedReason?.() || 'skipped');
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'skipped' });
-          try { sessionStorage.setItem('txc_onetap_dismissed', 'true'); } catch {}
         } else if (notification.isDismissedMoment()) {
+          console.log('[GoogleOneTap] Prompt dismissed by user');
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'dismissed' });
-          try { sessionStorage.setItem('txc_onetap_dismissed', 'true'); } catch {}
         } else if (notification.isDisplayed()) {
+          console.log('🚀 [GoogleOneTap] Prompt displayed to user');
           GrowthFunnelTracker.track('google_onetap_shown');
         }
       });
 
-      console.log('🚀 Google One Tap initialized successfully');
+      console.log('🚀 Google One Tap prompt dispatched instantly');
     } catch (error) {
       console.error('Failed to initialize Google One Tap:', error);
       initializedRef.current = false;
     }
   }, [handleCredentialResponse, autoSelect, disabled, user]);
-
-  const loadGoogleScript = useCallback(() => {
-    if (scriptLoadedRef.current || disabled || user || hasActiveAuthSession()) return;
-
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    
-    script.onload = () => {
-      scriptLoadedRef.current = true;
-      // Small delay to ensure Google SDK is fully loaded
-      setTimeout(initializeGoogleOneTap, 50);
-    };
-    
-    script.onerror = () => {
-      console.error('Failed to load Google authentication script');
-    };
-
-    document.head.appendChild(script);
-  }, [initializeGoogleOneTap, disabled, user]);
 
   useEffect(() => {
     // If user is authenticated, cancel any active prompt immediately
@@ -226,11 +215,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
 
     if (disabled) return;
 
-    if (window.google) {
-      initializeGoogleOneTap();
-    } else {
-      loadGoogleScript();
-    }
+    initializeGoogleOneTap();
 
     return () => {
       // Cleanup on unmount
@@ -238,7 +223,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
         window.google.accounts.id.cancel();
       }
     };
-  }, [initializeGoogleOneTap, loadGoogleScript, disabled, user]);
+  }, [initializeGoogleOneTap, disabled, user]);
 
   // Reset initialization only when user explicitly logs out
   useEffect(() => {
@@ -247,5 +232,5 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     }
   }, [user]);
 
-  return null; // This component doesn't render anything visible
+  return null;
 };

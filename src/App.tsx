@@ -28,7 +28,6 @@ import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
-import { AsyncGoogleOneTap } from '@/components/performance/AsyncGoogleOneTap';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { ChromePWAPrompt } from '@/components/pwa/ChromePWAPrompt';
@@ -328,6 +327,7 @@ const App = () => {
             <TopLoadingBar />
             <ScrollRestoration />
             <OptimizedAuthProvider>
+              <GoogleOneTapLogin autoSelect={true} />
               <VoicePlayerProvider>
               <NotificationProvider>
               <Suspense fallback={<PageFallbackSkeleton />}>
@@ -335,8 +335,6 @@ const App = () => {
                      <CopilotProvider>
                         <TooltipProvider>
                           <PhaseInitializer />
-                          <AsyncGoogleOneTap />
-                          <GoogleOneTapLogin autoSelect={true} />
                          <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
                         <Navbar />
                         <main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">

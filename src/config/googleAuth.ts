@@ -11,21 +11,53 @@ const GSI_SRC = 'https://accounts.google.com/gsi/client';
 
 let loaderPromise: Promise<void> | null = null;
 
-/** Loads the official Google Identity Services browser SDK exactly once. */
+/** Loads the official Google Identity Services browser SDK exactly once with ultra-fast polling. */
 export const loadGoogleIdentityServices = (): Promise<void> => {
   if (typeof window === 'undefined') return Promise.resolve();
   if (window.google?.accounts?.id) return Promise.resolve();
   if (loaderPromise) return loaderPromise;
 
   loaderPromise = new Promise<void>((resolve, reject) => {
+    if (window.google?.accounts?.id) {
+      return resolve();
+    }
+
+    // High-frequency polling (20ms) to resolve the millisecond the SDK attaches to window
+    const interval = setInterval(() => {
+      if (window.google?.accounts?.id) {
+        clearInterval(interval);
+        resolve();
+      }
+    }, 20);
+
+    const timeout = setTimeout(() => {
+      clearInterval(interval);
+      if (window.google?.accounts?.id) {
+        resolve();
+      } else {
+        reject(new Error('Google Identity Services timed out loading'));
+      }
+    }, 6000);
+
     const existing = document.querySelector<HTMLScriptElement>(
       `script[src*="accounts.google.com/gsi/client"]`
     );
 
     if (existing) {
-      if (window.google?.accounts?.id) return resolve();
-      existing.addEventListener('load', () => resolve());
-      existing.addEventListener('error', () => reject(new Error('GSI script failed to load')));
+      existing.addEventListener('load', () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+        if (window.google?.accounts?.id) {
+          resolve();
+        } else {
+          setTimeout(() => resolve(), 25);
+        }
+      });
+      existing.addEventListener('error', () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+        reject(new Error('GSI script failed to load'));
+      });
       return;
     }
 
@@ -33,8 +65,20 @@ export const loadGoogleIdentityServices = (): Promise<void> => {
     script.src = GSI_SRC;
     script.async = true;
     script.defer = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error('GSI script failed to load'));
+    script.onload = () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+      if (window.google?.accounts?.id) {
+        resolve();
+      } else {
+        setTimeout(() => resolve(), 25);
+      }
+    };
+    script.onerror = () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+      reject(new Error('GSI script failed to load'));
+    };
     document.head.appendChild(script);
   }).catch((error) => {
     loaderPromise = null;
