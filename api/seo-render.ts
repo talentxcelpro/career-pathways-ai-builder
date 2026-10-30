@@ -16,6 +16,7 @@ const PRIVATE_ROUTE_PREFIXES = [
   '/learning/dashboard', '/colleges/admin', '/colleges/private', '/careermap/private', '/careermap/user',
   '/careerpassport/user', '/careerpassport/private', '/employer/settings', '/employer/dashboard',
   '/employer/private', '/marketplace/orders', '/marketplace/private', '/events/settings', '/events/private',
+  '/employers/post-job',
   '/career-dashboard', '/provider/dashboard', '/checkout', '/subscription', '/billing', '/account',
   '/diagnostics', '/debug', '/testing', '/launch', '/access-control-test', '/realtime-demo', '/mobile-demo',
 ];
@@ -59,6 +60,7 @@ export default async function handler(req: Request) {
   }
 
   const html = generateDynamicSeoHtml(cleanPath);
+  const noindexDynamicHub = /^locations\/[^/]+$/.test(cleanPath) || /^jobs\/[^/]+\/[^/]+$/.test(cleanPath);
 
   return new Response(html, {
     status: 200,
@@ -66,6 +68,7 @@ export default async function handler(req: Request) {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
       'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
+      ...(noindexDynamicHub ? { 'X-Robots-Tag': 'noindex, follow' } : {}),
     },
   });
 }
@@ -93,26 +96,20 @@ function generateDynamicSeoHtml(cleanPath: string): string {
 
   if (prefix === 'locations' && secondary) {
     const cityName = formatTitle(secondary);
-    title = `Jobs & Tech Hiring in ${cityName} 2026 | TalentXcel`;
-    description = `Explore technology job listings, hiring information, and career opportunities in ${cityName}.`;
+    title = `Job Listings in ${cityName} | TalentXcel`;
+    description = `Browse current TalentXcel job listings for ${cityName}. Review each listing for its requirements and employer-provided compensation details.`;
     canonical = `https://talentxcel.in/locations/${secondary}`;
-    h1 = `Jobs & Tech Hiring in ${cityName} (2026)`;
+    h1 = `Job Listings in ${cityName}`;
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Employment &amp; Techcorridor Market in ${escapeHtml(cityName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Browse job listings and career information for ${escapeHtml(cityName)} on TalentXcel. Review each listing for current requirements and compensation details.</p>
+        <h2 class="text-xl font-bold text-white">Current listings for ${escapeHtml(cityName)}</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Browse job listings for ${escapeHtml(cityName)} on TalentXcel. Review each listing for its current requirements and employer-provided compensation details.</p>
         <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/locations/${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse All ${escapeHtml(cityName)} Jobs &rarr;</a>
-          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Score Scan &rarr;</a>
+          <a href="/jobs?location=${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse ${escapeHtml(cityName)} Jobs &rarr;</a>
         </div>
       </section>
     `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "Place",
-      "name": cityName,
-      "description": `Job vacancies and tech hiring in ${cityName}`
-    };
+    robotsDirective = 'noindex, follow';
   } else if (cleanPath === 'jobs' || (prefix === 'jobs' && !secondary)) {
     title = 'Technology & Engineering Jobs | TalentXcel';
     description = 'Browse technology and engineering job listings on TalentXcel. Review each listing for current requirements and application details.';
@@ -120,14 +117,8 @@ function generateDynamicSeoHtml(cleanPath: string): string {
     h1 = 'Explore Technology & Engineering Jobs';
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Active Technology Corridors &amp; Openings</h2>
+        <h2 class="text-xl font-bold text-white">Current job listings</h2>
         <p class="text-slate-300 text-sm leading-relaxed">Browse engineering, data, and product jobs across technology roles and locations in India. Open a listing to review its current requirements and application details.</p>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
-          <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer in Bangalore</a>
-          <a href="/jobs/full-stack-developer-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Full Stack Developer in Hyderabad</a>
-          <a href="/jobs/data-scientist-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Scientist in Pune</a>
-          <a href="/jobs/devops-engineer-in-mumbai" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">DevOps Engineer in Mumbai</a>
-        </div>
       </section>
     `;
     jsonLdSchema = {
@@ -178,34 +169,21 @@ function generateDynamicSeoHtml(cleanPath: string): string {
       const citySlug = parts[2];
       const roleName = formatTitle(roleSlug);
       const cityName = formatTitle(citySlug);
-      title = `${roleName} Jobs in ${cityName} 2026 | TalentXcel`;
-      description = `Explore ${roleName} job listings and career opportunities in ${cityName}. Review each listing for current requirements and compensation information.`;
+      title = `${roleName} Jobs in ${cityName} | TalentXcel`;
+      description = `Browse TalentXcel job listings for ${roleName} in ${cityName}. Review each listing for current requirements and employer-provided compensation details.`;
       canonical = `https://talentxcel.in/jobs/${roleSlug}/${citySlug}`;
       h1 = `${roleName} Jobs in ${cityName}`;
+      robotsDirective = 'noindex, follow';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment Corridor in ${escapeHtml(cityName)}</h2>
+          <h2 class="text-xl font-bold text-white">Current ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}</h2>
           <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Check each listing for current requirements and details supplied by the employer.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
-          </div>
           <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/jobs/${escapeHtml(roleSlug)}-in-${escapeHtml(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
+            <a href="/jobs?role=${encodeURIComponent(roleSlug)}&amp;location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse ${escapeHtml(roleName)} Jobs &rarr;</a>
             <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
           </div>
         </section>
       `;
-      jsonLdSchema = {
-        "@context": "https://schema.org",
-        "@type": "Occupation",
-        "name": roleName,
-        "occupationLocation": {
-          "@type": "City",
-          "name": cityName
-        },
-        "description": `${roleName} employment opportunities in ${cityName}`
-      };
     } else if (secondary === 'freshers' || secondary === 'fresher') {
       title = 'Fresher Jobs in India 2026 — Entry Level Hiring, Trainee & Graduate Openings | TalentXcel';
       description = 'Explore entry-level career resources and job listings for graduates across Bangalore, Hyderabad, Pune, Mumbai, and remote locations in India.';

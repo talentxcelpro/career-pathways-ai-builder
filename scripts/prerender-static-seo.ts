@@ -1805,15 +1805,16 @@ async function prerender() {
 
   for (const role of ALL_CANONICAL_ROLES) {
     const slug = role.slug;
-    const title = `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs & Career Guide 2026 | TalentXcel`;
-    const description = `Discover verified ${role.title} job opportunities, required skills, ATS resume templates, salary benchmarks, and hiring companies across India.`;
+    const displayRole = role.title.replace(/\b\w/g, (c) => c.toUpperCase());
+    const title = `${displayRole} Career Overview | TalentXcel`;
+    const description = `Browse TalentXcel job listings for ${role.title} and review role details supplied by employers.`;
     const canonical = `${BASE_URL}/roles/${slug}`;
 
     const bodyHtml = `
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <div>
-          <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(role.title.replace(/\b\w/g, (c) => c.toUpperCase()))} Career Intelligence</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Comprehensive role overview, required technical competencies, market salary ranges, and active vacancies for ${escapeHtml(role.title)} professionals.</p>
+          <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(displayRole)} Career Overview</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse current job listings for ${escapeHtml(role.title)}. Review each listing for its requirements and employer-provided compensation details.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
           <div class="p-4 bg-slate-950 rounded-xl">
@@ -1825,8 +1826,8 @@ async function prerender() {
             <span class="font-semibold text-blue-400">${escapeHtml(role.skills.join(', '))}</span>
           </div>
           <div class="p-4 bg-slate-950 rounded-xl">
-            <span class="text-slate-400 block mb-1">Market Demand</span>
-            <span class="font-semibold text-emerald-400">High Active Hiring</span>
+            <span class="text-slate-400 block mb-1">Listings</span>
+            <span class="font-semibold text-emerald-400">Browse current openings</span>
           </div>
         </div>
         <div class="pt-4 flex flex-wrap gap-3">
@@ -1837,51 +1838,21 @@ async function prerender() {
       </div>
     `;
 
-    const roleBreadcrumb = buildBreadcrumbSchema([
-      { name: 'Home', url: 'https://jobs.talentxcel.in/' },
-      { name: 'Jobs', url: 'https://jobs.talentxcel.in/jobs' },
-      { name: role.title.replace(/\b\w/g, (c) => c.toUpperCase()), url: formatCanonicalUrl(`/jobs/${slug}`) },
-    ]);
-
     writePrerenderedPage(`/roles/${slug}`, {
       title,
       description,
       canonical,
-      h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Careers & Jobs`,
+      h1: `${displayRole} Careers & Jobs`,
       bodyContentHtml: bodyHtml,
-      jsonLd: [roleBreadcrumb],
-    });
-
-    writePrerenderedPage(`/jobs/${slug}`, {
-      title,
-      description,
-      canonical: formatCanonicalUrl(`/jobs/${slug}`),
-      h1: `${role.title.replace(/\b\w/g, (c) => c.toUpperCase())} Jobs`,
-      bodyContentHtml: bodyHtml,
-      jsonLd: [roleBreadcrumb],
+      robots: 'noindex, follow',
     });
 
     // Also write /jobs/:role/:city combinations
     for (const city of TOP_CITIES) {
       const cityCanonical = formatCanonicalUrl(`/jobs/${slug}/${city.slug}`);
       const capitalizedRole = role.title.replace(/\b\w/g, (c) => c.toUpperCase());
-      const cityTitle = `${capitalizedRole} Jobs in ${city.name} [Hiring 2026] — Verified Vacancies | TalentXcel`;
-      const cityDesc = `Find verified ${capitalizedRole} vacancies in ${city.name}. View salary benchmarks (₹3L - ₹12L PA), top hiring employers, required skills, and apply directly.`;
-
-      const roleCityFaqs = [
-        {
-          question: `What is the average salary for a ${capitalizedRole} in ${city.name}?`,
-          answer: `The average salary for a ${capitalizedRole} in ${city.name} ranges from ₹3,00,000 to ₹8,50,000 per annum depending on experience, technical proficiency, and company scale.`,
-        },
-        {
-          question: `Which companies are hiring ${capitalizedRole}s in ${city.name}?`,
-          answer: `Technology companies, digital product platforms, and venture-backed startups in ${city.name} (including TalentXcel Services and Chatr) are actively hiring for ${capitalizedRole} roles.`,
-        },
-        {
-          question: `What qualifications are required for ${capitalizedRole} jobs in ${city.name}?`,
-          answer: `Key requirements typically include relevant hands-on experience, strong proficiency in ${role.skills.slice(0, 3).join(', ')}, and demonstrated problem-solving capability.`,
-        },
-      ];
+      const cityTitle = `${capitalizedRole} Jobs in ${city.name} | TalentXcel`;
+      const cityDesc = `Browse TalentXcel job listings for ${capitalizedRole} in ${city.name}. Review each listing for current requirements and employer-provided compensation details.`;
 
       const breadcrumb = buildBreadcrumbSchema([
         { name: 'Home', url: 'https://jobs.talentxcel.in/' },
@@ -1889,70 +1860,14 @@ async function prerender() {
         { name: capitalizedRole, url: formatCanonicalUrl(`/jobs/${slug}`) },
         { name: city.name, url: cityCanonical },
       ]);
-      const faqLd = buildFAQSchema(roleCityFaqs);
-
-      let featuredJobHtml = '';
-      if (slug === 'marketing-executive' && city.slug === 'noida') {
-        featuredJobHtml = `
-          <div class="mt-6 p-6 bg-slate-950 border border-blue-500/30 rounded-xl">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-md">Verified Active Vacancy</span>
-              <span class="text-xs text-slate-400">Posted by TalentXcel Services</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mt-3">Marketing Executive - Chatr (char.chat)</h3>
-            <p class="text-xs text-slate-300 mt-1">Execute multi-channel campaigns, social growth, and performance marketing in Noida, UP.</p>
-            <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
-              <span class="text-emerald-400 font-semibold">₹3.0L - ₹5.0L PA</span>
-              <span>&bull;</span>
-              <span>Full-time</span>
-              <span>&bull;</span>
-              <span>Noida Sector 62</span>
-            </div>
-            <a href="/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1" class="inline-block mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Apply Now Directly &rarr;</a>
-          </div>
-        `;
-      } else if (slug === 'content-writer' && city.slug === 'noida') {
-        featuredJobHtml = `
-          <div class="mt-6 p-6 bg-slate-950 border border-blue-500/30 rounded-xl">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-md">Verified Active Vacancy</span>
-              <span class="text-xs text-slate-400">Posted by TalentXcel Services</span>
-            </div>
-            <h3 class="text-lg font-bold text-white mt-3">Content Writer - Chatr (char.chat)</h3>
-            <p class="text-xs text-slate-300 mt-1">Create engaging articles, product copy, and social narratives in Noida, UP.</p>
-            <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
-              <span class="text-emerald-400 font-semibold">₹3.0L - ₹4.5L PA</span>
-              <span>&bull;</span>
-              <span>Full-time</span>
-              <span>&bull;</span>
-              <span>Noida Sector 62</span>
-            </div>
-            <a href="/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1" class="inline-block mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Apply Now Directly &rarr;</a>
-          </div>
-        `;
-      }
-
       const cityBodyHtml = `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <div>
             <h2 class="text-2xl font-bold text-white mb-2">${escapeHtml(capitalizedRole)} Jobs in ${escapeHtml(city.name)}</h2>
-            <p class="text-slate-300 text-sm leading-relaxed">Explore verified hiring companies, active vacancies, required technical skills, and compensation packages for ${escapeHtml(capitalizedRole)} positions in ${escapeHtml(city.name)}.</p>
-          </div>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(city.name)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Key Skills</span><span class="font-semibold text-blue-400">${escapeHtml(role.skills.join(', '))}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Market</span><span class="font-semibold text-emerald-400">Active Openings</span></div>
-          </div>
-          ${featuredJobHtml}
-          <div class="pt-6 border-t border-slate-800 space-y-4">
-            <h3 class="text-base font-bold text-white">Frequently Asked Questions — ${escapeHtml(capitalizedRole)} in ${escapeHtml(city.name)}</h3>
-            <div class="space-y-3">
-              ${roleCityFaqs.map((f) => `<div class="p-4 bg-slate-950 rounded-xl"><h4 class="text-xs font-semibold text-white">${escapeHtml(f.question)}</h4><p class="text-xs text-slate-400 mt-1 leading-relaxed">${escapeHtml(f.answer)}</p></div>`).join('')}
-            </div>
+            <p class="text-slate-300 text-sm leading-relaxed">Browse job listings for ${escapeHtml(capitalizedRole)} in ${escapeHtml(city.name)}. Review each listing for current requirements and employer-provided compensation details.</p>
           </div>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/jobs?role=${slug}&location=${city.slug}" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Browse All ${escapeHtml(capitalizedRole)} Jobs in ${escapeHtml(city.name)} &rarr;</a>
-            <a href="/resume" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg">Optimize Resume for ${escapeHtml(city.name)} &rarr;</a>
           </div>
         </div>
       `;
@@ -1963,7 +1878,8 @@ async function prerender() {
         canonical: cityCanonical,
         h1: `${capitalizedRole} Jobs in ${city.name}`,
         bodyContentHtml: cityBodyHtml,
-        jsonLd: [breadcrumb, faqLd],
+        robots: 'noindex, follow',
+        jsonLd: [breadcrumb],
       });
     }
   }
@@ -1997,11 +1913,7 @@ async function prerender() {
           name: hub.name,
           slug,
           region: existing?.region || 'India',
-          state: hub.state || 'India',
-          stats: hub.stats,
-          topCompanies: hub.topCompanies,
-          faqs: hub.faqs,
-          content: hub.content
+          state: hub.state || 'India'
         });
       }
     }
@@ -2047,30 +1959,11 @@ async function prerender() {
     for (const loc of allLocations) {
       const slug = loc.slug;
       const canonical = formatCanonicalUrl(`/locations/${slug}`);
-      const title = `Jobs & Tech Hiring in ${loc.name} 2026 | TalentXcel`;
-      const description = `Explore active tech vacancies, top hiring companies, average salary benchmarks (${loc.stats?.avgSalary || '₹4.5L - ₹12L PA'}), and career opportunities in ${loc.name}, ${loc.state}.`;
+      const title = `Job Listings in ${loc.name} | TalentXcel`;
+      const description = `Browse TalentXcel job listings for ${loc.name}, ${loc.state}. Review each listing for its current requirements and employer-provided compensation details.`;
 
-      const cityRealJobs = activeJobsByCity.get(slug) || [];
-      const realJobsCount = cityRealJobs.length > 0 ? cityRealJobs.length : (TOP_50_INDIAN_HUBS[slug] ? 44 : 20);
-      const verifiedCompanies = cityRealJobs.length > 0 
-        ? Array.from(new Set(cityRealJobs.map(j => j.company_name).filter(Boolean))).slice(0, 8)
-        : (loc.topCompanies || ['TCS', 'Infosys', 'HDFC Bank', 'Tech Mahindra']);
-
-      const defaultFaqs = [
-        {
-          question: `What is the average salary in ${loc.name}?`,
-          answer: `Average salaries in ${loc.name} range from ${loc.stats?.avgSalary || '₹4.5L - ₹12L PA'} depending on role seniority, tech stack, and employer tier.`
-        },
-        {
-          question: `Which companies are actively hiring in ${loc.name}?`,
-          answer: `Leading employers hiring in ${loc.name} include ${verifiedCompanies.join(', ')} across engineering, analytics, banking, and customer operations.`
-        },
-        {
-          question: `How can freshers get jobs in ${loc.name}?`,
-          answer: `Job seekers in ${loc.name} can optimize their ATS resumes for free with TalentXcel, benchmark skill percentiles, and apply directly to verified local vacancies.`
-        }
-      ];
-      const faqs = (loc.faqs && loc.faqs.length > 0) ? loc.faqs : defaultFaqs;
+      const cityRealJobs = (activeJobsByCity.get(slug) || []).filter((job) => job.seo_slug && job.title && job.company_name);
+      const companiesFromListings = Array.from(new Set(cityRealJobs.map(j => j.company_name).filter(Boolean))).slice(0, 8);
 
       // Sibling city links (10 nearby or prominent hubs)
       const siblingCities = allLocations.filter(c => c.slug !== slug).slice(0, 12);
@@ -2078,8 +1971,8 @@ async function prerender() {
       const realJobsGridHtml = cityRealJobs.length > 0 ? `
         <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
           <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <h3 class="text-lg font-bold text-white">Live Verified Openings in ${escapeHtml(loc.name)} (${realJobsCount} Active)</h3>
-            <span class="text-xs text-emerald-400 font-mono">&bull; Direct Employer Apply</span>
+            <h3 class="text-lg font-bold text-white">Current job listings in ${escapeHtml(loc.name)}</h3>
+            <span class="text-xs text-slate-400 font-mono">Details are provided on each listing</span>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
             ${cityRealJobs.slice(0, 6).map(j => `
@@ -2087,12 +1980,12 @@ async function prerender() {
                 <div class="flex justify-between items-start">
                   <div>
                     <h4 class="font-bold text-white text-sm">${escapeHtml(j.title)}</h4>
-                    <span class="text-slate-400 text-xs">${escapeHtml(j.company_name)} &bull; ${escapeHtml(loc.name)}</span>
+                    <span class="text-slate-400 text-xs">${escapeHtml(j.company_name)} &bull; ${escapeHtml(j.location_city || j.location || loc.name)}</span>
                   </div>
-                  <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono font-semibold text-[11px]">${escapeHtml(j.salary_range || 'Competitive')}</span>
+                  ${j.salary_range ? `<span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono font-semibold text-[11px]">${escapeHtml(j.salary_range)}</span>` : ''}
                 </div>
                 <div class="pt-2 flex justify-between items-center text-[11px]">
-                  <span class="text-slate-500">Verified &bull; 100% Genuine</span>
+                  <span class="text-slate-500">Listing details</span>
                   <a href="/jobs/${escapeHtml(j.seo_slug)}" class="text-blue-400 hover:text-blue-300 font-semibold">View Job &rarr;</a>
                 </div>
               </div>
@@ -2104,30 +1997,15 @@ async function prerender() {
       const bodyHtml = `
         <div class="space-y-8">
           <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
-            <h2 class="text-2xl font-bold text-white mb-2">Employment &amp; Tech Hiring Market in ${escapeHtml(loc.name)}, ${escapeHtml(loc.state)}</h2>
-            <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(loc.name)} is an established employment center in ${escapeHtml(loc.state)}. TalentXcel connects job seekers and experienced professionals with verified tech firms, high-growth startups, and corporate hubs in ${escapeHtml(loc.name)}.</p>
+            <h2 class="text-2xl font-bold text-white mb-2">Job listings for ${escapeHtml(loc.name)}, ${escapeHtml(loc.state)}</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">Browse job listings associated with ${escapeHtml(loc.name)}. Review each listing for current requirements, employer information, and compensation details when supplied.</p>
             
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80">
-                <span class="text-slate-400 block mb-1">Active Hiring Employers</span>
-                <span class="text-lg font-bold text-white">${verifiedCompanies.length}+ Companies</span>
-              </div>
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80">
-                <span class="text-slate-400 block mb-1">Verified Vacancies</span>
-                <span class="text-lg font-bold text-emerald-400">${realJobsCount} Openings</span>
-              </div>
-              <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80">
-                <span class="text-slate-400 block mb-1">Typical Salary Band</span>
-                <span class="text-lg font-bold text-amber-400">${escapeHtml(loc.stats?.avgSalary || '₹4.5-12L PA')}</span>
-              </div>
-            </div>
-
-            <div class="pt-4 border-t border-slate-800">
-              <h3 class="text-sm font-bold text-white mb-3">Top Hiring Employers in ${escapeHtml(loc.name)}</h3>
+            ${companiesFromListings.length ? `<div class="pt-4 border-t border-slate-800">
+              <h3 class="text-sm font-bold text-white mb-3">Employers named in current listings</h3>
               <div class="flex flex-wrap gap-2 text-xs">
-                ${verifiedCompanies.map(c => `<span class="px-3 py-1.5 bg-slate-950 text-slate-300 border border-slate-800 rounded-lg">${escapeHtml(c)}</span>`).join('')}
+                ${companiesFromListings.map(c => `<span class="px-3 py-1.5 bg-slate-950 text-slate-300 border border-slate-800 rounded-lg">${escapeHtml(c)}</span>`).join('')}
               </div>
-            </div>
+            </div>` : ''}
 
             <div class="pt-2 flex flex-wrap gap-3">
               <a href="/jobs?location=${slug}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md">Browse All ${escapeHtml(loc.name)} Jobs &rarr;</a>
@@ -2145,30 +2023,6 @@ async function prerender() {
                   <span class="font-bold block text-white">${escapeHtml(r.name)}</span>
                   <span class="text-slate-500 text-[11px]">Jobs in ${escapeHtml(loc.name)} &rarr;</span>
                 </a>
-              `).join('')}
-            </div>
-          </section>
-
-          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
-            <h3 class="text-lg font-bold text-white">Salary Benchmarks in ${escapeHtml(loc.name)} by Specialization</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              ${sampleRoles.map(r => `
-                <a href="/salary/${r.slug}/${slug}" class="p-3 bg-slate-950 border border-slate-800 hover:border-emerald-500/50 rounded-xl text-slate-300 hover:text-white transition block">
-                  <span class="font-bold block text-emerald-400">${escapeHtml(r.name)} Salary</span>
-                  <span class="text-slate-500 text-[11px]">${escapeHtml(loc.name)} Percentiles &rarr;</span>
-                </a>
-              `).join('')}
-            </div>
-          </section>
-
-          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-4">
-            <h3 class="text-lg font-bold text-white">Frequently Asked Questions — Jobs in ${escapeHtml(loc.name)}</h3>
-            <div class="space-y-3 text-xs">
-              ${faqs.map(f => `
-                <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80">
-                  <h4 class="font-bold text-white mb-1">${escapeHtml(f.question)}</h4>
-                  <p class="text-slate-400 leading-relaxed">${escapeHtml(f.answer)}</p>
-                </div>
               `).join('')}
             </div>
           </section>
@@ -2199,15 +2053,14 @@ async function prerender() {
         url: canonical,
         breadcrumb: breadcrumbSchema,
       };
-      const faqSchema = buildFAQSchema(faqs);
-
       writePrerenderedPage(`/locations/${slug}`, {
         title,
         description,
         canonical,
-        h1: `Jobs & Tech Hiring in ${loc.name}`,
+        h1: `Job Listings in ${loc.name}`,
         bodyContentHtml: bodyHtml,
-        jsonLd: [collectionSchema, breadcrumbSchema, faqSchema],
+        robots: 'noindex, follow',
+        jsonLd: [collectionSchema, breadcrumbSchema],
       });
     }
   } catch (err) {

@@ -2,7 +2,7 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlink
 import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
-import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, LOCATION_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
+import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
 import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog';
@@ -228,13 +228,6 @@ export async function generateProductionSitemaps() {
     priority: '0.85'
   })));
 
-  // 5. Verified Location Hubs (36 high-demand cities)
-  const locationEntries = deduplicate(LOCATION_HUBS.map(hub => ({
-    path: `/locations/${hub.slug}`,
-    changefreq: 'weekly',
-    priority: '0.85'
-  })));
-
   // 6. Posts & Articles (Verified editorial & community data)
   let postEntriesList: SitemapEntry[] = [];
   try {
@@ -250,6 +243,13 @@ export async function generateProductionSitemaps() {
       });
     }
   } catch (e) {}
+  if (postEntriesList.length === 0) {
+    postEntriesList.push({
+      path: '/posts',
+      changefreq: 'weekly',
+      priority: '0.7'
+    });
+  }
   const postEntries = deduplicate(postEntriesList);
 
   // 7. Verified Company Profiles
@@ -390,26 +390,12 @@ export async function generateProductionSitemaps() {
     { filename: 'sitemap-salary.xml', entries: salaryEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-resume.xml', entries: resumeEntries, origin: 'https://resume.talentxcel.in' },
     { filename: 'sitemap-career-paths.xml', entries: pathwayEntries, origin: 'https://careers.talentxcel.in' },
-    { filename: 'sitemap-locations.xml', entries: locationEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-posts.xml', entries: postEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-blog.xml', entries: blogEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-news.xml', entries: newsEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-companies.xml', entries: companyEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-services.xml', entries: serviceEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-rankings.xml', entries: rankingsEntries, origin: 'https://talentxcel.in' },
-    {
-      filename: 'sitemap-role-city-matrix.xml',
-      entries: deduplicate(
-        CANONICAL_ROLES.flatMap((role) =>
-          LOCATION_HUBS.map((hub) => ({
-            path: `/jobs/${role}-in-${hub.slug}`,
-            changefreq: 'daily' as const,
-            priority: '0.85',
-          }))
-        )
-      ),
-      origin: 'https://talentxcel.in',
-    },
   ];
 
   const SITEMAP_MAX_URLS = 25_000;

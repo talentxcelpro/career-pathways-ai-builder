@@ -5,7 +5,7 @@
  * talentxcel.net is a secondary/alias domain and must never be canonical.
  */
 
-import { INDUSTRY_HUBS, LOCATION_HUBS, RESOURCE_HUBS } from './publicIA';
+import { INDUSTRY_HUBS, RESOURCE_HUBS } from './publicIA';
 
 export const PRODUCTION_ORIGIN = 'https://talentxcel.in';
 
@@ -31,6 +31,7 @@ export const NOINDEX_PREFIXES = [
   '/employer/dashboard',
   '/employer/settings',
   '/employer/private',
+  '/employers/post-job',
   '/profile/edit',
   '/profile/settings',
   '/my-applications',
@@ -92,6 +93,9 @@ export const NOINDEX_PREFIXES = [
 const NOINDEX_PATH_PATTERNS = [
   /^\/(?:blog|news)\/[^/]+\/?$/,
   /^\/salary\/(?!scenarios\/?$|negotiation\/?$|goals\/?$|skills-gap\/?$|jobs\/?$)[^/]+(?:\/[^/]+)?\/?$/,
+  /^\/locations\/[^/]+\/?$/,
+  /^\/roles\/[^/]+\/?$/,
+  /^\/jobs\/[^/]+\/[^/]+\/?$/,
 ];
 
 /**
@@ -148,14 +152,12 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
   { path: '/rankings/ai-products/singapore', changefreq: 'daily', priority: '0.9' },
 
   // Candidate services
-  { path: '/resume-builder', changefreq: 'weekly', priority: '0.9' },
   { path: '/ai-career-coach', changefreq: 'weekly', priority: '0.8' },
   { path: '/job-matching', changefreq: 'weekly', priority: '0.8' },
   { path: '/reverse-job-search', changefreq: 'weekly', priority: '0.8' },
   { path: '/career-coaching', changefreq: 'monthly', priority: '0.7' },
 
   // Employer services
-  { path: '/employers', changefreq: 'weekly', priority: '0.9' },
   { path: '/staffing', changefreq: 'monthly', priority: '0.8' },
   { path: '/recruitment', changefreq: 'monthly', priority: '0.8' },
   { path: '/rpo', changefreq: 'monthly', priority: '0.8' },
@@ -168,13 +170,6 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
     changefreq: 'weekly' as const,
     priority: '0.7',
   })),
-  { path: '/locations', changefreq: 'weekly', priority: '0.8' },
-  ...LOCATION_HUBS.map((hub) => ({
-    path: `/locations/${hub.slug}`,
-    changefreq: 'daily' as const,
-    priority: '0.7',
-  })),
-  { path: '/resources', changefreq: 'weekly', priority: '0.7' },
   ...RESOURCE_HUBS.map((hub) => ({
     path: `/resources/${hub.slug}`,
     changefreq: 'monthly' as const,

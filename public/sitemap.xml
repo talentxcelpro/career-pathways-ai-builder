@@ -37,9 +37,6 @@
     <loc>https://talentxcel.in/sitemap-career-paths.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-locations.xml</loc>
-  </sitemap>
-  <sitemap>
     <loc>https://talentxcel.in/sitemap-posts.xml</loc>
   </sitemap>
   <sitemap>
@@ -55,6 +52,6 @@
     <loc>https://talentxcel.in/sitemap-services.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-role-city-matrix.xml</loc>
+    <loc>https://talentxcel.in/sitemap-rankings.xml</loc>
   </sitemap>
 </sitemapindex>

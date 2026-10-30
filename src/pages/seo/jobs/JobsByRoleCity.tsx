@@ -253,51 +253,8 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
 
         let combinedJobs = data ? [...data] : [];
 
-        // If manual jobs are fewer than 10, query scraped_jobs matching role & city in SQL
-        if (combinedJobs.length < 10) {
-          try {
-            const scrapedRoleFilter = roleTokens.map(r => `job_title.ilike.%${r}%`).join(',');
-            const scrapedCityFilter = cityAliases.map(c => `location.ilike.%${c}%`).join(',');
-
-            const { data: scrapedMatches } = await supabase
-              .from('scraped_jobs')
-              .select('id, job_title, company, location, salary, job_description, created_at')
-              .or(scrapedCityFilter)
-              .or(scrapedRoleFilter)
-              .order('created_at', { ascending: false })
-              .limit(20);
-
-            if (scrapedMatches && scrapedMatches.length > 0) {
-              const formattedScraped = scrapedMatches.map((s: any) => ({
-                id: String(s.id),
-                title: s.job_title || `${roleDisplay} Opening`,
-                company_name: s.company || 'Verified Employer',
-                location: s.location || cityDisplay,
-                salary_min: undefined,
-                salary_max: undefined,
-                employment_type: 'Full-time',
-                experience_level: 'Mid-Senior',
-                skills_required: catInfo.skills.slice(0, 4),
-                description: s.job_description || `${roleDisplay} position in ${cityDisplay}.`,
-                posted_at: s.created_at || new Date().toISOString(),
-                seo_slug: `${roleSlug}-${citySlug}`,
-              }));
-
-              const existingIds = new Set(combinedJobs.map((j) => j.id));
-              for (const sj of formattedScraped) {
-                if (!existingIds.has(sj.id)) {
-                  combinedJobs.push(sj as any);
-                  existingIds.add(sj.id);
-                }
-              }
-            }
-          } catch {
-            // Non-blocking fallback
-          }
-        }
-
         setJobs(combinedJobs);
-        setTotalCount(combinedJobs.length);
+        setTotalCount(count ?? combinedJobs.length);
 
         trackDiscoveryPageView({
           page_type: 'RoleLocationDiscovery',
@@ -316,8 +273,8 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
   }, [role, city]);
 
   // SEO Metadata — WebPage / Occupation Schema (No fake JobPosting when 0 jobs exist)
-  const pageTitle = `${roleDisplay} Careers, Skills & Opportunities in ${cityDisplay} | TalentXcel`;
-  const pageDescription = `Explore ${roleDisplay} career paths, required skills, ATS resume guides, interview prep, and hiring market context in ${cityDisplay} on TalentXcel.`;
+  const pageTitle = `${roleDisplay} Jobs in ${cityDisplay} | TalentXcel`;
+  const pageDescription = `Browse current TalentXcel job listings for ${roleDisplay} in ${cityDisplay}. Review each listing for its requirements and employer-provided compensation details.`;
   const canonicalUrl = `https://talentxcel.in/jobs/${roleSlug}/${citySlug}`;
 
   const breadcrumbSchema = {
@@ -329,19 +286,6 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
       { '@type': 'ListItem', position: 3, name: roleDisplay, item: `https://talentxcel.in/roles/${roleSlug}` },
       { '@type': 'ListItem', position: 4, name: `${roleDisplay} in ${cityDisplay}`, item: canonicalUrl },
     ],
-  };
-
-  const occupationSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Occupation',
-    name: roleDisplay,
-    description: `${roleDisplay} career opportunities, required skills, and employment ecosystem context in ${cityDisplay}.`,
-    occupationLocation: {
-      '@type': 'City',
-      name: cityDisplay,
-    },
-    skills: catInfo.skills.slice(0, 8).join(', '),
-    mainEntityOfPage: canonicalUrl,
   };
 
   if (loading) {
@@ -359,6 +303,7 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
+        <meta name="robots" content="noindex, follow" />
         <meta name="keywords" content={`${roleDisplay} jobs, ${cityDisplay} jobs, ${roleDisplay} skills, ${cityDisplay} career ecosystem, ${roleDisplay} resume guide`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={pageTitle} />
@@ -369,7 +314,6 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
-        <script type="application/ld+json">{JSON.stringify(occupationSchema)}</script>
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 space-y-10">
@@ -393,7 +337,7 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl leading-relaxed">
-            {catInfo.overview} Explore key skills hiring managers seek, career progression milestones, resume guidelines, and interview preparation for {roleDisplay} roles in {cityDisplay}.
+            Browse current {roleDisplay} job listings in {cityDisplay}. Review each listing for current requirements and employer-provided compensation details.
           </p>
 
           {totalCount > 0 && (
@@ -427,7 +371,7 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
               <ResumeQuickScanWidget
                 role={roleDisplay}
                 location={cityDisplay}
-                matchingJobsCount={jobs.length || 14}
+              matchingJobsCount={jobs.length}
               />
 
               {/* Active Jobs Listings (if any exist) */}
