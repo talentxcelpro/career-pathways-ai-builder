@@ -108,29 +108,43 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
       }
     };
 
-    // Initialize realtime safely with retry logic
+    // Initialize realtime safely with retry logic - deferred to avoid blocking initial paint/LCP
     const initWithRetry = async (attempt = 1) => {
+      if (!mounted) return;
       try {
+        // Only connect active websockets if user has active session or on interactive tool routes
+        const { data: { session } } = await supabase.auth.getSession();
+        const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+        const isInteractiveToolRoute = pathname.startsWith('/dashboard') || 
+                                       pathname.startsWith('/network/messages') || 
+                                       pathname.startsWith('/admin');
+        
+        if (!session?.user && !isInteractiveToolRoute) {
+          // Guests on public pages use low-overhead static states
+          setState(prev => ({ ...prev, isConnected: true, usePollingFallback: false }));
+          return;
+        }
+
         await initTalentXcelRealtime(onUpdateCallback);
         console.log('🎯 Realtime initialized successfully');
       } catch (initError) {
-        console.error(`Realtime initialization failed (attempt ${attempt}):`, initError);
-        
-        // Retry up to 3 times with exponential backoff
-        if (attempt < 3) {
-          const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
-          console.log(`🔄 Retrying realtime init in ${delay}ms...`);
+        console.warn(`Realtime init attempt ${attempt} deferred:`, initError);
+        if (attempt < 2) {
           setTimeout(() => {
             if (mounted) initWithRetry(attempt + 1);
-          }, delay);
+          }, 15000);
         } else {
-          console.error('🚫 Realtime initialization failed after 3 attempts');
           setState(prev => ({ ...prev, usePollingFallback: true }));
         }
       }
     };
 
-    initWithRetry();
+    // Defer initialization to after main thread idle
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => initWithRetry(), { timeout: 3000 });
+    } else {
+      setTimeout(initWithRetry, 1000);
+    }
 
     // Safe auth listener
     let authListener: any = null;
@@ -208,7 +222,7 @@ export const SafeRealtimeProvider: FC<SafeRealtimeProviderProps> = ({
       } catch (error) {
         console.error('Status interval error:', error);
       }
-    }, 3000);
+    }, 15000);
 
     // Cleanup function
     return () => {

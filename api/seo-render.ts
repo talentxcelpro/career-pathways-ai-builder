@@ -94,7 +94,44 @@ function generateDynamicSeoHtml(cleanPath: string): string {
   let jsonLdSchema: any = null;
   let robotsDirective = 'index, follow';
 
-  if (prefix === 'locations' && secondary) {
+  if (!cleanPath || cleanPath === '') {
+    title = 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
+    description = 'TalentXcel SI — Super Intelligence for Careers & Hiring. Context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.';
+    canonical = 'https://talentxcel.in';
+    h1 = 'Your Career. Your Talent. A Global Platform.';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+          TalentXcel SI — Super Intelligence for Careers &amp; Hiring
+        </span>
+        <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Your Career. Your Talent. <span class="text-blue-500">A Global Platform.</span></h1>
+        <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          Powered by TalentXcel SI — context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Global Opportunities &rarr;</a>
+          <a href="/career-insights" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold text-sm rounded-xl border border-slate-700 transition">AI-Powered Career Intelligence</a>
+          <a href="/hire" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Hire Talent (Recruiter OS)</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  } else if (cleanPath === 'reels') {
+    title = 'TalentXcel Reels — Global Tech, AI & Career Stories';
+    description = 'Watch short-form professional knowledge, engineering architecture breakdowns, and career stories on TalentXcel Reels.';
+    canonical = 'https://talentxcel.in/reels';
+    h1 = 'TalentXcel Reels — Professional Career Content';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 class="text-2xl font-bold text-white">Professional Career Content &amp; Architectural Breakdowns</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Short-form video content curated for technology and leadership professionals across AI, system design, salary negotiation, and career advancement.</p>
+        <div class="pt-2">
+          <a href="/reels" class="px-5 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl">Watch Reels in App &rarr;</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  } else if (prefix === 'locations' && secondary) {
     const cityName = formatTitle(secondary);
     title = `Job Listings in ${cityName} | TalentXcel`;
     description = `Browse current TalentXcel job listings for ${cityName}. Review each listing for its requirements and employer-provided compensation details.`;

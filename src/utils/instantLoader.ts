@@ -28,7 +28,7 @@ export const addResourceHints = () => {
   addHint('preload', 'https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfMZ.woff2', 'font', 'font/woff2');
   
   // Preload hero image
-  addHint('preload', '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png', 'image');
+  addHint('preload', '/hero-character-full.webp', 'image', 'image/webp');
 };
 
 // Ultra-fast DOM optimizations

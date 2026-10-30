@@ -2,6 +2,7 @@ import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlink
 import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
+import { formatCanonicalUrl } from '../src/config/domainArchitecture';
 import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
 import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
@@ -64,10 +65,18 @@ function escapeXml(unsafe: string): string {
   });
 }
 
+function canonicalSitemapLoc(entry: SitemapEntry, originOverride?: string): string {
+  const normalizedPath = entry.path === '/' ? '/' : entry.path.replace(/\/+$/, '');
+  // Product subdomain homepages remain canonical to that universe; routed pages
+  // follow the centralized apex canonical policy in domainArchitecture.ts.
+  return normalizedPath === '/'
+    ? `${originOverride || PRODUCTION_ORIGIN}/`
+    : formatCanonicalUrl(normalizedPath);
+}
+
 function buildUrlSetXml(entries: SitemapEntry[], originOverride?: string): string {
-  const origin = originOverride || PRODUCTION_ORIGIN;
   const urlNodes = entries.map((entry) => {
-    const loc = `${origin}${entry.path === '/' ? '/' : entry.path.replace(/\/+$/, '')}`;
+    const loc = canonicalSitemapLoc(entry, originOverride);
     const lines = [
       '  <url>',
       `    <loc>${escapeXml(loc)}</loc>`,
@@ -379,7 +388,6 @@ export async function generateProductionSitemaps() {
   // Master segmented configuration array (All 10 Dedicated Production Domains + Supplemental Hubs)
   const sitemapConfig: { filename: string; entries: SitemapEntry[]; origin?: string }[] = [
     { filename: 'sitemap-base.xml', entries: baseEntries, origin: 'https://talentxcel.in' },
-    { filename: 'sitemap-core.xml', entries: baseEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-jobs.xml', entries: activeJobEntries, origin: 'https://jobs.talentxcel.in' },
     { filename: 'sitemap-learning.xml', entries: learningEntries, origin: 'https://learning.talentxcel.in' },
     { filename: 'sitemap-passport.xml', entries: passportEntries, origin: 'https://passport.talentxcel.in' },
@@ -403,24 +411,29 @@ export async function generateProductionSitemaps() {
 
   sitemapConfig.forEach(({ filename, entries, origin }) => {
     if (entries.length === 0) return;
+    const uniqueEntries = deduplicate(entries).filter((entry) => !globalSeenLocs.has(canonicalSitemapLoc(entry, origin)));
+    if (uniqueEntries.length === 0) {
+      console.log(`↷ Skipped ${filename}: all URLs already appear in an earlier sitemap`);
+      return;
+    }
 
-    if (entries.length <= SITEMAP_MAX_URLS) {
-      const xml = buildUrlSetXml(entries, origin);
+    if (uniqueEntries.length <= SITEMAP_MAX_URLS) {
+      const xml = buildUrlSetXml(uniqueEntries, origin);
       writeFileSync(resolve(publicDir, filename), xml, 'utf-8');
-      validSitemapsForIndex.push({ filename, count: entries.length });
-      entries.forEach(e => globalSeenLocs.add(`${origin || PRODUCTION_ORIGIN}${e.path}`));
-      console.log(`✓ Generated ${filename}: ${entries.length.toLocaleString()} URLs (Origin: ${origin || PRODUCTION_ORIGIN})`);
+      validSitemapsForIndex.push({ filename, count: uniqueEntries.length });
+      uniqueEntries.forEach((entry) => globalSeenLocs.add(canonicalSitemapLoc(entry, origin)));
+      console.log(`✓ Generated ${filename}: ${uniqueEntries.length.toLocaleString()} URLs (Origin: ${origin || PRODUCTION_ORIGIN})`);
     } else {
       // Automatic 50,000-URL Sharding Protocol Engine
-      const totalShards = Math.ceil(entries.length / SITEMAP_MAX_URLS);
+      const totalShards = Math.ceil(uniqueEntries.length / SITEMAP_MAX_URLS);
       const nameWithoutExt = filename.replace(/\.xml$/, '');
       for (let i = 0; i < totalShards; i++) {
-        const shardEntries = entries.slice(i * SITEMAP_MAX_URLS, (i + 1) * SITEMAP_MAX_URLS);
+        const shardEntries = uniqueEntries.slice(i * SITEMAP_MAX_URLS, (i + 1) * SITEMAP_MAX_URLS);
         const shardFilename = `${nameWithoutExt}-${i + 1}.xml`;
         const xml = buildUrlSetXml(shardEntries, origin);
         writeFileSync(resolve(publicDir, shardFilename), xml, 'utf-8');
         validSitemapsForIndex.push({ filename: shardFilename, count: shardEntries.length });
-        shardEntries.forEach(e => globalSeenLocs.add(`${origin || PRODUCTION_ORIGIN}${e.path}`));
+        shardEntries.forEach((entry) => globalSeenLocs.add(canonicalSitemapLoc(entry, origin)));
         console.log(`✓ Generated Sharded Sitemap ${shardFilename}: ${shardEntries.length.toLocaleString()} URLs (Origin: ${origin || PRODUCTION_ORIGIN})`);
       }
     }

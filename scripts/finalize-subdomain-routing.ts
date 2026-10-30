@@ -66,6 +66,9 @@ export function finalizeSubdomainRouting(): void {
 
   // 2. Finalize dist/ directory if present
   if (existsSync(distDir)) {
+    if (existsSync(resolve(distDir, 'reels'))) fs.rmSync(resolve(distDir, 'reels'), { recursive: true, force: true });
+    if (existsSync(resolve(distDir, 'reels.html'))) unlinkSync(resolve(distDir, 'reels.html'));
+    if (existsSync(resolve(distDir, 'home.html'))) unlinkSync(resolve(distDir, 'home.html'));
     const distSitemap = resolve(distDir, 'sitemap.xml');
     const distSitemapRoot = resolve(distDir, 'sitemap-root.xml');
     if (existsSync(distSitemap)) {

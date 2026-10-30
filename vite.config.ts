@@ -78,8 +78,29 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/docx')) {
             return 'docx-vendor';
           }
-          // 5. Keep all React core runtime and vendor libraries in a unified vendor chunk
-          // to prevent cross-chunk circular dependencies and uninitialized createContext calls
+          // 5. Heavy graphics, 3D, and flow libraries loaded on-demand
+          if (id.includes('node_modules/@react-three') || id.includes('node_modules/three')) {
+            return 'three-vendor';
+          }
+          if (id.includes('node_modules/@xyflow')) {
+            return 'xyflow-vendor';
+          }
+          if (id.includes('node_modules/@react-pdf')) {
+            return 'react-pdf-vendor';
+          }
+          if (id.includes('node_modules/@aws-sdk')) {
+            return 'aws-vendor';
+          }
+          if (id.includes('node_modules/jszip')) {
+            return 'jszip-vendor';
+          }
+          if (id.includes('node_modules/@dnd-kit') || id.includes('node_modules/@hello-pangea')) {
+            return 'dnd-vendor';
+          }
+          if (id.includes('node_modules/recharts')) {
+            return 'recharts-vendor';
+          }
+          // 6. Keep React core runtime and remaining vendor libraries in core vendor
           if (id.includes('node_modules')) {
             return 'vendor';
           }

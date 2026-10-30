@@ -43,6 +43,25 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
+function toMetaDescription(source: string, maxLength = 160): string {
+  const plainText = (source || '')
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/[`*_#>~]/g, ' ')
+    .replace(/(^|\s)-\s+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (plainText.length <= maxLength) return plainText;
+
+  const candidate = plainText.slice(0, maxLength - 1);
+  const lastWordBoundary = candidate.lastIndexOf(' ');
+  const summary = lastWordBoundary > Math.floor(maxLength * 0.6)
+    ? candidate.slice(0, lastWordBoundary)
+    : candidate;
+  return `${summary.trimEnd()}…`;
+}
+
 async function prerender() {
   console.log('🚀 Starting Static SEO Pre-rendering Pipeline for Priority Class A URLs...\n');
 
@@ -101,6 +120,13 @@ async function prerender() {
     }
   ) {
     const cleanPath = routePath.replace(/^\//, '').replace(/\/$/, '');
+
+    // CRITICAL: NEVER overwrite dist/index.html (the Vite SPA entrypoint) or client-only interactive routes!
+    if (cleanPath === '' || cleanPath === 'reels') {
+      console.log(`  ⏩ Skipping static HTML overwrite for client SPA route: /${cleanPath || ''} (preserving Vite SPA entrypoint)`);
+      return;
+    }
+
     const targetDir = cleanPath === '' ? DIST_DIR : path.join(DIST_DIR, cleanPath);
     fs.mkdirSync(targetDir, { recursive: true });
     const targetIndexFile = path.join(targetDir, 'index.html');
@@ -247,49 +273,7 @@ async function prerender() {
 
   // 0. Pre-render All Core Public Product Surface Hubs
   console.log('Pre-rendering Core Public Product Surface Hubs...');
-  const coreHubs = [
-    {
-      route: '/',
-      title: DEFAULT_TITLE,
-      desc: DEFAULT_DESCRIPTION,
-      h1: 'The Global Professional Talent Network',
-      bodyHtml: `
-        <div class="space-y-8">
-          <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-slate-900 border border-blue-800/40 rounded-3xl p-8 text-center space-y-4">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
-              Profiles • Jobs • Career Tools • Hiring
-            </span>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Connect. Discover. Grow. Get Hired.</h2>
-            <p class="text-slate-300 text-sm max-w-2xl mx-auto leading-relaxed">
-              Explore professional profiles, job listings, career resources, and tools for resumes and hiring.
-            </p>
-            <div class="flex flex-wrap justify-center gap-3 pt-2">
-              <a href="/network" class="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg">Join the Network &rarr;</a>
-              <a href="/reels" class="px-5 py-2.5 rounded-full bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold transition-all shadow-lg">Watch Reels &rarr;</a>
-              <a href="/hire" class="px-5 py-2.5 rounded-full bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-all border border-slate-700">Recruiter OS &rarr;</a>
-            </div>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h3 class="text-lg font-bold text-white mb-2">Global Tech & Leadership Jobs</h3>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Browse job listings and review the role and compensation details supplied by employers.</p>
-              <a href="/jobs" class="text-blue-400 text-xs font-semibold hover:underline">Explore Jobs &rarr;</a>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h3 class="text-lg font-bold text-white mb-2">Career Passport</h3>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Create a professional profile and record career experience and skills with TalentXcel tools.</p>
-              <a href="/careerpassport" class="text-blue-400 text-xs font-semibold hover:underline">Build Career Passport &rarr;</a>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-              <h3 class="text-lg font-bold text-white mb-2">Recruiter OS & Candidate 360</h3>
-              <p class="text-slate-300 text-sm leading-relaxed mb-4">Use recruiter tools to explore public member profiles and manage hiring workflows.</p>
-              <a href="/hire" class="text-blue-400 text-xs font-semibold hover:underline">Access Recruiter OS &rarr;</a>
-            </div>
-          </div>
-        </div>
-      `,
-    },
-    {
+  const coreHubs = [    {
       route: '/career-insights',
       title: 'AI Career Operating System & Career Insights — Global Tech Telemetry | TalentXcel',
       desc: 'Explore career resources and tools for comparing roles, planning skills, and navigating career transitions.',
@@ -308,26 +292,7 @@ async function prerender() {
           </section>
         </div>
       `,
-    },
-    {
-      route: '/reels',
-      title: 'TalentXcel Reels — Global Tech, AI & Career Stories',
-      desc: 'Browse short-form videos and career discussions shared on TalentXcel Reels.',
-      h1: 'Global Professional Reels & Tech Architecture Stories',
-      bodyHtml: `
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">Short-Form Professional Knowledge & Engineering Breakdowns</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore videos and discussions shared by members on TalentXcel.</p>
-          <div class="flex flex-wrap gap-2 text-xs">
-            <a href="/reels?category=ai" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">AI & Machine Learning</a>
-            <a href="/reels?category=systemdesign" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">System Design</a>
-            <a href="/reels?category=career" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Salary & Career Growth</a>
-            <a href="/reels?category=interview" class="px-3 py-1.5 bg-slate-800 text-slate-200 rounded-lg">Interview Prep</a>
-          </div>
-        </div>
-      `,
-    },
-    {
+    },    {
       route: '/about',
       title: 'About TalentXcel — The Global Professional Talent Network',
       desc: 'Learn about TalentXcel, a platform for professional profiles, job listings, career resources, and hiring tools.',
@@ -885,45 +850,41 @@ async function prerender() {
       for (const job of dbJobs) {
         const schema = buildJobPostingSchema(job);
         const slug = job.seo_slug || job.id;
-        const canonical = `https://jobs.talentxcel.in/jobs/${slug}`;
-        const title = `${job.title} at ${job.company_name} | TalentXcel Jobs`;
-        const description = (job.description || '').slice(0, 160);
+        const canonical = formatCanonicalUrl(`/jobs/${slug}`);
+        const jobTitle = job.title || job.job_title || 'Job opening';
+        const companyName = job.company_name || job.companies?.name || '';
+        const title = `${jobTitle}${companyName ? ` at ${companyName}` : ''} | TalentXcel Jobs`;
+        const description = toMetaDescription(job.job_summary || job.description || '') ||
+          `Job opening: ${jobTitle}${companyName ? ` at ${companyName}` : ''}.`;
+        const salaryCurrency = (job.salary_currency || '').toUpperCase();
+        const salaryText = salaryCurrency === 'INR' && typeof job.salary_min === 'number' && job.salary_min > 0
+          ? (typeof job.salary_max === 'number' && job.salary_max >= job.salary_min
+            ? `₹${(job.salary_min / 100000).toFixed(1)}L–₹${(job.salary_max / 100000).toFixed(1)}L per year`
+            : `From ₹${(job.salary_min / 100000).toFixed(1)}L per year`)
+          : '';
 
         const bodyHtml = `
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <h2 class="text-2xl font-bold text-white">${escapeHtml(job.title)}</h2>
-                <p class="text-sm text-blue-400 font-medium mt-1">${escapeHtml(job.company_name)} &bull; ${escapeHtml(job.location || 'Noida, India')}</p>
+                <h2 class="text-2xl font-bold text-white">${escapeHtml(jobTitle)}</h2>
+                ${companyName || job.location ? `<p class="text-sm text-blue-400 font-medium mt-1">${companyName ? escapeHtml(companyName) : ''}${companyName && job.location ? ' &bull; ' : ''}${job.location ? escapeHtml(job.location) : ''}</p>` : ''}
                 <div class="flex items-center gap-3 mt-3 text-xs text-slate-400">
-                  <span class="px-2.5 py-1 bg-slate-800 rounded-md text-slate-300">${escapeHtml(job.employment_type || 'Full-time')}</span>
-                  ${job.salary_min ? `<span class="text-emerald-400 font-semibold">₹${(job.salary_min / 100000).toFixed(1)}L - ₹${((job.salary_max || job.salary_min) / 100000).toFixed(1)}L PA</span>` : ''}
+                  ${job.employment_type ? `<span class="px-2.5 py-1 bg-slate-800 rounded-md text-slate-300">${escapeHtml(job.employment_type)}</span>` : ''}
+                  ${salaryText ? `<span class="text-emerald-400 font-semibold">${escapeHtml(salaryText)}</span>` : ''}
                 </div>
               </div>
-              <a href="${canonical}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl">Apply for Role</a>
             </div>
             <div class="pt-6 border-t border-slate-800 text-slate-200 text-sm leading-relaxed whitespace-pre-line">
               ${escapeHtml(job.description || '')}
-            </div>
-
-            <!-- Interactive Match Diagnostic & Conversion Hook -->
-            <div class="p-6 bg-gradient-to-r from-blue-950/60 via-slate-900 to-purple-950/60 border border-blue-500/40 rounded-2xl text-center space-y-4">
-              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold">
-                Instant Skill Intelligence Diagnostic
-              </span>
-              <h3 class="text-xl font-bold text-white">See How Well You Match This Job — Free</h3>
-              <p class="text-xs text-slate-300 max-w-md mx-auto">Calculate your ATS compatibility index, evaluate skill requirements, and unlock 24 matched positions in 10 seconds.</p>
-              <a href="${canonical}" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-blue-600/30">
-                Calculate Match Score Free &rarr;
-              </a>
             </div>
           </div>
         `;
 
         const breadcrumbSchema = buildBreadcrumbSchema([
-          { name: 'Home', url: 'https://jobs.talentxcel.in/' },
-          { name: 'Jobs', url: 'https://jobs.talentxcel.in/jobs' },
-          { name: job.title, url: canonical },
+          { name: 'Home', url: `${BASE_URL}/` },
+          { name: 'Jobs', url: `${BASE_URL}/jobs` },
+          { name: jobTitle, url: canonical },
         ]);
 
         writePrerenderedPage(`/jobs/${slug}`, {

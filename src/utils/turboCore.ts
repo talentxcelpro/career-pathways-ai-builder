@@ -60,7 +60,8 @@ class TurboCore {
     // Hero image preload
     const heroLink = document.createElement('link');
     heroLink.rel = 'preload';
-    heroLink.href = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
+    heroLink.href = '/hero-character-full.webp';
+    heroLink.type = 'image/webp';
     heroLink.as = 'image';
     (heroLink as any).fetchPriority = 'high';
     document.head.appendChild(heroLink);

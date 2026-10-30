@@ -1,7 +1,7 @@
 // scripts/seo-ci-gate.ts
 // TalentXcel Production SEO & Google Search Console CI Quality Gate (60+ Strict Production Checks)
 
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, readdirSync } from 'fs';
 import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { TOP_50_INDIAN_HUBS } from '../src/data/tier2LocationsData.js';
@@ -686,6 +686,26 @@ async function runSeoCiGate() {
     record('Sitemap', 'Segmented Sub-sitemaps Present', sitemapContent.includes('sitemap-colleges.xml') && sitemapContent.includes('sitemap-services.xml'), 'Sub-sitemaps declared');
     record('Sitemap', 'Jobs Sub-sitemap Present', sitemapContent.includes('sitemap-jobs.xml'), 'sitemap-jobs declared');
     record('Sitemap', 'Posts Sub-sitemap Present', sitemapContent.includes('sitemap-posts.xml') || existsSync(resolve('public/sitemap-posts.xml')), 'sitemap-posts declared');
+
+    const sitemapPartitionFiles = readdirSync(resolve('public')).filter((filename) =>
+      /^sitemap-(?!root\.xml$).+\.xml$/.test(filename)
+    );
+    const seenSitemapLocs = new Set<string>();
+    let duplicateSitemapLocs = 0;
+    for (const filename of sitemapPartitionFiles) {
+      const partition = readFileSync(resolve('public', filename), 'utf-8');
+      for (const match of partition.matchAll(/<loc>(.*?)<\/loc>/g)) {
+        const loc = match[1].trim();
+        if (seenSitemapLocs.has(loc)) duplicateSitemapLocs++;
+        else seenSitemapLocs.add(loc);
+      }
+    }
+    record(
+      'Sitemap',
+      'Cross-partition URL Deduplication',
+      duplicateSitemapLocs === 0,
+      `Found ${duplicateSitemapLocs} duplicate URLs across ${sitemapPartitionFiles.length} sitemap partitions`
+    );
   } else {
     record('Sitemap', 'File Exists', false, 'public/sitemap.xml not found', { severity: 'CRITICAL' });
   }
