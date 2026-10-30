@@ -2,7 +2,7 @@
 // TXC Treasury Governance & Multi-Signature Engine
 // Enforces 2-Super-Admin multi-sig for large mints, mandatory audit reasons, and append-only ledger invariant.
 
-import { isSuperAdminPhone, AdminActor } from './superAdminPolicy';
+import { isSuperAdminUser, AdminActor } from './superAdminPolicy';
 import { recordAdminAction } from './adminAuditLedger';
 
 export interface TreasuryMintRequest {
@@ -11,9 +11,11 @@ export interface TreasuryMintRequest {
   recipient_user_id: string;
   recipient_name?: string;
   reason: string;
+  requested_by_id?: string;
   requested_by_phone: string;
   requested_at: string;
   signatures: Array<{
+    admin_id?: string;
     admin_phone: string;
     signed_at: string;
     approved: boolean;
@@ -72,14 +74,16 @@ export const SAMPLE_TREASURY_QUEUE: TreasuryMintRequest[] = [
     recipient_user_id: 'treasury_pool_main',
     recipient_name: 'TalentXcel Liquidity Pool',
     reason: 'Quarterly candidate onboarding incentive allocation & university career fair reward pool.',
-    requested_by_phone: '9910678611',
+    requested_by_id: 'admin_root_1',
+    requested_by_phone: 'Primary Super Admin',
     requested_at: new Date(Date.now() - 3600000 * 4).toISOString(),
     signatures: [
       {
-        admin_phone: '9910678611',
+        admin_id: 'admin_root_1',
+        admin_phone: 'Primary Super Admin',
         signed_at: new Date(Date.now() - 3600000 * 4).toISOString(),
         approved: true,
-        note: 'Initial request authored and signed by Root Admin 1'
+        note: 'Initial request authored and signed by Super Admin 1'
       }
     ],
     status: 'PENDING_SECOND_SIGNATURE'
@@ -95,20 +99,21 @@ export function submitSecondSignature(
   approved: boolean,
   note?: string
 ): TreasuryMintRequest {
-  if (!isSuperAdminPhone(actor.phone)) {
-    throw new Error('TREASURY_POLICY_ERROR: Only a verified Root Super Admin can sign treasury mint requests.');
+  if (!isSuperAdminUser(actor)) {
+    throw new Error('TREASURY_POLICY_ERROR: Only a verified Super Admin can sign treasury mint requests.');
   }
 
-  const signerNorm = (actor.phone || '').replace(/[^0-9]/g, '').slice(-10);
-  const firstSignerNorm = request.requested_by_phone.replace(/[^0-9]/g, '').slice(-10);
+  const signerId = (actor.id || '').trim();
+  const firstSignerId = (request.requested_by_id || request.requested_by_phone || '').trim();
 
-  if (signerNorm === firstSignerNorm) {
-    throw new Error('TREASURY_MULTI_SIG_ERROR: The second signature must be from the other Super Admin (Dual Control Invariant).');
+  if (signerId && firstSignerId && signerId === firstSignerId) {
+    throw new Error('TREASURY_MULTI_SIG_ERROR: The second signature must be from a different Super Admin (Dual Control Invariant).');
   }
 
   const updatedSignatures = [
     ...request.signatures,
     {
+      admin_id: actor.id,
       admin_phone: actor.phone || '',
       signed_at: new Date().toISOString(),
       approved,

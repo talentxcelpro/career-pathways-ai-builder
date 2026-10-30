@@ -96,17 +96,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     let candidateId = passedUserId;
 
     if (!candidateId) {
-      const { data: existingUsers } = await supabase.auth.admin.listUsers({
-        page: 1,
-        perPage: 50,
-      });
+      // SEC-006: Reliable candidate identity resolution without 50-user page 1 ceiling
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', cleanEmail)
+        .maybeSingle();
 
-      const matched = existingUsers?.users?.find(
-        (u) => u.email?.toLowerCase() === cleanEmail
-      );
-
-      if (matched) {
-        candidateId = matched.id;
+      if (existingProfile?.id) {
+        candidateId = existingProfile.id;
       } else {
         const cleanSlug = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
         const randomPassword = `Tx!${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}A1#`;
@@ -123,12 +121,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           },
         });
 
-        if (createErr || !newUser?.user) {
-          console.error('Error creating candidate:', createErr);
-          throw new Error(createErr?.message || 'Failed to initialize candidate account');
-        }
+        if (newUser?.user?.id) {
+          candidateId = newUser.user.id;
+        } else if (createErr) {
+          // If creation fails due to existing auth account, search via paginated loop
+          let page = 1;
+          let matched = false;
+          while (!matched && page <= 10) {
+            const { data: pageData } = await supabase.auth.admin.listUsers({ page, perPage: 100 });
+            const foundUser = pageData?.users?.find(u => u.email?.toLowerCase() === cleanEmail);
+            if (foundUser) {
+              candidateId = foundUser.id;
+              matched = true;
+              break;
+            }
+            if (!pageData?.users || pageData.users.length < 100) break;
+            page++;
+          }
 
-        candidateId = newUser.user.id;
+          if (!candidateId) {
+            console.error('Error creating candidate:', createErr);
+            throw new Error(createErr?.message || 'Failed to initialize candidate account');
+          }
+        }
       }
     }
 

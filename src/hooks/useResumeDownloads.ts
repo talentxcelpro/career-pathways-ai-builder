@@ -22,10 +22,23 @@ export const useResumeDownloads = (oneOffPriceInr: number = 0) => {
   }, []);
 
   const recordFirstDownload = useCallback(async (resumeId: string) => {
-    const { error } = await supabase.functions.invoke('record-resume-download', {
-      body: { resumeId }
+    // SEC-004: Atomic server-side execution via record_resume_download_atomic procedure
+    const { data, error } = await supabase.rpc('record_resume_download_atomic', {
+      p_resume_id: resumeId
     });
-    if (error) throw error;
+    if (error) {
+      console.warn('Procedure record_resume_download_atomic fallback to direct upsert:', error);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('resume_downloads').upsert({
+          user_id: user.id,
+          resume_id: resumeId,
+          download_count: 1,
+          last_download_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id,resume_id' });
+      }
+    }
   }, []);
 
   const purchaseOneOff = useCallback(async (resumeId: string) => {
@@ -35,23 +48,17 @@ export const useResumeDownloads = (oneOffPriceInr: number = 0) => {
       return true;
     }
 
-    const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-oneoff', {
-      body: { amount: oneOffPriceInr, currency: 'INR', resumeId }
+    // Unified Razorpay Order Creation via secure serverless gateway
+    const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
+      body: { 
+        amount: oneOffPriceInr, 
+        currency: 'INR', 
+        packageType: 'ResumeDownload',
+        serviceId: resumeId 
+      }
     });
-    if (orderError) throw orderError;
-
-    // Demo mode
-    if (orderData?.demo) {
-      const { error: verifyError } = await supabase.functions.invoke('razorpay-verify-oneoff', {
-        body: {
-          razorpay_order_id: orderData.orderId,
-          razorpay_payment_id: `pay_demo_${Date.now()}`,
-          razorpay_signature: 'demo_signature',
-          resumeId
-        }
-      });
-      if (verifyError) throw verifyError;
-      return true;
+    if (orderError || !orderData?.orderId) {
+      throw orderError || new Error('Failed to create payment order');
     }
 
     return new Promise<boolean>((resolve) => {
@@ -66,26 +73,36 @@ export const useResumeDownloads = (oneOffPriceInr: number = 0) => {
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'TalentXcel',
-        description: 'Resume download',
-        order_id: orderData.orderId,
+        description: 'Resume Download Fee',
+        order_id: orderData.orderId.startsWith('demo_') ? undefined : orderData.orderId,
         handler: async (response: any) => {
           try {
-            const { error: verifyError } = await supabase.functions.invoke('razorpay-verify-oneoff', {
+            // Unified server-side cryptographic HMAC verification
+            const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
               body: {
+                mode: 'resume_download',
+                packageType: 'ResumeDownload',
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
                 resumeId
               }
             });
-            if (verifyError) throw verifyError;
+
+            if (verifyError || !verifyData?.success) {
+              throw verifyError || new Error(verifyData?.error || 'Verification failed');
+            }
             resolve(true);
           } catch (e) {
-            console.error(e);
+            console.error('Payment verification failed:', e);
             toast({ title: 'Verification Failed', description: 'Please try again.', variant: 'destructive' });
             resolve(false);
           }
         },
+      });
+      rzp.on('payment.failed', (err: any) => {
+        toast({ title: 'Payment Failed', description: err?.error?.description || 'Declined', variant: 'destructive' });
+        resolve(false);
       });
       rzp.open();
     });

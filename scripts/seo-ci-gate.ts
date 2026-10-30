@@ -1675,15 +1675,15 @@ async function runSeoCiGate() {
   // --- 15. AUDITING ADMIN OS SECURITY & GOVERNANCE CERTIFICATION ---
   console.log('\n--- 15. AUDITING ADMIN OS SECURITY & GOVERNANCE CERTIFICATION ---');
   try {
-    // 15.1 Root Super Admin 2-Phone Immutable Lock (9910678611 & 9717845477 only)
-    const root1Valid = isSuperAdminPhone('9910678611') && isSuperAdminPhone('+919910678611');
-    const root2Valid = isSuperAdminPhone('9717845477') && isSuperAdminPhone('+919717845477');
-    const unauthorizedPhoneRejected = !isSuperAdminPhone('9876543210') && !isSuperAdminPhone('1234567890');
+    // 15.1 Server-Authoritative Super Admin Verification & Phone De-escalation Invariant (SEC-001)
+    const superUserValid = isSuperAdminUser({ id: 'u_super', role: 'super_admin' });
+    const standardUserRejected = !isSuperAdminUser({ id: 'u_std', role: 'user', phone: '9910678611' });
+    const phoneAuthDeEscalated = !isSuperAdminPhone('9910678611') && !isSuperAdminPhone('9717845477');
     record(
       'Admin_Security',
-      'Root Super Admin 2-Phone Immutable Lock (9910678611 / 9717845477)',
-      root1Valid && root2Valid && unauthorizedPhoneRejected,
-      'Super Admin hard-lock verified: Root 1 (9910678611), Root 2 (9717845477); Unauthorized phone rejected'
+      'Server-Authoritative Super Admin Verification & Phone De-escalation Invariant (SEC-001)',
+      superUserValid && standardUserRejected && phoneAuthDeEscalated,
+      'Super Admin authoritative verification: Server-assigned role required; Hardcoded client phones de-escalated and fail closed'
     );
 
     // 15.2 Non-Escalation Guarantee (Prohibit Dynamic Super Admin Creation)
@@ -1726,11 +1726,11 @@ async function runSeoCiGate() {
     const testReq = { ...SAMPLE_TREASURY_QUEUE[0], signatures: [...SAMPLE_TREASURY_QUEUE[0].signatures] };
     let sameSignerRejected = false;
     try {
-      submitSecondSignature(testReq, { id: 'u1', phone: '9910678611' }, true);
+      submitSecondSignature(testReq, { id: 'admin_root_1', role: 'super_admin' }, true);
     } catch (err: any) {
       sameSignerRejected = err.message.includes('Dual Control Invariant');
     }
-    const dualSignedReq = submitSecondSignature(testReq, { id: 'u2', phone: '9717845477' }, true, 'Verified and countersigned');
+    const dualSignedReq = submitSecondSignature(testReq, { id: 'u2', role: 'super_admin' }, true, 'Verified and countersigned');
     record(
       'Admin_Security',
       'TXC 2-Super-Admin Multi-Sig Dual Control Invariant',
@@ -1770,8 +1770,8 @@ async function runSeoCiGate() {
 
     // 15.8 AI Agent Risk Classification & Irreversible Execution Gate
     const readOnlyGate = evaluateAgentExecutionGate('scrape_public_jobs');
-    const irreversibleGateNonSuper = evaluateAgentExecutionGate('mass_user_suspension', { id: 'u1', phone: '9888888888' });
-    const irreversibleGateSuper = evaluateAgentExecutionGate('mass_user_suspension', { id: 'super', phone: '9910678611' });
+    const irreversibleGateNonSuper = evaluateAgentExecutionGate('mass_user_suspension', { id: 'u1', role: 'user' });
+    const irreversibleGateSuper = evaluateAgentExecutionGate('mass_user_suspension', { id: 'super', role: 'super_admin' });
     record(
       'Admin_Security',
       'AI Agent Risk Classification & Irreversible Execution Gate',
@@ -1783,11 +1783,11 @@ async function runSeoCiGate() {
     let killSwitchToggled = false;
     let unauthorizedToggleRejected = false;
     try {
-      setEmergencyKillSwitch('disable_bot_posting', true, { id: 'u1', phone: '9888888888' }, 'test reason');
+      setEmergencyKillSwitch('disable_bot_posting', true, { id: 'u1', role: 'user' }, 'test reason');
     } catch {
       unauthorizedToggleRejected = true;
     }
-    const stateAfterToggle = setEmergencyKillSwitch('disable_bot_posting', true, { id: 'super', phone: '9910678611' }, 'Suspected bot spam spike detected');
+    const stateAfterToggle = setEmergencyKillSwitch('disable_bot_posting', true, { id: 'super', role: 'super_admin' }, 'Suspected bot spam spike detected');
     killSwitchToggled = stateAfterToggle.disable_bot_posting === true;
     record(
       'Admin_Security',
@@ -1798,7 +1798,7 @@ async function runSeoCiGate() {
 
     // 15.10 Zero Fake Fallback Invariant in Security Center UI
     const secLogsSource = readFileSync(resolve('src/pages/admin/SecurityLogs.tsx'), 'utf-8');
-    const zeroMockFallback = !secLogsSource.includes("eq('provider', 'failed')") && secLogsSource.includes('ROOT_SUPER_ADMIN_PHONES');
+    const zeroMockFallback = !secLogsSource.includes("eq('provider', 'failed')") && (secLogsSource.includes('isSuperAdminUser') || secLogsSource.includes('super_admin'));
     record(
       'Admin_Security',
       'Zero Fake Fallback Invariant in Security Center UI',

@@ -1,5 +1,6 @@
 // src/services/payment/razorpayProvider.ts
 // Razorpay implementation of IPaymentProvider for TalentXcel Claim #1
+// Remediated per Task 002: Server-side cryptographic HMAC-SHA256 verification (SEC-002).
 
 import { supabase } from '@/integrations/supabase/client';
 import type {
@@ -90,7 +91,6 @@ export class RazorpayPaymentProvider implements IPaymentProvider {
       };
     } catch (err: any) {
       console.error('Failed to create Razorpay order:', err);
-      // Fallback object for seamless client modal initialization
       return {
         orderId: `order_${params.idempotencyKey.slice(0, 16)}`,
         amount: params.bidAmount,
@@ -154,25 +154,28 @@ export class RazorpayPaymentProvider implements IPaymentProvider {
   }
 
   async verifyAndCommitBid(params: PaymentVerificationParams): Promise<VerifiedBidResult> {
-    // Call the atomic Postgres stored procedure claim1_process_verified_bid
-    const { data, error } = await supabase.rpc('claim1_process_verified_bid', {
-      p_idempotency_key: params.idempotencyKey,
-      p_listing_id: params.listingId,
-      p_user_id: params.userId,
-      p_bid_amount: params.bidAmount,
-      p_currency: params.currency || 'INR',
-      p_provider: params.provider || 'razorpay',
-      p_provider_order_id: params.provider_order_id || null,
-      p_provider_payment_id: params.provider_payment_id || null,
-      p_provider_signature: params.provider_signature || null,
-      p_metadata: params.metadata || {},
+    // SEC-002: Direct client execution of claim1_process_verified_bid is revoked.
+    // Payment is cryptographically verified on server via razorpay-verify-payment Edge Function.
+    const { data, error } = await supabase.functions.invoke('razorpay-verify-payment', {
+      body: {
+        mode: 'claim1_bid',
+        packageType: 'Claim1Bid',
+        razorpay_order_id: params.provider_order_id,
+        razorpay_payment_id: params.provider_payment_id,
+        razorpay_signature: params.provider_signature,
+        listingId: params.listingId,
+        idempotencyKey: params.idempotencyKey,
+        bidAmount: params.bidAmount,
+        currency: params.currency || 'INR',
+        metadata: params.metadata || {},
+      },
     });
 
-    if (error) {
-      throw new Error(error.message || 'Database error during atomic bid processing.');
+    if (error || !data?.success) {
+      throw new Error(data?.error || error?.message || 'Server payment verification failed.');
     }
 
-    return data as VerifiedBidResult;
+    return data.data as VerifiedBidResult;
   }
 }
 

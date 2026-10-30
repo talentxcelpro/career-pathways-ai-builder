@@ -1,18 +1,36 @@
 
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit, getClientIdentifier } from "../_shared/rateLimiter.ts";
 
 const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Max-Age': '86400',
-};
+
 
 serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req);
   console.log('=== AI Resume Parser Function Called ===');
+
+  // Rate Limiting Guard (SEC-010)
+  const clientId = getClientIdentifier(req);
+  const rateLimit = checkRateLimit(clientId, 10, 60000);
+  if (!rateLimit.allowed) {
+    return new Response(
+      JSON.stringify({
+        error: "Too many resume parse requests. Please wait before retrying.",
+        retryAfter: rateLimit.resetSeconds,
+      }),
+      {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": String(rateLimit.resetSeconds),
+        },
+      }
+    );
+  }
   console.log('Method:', req.method);
 
   // Handle CORS preflight requests

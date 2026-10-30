@@ -1,5 +1,6 @@
 // supabase/functions/razorpay-create-order/index.ts
 // Secure Razorpay Order Creation for TalentXcel Subscriptions & Services
+// Remediated per Task 002: Enforces fail-closed production controls (SEC-005).
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -42,6 +43,9 @@ serve(async (req) => {
     } else if (rawIdentifier.includes("starter") || rawIdentifier.includes("basic") || rawIdentifier.includes("199")) {
       tier = "Starter";
       planName = "Career Starter";
+    } else if (rawIdentifier.includes("resume") || rawIdentifier.includes("oneoff")) {
+      tier = "OneOff";
+      planName = "Resume Download";
     } else {
       tier = "Pro";
       planName = "Career Pro";
@@ -72,10 +76,23 @@ serve(async (req) => {
     const razorpayKeyId = Deno.env.get("RAZORPAY_KEY_ID");
     const razorpayKeySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
 
+    const env = Deno.env.get("ENVIRONMENT") || "production";
+    const isDevelopment = env === "development" || env === "local";
+    const allowDemo = Deno.env.get("ALLOW_DEMO_PAYMENTS") === "true" && isDevelopment;
+
     if (!razorpayKeyId || !razorpayKeySecret) {
-      console.log("Razorpay credentials not found, using demo mode");
+      if (!allowDemo) {
+        console.error("FATAL [SEC-005]: Razorpay credentials missing in non-demo environment. Failing closed.");
+        return new Response(
+          JSON.stringify({ 
+            error: "Payment gateway credentials are not configured on server. Order creation rejected." 
+          }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.warn("[razorpay-create-order] ALLOW_DEMO_PAYMENTS active in local development. Generating demo order.");
       
-      // Return demo order
       const demoOrder = {
         orderId: `demo_order_${Date.now()}`,
         amount: Math.round(amount * 100),
@@ -86,7 +103,6 @@ serve(async (req) => {
         demo: true
       };
       
-      // Store pending subscription order in subscribers table
       await supabaseClient
         .from("subscribers")
         .upsert({
@@ -107,12 +123,12 @@ serve(async (req) => {
       });
     }
 
-    // Create Razorpay order with live credentials
+    // Create Razorpay order with verified provider credentials
     const amountInPaise = Math.round(amount * 100);
     const orderData = {
       amount: amountInPaise,
       currency: currency,
-      receipt: `sub_${user.id.slice(0, 8)}_${Date.now()}`,
+      receipt: `tx_${user.id.slice(0, 8)}_${Date.now()}`,
       notes: {
         service_id: serviceId,
         package_type: packageType || tier,
@@ -142,24 +158,26 @@ serve(async (req) => {
     const order = await razorpayResponse.json();
     console.log(`Razorpay order created successfully: ${order.id} for user ${user.id} (${tier})`);
 
-    // Store pending order in subscribers table for subscription tracking
-    const { error: insertError } = await supabaseClient
-      .from("subscribers")
-      .upsert({
-        user_id: user.id,
-        email: user.email,
-        subscribed: false,
-        subscription_plan: planName,
-        subscription_tier: tier,
-        amount: amountInPaise,
-        currency: currency,
-        status: 'pending',
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id' });
+    // Store pending order in subscribers table for subscription tracking (if subscription product)
+    if (packageType !== 'Claim1Bid' && packageType !== 'ResumeDownload') {
+      const { error: insertError } = await supabaseClient
+        .from("subscribers")
+        .upsert({
+          user_id: user.id,
+          email: user.email,
+          subscribed: false,
+          subscription_plan: planName,
+          subscription_tier: tier,
+          amount: amountInPaise,
+          currency: currency,
+          status: 'pending',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id' });
 
-    if (insertError) {
-      console.error("Database upsert error:", insertError);
-      throw new Error("Failed to store subscription order");
+      if (insertError) {
+        console.error("Database upsert error:", insertError);
+        throw new Error("Failed to store subscription order");
+      }
     }
 
     return new Response(

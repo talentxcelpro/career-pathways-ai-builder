@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
-import { ROOT_SUPER_ADMIN_PHONES, isSuperAdminPhone } from '@/lib/admin/superAdminPolicy';
+import { isSuperAdminUser } from '@/lib/admin/superAdminPolicy';
 import { ROLE_SCOPE_MATRIX, ScopedAdminRole } from '@/lib/admin/rbacPolicyEngine';
 import { 
   SAMPLE_TREASURY_QUEUE, 

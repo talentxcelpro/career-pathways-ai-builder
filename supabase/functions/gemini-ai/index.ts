@@ -1,18 +1,39 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-const jsonResponse = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit, getClientIdentifier } from "../_shared/rateLimiter.ts";
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const corsHeaders = getCorsHeaders(req);
+
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+
+  // Rate Limiting Guard (SEC-010)
+  const clientId = getClientIdentifier(req);
+  const rateLimit = checkRateLimit(clientId, 20, 60000); // 20 requests per minute
+  if (!rateLimit.allowed) {
+    return new Response(
+      JSON.stringify({
+        error: "Too many AI requests. Please wait before retrying.",
+        retryAfter: rateLimit.resetSeconds,
+      }),
+      {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Retry-After": String(rateLimit.resetSeconds),
+        },
+      }
+    );
+  }
+
+  const jsonResponse = (body: unknown, status = 200) =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
 
   try {
     const { action, topic, tone, postContent, replyType, profile, targetProfile } = await req.json();
@@ -58,64 +79,55 @@ Return JSON:
 }`;
     } else if (action === "passport_assistant") {
       systemInstruction = "You are an executive resume writer and career coach.";
-      prompt = `Analyze this profile: ${JSON.stringify(profile || { full_name: 'Professional', title: 'Leader' })}
+      prompt = `Optimize professional passport highlights for a candidate targeting top roles in India and APAC.
+Profile context: ${JSON.stringify(profile || { role: topic || 'Professional' })}
 Generate:
-1. An executive AI summary (2-3 sentences).
-2. Key competency score (out of 100) with top strengths.
-3. 3 resume bullet point optimizations.
+1. High-impact executive summary (2 sentences).
+2. Competency alignment score (integer 90-99).
+3. 3 core high-value strategic strengths.
+4. 3 bullet-point achievements optimized for ATS and recruiters.
 
 Return JSON:
 {
   "summary": "...",
-  "competencyScore": 96,
-  "topStrengths": ["Strategic APAC Sales", "Revenue Optimization", "Team Leadership"],
-  "bulletOptimizations": [
-    "Accelerated regional revenue by 42% through targeted Enterprise outreach",
-    "Spearheaded cross-functional team of 15+ to launch digital transformation initiatives",
-    "Established key partnership pipelines resulting in $2.4M ARR growth"
-  ]
-}`;
-    } else if (action === "smart_connect") {
-      systemInstruction = "You are an expert networking assistant.";
-      prompt = `Write a personalized connection request message from candidate (${profile?.full_name || 'Professional'}) to connection (${targetProfile?.full_name || 'Industry Leader'}).
-Keep it under 300 characters, warm, professional, and value-oriented.
-
-Return JSON:
-{
-  "message": "..."
+  "competencyScore": 95,
+  "topStrengths": ["...", "...", "..."],
+  "bulletOptimizations": ["...", "...", "..."]
 }`;
     } else {
-      return jsonResponse({ error: "Invalid action" }, 400);
+      systemInstruction = "You are an expert AI career intelligence assistant.";
+      prompt = `Generate a personalized networking introduction message to connect with ${targetProfile?.full_name || 'an industry peer'} (${targetProfile?.headline || targetProfile?.title || 'Professional'}). Keep it warm, authentic, and under 50 words.`;
     }
 
-    // Call Gemini API via Google API REST endpoint or OpenRouter/Lovable Gateway
     let result = null;
     try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: `${systemInstruction}\n\n${prompt}` }
-                ]
-              }
-            ],
-            generationConfig: {
-              responseMimeType: "application/json"
-            }
-          })
-        }
-      );
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 800,
+            responseMimeType: action === "post_assistant" || action === "smart_reply" || action === "passport_assistant" ? "application/json" : "text/plain"
+          }
+        })
+      });
 
       if (response.ok) {
-        const resData = await response.json();
-        const text = resData?.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (text) {
-          result = JSON.parse(text);
+        const geminiData = await response.json();
+        const textContent = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (textContent) {
+          if (action === "post_assistant" || action === "smart_reply" || action === "passport_assistant") {
+            try {
+              result = JSON.parse(textContent);
+            } catch {
+              result = { message: textContent };
+            }
+          } else {
+            result = { message: textContent };
+          }
         }
       }
     } catch (apiErr) {

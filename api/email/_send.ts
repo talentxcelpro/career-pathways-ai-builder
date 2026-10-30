@@ -26,11 +26,9 @@ const SUPABASE_URL =
   process.env.SUPABASE_URL ||
   'https://dthlgsnakhoftinssokm.supabase.co';
 
-const SUPABASE_KEY =
+const SUPABASE_SERVICE_ROLE_KEY =
   process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  process.env.VITE_SUPABASE_ANON_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
   '';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -415,7 +413,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const priority = payload.priority ? Number(payload.priority) : 2;
     const immediate = payload.immediate === true || priority === 1;
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    if (!SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing service role key in email dispatch handler');
+      return res.status(500).json({
+        success: false,
+        error: 'Server configuration error: Service role credentials required for email dispatch.'
+      });
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false }
     });
 

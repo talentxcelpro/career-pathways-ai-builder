@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { UnifiedAdminLayout } from '@/components/admin/UnifiedAdminLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +26,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { AddAdminDialog } from '@/components/admin/dialogs/AddAdminDialog';
-import { isSuperAdminPhone } from '@/lib/admin/superAdminPolicy';
+import { isSuperAdminUser } from '@/lib/admin/superAdminPolicy';
 
 const AdminManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,18 +34,19 @@ const AdminManagement = () => {
   const { data: adminUsers } = useQuery({
     queryKey: ['admin-users', searchTerm],
     queryFn: async () => {
-      // Get admin user IDs from user_roles table
-      const { data: adminRoles } = await supabase
+      // Authoritative: Get active admin roles and user IDs directly from user_roles
+      const { data: adminRoles, error: rolesError } = await supabase
         .from('user_roles')
-        .select('user_id')
+        .select('user_id, role')
         .in('role', ['super_admin', 'admin', 'moderator'])
         .eq('is_active', true);
 
-      if (!adminRoles || adminRoles.length === 0) {
+      if (rolesError || !adminRoles || adminRoles.length === 0) {
         return [];
       }
 
-      const adminUserIds = adminRoles.map(role => role.user_id);
+      const roleByUserId = new Map(adminRoles.map(r => [r.user_id, r.role]));
+      const adminUserIds = adminRoles.map(r => r.user_id);
 
       let query = supabase
         .from('profiles')
@@ -60,14 +60,18 @@ const AdminManagement = () => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      
+      return (data || []).map(profile => ({
+        ...profile,
+        role: roleByUserId.get(profile.id) || 'admin'
+      }));
     }
   });
 
   const { data: adminStats } = useQuery({
     queryKey: ['admin-stats'],
     queryFn: async () => {
-      // Get admin counts from user_roles table
+      // Authoritative: Get admin counts from user_roles table
       const [
         { count: totalAdmins },
         { count: superAdmins }
@@ -76,7 +80,6 @@ const AdminManagement = () => {
         supabase.from('user_roles').select('*', { count: 'exact', head: true }).eq('role', 'super_admin').eq('is_active', true)
       ]);
 
-      // Get admin user IDs for activity checks
       const { data: adminRoles } = await supabase
         .from('user_roles')
         .select('user_id')
@@ -172,94 +175,70 @@ const AdminManagement = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredAdmins.map((admin) => (
-                  <TableRow key={admin.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback>
-                            {admin.full_name?.charAt(0) || 'A'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{admin.full_name || 'Unknown Admin'}</p>
-                          <p className="text-sm text-gray-600">{admin.email} {admin.phone && `• ${admin.phone}`}</p>
+                {filteredAdmins.map((admin) => {
+                  const isSuper = isSuperAdminUser(admin);
+                  return (
+                    <TableRow key={admin.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarFallback>
+                              {admin.full_name?.charAt(0) || 'A'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{admin.full_name || 'Unknown Admin'}</p>
+                            <p className="text-sm text-gray-600">{admin.email} {admin.phone && `• ${admin.phone}`}</p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {isSuperAdminPhone(admin.phone) ? (
-                        <Badge className="bg-red-600 text-white font-mono text-[11px] font-bold">
-                          👑 ROOT SUPER ADMIN
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-blue-100 text-blue-800 font-mono text-[11px] font-semibold">
-                          🛡️ SCOPED ADMIN
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={admin.profile_completed ? 'default' : 'secondary'}>
-                        {admin.profile_completed ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm text-gray-600">
-                        {admin.last_login_at 
-                          ? new Date(admin.last_login_at).toLocaleDateString()
-                          : 'Never'
-                        }
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-sm">{admin.login_count || 0} times</span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" title="View details">
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" title="Edit admin scope">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        {!isSuperAdminPhone(admin.phone) && (
-                          <Button variant="outline" size="sm" className="text-red-600" title="Revoke admin privileges">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                      </TableCell>
+                      <TableCell>
+                        {isSuper ? (
+                          <Badge className="bg-red-600 text-white font-mono text-[11px] font-bold">
+                            👑 SUPER ADMIN
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-blue-100 text-blue-800 font-mono text-[11px] font-semibold">
+                            🛡️ {admin.role?.toUpperCase() || 'SCOPED ADMIN'}
+                          </Badge>
                         )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={admin.profile_completed ? 'default' : 'secondary'}>
+                          {admin.profile_completed ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm text-gray-600">
+                          {admin.last_login_at 
+                            ? new Date(admin.last_login_at).toLocaleDateString()
+                            : 'Never'
+                          }
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className="text-sm">{admin.login_count || 0} times</span>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" title="View details">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="outline" size="sm" title="Edit admin scope">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          {!isSuper && (
+                            <Button variant="outline" size="sm" className="text-red-600" title="Revoke admin privileges">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Admin Activity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredAdmins.slice(0, 5).map((admin, index) => (
-                <div key={admin.id} className="flex items-center justify-between py-2 border-b last:border-b-0">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">
-                      {admin.full_name || 'Admin'} logged in {admin.login_count || 0} times
-                    </span>
-                  </div>
-                  <span className="text-xs text-gray-500">
-                    {admin.last_login_at 
-                      ? new Date(admin.last_login_at).toLocaleDateString()
-                      : 'No recent activity'
-                    }
-                  </span>
-                </div>
-              ))}
-            </div>
           </CardContent>
         </Card>
       </div>
