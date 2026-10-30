@@ -84,7 +84,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
 
         // Minimal logging in production
         if (process.env.NODE_ENV === 'development') {
-          console.log('Auth state:', event, session?.user?.email);
+          if (session?.user?.email) console.log('Auth state:', event, session.user.email);
         }
         
         setSession(session);

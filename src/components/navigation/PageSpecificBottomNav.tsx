@@ -377,7 +377,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
       ];
 
     // Mobile Reels (keep existing)
-    case basePath === '/mobile/reels':
+    case basePath === '/mobile/reels' || basePath === '/reels':
       return [
         {
           icon: Home,

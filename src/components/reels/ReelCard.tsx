@@ -59,13 +59,15 @@ export const ReelCard: React.FC<ReelCardProps> = ({
       />
 
       {/* Non-blocking Content Overlay (clicks pass through to video unless on buttons) */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/40 pointer-events-none">
-        {/* Top Creator Info & Career Passport */}
-        <div className="absolute top-12 left-4 right-20 z-20 pointer-events-auto">
-          <div className="flex items-start gap-3">
-            <Avatar className="h-11 w-11 ring-2 ring-white/40 shadow-xl flex-shrink-0">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-black/30 pointer-events-none">
+        
+        {/* Content Area - Bottom Left (TikTok / Shorts Standard Layout) */}
+        <div className="absolute bottom-24 left-3.5 right-20 z-20 pointer-events-auto space-y-2">
+          {/* Creator Profile */}
+          <div className="flex items-center gap-2.5">
+            <Avatar className="h-9 w-9 ring-2 ring-white/50 shadow-md shrink-0">
               <AvatarImage src={reel.user_avatar} alt={reel.user_name} />
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white font-bold text-sm">
+              <AvatarFallback className="bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 text-white font-bold text-xs">
                 {reel.user_name?.charAt(0)?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
@@ -78,13 +80,13 @@ export const ReelCard: React.FC<ReelCardProps> = ({
                 {reel.talent_score && (
                   <a
                     href="/passport"
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-semibold hover:bg-amber-500/30 transition-all shadow-sm"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[10px] font-semibold hover:bg-amber-500/30 transition-all shadow-xs"
                   >
                     <span>⚡ {reel.talent_score} TalentScore</span>
                   </a>
                 )}
               </div>
-              <div className="flex items-center gap-1.5 text-white/75 text-[11px] mt-0.5 truncate">
+              <div className="flex items-center gap-1 text-white/70 text-[10px] truncate">
                 {reel.creator_role && <span>{reel.creator_role}</span>}
                 {reel.creator_role && reel.location && <span>•</span>}
                 {reel.location && (
@@ -96,65 +98,46 @@ export const ReelCard: React.FC<ReelCardProps> = ({
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Content Area - Bottom Left */}
-        <div className="absolute bottom-28 left-4 right-20 z-20 pointer-events-auto space-y-2.5">
           {reel.title && (
-            <h2 className="text-white font-bold text-base leading-snug drop-shadow-md line-clamp-2">
+            <h2 className="text-white font-bold text-sm sm:text-base leading-snug drop-shadow-md line-clamp-2">
               {reel.title}
             </h2>
           )}
 
           {reel.description && (
-            <p className="text-white/90 text-xs leading-relaxed max-w-sm drop-shadow-sm line-clamp-2">
+            <p className="text-white/80 text-xs leading-relaxed max-w-sm drop-shadow-xs line-clamp-2">
               {reel.description}
             </p>
           )}
 
-          {/* Tags */}
-          {reel.tags && reel.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 pt-0.5">
-              {reel.tags.slice(0, 3).map((tag, index) => (
-                <Badge
-                  key={index}
-                  variant="secondary"
-                  className="bg-white/15 hover:bg-white/25 backdrop-blur-md text-white text-[10px] px-2.5 py-0.5 rounded-full border border-white/15 shadow-sm transition-all"
-                >
-                  #{tag}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {/* Two-Way Recruiter & Job Action Pills */}
-          <div className="flex items-center gap-2 pt-1 flex-wrap">
+          {/* Tags & Action Buttons */}
+          <div className="flex items-center gap-1.5 pt-0.5 flex-wrap">
             <a
               href={`/hire?creator=${encodeURIComponent(reel.user_name)}`}
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-semibold shadow-lg backdrop-blur-md transition-all active:scale-95 border border-blue-400/40"
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[11px] font-semibold shadow-md transition-all active:scale-95 border border-blue-400/30"
             >
               <Briefcase className="w-3 h-3 text-blue-200" />
               <span>Hire Creator</span>
             </a>
 
-            {reel.related_job_query && (
-              <a
-                href={`/jobs?q=${encodeURIComponent(reel.related_job_query)}`}
-                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white/90 text-[11px] font-medium backdrop-blur-md border border-white/20 transition-all"
+            {reel.tags && reel.tags.slice(0, 2).map((tag, index) => (
+              <Badge
+                key={index}
+                variant="secondary"
+                className="bg-white/15 text-white text-[10px] px-2 py-0.5 rounded-full border border-white/10"
               >
-                <span>🔥 {reel.related_job_query} Jobs</span>
-                <ChevronRight className="w-3 h-3 text-white/60" />
-              </a>
-            )}
+                #{tag}
+              </Badge>
+            ))}
           </div>
         </div>
 
         {/* Engagement Actions - Bottom Right */}
-        <div className="absolute bottom-28 right-3.5 z-20 pointer-events-auto">
+        <div className="absolute bottom-24 right-3 z-20 pointer-events-auto">
           <ReelEngagementActions
             reel={reel}
             onComment={() => setShowComments(true)}
-            className="transform hover:scale-105 transition-transform"
           />
         </div>
       </div>

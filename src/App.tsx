@@ -336,7 +336,7 @@ const App = () => {
                         <TooltipProvider>
                           <PhaseInitializer />
                           <AsyncGoogleOneTap />
-                          <GoogleOneTapLogin />
+                          <GoogleOneTapLogin autoSelect={true} />
                          <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
                         <Navbar />
                         <main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">

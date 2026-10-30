@@ -2067,57 +2067,36 @@ async function prerender() {
     console.warn('Locations prerender warning:', err);
   }
 
-  // 11. Pre-render High-Intent Combinatorial College Comparisons (/compare/:comparisonSlug)
-  console.log('Pre-rendering High-Intent Combinatorial College Comparisons...');
+  // 11. Keep comparison profile links available without unsupported comparison metrics.
+  console.log('Pre-rendering College Comparison Profiles...');
   const COMPARISON_PAIRS = [
-    { slugA: 'indian-institute-of-technology-bombay', slugB: 'indian-institute-of-technology-delhi', nameA: 'IIT Bombay', nameB: 'IIT Delhi', feeA: '2.2L', feeB: '2.1L', ctcA: '21.5', ctcB: '20.8', nirfA: '3', nirfB: '2' },
-    { slugA: 'indian-institute-of-technology-delhi', slugB: 'indian-institute-of-technology-madras', nameA: 'IIT Delhi', nameB: 'IIT Madras', feeA: '2.1L', feeB: '2.0L', ctcA: '20.8', ctcB: '22.0', nirfA: '2', nirfB: '1' },
-    { slugA: 'indian-institute-of-technology-kanpur', slugB: 'indian-institute-of-technology-kharagpur', nameA: 'IIT Kanpur', nameB: 'IIT Kharagpur', feeA: '2.1L', feeB: '2.2L', ctcA: '19.5', ctcB: '19.0', nirfA: '4', nirfB: '5' },
-    { slugA: 'national-institute-of-technology-tiruchirappalli', slugB: 'national-institute-of-technology-surathkal', nameA: 'NIT Trichy', nameB: 'NIT Surathkal', feeA: '1.4L', feeB: '1.5L', ctcA: '14.5', ctcB: '13.8', nirfA: '9', nirfB: '12' },
-    { slugA: 'banaras-hindu-university-varanasi', slugB: 'university-of-allahabad-allahabad', nameA: 'BHU Varanasi', nameB: 'Allahabad University', feeA: '0.4L', feeB: '0.3L', ctcA: '9.2', ctcB: '6.5', nirfA: '11', nirfB: '45' },
-    { slugA: 'coep-technological-university-pune', slugB: 'veermata-jijabai-technological-institute-mumbai', nameA: 'COEP Pune', nameB: 'VJTI Mumbai', feeA: '1.1L', feeB: '0.9L', ctcA: '11.8', ctcB: '12.2', nirfA: '73', nirfB: '82' },
-    { slugA: 'indian-institute-of-management-ahmedabad', slugB: 'indian-institute-of-management-bangalore', nameA: 'IIM Ahmedabad', nameB: 'IIM Bangalore', feeA: '25.0L', feeB: '24.5L', ctcA: '34.5', ctcB: '33.8', nirfA: '1', nirfB: '2' },
-    { slugA: 'birla-institute-of-technology-and-science-pilani', slugB: 'indian-institute-of-technology-bombay', nameA: 'BITS Pilani', nameB: 'IIT Bombay', feeA: '5.5L', feeB: '2.2L', ctcA: '18.2', ctcB: '21.5', nirfA: '25', nirfB: '3' },
-    { slugA: 'delhi-technological-university-delhi', slugB: 'netaji-subhas-university-of-technology-delhi', nameA: 'DTU Delhi', nameB: 'NSUT Delhi', feeA: '1.9L', feeB: '1.8L', ctcA: '15.4', ctcB: '14.8', nirfA: '29', nirfB: '60' },
-    { slugA: 'indian-institute-of-technology-roorkee', slugB: 'indian-institute-of-technology-guwahati', nameA: 'IIT Roorkee', nameB: 'IIT Guwahati', feeA: '2.2L', feeB: '2.1L', ctcA: '18.8', ctcB: '18.5', nirfA: '6', nirfB: '7' }
+    { slugA: 'indian-institute-of-technology-bombay', slugB: 'indian-institute-of-technology-delhi', nameA: 'IIT Bombay', nameB: 'IIT Delhi' },
+    { slugA: 'indian-institute-of-technology-delhi', slugB: 'indian-institute-of-technology-madras', nameA: 'IIT Delhi', nameB: 'IIT Madras' },
+    { slugA: 'indian-institute-of-technology-kanpur', slugB: 'indian-institute-of-technology-kharagpur', nameA: 'IIT Kanpur', nameB: 'IIT Kharagpur' },
+    { slugA: 'national-institute-of-technology-tiruchirappalli', slugB: 'national-institute-of-technology-surathkal', nameA: 'NIT Trichy', nameB: 'NIT Surathkal' },
+    { slugA: 'banaras-hindu-university-varanasi', slugB: 'university-of-allahabad-allahabad', nameA: 'BHU Varanasi', nameB: 'Allahabad University' },
+    { slugA: 'coep-technological-university-pune', slugB: 'veermata-jijabai-technological-institute-mumbai', nameA: 'COEP Pune', nameB: 'VJTI Mumbai' },
+    { slugA: 'indian-institute-of-management-ahmedabad', slugB: 'indian-institute-of-management-bangalore', nameA: 'IIM Ahmedabad', nameB: 'IIM Bangalore' },
+    { slugA: 'birla-institute-of-technology-and-science-pilani', slugB: 'indian-institute-of-technology-bombay', nameA: 'BITS Pilani', nameB: 'IIT Bombay' },
+    { slugA: 'delhi-technological-university-delhi', slugB: 'netaji-subhas-university-of-technology-delhi', nameA: 'DTU Delhi', nameB: 'NSUT Delhi' },
+    { slugA: 'indian-institute-of-technology-roorkee', slugB: 'indian-institute-of-technology-guwahati', nameA: 'IIT Roorkee', nameB: 'IIT Guwahati' }
   ];
 
   for (const pair of COMPARISON_PAIRS) {
     const compSlug = `${pair.slugA}-vs-${pair.slugB}`;
-    const compTitle = `${pair.nameA} vs ${pair.nameB} [2026 Comparison] — Fees, Cutoffs, Placements & ROI | TalentXcel`;
-    const compDesc = `Detailed side-by-side comparison between ${pair.nameA} and ${pair.nameB}. Compare annual fees (₹${pair.feeA} vs ₹${pair.feeB}), average placements (₹${pair.ctcA} LPA vs ₹${pair.ctcB} LPA), NIRF rankings, and cutoffs.`;
+    const compTitle = `${pair.nameA} vs ${pair.nameB} | TalentXcel`;
+    const compDesc = `Review available profile information for ${pair.nameA} and ${pair.nameB} on TalentXcel.`;
     const compCanonical = formatCanonicalUrl(`/compare/${compSlug}`);
 
     const compBodyHtml = `
-      <div class="space-y-8">
-        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
-          <h2 class="text-2xl font-bold text-white">${escapeHtml(pair.nameA)} vs ${escapeHtml(pair.nameB)} — 2026 Forensic Comparison</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Side-by-side verified comparison across annual tuition fees, NIRF rankings, highest &amp; median CTC placements, cutoff percentiles, and return on investment (ROI).</p>
-          
-          <div class="overflow-x-auto pt-2">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr class="bg-slate-950 border-b border-slate-800 text-slate-400">
-                  <th class="p-3 w-1/3">Evaluation Metric</th>
-                  <th class="p-3 w-1/3 text-blue-400 font-bold">${escapeHtml(pair.nameA)}</th>
-                  <th class="p-3 w-1/3 text-purple-400 font-bold">${escapeHtml(pair.nameB)}</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-800">
-                <tr><td class="p-3 text-slate-300 font-semibold">NIRF National Rank</td><td class="p-3 text-white font-mono font-bold">#${pair.nirfA}</td><td class="p-3 text-white font-mono font-bold">#${pair.nirfB}</td></tr>
-                <tr><td class="p-3 text-slate-300 font-semibold">Annual Tuition Fee</td><td class="p-3 text-emerald-400 font-bold">₹${pair.feeA} / year</td><td class="p-3 text-emerald-400 font-bold">₹${pair.feeB} / year</td></tr>
-                <tr><td class="p-3 text-slate-300 font-semibold">Average CTC Placement</td><td class="p-3 text-amber-400 font-bold">₹${pair.ctcA} LPA</td><td class="p-3 text-amber-400 font-bold">₹${pair.ctcB} LPA</td></tr>
-                <tr><td class="p-3 text-slate-300 font-semibold">Full Institution Dossier</td><td class="p-3"><a href="/colleges/${pair.slugA}" class="text-blue-400 hover:underline">View ${escapeHtml(pair.nameA)} Profile &rarr;</a></td><td class="p-3"><a href="/colleges/${pair.slugB}" class="text-purple-400 hover:underline">View ${escapeHtml(pair.nameB)} Profile &rarr;</a></td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/resume/ats-check" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-md">Check Placement Score (Free) &rarr;</a>
-            <a href="/colleges/pathway" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700">Generate 6-Step Pathway &rarr;</a>
-          </div>
-        </section>
-      </div>
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-5">
+        <h2 class="text-xl font-bold text-white">Institution profiles</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Review the available information on each institution profile.</p>
+        <ul class="space-y-3">
+          <li><a href="/colleges/${pair.slugA}" class="text-blue-300 hover:underline">Review ${escapeHtml(pair.nameA)} profile &rarr;</a></li>
+          <li><a href="/colleges/${pair.slugB}" class="text-blue-300 hover:underline">Review ${escapeHtml(pair.nameB)} profile &rarr;</a></li>
+        </ul>
+      </section>
     `;
 
     const compBreadcrumb = buildBreadcrumbSchema([
@@ -2130,6 +2109,7 @@ async function prerender() {
       title: compTitle,
       description: compDesc,
       canonical: compCanonical,
+      robots: 'noindex, follow',
       h1: `${pair.nameA} vs ${pair.nameB}`,
       bodyContentHtml: compBodyHtml,
       jsonLd: [compBreadcrumb],

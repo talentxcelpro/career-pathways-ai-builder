@@ -60,7 +60,7 @@ export default async function handler(req: Request) {
   }
 
   const html = generateDynamicSeoHtml(cleanPath);
-  const noindexDynamicHub = /^locations\/[^/]+$/.test(cleanPath) || /^jobs\/[^/]+\/[^/]+$/.test(cleanPath);
+  const noindexDynamicHub = /^locations\/[^/]+$/.test(cleanPath) || /^jobs\/[^/]+\/[^/]+$/.test(cleanPath) || /^compare\/[^/]+$/.test(cleanPath);
 
   return new Response(html, {
     status: 200,
@@ -278,14 +278,19 @@ function generateDynamicSeoHtml(cleanPath: string): string {
     const compParts = secondary.split('-vs-');
     const nameA = formatTitle(compParts[0] || 'College A');
     const nameB = formatTitle(compParts[1] || 'College B');
-    title = `${nameA} vs ${nameB} [2026 Comparison] — Fees, Cutoffs & Placements | TalentXcel`;
-    description = `Review available institution information for ${nameA} and ${nameB} on TalentXcel.`;
+    title = `${nameA} vs ${nameB} | TalentXcel`;
+    description = `Review available profile information for ${nameA} and ${nameB} on TalentXcel.`;
     canonical = `https://talentxcel.in/compare/${secondary}`;
     h1 = `${nameA} vs ${nameB}`;
+    robotsDirective = 'noindex, follow';
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">${escapeHtml(nameA)} vs ${escapeHtml(nameB)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Review current fees, rankings, admissions, and placement information on each institution profile before comparing the available details.</p>
+        <h2 class="text-xl font-bold text-white">Institution profiles</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Review the available information on each institution profile.</p>
+        <ul class="space-y-3">
+          <li><a href="/colleges/${escapeHtml(compParts[0] || '')}" class="text-blue-300 hover:underline">Review ${escapeHtml(nameA)} profile &rarr;</a></li>
+          <li><a href="/colleges/${escapeHtml(compParts[1] || '')}" class="text-blue-300 hover:underline">Review ${escapeHtml(nameB)} profile &rarr;</a></li>
+        </ul>
       </section>
     `;
   } else if ((prefix === 'profile' || prefix === 'user' || prefix === 'p') && secondary) {

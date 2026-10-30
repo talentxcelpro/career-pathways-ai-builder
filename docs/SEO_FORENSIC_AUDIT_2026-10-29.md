@@ -48,3 +48,43 @@ The SEO gate rerun completed its checks but reported one environmental failure: 
 ## Verification status
 
 The Vite compilation phase completed successfully after the Phase 2 change. The full `npm run build` postbuild chain was not allowed to complete because its long-running media/network stages exceeded the verification window; generated HTML was still inspected directly. The standalone SEO gate ran and recorded the Supabase connectivity failure described above. Field-data Core Web Vitals remain unmeasured locally.
+
+## Final verification refresh — 30 October 2026
+
+This section supersedes the earlier incomplete build and database-connectivity status above. No deployment or commit was performed.
+
+### Confirmed route metadata
+
+Generated HTML was inspected directly after the final Vite build and prerender. These checks establish document contents; HTTP status and response headers were not fetched from a live production host.
+
+| Route | Generated document | Title / H1 | Canonical | Robots | Sitemap |
+|---|---|---|---|---|---|
+| `/` | `dist/index.html` | TalentXcel global network title / “The Global Professional Talent Network” | `https://talentxcel.in/` | `index, follow` | Included |
+| `/jobs` | `dist/jobs/index.html` | “Job Listings” | `https://talentxcel.in/jobs` | `index, follow` | Included |
+| `/employer` | `dist/employer/index.html` | “Employer Hiring Tools” | `https://talentxcel.in/employer` | `index, follow` | Included |
+| `/blog` | `dist/blog/index.html` | “Career Articles and Guides” | `https://talentxcel.in/blog` | `index, follow` | Included |
+| `/news` | `dist/news/index.html` | “Career and Hiring News” | `https://talentxcel.in/news` | `index, follow` | Included |
+| `/rankings` | `dist/rankings/index.html` | “Company and Product Leaderboards” | `https://talentxcel.in/rankings` | `index, follow` | Included |
+| `/talent` | `dist/talent/index.html` | “Talent Directory” | `https://talentxcel.in/talent` | `noindex, follow` | Excluded |
+| `/roles/software-engineer` | Generated | “Software Engineer Career Overview” | `.in/roles/software-engineer` | `noindex, follow` | Excluded |
+| `/jobs/software-engineer/bangalore` | Generated | “Software Engineer Jobs in Bangalore” | `.in/jobs/software-engineer/bangalore` | `noindex, follow` | Excluded |
+| `/locations/bangalore` | Generated | “Job Listings in Bangalore” | `.in/locations/bangalore` | `noindex, follow` | Excluded |
+| `/salary/software-engineer/bangalore` | Generated | Source-availability title | `.in/salary/software-engineer/bangalore` | `noindex, follow` | Excluded |
+| `/compare/{institution-pair}` | Generated | Institution-pair title and heading | `.in/compare/{institution-pair}` | `noindex, follow` | Excluded |
+| `/auth/login`, `/dashboard`, `/profile/edit` | No route-specific static HTML | Runtime title/robots policy | Runtime | Runtime noindex; Vercel `X-Robots-Tag` rules cover private families | Excluded |
+
+The sitemap generator queried live data successfully: 2,236 active job records (2,238 `<loc>` entries in the jobs sitemap, including its static entries), 1,000 post records, and 13,767 URLs across the generated sitemap partitions. The generator completed after removing obsolete matrix sitemap files. The resulting sitemap partitions contain no comparison, location-hub, or role/city-hub URLs. `/resume-builder` and `/resources` are not valid indexable targets in the router inventory used here (the former is private/noindex; the latter redirects); `/resources/:slug` is the actual resource route family.
+
+### Template remediation and quality checks
+
+- Comparison templates had fallback tuition, placement, NIRF rank, recruiter, and placement-rate values when institution data was absent, while describing the output as verified. Those claims and fallbacks were removed from the runtime page and static prerender. The route now presents links to available institution profiles and carries `noindex, follow` in runtime/static metadata, the SEO path policy, the edge response header, and Vercel headers.
+- Generated static metadata retains the `.in` canonical host. Blog/news details and unsupported salary/location/role hubs remain noindex; their collection roots remain indexable.
+- `vercel.json` parsed successfully and `git diff --check` completed without whitespace errors (Git reported only expected line-ending conversion notices).
+- `npm run build --ignore-scripts` passed in 5m31s after sitemap generation had completed. An earlier concurrent build attempt failed because the sitemap generator was replacing public files during Vite's asset copy; the isolated retry passed. Existing warnings remain for mixed static/dynamic imports, an `eval` in Bluebird, outdated Browserslist data, and chunks larger than 3 MB. The emitted institution catalog chunk was 16.58 MB uncompressed (1.18 MB gzip); vendor was 3.17 MB (887 KB gzip).
+- The SEO CI gate passed **4,314/4,314** invariants with live database access; it fetched 1,000 active jobs for JobPosting checks.
+- A focused TypeScript check for `CollegeComparePage.tsx` passed. A prior repository-wide `tsc` attempt reported existing diagnostics across unrelated modules and is not a clean project-wide typecheck result.
+- The prerender completed and generated 12,626 static HTML documents. Representative generated files show unique titles, canonicals, and robots directives as listed above. Private routes have no dedicated static document and rely on existing runtime/edge/Vercel policy.
+
+### Remaining measurement limits
+
+No live production HTTP status/header check was run, and the local preview could not be inspected in a browser during this session. Consequently this audit does not claim a visual screenshot review, field-data LCP/CLS/INP result, or Core Web Vitals improvement. The production build reports a large institution-catalog JavaScript chunk that merits a separate code-splitting review. Image asset sizes and source usage were inspected, but no blanket conversion or image-component rewrite was made without rendered-page evidence. Unrelated image files and user-generated test images visible in the working tree were preserved.

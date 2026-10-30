@@ -22,6 +22,10 @@ export const MobileReels = () => {
     } catch (error) {
       console.warn('Failed to cleanup realtime:', error);
     }
+
+    const handleOpenUpload = () => setShowUploadModal(true);
+    window.addEventListener('openReelsUpload', handleOpenUpload);
+    return () => window.removeEventListener('openReelsUpload', handleOpenUpload);
   }, []);
 
   const handleUploadSuccess = () => {
@@ -49,7 +53,7 @@ export const MobileReels = () => {
       </Helmet>
       
       {/* Centered responsive container (9:16 on desktop, 100% on mobile) */}
-      <div className="w-full h-[calc(100vh-4rem)] md:h-[calc(100vh-4rem)] overflow-hidden bg-slate-950 flex justify-center">
+      <div className="w-full h-[100dvh] overflow-hidden bg-slate-950 flex justify-center">
         <div className="w-full max-w-[480px] h-full relative bg-black shadow-2xl border-x border-slate-900/60 overflow-hidden">
           {/* Header with Tab switcher and Category pills */}
           <ReelsHeader
@@ -71,60 +75,7 @@ export const MobileReels = () => {
             category={category}
           />
 
-          {/* Bottom Navigation */}
-          <div className="absolute bottom-0 left-0 right-0 z-40 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md">
-            <div className="flex items-center justify-around py-2 px-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/')}
-                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
-              >
-                <Home className="h-4 w-4" />
-                <span className="text-[10px]">Home</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/network')}
-                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
-              >
-                <Heart className="h-4 w-4" />
-                <span className="text-[10px]">Network</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowUploadModal(true)}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-12 w-12 shadow-lg transform hover:scale-105 transition-all"
-              >
-                <Plus className="h-5 w-5" />
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/jobs')}
-                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
-              >
-                <Search className="h-4 w-4" />
-                <span className="text-[10px]">Jobs</span>
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/talent')}
-                className="flex flex-col items-center gap-0.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-11 w-11 transition-all"
-              >
-                <User className="h-4 w-4" />
-                <span className="text-[10px]">Talent</span>
-              </Button>
-            </div>
-          </div>
-        
+          {/* Global bottom navigation handled by PageSpecificBottomNav */}
           {/* Upload Modal */}
           <ReelsUploadModal
             isOpen={showUploadModal}

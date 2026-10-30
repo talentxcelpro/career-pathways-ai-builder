@@ -670,6 +670,15 @@
       ]
     },
     {
+      "source": "/compare/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, follow"
+        }
+      ]
+    },
+    {
       "source": "/roles/:path*",
       "headers": [
         {

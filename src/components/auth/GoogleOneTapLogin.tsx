@@ -48,7 +48,7 @@ const APP_ROUTE_PREFIXES = [
 
 export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({ 
   disabled = false,
-  autoSelect = false 
+  autoSelect = true 
 }) => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();

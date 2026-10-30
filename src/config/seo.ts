@@ -94,6 +94,7 @@ const NOINDEX_PATH_PATTERNS = [
   /^\/(?:blog|news)\/[^/]+\/?$/,
   /^\/salary\/(?!scenarios\/?$|negotiation\/?$|goals\/?$|skills-gap\/?$|jobs\/?$)[^/]+(?:\/[^/]+)?\/?$/,
   /^\/locations\/[^/]+\/?$/,
+  /^\/compare\/[^/]+\/?$/,
   /^\/roles\/[^/]+\/?$/,
   /^\/jobs\/[^/]+\/[^/]+\/?$/,
 ];

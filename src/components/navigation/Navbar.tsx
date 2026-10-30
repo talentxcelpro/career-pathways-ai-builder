@@ -190,9 +190,13 @@ export const Navbar = () => {
     return null;
   }
 
-  // Hide navbar on standalone canvas editors that have their own custom header
-  const isFullScreenEditor = location.pathname.startsWith('/resume/editor/') || location.pathname.startsWith('/resume/wizard');
-  if (isFullScreenEditor) {
+  // Hide navbar on full-screen immersive experiences (Reels player, canvas editors, wizards)
+  const isFullScreenImmersive = 
+    location.pathname.startsWith('/resume/editor/') || 
+    location.pathname.startsWith('/resume/wizard') ||
+    location.pathname === '/mobile/reels' ||
+    location.pathname === '/reels';
+  if (isFullScreenImmersive) {
     return null;
   }
 
