@@ -1,11 +1,10 @@
-import { jsPDF } from 'jspdf';
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
-import html2canvas from 'html2canvas';
 
 /**
  * Exports resume as PDF with 100% visual fidelity matching on-screen template & preview
  */
 export const exportToPDF = async (resumeData: any, elementId: string = 'resume-preview-container'): Promise<void> => {
+  const { default: html2canvas } = await import('html2canvas');
+  const { jsPDF } = await import('jspdf');
   // 1. Try to capture the rendered template element directly from the DOM for 100% visual match
   const targetElement = document.getElementById(elementId) || document.querySelector('.template-render-container');
   
@@ -192,6 +191,7 @@ export const exportToPDF = async (resumeData: any, elementId: string = 'resume-p
  * Exports resume as DOCX
  */
 export const exportToDOCX = async (resumeData: any): Promise<void> => {
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import('docx');
   const children: any[] = [];
 
   // Header / Title

@@ -15,8 +15,6 @@ import {
   Globe,
   Award
 } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import QRCode from 'qrcode';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -248,6 +246,7 @@ ${passportUrl}
     if (!certificateRef.current) return;
     setIsExportingImage(true);
     try {
+      const { default: html2canvas } = await import('html2canvas');
       await document.fonts.ready;
       const element = certificateRef.current;
       const canvas = await html2canvas(element, {
@@ -278,6 +277,8 @@ ${passportUrl}
     if (!certificateRef.current) return;
     setIsExportingPDF(true);
     try {
+      const { default: html2canvas } = await import('html2canvas');
+      const { jsPDF } = await import('jspdf');
       await document.fonts.ready;
       const element = certificateRef.current;
       const canvas = await html2canvas(element, {

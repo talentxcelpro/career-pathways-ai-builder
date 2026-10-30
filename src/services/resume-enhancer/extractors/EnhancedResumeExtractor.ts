@@ -2,7 +2,6 @@ import { EnhancedExtractedContent } from '../interfaces/EnhancedExtractedContent
 import { supabase } from "@/integrations/supabase/client";
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
 import * as pdfjsLib from 'pdfjs-dist';
-import Tesseract from 'tesseract.js';
 
 // Set up PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
@@ -241,7 +240,8 @@ export class EnhancedResumeExtractor {
   private async extractFromImage(file: File): Promise<string> {
     console.log('🖼️ Extracting from image using OCR...');
     
-    const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+    const Tesseract = (await import("tesseract.js")).default;
+    const { data: { text } } = await Tesseract.recognize(file, "eng", {
       logger: (m) => console.log('OCR:', m)
     });
     

@@ -1,8 +1,8 @@
-import { Document, Packer, Paragraph, TextRun } from 'docx';
 import { saveAs } from 'file-saver';
 import type { ResumeJSON } from '@/hooks/useResumeParser';
 
 export async function exportResumeToDocx(resume: ResumeJSON, filename = 'resume.docx') {
+  const { Document, Packer, Paragraph, TextRun } = await import('docx');
   const children: Paragraph[] = [];
 
   const addHeading = (text: string) => children.push(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text, bold: true, size: 28 })] }));

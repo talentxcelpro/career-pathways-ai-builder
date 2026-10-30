@@ -5,7 +5,6 @@
 
 import * as pdfjsLib from 'pdfjs-dist';
 // import * as mammoth from 'mammoth'; // Removed - using lazy loading instead
-import Tesseract from 'tesseract.js';
 import { configurePDFWorker, isPDFWorkerReady, getPDFWorkerStatus } from '@/utils/pdfWorkerConfig';
 
 export class ResumeTextExtractor {
@@ -218,7 +217,8 @@ export class ResumeTextExtractor {
     try {
       console.log('🔍 Starting OCR extraction from image...');
       
-      const { data: { text } } = await Tesseract.recognize(file, 'eng', {
+      const Tesseract = (await import("tesseract.js")).default;
+      const { data: { text } } = await Tesseract.recognize(file, "eng", {
         logger: (m) => {
           if (m.status === 'recognizing text') {
             console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
@@ -281,7 +281,8 @@ export class ResumeTextExtractor {
             canvas.toBlob((blob) => resolve(blob!), 'image/png');
           });
           
-          const { data: { text } } = await Tesseract.recognize(blob, 'eng');
+          const Tesseract = (await import("tesseract.js")).default;
+          const { data: { text } } = await Tesseract.recognize(blob, "eng");
           
           if (text.trim()) {
             combinedText += text + '\n\n';

@@ -1,4 +1,3 @@
-import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 import { saveAs } from 'file-saver';
 import { toast } from 'sonner';
 
@@ -21,6 +20,7 @@ export const exportToPDF = async (elementId: string, filename: string = 'resume.
 
 export const exportToDOCX = async (resumeData: any, filename: string = 'resume.docx') => {
   try {
+    const { Document, Packer, Paragraph, TextRun, HeadingLevel } = await import('docx');
     console.log('Starting DOCX export with data:', resumeData);
     toast.loading('Generating DOCX...', { id: 'docx-export' });
 

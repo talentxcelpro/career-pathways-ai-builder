@@ -62,21 +62,9 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/pdfjs-dist')) {
             return 'pdfjs-vendor';
           }
-          if (id.includes('node_modules/jspdf')) {
-            return 'jspdf-vendor';
-          }
-          if (id.includes('node_modules/html2canvas')) {
-            return 'html2canvas-vendor';
-          }
           // 4. Standalone heavy compute/rendering engines (loaded only when their specific route/tool is active)
           if (id.includes('node_modules/fabric')) {
             return 'fabric-vendor';
-          }
-          if (id.includes('node_modules/tesseract.js')) {
-            return 'tesseract-vendor';
-          }
-          if (id.includes('node_modules/docx')) {
-            return 'docx-vendor';
           }
           // 5. Heavy graphics, 3D, and flow libraries loaded on-demand
           if (id.includes('node_modules/@react-three') || id.includes('node_modules/three')) {
