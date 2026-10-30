@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { Search, Building, MapPin, Briefcase, GraduationCap, TrendingUp, Sparkles, ChevronRight, Layers, ExternalLink } from 'lucide-react';
+import { Search, MapPin, Briefcase, GraduationCap, TrendingUp, ChevronRight } from 'lucide-react';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 const TOP_STATES_DATA = [

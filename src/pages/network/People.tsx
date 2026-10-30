@@ -43,7 +43,7 @@ import { useUserPresence } from '@/hooks/useUserPresence';
 import { RealTimePresence } from '@/components/network/RealTimePresence';
 import { toast } from 'sonner';
 
-// Curated Global Tech Leaders & Creators to enrich directory and eliminate empty states
+// Public member directory backed by profiles that members explicitly mark public
 interface GlobalTalentProfile {
   id: string;
   full_name: string;
@@ -64,7 +64,10 @@ interface GlobalTalentProfile {
   activity_type?: 'reel' | 'post' | 'hiring' | 'achievement';
 }
 
-// Seed identities and performance claims are not presented as member data.\r\nconst GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [];\r\n\r\nconst GLOBAL_HUBS = [
+// Seed identities and performance claims are not presented as member data.
+const GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [];
+
+const GLOBAL_HUBS = [
   { id: 'all', label: 'All Worldwide', icon: '🌍' },
   { id: 'dubai', label: 'Dubai & MENA', icon: '🇦🇪' },
   { id: 'us', label: 'Silicon Valley & US', icon: '🇺🇸' },
