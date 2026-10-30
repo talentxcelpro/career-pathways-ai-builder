@@ -12,9 +12,13 @@ serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
   console.log('=== AI Resume Parser Function Called ===');
 
-  // Rate Limiting Guard (SEC-010)
-  const clientId = getClientIdentifier(req);
-  const rateLimit = checkRateLimit(clientId, 10, 60000);
+  // Rate Limiting Guard (SEC-010) - Distributed Persistent Rate Limiting
+  const rateLimit = await checkRateLimit(req, {
+    endpoint: "ai-resume-parser",
+    maxRequests: 10,
+    windowSeconds: 60,
+    failClosed: true,
+  });
   if (!rateLimit.allowed) {
     return new Response(
       JSON.stringify({

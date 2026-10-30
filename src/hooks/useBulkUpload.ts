@@ -109,7 +109,7 @@ export const useBulkUpload = () => {
         // Get secure signed URL for private documents bucket (1 hour expiry)
         const { data: signedData, error: signError } = await supabase.storage
           .from('documents')
-          .createSignedUrl(filePath, 3600);
+          .createSignedUrl(filePath, 900);
           
         const secureUrl = signedData?.signedUrl;
         if (!secureUrl || signError) {
@@ -153,7 +153,7 @@ export const useBulkUpload = () => {
           if (error) throw error;
           
           return {
-            fileUrl: publicUrl,
+            fileUrl: secureUrl,
             extractedData: data,
             fileName: file.name,
             processingTier
@@ -180,7 +180,7 @@ export const useBulkUpload = () => {
           
           const data = await response.json();
           return {
-            fileUrl: publicUrl,
+            fileUrl: secureUrl,
             extractedData: data,
             fileName: file.name,
             processingTier

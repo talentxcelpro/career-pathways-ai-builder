@@ -1,11 +1,14 @@
 // supabase/functions/_shared/cors.ts
-// Production Hardened CORS Configuration for TalentXcel Edge Functions
+// Production Hardened CORS Configuration for TalentXcel Edge Functions (SEC-009)
 
 export const ALLOWED_ORIGINS = [
   'https://talentxcel.in',
   'https://www.talentxcel.in',
   'https://jobs.talentxcel.in',
   'https://employers.talentxcel.in',
+  'https://employer.talentxcel.in',
+  'https://recruiter.talentxcel.in',
+  'https://admin.talentxcel.in',
   'https://resume.talentxcel.in',
   'https://learning.talentxcel.in',
   'https://colleges.talentxcel.in',
@@ -13,6 +16,7 @@ export const ALLOWED_ORIGINS = [
   'https://salary.talentxcel.in',
   'https://passport.talentxcel.in',
   'https://government.talentxcel.in',
+  'https://preview.talentxcel.in',
   'http://localhost:8080',
   'http://localhost:5173',
   'http://localhost:3000',
@@ -25,16 +29,22 @@ export const ALLOWED_ORIGINS = [
   'http://localhost',
 ];
 
-const PREVIEW_ORIGIN_PATTERNS = [
-  /^https:\/\/[a-zA-Z0-9_-]+\.talentxcel\.in$/,
-  /^https:\/\/[a-zA-Z0-9_-]+-talentxcel.*\.vercel\.app$/,
-  /^https:\/\/career-pathways-ai-builder.*\.vercel\.app$/,
+// Strictly anchored preview origin patterns for TalentXcel.in and verified Vercel deployments
+export const PREVIEW_ORIGIN_PATTERNS = [
+  // Official TalentXcel.in subdomain preview / features
+  /^https:\/\/[a-z0-9-]+\.preview\.talentxcel\.in$/,
+  /^https:\/\/[a-z0-9-]+\.talentxcel\.in$/,
+  // Exact Vercel deployment URLs strictly scoped to the career-pathways-ai-builder project and talentxcelpro team
+  /^https:\/\/career-pathways-ai-builder(-[a-z0-9-]+)*-talentxcelpro\.vercel\.app$/,
+  /^https:\/\/career-pathways-ai-builder\.vercel\.app$/,
 ];
 
 export function isAllowedOrigin(origin: string): boolean {
-  if (!origin) return false;
-  if (ALLOWED_ORIGINS.includes(origin)) return true;
-  return PREVIEW_ORIGIN_PATTERNS.some((pattern) => pattern.test(origin));
+  if (!origin || typeof origin !== 'string') return false;
+  const trimmed = origin.trim();
+  if (!trimmed) return false;
+  if (ALLOWED_ORIGINS.includes(trimmed)) return true;
+  return PREVIEW_ORIGIN_PATTERNS.some((pattern) => pattern.test(trimmed));
 }
 
 export function getCorsHeaders(reqOrOrigin?: Request | string | null): Record<string, string> {
@@ -46,7 +56,9 @@ export function getCorsHeaders(reqOrOrigin?: Request | string | null): Record<st
   }
 
   const allowed = isAllowedOrigin(origin);
-  // Default to primary production origin if incoming origin is not in allowlist
+  // If allowed, return the matching caller origin.
+  // If not allowed, return primary production origin so browser security fails safely
+  // (the browser detects mismatch between requested origin and returned Allow-Origin header).
   const allowOrigin = allowed ? origin : 'https://talentxcel.in';
 
   return {

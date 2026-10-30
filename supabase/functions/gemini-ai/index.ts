@@ -9,9 +9,13 @@ serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  // Rate Limiting Guard (SEC-010)
-  const clientId = getClientIdentifier(req);
-  const rateLimit = checkRateLimit(clientId, 20, 60000); // 20 requests per minute
+  // Rate Limiting Guard (SEC-010) - Distributed Persistent Rate Limiting
+  const rateLimit = await checkRateLimit(req, {
+    endpoint: "gemini-ai",
+    maxRequests: 20,
+    windowSeconds: 60,
+    failClosed: true,
+  });
   if (!rateLimit.allowed) {
     return new Response(
       JSON.stringify({

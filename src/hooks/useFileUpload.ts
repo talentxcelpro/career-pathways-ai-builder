@@ -140,11 +140,11 @@ export function useFileUpload(options?: UseFileUploadOptions) {
         throw uploadError;
       }
 
-      const isPrivateBucket = ['cv-files', 'documents', 'user-uploads'].includes(bucket);
+      const isPrivateBucket = ['cv-files', 'documents', 'user-uploads', 'resumes', 'cover-letters'].includes(bucket);
       let resolvedUrl: string;
 
       if (isPrivateBucket) {
-        const { data: signedData, error: signErr } = await supabase.storage.from(bucket).createSignedUrl(data.path, 3600);
+        const { data: signedData, error: signErr } = await supabase.storage.from(bucket).createSignedUrl(data.path, 900);
         if (signErr || !signedData?.signedUrl) {
           throw signErr || new Error(`Failed to generate signed URL for private bucket: ${bucket}`);
         }

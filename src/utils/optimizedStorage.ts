@@ -108,8 +108,15 @@ class OptimizedStorage {
     const result = await client.storage
       .from(bucket)
       .upload(path, file, uploadOptions);
-
     if (result.data && !result.error) {
+      const isPrivate = ['documents', 'cv-files', 'user-uploads', 'resumes', 'cover-letters'].includes(bucket);
+      if (isPrivate) {
+        const { data: signedData } = await client.storage
+          .from(bucket)
+          .createSignedUrl(result.data.path, 900);
+        return { ...result, customUrl: signedData?.signedUrl || '' };
+      }
+
       const { data: { publicUrl } } = client.storage
         .from(bucket)
         .getPublicUrl(result.data.path);
@@ -175,8 +182,25 @@ class OptimizedStorage {
     };
   }
 
-  // Optimized public URL retrieval with caching
+  // Secure signed URL retrieval with short-lived expiration (SEC-003)
+  async getSignedUrl(bucket: string, path: string, expiresIn: number = 900): Promise<string> {
+    const client = this.getConnection();
+    const { data, error } = await client.storage
+      .from(bucket)
+      .createSignedUrl(path, expiresIn);
+    if (error || !data?.signedUrl) {
+      throw error || new Error(`Failed to generate signed URL for bucket: ${bucket}`);
+    }
+    return data.signedUrl;
+  }
+
+  // Optimized public URL retrieval with caching & private bucket guard
   async getPublicUrl(bucket: string, path: string, useCache = true): Promise<string> {
+    const isPrivate = ['documents', 'cv-files', 'user-uploads', 'resumes', 'cover-letters'].includes(bucket);
+    if (isPrivate) {
+      return this.getSignedUrl(bucket, path, 900);
+    }
+
     const cacheKey = `url:${bucket}:${path}`;
     
     if (useCache) {

@@ -8,6 +8,10 @@
 -- 1. Rollback procedure record_resume_download_atomic if needed
 DROP FUNCTION IF EXISTS public.record_resume_download_atomic(UUID);
 
+-- 2. Rate Limiter Rollback (SEC-010)
+DROP FUNCTION IF EXISTS public.check_rate_limit(TEXT, TEXT, INT, INT);
+DROP TABLE IF EXISTS public.edge_rate_limits;
+
 -- 2. Storage Policies Rollback
 -- Retains documents bucket as private, but drops the newly created RLS policies if necessary
 DROP POLICY IF EXISTS "Admins can manage documents" ON storage.objects;

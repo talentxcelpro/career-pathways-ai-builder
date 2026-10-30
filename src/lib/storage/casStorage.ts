@@ -68,7 +68,7 @@ export async function uploadWithCasEngine(params: {
       const { data } = supabaseClient.storage.from(bucket).getPublicUrl(canonicalPath);
       resolvedUrl = data.publicUrl;
     } else {
-      const { data } = await supabaseClient.storage.from(bucket).createSignedUrl(canonicalPath, 3600);
+      const { data } = await supabaseClient.storage.from(bucket).createSignedUrl(canonicalPath, 900);
       resolvedUrl = data?.signedUrl || '';
     }
 
@@ -107,7 +107,7 @@ export async function uploadWithCasEngine(params: {
     const { data } = supabaseClient.storage.from(bucket).getPublicUrl(physicalPath);
     resolvedUrl = data.publicUrl;
   } else {
-    const { data } = await supabaseClient.storage.from(bucket).createSignedUrl(physicalPath, 3600);
+    const { data } = await supabaseClient.storage.from(bucket).createSignedUrl(physicalPath, 900);
     resolvedUrl = data?.signedUrl || '';
   }
 

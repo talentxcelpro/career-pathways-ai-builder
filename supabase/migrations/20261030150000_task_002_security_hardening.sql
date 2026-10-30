@@ -171,3 +171,133 @@ END;
 $$;
 
 GRANT EXECUTE ON FUNCTION public.record_resume_download_atomic(UUID) TO authenticated;
+
+-- ============================================================================
+-- 5. SEC-010: DISTRIBUTED PERSISTENT RATE LIMITING ENGINE
+-- ============================================================================
+-- Dedicated table for multi-isolate persistent rate limiting
+CREATE TABLE IF NOT EXISTS public.edge_rate_limits (
+    rate_key TEXT PRIMARY KEY,
+    endpoint TEXT NOT NULL,
+    request_count INT NOT NULL DEFAULT 1,
+    window_start TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT clock_timestamp()
+);
+
+-- Index for rapid expiration lookup and background cleanup
+CREATE INDEX IF NOT EXISTS idx_edge_rate_limits_expires_at 
+  ON public.edge_rate_limits(expires_at);
+
+-- RLS Hardening: Revoke direct access from public/anon/authenticated.
+-- Strictly accessible only via service_role and SECURITY DEFINER RPC.
+ALTER TABLE public.edge_rate_limits ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON public.edge_rate_limits FROM PUBLIC, anon, authenticated;
+GRANT ALL ON public.edge_rate_limits TO service_role;
+
+-- Concurrency-safe atomic rate limiter procedure with row-level locking
+CREATE OR REPLACE FUNCTION public.check_rate_limit(
+    p_rate_key TEXT,
+    p_endpoint TEXT,
+    p_max_requests INT,
+    p_window_seconds INT
+)
+RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_temp
+AS $$
+DECLARE
+    v_now TIMESTAMPTZ := clock_timestamp();
+    v_current_count INT;
+    v_allowed BOOLEAN;
+    v_remaining INT;
+    v_reset_seconds INT;
+BEGIN
+    -- Input validation: reject invalid or empty keys
+    IF p_rate_key IS NULL OR length(trim(p_rate_key)) = 0 THEN
+        RETURN jsonb_build_object(
+            'allowed', false,
+            'remaining', 0,
+            'reset_seconds', 60,
+            'error', 'invalid_rate_limit_key'
+        );
+    END IF;
+
+    -- Concurrency-safe atomic UPSERT with row-level locking (FOR UPDATE)
+    INSERT INTO public.edge_rate_limits (
+        rate_key,
+        endpoint,
+        request_count,
+        window_start,
+        expires_at,
+        created_at,
+        updated_at
+    )
+    VALUES (
+        p_rate_key,
+        p_endpoint,
+        1,
+        v_now,
+        v_now + (p_window_seconds || ' seconds')::INTERVAL,
+        v_now,
+        v_now
+    )
+    ON CONFLICT (rate_key) DO UPDATE
+    SET 
+        -- If current window has expired, reset window and count to 1
+        request_count = CASE 
+            WHEN edge_rate_limits.expires_at <= clock_timestamp() THEN 1
+            ELSE edge_rate_limits.request_count + 1
+        END,
+        window_start = CASE 
+            WHEN edge_rate_limits.expires_at <= clock_timestamp() THEN clock_timestamp()
+            ELSE edge_rate_limits.window_start
+        END,
+        expires_at = CASE 
+            WHEN edge_rate_limits.expires_at <= clock_timestamp() 
+                THEN clock_timestamp() + (p_window_seconds || ' seconds')::INTERVAL
+            ELSE edge_rate_limits.expires_at
+        END,
+        updated_at = clock_timestamp()
+    RETURNING 
+        request_count, 
+        EXTRACT(EPOCH FROM (expires_at - clock_timestamp()))::INT
+    INTO 
+        v_current_count, 
+        v_reset_seconds;
+
+    -- Ensure reset_seconds is at least 1
+    IF v_reset_seconds < 1 THEN
+        v_reset_seconds := 1;
+    END IF;
+
+    -- Evaluate quota
+    IF v_current_count <= p_max_requests THEN
+        v_allowed := true;
+        v_remaining := p_max_requests - v_current_count;
+    ELSE
+        v_allowed := false;
+        v_remaining := 0;
+    END IF;
+
+    -- Opportunistic non-blocking cleanup of stale expired keys (1% of requests)
+    IF random() < 0.01 THEN
+        DELETE FROM public.edge_rate_limits 
+        WHERE expires_at < (clock_timestamp() - INTERVAL '1 hour');
+    END IF;
+
+    RETURN jsonb_build_object(
+        'allowed', v_allowed,
+        'remaining', v_remaining,
+        'reset_seconds', v_reset_seconds,
+        'current_count', v_current_count
+    );
+END;
+$$;
+
+-- Revoke execute from PUBLIC, anon, authenticated; grant exclusively to service_role
+REVOKE EXECUTE ON FUNCTION public.check_rate_limit(TEXT, TEXT, INT, INT) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.check_rate_limit(TEXT, TEXT, INT, INT) TO service_role;
+
