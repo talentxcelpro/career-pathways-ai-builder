@@ -152,6 +152,7 @@ const ProofRedirect                   = lazy(() => import('./pages/passport/comp
 const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
 const RealTimeChat                    = lazy(() => import('@/components/realtime/RealTimeChat').then(m => ({ default: m.RealTimeChat })));
+const CareerVersePage                 = lazy(() => import('./pages/CareerVersePage'));
 const CommunitiesPage                 = lazy(() => import('./pages/network/Communities'));
 const MessagesPage                    = lazy(() => import('./pages/network/Messages'));
 const PeopleDirectoryPage             = lazy(() => import('./pages/network/People'));
@@ -592,6 +593,27 @@ const App = () => {
                 <Route path="/directory/jobs-by-city" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading City Job Directory...</div>}><JobsCityDirectory /></Suspense>} />
 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/play" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>
+                  }>
+                    <CareerVersePage />
+                  </Suspense>
+                } />
+                <Route path="/careerverse" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>
+                  }>
+                    <CareerVersePage />
+                  </Suspense>
+                } />
+                <Route path="/rpg" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>
+                  }>
+                    <CareerVersePage />
+                  </Suspense>
+                } />
                 <Route path="/recruiters" element={
                   <Suspense fallback={
                     <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>
