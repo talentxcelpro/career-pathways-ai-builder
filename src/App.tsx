@@ -153,7 +153,6 @@ const ProofRedirect                   = lazy(() => import('./pages/passport/comp
 const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
 const RealTimeChat                    = lazy(() => import('@/components/realtime/RealTimeChat').then(m => ({ default: m.RealTimeChat })));
-const CareerVersePage                 = lazy(() => import('./pages/CareerVersePage'));
 const CommunitiesPage                 = lazy(() => import('./pages/network/Communities'));
 const MessagesPage                    = lazy(() => import('./pages/network/Messages'));
 const PeopleDirectoryPage             = lazy(() => import('./pages/network/People'));
