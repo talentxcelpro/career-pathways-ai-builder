@@ -4,8 +4,6 @@ import { NavItem } from "../types/nav-item";
 
 const CareerVersePage = lazy(() => import('../pages/CareerVersePage'));
 
-const CareerVersePage = lazy(() => import('../pages/CareerVersePage'));
-
 export const gamificationRoutes: NavItem[] = [
   {
     title: "CareerVerse RPG",
