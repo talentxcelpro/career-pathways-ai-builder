@@ -19,15 +19,40 @@ export const config = {
  * TALENTXCEL STAGE E.1 INDEPENDENT DEPLOYMENT UNITS
  * Each unit can be toggled independently via environment variables or runtime overrides.
  */
+export function getUnitsDiagnosticHeader(): string {
+  return `soft404=${DEPLOYMENT_UNITS.SOFT_404_PROTECTION ? 1 : 0},salary=${DEPLOYMENT_UNITS.SALARY_CANARY_CANONICAL ? 1 : 0},ctr=${DEPLOYMENT_UNITS.CTR_METADATA_OPTIMIZATION ? 1 : 0}`;
+}
+
+/**
+ * TALENTXCEL STAGE F HARDENED FAIL-CLOSED DEPLOYMENT UNITS
+ * Requirements:
+ * - Explicit 'true' is required to activate a deployment unit.
+ * - Explicit 'false' disables it.
+ * - Unset (undefined or empty) disables it.
+ * - Zero alternate activation paths.
+ * - Independent controllability guaranteed via dynamic getters.
+ */
 export const DEPLOYMENT_UNITS = {
-  // Unit 1: Soft 404 Protection & Strict Entity Validation (SEO-002)
-  SOFT_404_PROTECTION: typeof process !== 'undefined' && process.env?.SEO_DEPLOY_SOFT_404 ? process.env.SEO_DEPLOY_SOFT_404 !== 'false' : true,
+  // Unit 1: Soft 404 Protection & Strict Entity Validation (SEO-002) - FAIL-CLOSED
+  get SOFT_404_PROTECTION(): boolean {
+    return typeof process !== 'undefined' && Boolean(process.env?.SEO_DEPLOY_SOFT_404)
+      ? process.env.SEO_DEPLOY_SOFT_404.trim().toLowerCase() === 'true'
+      : false;
+  },
 
-  // Unit 2: Salary Independent Canonical Canary (SEO-004 & SEO-001)
-  SALARY_CANARY_CANONICAL: typeof process !== 'undefined' && process.env?.SEO_DEPLOY_SALARY_CANARY ? process.env.SEO_DEPLOY_SALARY_CANARY !== 'false' : true,
+  // Unit 2: Salary Independent Canonical Canary (SEO-004 & SEO-001) - FAIL-CLOSED
+  get SALARY_CANARY_CANONICAL(): boolean {
+    return typeof process !== 'undefined' && Boolean(process.env?.SEO_DEPLOY_SALARY_CANARY)
+      ? process.env.SEO_DEPLOY_SALARY_CANARY.trim().toLowerCase() === 'true'
+      : false;
+  },
 
-  // Unit 3: CTR Metadata Optimization (SEO-007)
-  CTR_METADATA_OPTIMIZATION: typeof process !== 'undefined' && process.env?.SEO_DEPLOY_CTR_OPTIMIZATION ? process.env.SEO_DEPLOY_CTR_OPTIMIZATION !== 'false' : true,
+  // Unit 3: CTR Metadata Optimization (SEO-007) - FAIL-CLOSED
+  get CTR_METADATA_OPTIMIZATION(): boolean {
+    return typeof process !== 'undefined' && Boolean(process.env?.SEO_DEPLOY_CTR_OPTIMIZATION)
+      ? process.env.SEO_DEPLOY_CTR_OPTIMIZATION.trim().toLowerCase() === 'true'
+      : false;
+  },
 };
 
 export function resolveCanaryCanonical(cleanPath: string, targetUniverse: string): string {
@@ -96,6 +121,7 @@ function legacyGenericOkResponse(cleanPath: string): Response {
       'Content-Type': 'text/html; charset=utf-8',
       'X-Robots-Tag': 'index, follow',
       'X-Render-Engine': 'TalentXcel-Legacy-CatchAll',
+      'X-SEO-Units': getUnitsDiagnosticHeader(),
     },
   });
 }
@@ -315,6 +341,7 @@ export default async function handler(req: Request) {
       'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
       'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
       'X-Robots-Tag': result.robotsDirective,
+      'X-SEO-Units': getUnitsDiagnosticHeader(),
     },
   });
 }
