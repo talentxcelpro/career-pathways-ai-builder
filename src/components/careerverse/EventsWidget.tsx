@@ -1,65 +1,59 @@
 import React from 'react';
-import { Calendar, Laptop, Briefcase, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight, Trophy, Briefcase } from 'lucide-react';
 import { CareerEvent } from '@/services/careerverse/careerBadgeAndRewardsService';
 
-interface EventsWidgetProps {
+interface EventsProps {
   events: CareerEvent[];
-  onOpenEvents?: () => void;
-  onSelectEvent?: (event: CareerEvent) => void;
+  onOpenEventsModal: () => void;
 }
 
-export const EventsWidget: React.FC<EventsWidgetProps> = ({
-  events,
-  onOpenEvents,
-  onSelectEvent,
-}) => {
+export const EventsWidget: React.FC<EventsProps> = ({ events, onOpenEventsModal }) => {
+  const displayEvents = events.slice(0, 2);
+
   return (
-    <div className="bg-[#101E3B] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
+    <div className="bg-[#101E3B] border border-white/5 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-[#36D9F5]/20 flex items-center justify-center text-[#36D9F5]">
+        <div className="w-7 h-7 rounded-lg bg-[#36D9F5]/15 flex items-center justify-center text-[#36D9F5]">
           <Calendar className="w-4 h-4" />
         </div>
         <h3 className="font-bold text-white text-base">Upcoming Events</h3>
       </div>
 
-      {/* Events List matching reference screenshot */}
-      <div className="space-y-2.5">
-        {events.slice(0, 2).map((event, idx) => (
+      {/* Events List */}
+      <div className="flex flex-col gap-2.5">
+        {displayEvents.map((event) => (
           <div
             key={event.id}
-            onClick={() => onSelectEvent?.(event)}
-            className="flex items-center justify-between p-3 rounded-xl bg-[#071329]/60 hover:bg-[#071329] border border-white/5 hover:border-[#36D9F5]/40 transition-all cursor-pointer group"
+            onClick={onOpenEventsModal}
+            className="flex items-center justify-between p-3 rounded-xl bg-[#071329] border border-white/5 hover:border-[#36D9F5]/40 cursor-pointer transition-all group"
           >
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                  idx === 0
-                    ? 'bg-[#278DFF]/20 text-[#36D9F5] border border-[#278DFF]/30'
-                    : 'bg-[#FFCA55]/20 text-[#FFCA55] border border-[#FFCA55]/30'
-                }`}
-              >
-                {idx === 0 ? <Laptop className="w-4 h-4" /> : <Briefcase className="w-4 h-4" />}
+            <div className="flex items-center gap-3 min-w-0 pr-2">
+              <div className="w-8 h-8 rounded-lg bg-[#278DFF]/15 flex items-center justify-center text-[#36D9F5] flex-shrink-0">
+                {event.category === 'competition' ? (
+                  <Trophy className="w-4 h-4" />
+                ) : (
+                  <Briefcase className="w-4 h-4" />
+                )}
               </div>
-
-              <div>
-                <h4 className="text-xs font-bold text-white group-hover:text-[#36D9F5] transition-colors leading-snug">
+              <div className="min-w-0">
+                <h4 className="text-xs font-bold text-white group-hover:text-[#36D9F5] transition-colors truncate">
                   {event.title}
                 </h4>
-                <p className="text-[10px] text-slate-400">{event.description}</p>
+                <p className="text-[10px] text-slate-400 truncate">{event.description}</p>
               </div>
             </div>
 
-            <span className="text-[11px] font-black text-slate-300 bg-[#101E3B] px-2 py-1 rounded-md shrink-0">
-              {event.date_display}
+            <span className="text-xs font-black text-[#FFCA55] bg-[#FFCA55]/10 px-2 py-1 rounded-md flex-shrink-0">
+              {event.event_date}
             </span>
           </div>
         ))}
       </div>
 
-      {/* View All Events Footer */}
+      {/* View All Events */}
       <button
-        onClick={onOpenEvents}
+        onClick={onOpenEventsModal}
         className="w-full text-center text-xs font-bold text-[#36D9F5] hover:underline flex items-center justify-center gap-1 pt-1"
       >
         <span>View All Events</span>

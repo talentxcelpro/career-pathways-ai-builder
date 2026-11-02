@@ -1,61 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Trophy, ChevronRight } from 'lucide-react';
-import { LeaderboardEntry } from '@/services/careerverse/careerLeaderboardService';
+import { LeaderboardPlayer } from '@/services/careerverse/careerLeaderboardService';
 
-interface LeaderboardWidgetProps {
-  entries: LeaderboardEntry[];
-  currentScope: 'college' | 'react' | 'overall';
-  onChangeScope: (scope: 'college' | 'react' | 'overall') => void;
-  onOpenFullLeaderboard?: () => void;
+interface LeaderboardProps {
+  players: LeaderboardPlayer[];
+  currentTab: 'college' | 'react' | 'overall';
+  onTabChange: (tab: 'college' | 'react' | 'overall') => void;
+  onViewFull: () => void;
 }
 
-export const LeaderboardWidget: React.FC<LeaderboardWidgetProps> = ({
-  entries,
-  currentScope,
-  onChangeScope,
-  onOpenFullLeaderboard,
+export const LeaderboardWidget: React.FC<LeaderboardProps> = ({
+  players,
+  currentTab,
+  onTabChange,
+  onViewFull
 }) => {
   return (
-    <div className="bg-[#101E3B] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
+    <div className="bg-[#101E3B] border border-white/5 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-[#FFCA55]/20 flex items-center justify-center text-[#FFCA55]">
+          <div className="w-7 h-7 rounded-lg bg-[#FFCA55]/15 flex items-center justify-center text-[#FFCA55]">
             <Trophy className="w-4 h-4" />
           </div>
           <h3 className="font-bold text-white text-base">Leaderboard</h3>
         </div>
       </div>
 
-      {/* Scope Filter Tabs matching reference screenshot */}
-      <div className="flex items-center gap-1 bg-[#071329] p-1 rounded-xl border border-white/5">
+      {/* Tabs */}
+      <div className="grid grid-cols-3 gap-1 bg-[#071329] p-1 rounded-xl border border-white/5">
         <button
-          onClick={() => onChangeScope('college')}
-          className={`flex-1 py-1 text-center text-xs font-bold rounded-lg transition-all ${
-            currentScope === 'college'
-              ? 'bg-[#7047F5] text-white shadow-[0_0_10px_rgba(112,71,245,0.4)]'
+          onClick={() => onTabChange('college')}
+          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+            currentTab === 'college'
+              ? 'bg-[#278DFF] text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
           My College
         </button>
-
         <button
-          onClick={() => onChangeScope('react')}
-          className={`flex-1 py-1 text-center text-xs font-bold rounded-lg transition-all ${
-            currentScope === 'react'
-              ? 'bg-[#7047F5] text-white shadow-[0_0_10px_rgba(112,71,245,0.4)]'
+          onClick={() => onTabChange('react')}
+          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+            currentTab === 'react'
+              ? 'bg-[#278DFF] text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
           React
         </button>
-
         <button
-          onClick={() => onChangeScope('overall')}
-          className={`flex-1 py-1 text-center text-xs font-bold rounded-lg transition-all ${
-            currentScope === 'overall'
-              ? 'bg-[#7047F5] text-white shadow-[0_0_10px_rgba(112,71,245,0.4)]'
+          onClick={() => onTabChange('overall')}
+          className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
+            currentTab === 'overall'
+              ? 'bg-[#278DFF] text-white shadow-md'
               : 'text-slate-400 hover:text-white'
           }`}
         >
@@ -63,57 +61,62 @@ export const LeaderboardWidget: React.FC<LeaderboardWidgetProps> = ({
         </button>
       </div>
 
-      {/* Player List matching reference screenshot */}
-      <div className="space-y-2">
-        {entries.slice(0, 5).map((entry) => {
-          const isUser = entry.is_current_user;
-
+      {/* Ranked Players List */}
+      <div className="flex flex-col gap-1.5">
+        {players.slice(0, 5).map((player) => {
+          const isCurrentUser = player.is_current_user;
           return (
             <div
-              key={entry.rank}
-              className={`flex items-center justify-between p-2 rounded-xl transition-all ${
-                isUser
-                  ? 'bg-gradient-to-r from-[#7047F5]/30 to-[#A34EFF]/20 border border-[#7047F5] shadow-lg shadow-[#7047F5]/25'
-                  : 'bg-[#071329]/50 border border-white/5 hover:border-white/10'
+              key={player.id}
+              className={`flex items-center justify-between p-2.5 rounded-xl border transition-all ${
+                isCurrentUser
+                  ? 'bg-gradient-to-r from-[#7047F5]/30 to-[#278DFF]/30 border-[#7047F5] shadow-lg shadow-[#7047F5]/20'
+                  : 'bg-[#071329] border-white/5'
               }`}
             >
-              <div className="flex items-center gap-2.5">
-                {/* Rank number or Crown */}
-                <div className="w-5 text-center text-xs font-black">
-                  {entry.rank === 1 ? (
-                    <span className="text-[#FFCA55]">👑</span>
+              <div className="flex items-center gap-3 min-w-0 pr-2">
+                {/* Rank Number / Crown */}
+                <span
+                  className={`w-5 text-center text-xs font-black ${
+                    player.rank === 1
+                      ? 'text-[#FFCA55]'
+                      : player.rank === 2
+                      ? 'text-[#36D9F5]'
+                      : player.rank === 3
+                      ? 'text-[#FFA726]'
+                      : 'text-slate-400'
+                  }`}
+                >
+                  {player.rank === 1 ? '👑' : player.rank}
+                </span>
+
+                {/* Avatar */}
+                <div className="w-7 h-7 rounded-full bg-[#101E3B] border border-white/10 flex items-center justify-center text-xs font-bold text-white overflow-hidden flex-shrink-0">
+                  {player.avatar_url ? (
+                    <img src={player.avatar_url} alt={player.display_name} className="w-full h-full object-cover" />
                   ) : (
-                    <span className={isUser ? 'text-[#36D9F5]' : 'text-slate-400'}>{entry.rank}</span>
+                    player.display_name.charAt(0)
                   )}
                 </div>
 
-                {/* Avatar */}
-                <div className="w-7 h-7 rounded-full overflow-hidden border border-white/10 shrink-0">
-                  <img
-                    src={entry.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'}
-                    alt={entry.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-
                 {/* Name */}
-                <span className={`text-xs font-bold truncate max-w-[110px] ${isUser ? 'text-white' : 'text-slate-200'}`}>
-                  {entry.name}
+                <span className={`text-xs font-bold truncate ${isCurrentUser ? 'text-white' : 'text-slate-200'}`}>
+                  {player.display_name}
                 </span>
               </div>
 
-              {/* XP */}
-              <span className={`text-xs font-black ${isUser ? 'text-[#36D9F5]' : 'text-slate-300'}`}>
-                {entry.xp.toLocaleString()} XP
+              {/* XP Pill */}
+              <span className="text-xs font-black text-white bg-white/5 px-2.5 py-1 rounded-md flex-shrink-0">
+                {player.xp.toLocaleString()} XP
               </span>
             </div>
           );
         })}
       </div>
 
-      {/* View Full Leaderboard Footer */}
+      {/* View Full Link */}
       <button
-        onClick={onOpenFullLeaderboard}
+        onClick={onViewFull}
         className="w-full text-center text-xs font-bold text-[#36D9F5] hover:underline flex items-center justify-center gap-1 pt-1"
       >
         <span>View Full Leaderboard</span>

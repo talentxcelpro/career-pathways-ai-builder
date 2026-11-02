@@ -1,139 +1,112 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export interface LeaderboardEntry {
-  rank: number;
-  name: string;
-  avatar_url?: string;
+export interface LeaderboardPlayer {
+  id: string;
+  display_name: string;
+  avatar_url: string | null;
+  career_title: string;
+  college: string;
   xp: number;
-  is_current_user?: boolean;
+  level: number;
+  rank: number;
+  is_current_user: boolean;
 }
 
-export interface CareerGuild {
+export interface CampusGuild {
   id: string;
   name: string;
-  campus_name: string;
+  college: string;
+  description: string;
+  badge_icon: string;
   member_count: number;
   campus_rank: number;
-  icon?: string;
-  tagline?: string;
 }
 
-export const careerLeaderboardService = {
-  async getLeaderboard(
-    scope: 'college' | 'react' | 'overall' = 'college',
-    userId?: string
-  ): Promise<LeaderboardEntry[]> {
-    try {
-      // Fetch top users by xp from career_players table
-      const { data: players, error } = await supabase
-        .from('career_players')
-        .select('id, display_name, avatar_url, xp, level')
-        .order('xp', { ascending: false })
-        .limit(10);
+export class CareerLeaderboardService {
+  static async getLeaderboard(
+    tab: 'college' | 'react' | 'overall',
+    currentUserId?: string,
+    userCollege?: string
+  ): Promise<LeaderboardPlayer[]> {
+    let query = supabase
+      .from('career_players' as any)
+      .select('id, display_name, avatar_url, career_title, college, xp, level')
+      .order('xp', { ascending: false })
+      .limit(20);
 
-      if (!error && players && players.length > 0) {
-        let entries = players.map((p, idx) => ({
-          rank: idx + 1,
-          name: p.display_name || `Player #${idx + 1}`,
-          avatar_url: p.avatar_url || `https://api.dicebear.com/7.x/bottts/svg?seed=${p.id}`,
-          xp: p.xp || (3000 - idx * 250),
-          is_current_user: p.id === userId,
-        }));
-
-        // If current user is not in top entries, inject their standing
-        if (userId && !entries.some((e) => e.is_current_user)) {
-          entries = [
-            entries[0],
-            { rank: 2, name: 'Arjun V. (You)', avatar_url: '', xp: 2450, is_current_user: true },
-            ...entries.slice(1, 4),
-          ].map((e, i) => ({ ...e, rank: i + 1 }));
-        }
-
-        return entries;
-      }
-
-      return this.getDefaultLeaderboard();
-    } catch (err) {
-      console.warn('careerLeaderboardService.getLeaderboard fallback:', err);
-      return this.getDefaultLeaderboard();
+    if (tab === 'college' && userCollege && userCollege !== 'General') {
+      query = query.eq('college', userCollege);
     }
-  },
 
-  getDefaultLeaderboard(): LeaderboardEntry[] {
-    return [
-      {
-        rank: 1,
-        name: 'Priya S.',
-        avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80',
-        xp: 3820,
-        is_current_user: false,
-      },
-      {
-        rank: 2,
-        name: 'Arjun V. (You)',
-        avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
-        xp: 2450,
-        is_current_user: true,
-      },
-      {
-        rank: 3,
-        name: 'Rohan M.',
-        avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
-        xp: 2310,
-        is_current_user: false,
-      },
-      {
-        rank: 4,
-        name: 'Neha K.',
-        avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&auto=format&fit=crop&q=80',
-        xp: 2190,
-        is_current_user: false,
-      },
-      {
-        rank: 5,
-        name: 'Aditya P.',
-        avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80',
-        xp: 2040,
-        is_current_user: false,
-      },
-    ];
-  },
-};
-
-export const careerGuildService = {
-  async getGuilds(userId?: string): Promise<CareerGuild[]> {
-    try {
-      const { data: guilds, error } = await supabase
-        .from('career_guilds')
-        .select('id, name, tagline, member_count, campus_rank')
-        .order('campus_rank', { ascending: true })
-        .limit(5);
-
-      if (!error && guilds && guilds.length > 0) {
-        return guilds.map((g) => ({
-          id: g.id,
-          name: g.name,
-          campus_name: g.tagline || 'ABC College',
-          member_count: g.member_count || 42,
-          campus_rank: g.campus_rank || 3,
-        }));
-      }
-
-      return [this.getDefaultGuild()];
-    } catch (err) {
-      console.warn('careerGuildService.getGuilds fallback:', err);
-      return [this.getDefaultGuild()];
+    const { data, error } = await query;
+    if (error) {
+      console.error('Error fetching leaderboard:', error);
+      throw error;
     }
-  },
 
-  getDefaultGuild(): CareerGuild {
-    return {
-      id: 'guild_techtitans',
-      name: 'TechTitans',
-      campus_name: 'ABC College',
-      member_count: 42,
-      campus_rank: 3,
-      tagline: 'Leading innovators and competitive programmers of ABC College',
-    };
-  },
-};
+    const players = (data || []) as any[];
+
+    // Calculate ranking and check if current user is present
+    let result = players.map((p, idx) => ({
+      id: p.id,
+      display_name: p.display_name,
+      avatar_url: p.avatar_url,
+      career_title: p.career_title,
+      college: p.college,
+      xp: p.xp,
+      level: p.level,
+      rank: idx + 1,
+      is_current_user: currentUserId ? p.id === currentUserId : false
+    }));
+
+    // If current user is logged in but not in top 20, fetch their rank and position
+    if (currentUserId && currentUserId !== 'guest' && !result.some(p => p.is_current_user)) {
+      const { data: userProfile } = await supabase
+        .from('career_players' as any)
+        .select('id, display_name, avatar_url, career_title, college, xp, level')
+        .eq('id', currentUserId)
+        .maybeSingle();
+
+      if (userProfile) {
+        const up = userProfile as any;
+        const { count } = await supabase
+          .from('career_players' as any)
+          .select('id', { count: 'exact', head: true })
+          .gt('xp', up.xp);
+
+        result.push({
+          id: up.id,
+          display_name: `${up.display_name} (You)`,
+          avatar_url: up.avatar_url,
+          career_title: up.career_title,
+          college: up.college,
+          xp: up.xp,
+          level: up.level,
+          rank: (count || 0) + 1,
+          is_current_user: true
+        });
+      }
+    }
+
+    return result;
+  }
+
+  static async getCampusGuild(guildId?: string | null): Promise<CampusGuild | null> {
+    let query = supabase
+      .from('career_guilds' as any)
+      .select('*')
+      .order('campus_rank', { ascending: true })
+      .limit(1);
+
+    if (guildId) {
+      query = supabase.from('career_guilds' as any).select('*').eq('id', guildId);
+    }
+
+    const { data, error } = await query.maybeSingle();
+    if (error) {
+      console.warn('Error fetching guild:', error);
+      return null;
+    }
+    return data as CampusGuild | null;
+  }
+}

@@ -1,35 +1,43 @@
 import { supabase } from '@/integrations/supabase/client';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 
-export const careerRealtimeService = {
-  subscribeToPlayerProgress(
+export class CareerRealtimeService {
+  /**
+   * Subscribe to real-time player level, XP, and coin updates.
+   */
+  static subscribeToPlayerUpdates(
     userId: string,
-    onProgressUpdate: (payload: any) => void
-  ): RealtimeChannel {
-    const channelName = `career_realtime_${userId || 'guest'}_${Date.now()}`;
-    const channel = supabase.channel(channelName);
+    onUpdate: (updatedPlayer: any) => void
+  ): RealtimeChannel | null {
+    if (!userId || userId === 'guest') return null;
 
-    channel
+    const channel = supabase
+      .channel(`career_player_${userId}`)
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'UPDATE',
           schema: 'public',
-          table: 'career_xp_ledger',
-          filter: userId ? `user_id=eq.${userId}` : undefined,
+          table: 'career_players',
+          filter: `id=eq.${userId}`
         },
         (payload) => {
-          onProgressUpdate(payload);
+          if (payload.new) {
+            onUpdate(payload.new);
+          }
         }
       )
       .subscribe();
 
     return channel;
-  },
+  }
 
-  unsubscribe(channel: RealtimeChannel) {
+  /**
+   * Cleanly unsubscribe from a real-time channel.
+   */
+  static unsubscribe(channel: RealtimeChannel | null): void {
     if (channel) {
       supabase.removeChannel(channel);
     }
-  },
-};
+  }
+}

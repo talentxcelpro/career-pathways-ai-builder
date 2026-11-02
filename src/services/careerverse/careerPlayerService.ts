@@ -2,205 +2,147 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface CareerPlayer {
   id: string;
-  user_id: string;
-  name: string;
-  title: string;
-  avatar_url: string;
-  level: number;
+  display_name: string;
+  career_title: string;
+  avatar_url: string | null;
+  college: string;
   xp: number;
-  next_level_xp: number;
+  level: number;
   career_coins: number;
-  streak_count: number;
-  headline?: string;
-  passport_verified?: boolean;
+  current_streak: number;
+  last_active_at: string;
   stats: {
     javascript: number;
     react: number;
     communication: number;
+    [key: string]: number;
   };
+  guild_id: string | null;
 }
 
-export const careerPlayerService = {
+export const calcLevel = (xp: number): number => {
+  return Math.max(1, Math.floor(xp / 250) + 1);
+};
+
+export const getNextLevelThreshold = (currentLevel: number): number => {
+  return currentLevel * 250;
+};
+
+export const getLevelFloorXP = (currentLevel: number): number => {
+  return (currentLevel - 1) * 250;
+};
+
+// Default guest profile when not logged in (clearly labelled, genuine preview state)
+export const GUEST_PLAYER: CareerPlayer = {
+  id: 'guest',
+  display_name: 'Guest Explorer',
+  career_title: 'Aspiring Engineer',
+  avatar_url: null,
+  college: 'TalentXcel Academy',
+  xp: 0,
+  level: 1,
+  career_coins: 0,
+  current_streak: 1,
+  last_active_at: new Date().toISOString(),
+  stats: {
+    javascript: 20,
+    react: 15,
+    communication: 30
+  },
+  guild_id: null
+};
+
+export class CareerPlayerService {
   /**
-   * Fetch current player from career_players or return realistic default
+   * Fetch player profile for a given user ID, or automatically initialize one via RPC if missing.
    */
-  async getOrCreateCurrentPlayer(userId: string): Promise<CareerPlayer> {
+  static async getOrActivatePlayer(userId: string, defaultName?: string): Promise<CareerPlayer> {
     try {
-      if (!userId || userId === 'demo_user_id') {
-        // Query first player in career_players as baseline
-        const { data: firstPlayer } = await supabase
-          .from('career_players')
-          .select('*')
-          .order('xp', { ascending: false })
-          .limit(1)
-          .maybeSingle();
-
-        if (firstPlayer) {
-          return this.mapDbPlayer(firstPlayer);
-        }
-        return this.getDefaultPlayer('guest');
-      }
-
-      // Check if player exists in career_players
-      const { data: player, error } = await supabase
-        .from('career_players')
+      const { data, error } = await supabase
+        .from('career_players' as any)
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (!error && player) {
-        return this.mapDbPlayer(player);
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Error fetching player, falling back to activate:', error);
       }
 
-      // Fallback check in profiles
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('id, full_name, headline, avatar_url')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (profile) {
-        return {
-          id: profile.id,
-          user_id: profile.id,
-          name: profile.full_name || 'Arjun Verma',
-          title: profile.headline || 'Frontend Explorer',
-          avatar_url: profile.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-          level: 12,
-          xp: 2450,
-          next_level_xp: 3000,
-          career_coins: 350,
-          streak_count: 7,
-          headline: profile.headline || 'Frontend Explorer',
-          passport_verified: true,
-          stats: {
-            javascript: 82,
-            react: 76,
-            communication: 64,
-          },
-        };
+      if (data) {
+        return data as unknown as CareerPlayer;
       }
 
-      return this.getDefaultPlayer(userId);
+      // Activate via server-side RPC
+      const { data: rpcData, error: rpcError } = await (supabase.rpc as any)('activate_career_player', {
+        p_user_id: userId,
+        p_display_name: defaultName || 'Adventurer'
+      });
+
+      if (rpcError) {
+        console.error('Failed to activate career player:', rpcError);
+        throw rpcError;
+      }
+
+      return (rpcData as any)?.player as CareerPlayer;
     } catch (err) {
-      console.warn('careerPlayerService.getOrCreateCurrentPlayer fallback:', err);
-      return this.getDefaultPlayer(userId);
+      console.error('CareerPlayerService.getOrActivatePlayer error:', err);
+      throw err;
     }
-  },
-
-  mapDbPlayer(p: any): CareerPlayer {
-    const totalXp = p.xp || 2450;
-    const currentLevel = p.level || Math.max(1, Math.floor(totalXp / 250) + 1);
-    const nextLevelXp = Math.max(3000, currentLevel * 250);
-
-    const statsObj = p.stats || {};
-    return {
-      id: p.id,
-      user_id: p.id,
-      name: p.display_name || 'Arjun Verma',
-      title: p.career_title || 'Frontend Explorer',
-      avatar_url: p.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      level: currentLevel,
-      xp: totalXp,
-      next_level_xp: nextLevelXp,
-      career_coins: p.career_coins || 350,
-      streak_count: p.streak_count || 7,
-      headline: p.career_title || 'Frontend Explorer',
-      passport_verified: true,
-      stats: {
-        javascript: statsObj.javascript || 82,
-        react: statsObj.react || 76,
-        communication: statsObj.communication || 64,
-      },
-    };
-  },
+  }
 
   /**
-   * Server-authoritative idempotency-protected XP addition
+   * Award XP and Coins server-authoritatively using unique idempotency key.
    */
-  async addXP(
-    userId: string,
-    amount: number,
-    reason: string,
-    sourceType: string,
-    sourceId: string,
-    idempotencyKey: string
-  ): Promise<{ success: boolean; newTotalXP: number; newLevel: number }> {
-    try {
-      // 1. Check idempotency key in ledger
-      const { data: existingEntry } = await supabase
-        .from('career_xp_ledger')
-        .select('id, amount')
-        .eq('idempotency_key', idempotencyKey)
-        .maybeSingle();
+  static async awardXP(params: {
+    userId: string;
+    amount: number;
+    coins?: number;
+    action: string;
+    sourceType: string;
+    sourceId?: string;
+    idempotencyKey?: string;
+    metadata?: Record<string, any>;
+  }): Promise<{
+    success: boolean;
+    idempotent?: boolean;
+    new_xp: number;
+    new_level: number;
+    new_coins: number;
+    leveled_up: boolean;
+  }> {
+    const key = params.idempotencyKey || `xp_${params.userId}_${params.sourceType}_${params.sourceId || Date.now()}`;
+    
+    const { data, error } = await (supabase.rpc as any)('award_career_xp', {
+      p_user_id: params.userId,
+      p_amount: params.amount,
+      p_coins: params.coins || 0,
+      p_action: params.action,
+      p_source_type: params.sourceType,
+      p_source_id: params.sourceId || null,
+      p_idempotency_key: key,
+      p_metadata: params.metadata || {}
+    });
 
-      if (existingEntry) {
-        console.warn('XP ledger idempotency match detected, skipping duplicate award.');
-        return { success: true, newTotalXP: 2450, newLevel: 12 };
-      }
-
-      // 2. Record in career_xp_ledger
-      const targetUserId = userId && userId !== 'demo_user_id' ? userId : '375b5ffa-1057-4c46-bc30-1b1aab7396de';
-      const { error: ledgerError } = await supabase
-        .from('career_xp_ledger')
-        .insert({
-          user_id: targetUserId,
-          amount,
-          reason,
-          source_type: sourceType,
-          source_id: sourceId,
-          idempotency_key: idempotencyKey,
-        });
-
-      if (ledgerError) {
-        console.warn('Failed to insert into career_xp_ledger:', ledgerError);
-      }
-
-      // 3. Update career_players if player exists
-      const { data: currentPlayer } = await supabase
-        .from('career_players')
-        .select('xp, level')
-        .eq('id', targetUserId)
-        .maybeSingle();
-
-      if (currentPlayer) {
-        const currentXp = (currentPlayer.xp || 2450) + amount;
-        const newLevel = Math.max(1, Math.floor(currentXp / 250) + 1);
-
-        await supabase
-          .from('career_players')
-          .update({ xp: currentXp, level: newLevel })
-          .eq('id', targetUserId);
-
-        return { success: true, newTotalXP: currentXp, newLevel };
-      }
-
-      return { success: true, newTotalXP: 2450 + amount, newLevel: 12 };
-    } catch (err) {
-      console.error('Error awarding XP:', err);
-      return { success: false, newTotalXP: 2450, newLevel: 12 };
+    if (error) {
+      console.error('Error in award_career_xp RPC:', error);
+      throw error;
     }
-  },
 
-  getDefaultPlayer(userId: string): CareerPlayer {
-    return {
-      id: userId || 'demo_player',
-      user_id: userId || 'demo_player',
-      name: 'Arjun Verma',
-      title: 'Frontend Explorer',
-      avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      level: 12,
-      xp: 2450,
-      next_level_xp: 3000,
-      career_coins: 350,
-      streak_count: 7,
-      headline: 'Frontend Explorer',
-      passport_verified: true,
-      stats: {
-        javascript: 82,
-        react: 76,
-        communication: 64,
-      },
-    };
-  },
-};
+    return data as any;
+  }
+
+  /**
+   * Update editable player profile fields.
+   */
+  static async updatePlayerProfile(userId: string, updates: Partial<Pick<CareerPlayer, 'display_name' | 'career_title' | 'avatar_url' | 'college'>>): Promise<void> {
+    const { error } = await supabase
+      .from('career_players' as any)
+      .update(updates)
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating player profile:', error);
+      throw error;
+    }
+  }
+}

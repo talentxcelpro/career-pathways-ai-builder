@@ -1,137 +1,145 @@
 import { supabase } from '@/integrations/supabase/client';
-import { careerPlayerService } from './careerPlayerService';
+import { CareerPlayerService } from './careerPlayerService';
 
 export interface CareerQuest {
   id: string;
   title: string;
   description: string;
-  category: 'daily' | 'weekly' | 'milestone' | 'special';
+  category: 'daily' | 'weekly' | 'milestone' | 'learning';
+  difficulty: 'easy' | 'medium' | 'hard';
   xp_reward: number;
-  coin_reward?: number;
-  completed: boolean;
-  action_url?: string;
+  coins_reward: number;
+  action_type: string;
+  requirements: Record<string, any>;
+  is_active: boolean;
+  user_progress?: {
+    status: 'available' | 'in_progress' | 'completed' | 'claimed';
+    progress: number;
+    completed_at: string | null;
+    claimed_at: string | null;
+  };
 }
 
-export const careerQuestService = {
-  async getUserQuestsWithStatus(userId: string): Promise<CareerQuest[]> {
-    try {
-      // 1. Fetch available quests from database
-      const { data: dbQuests, error } = await supabase
-        .from('career_quests')
-        .select('id, title, description, category, xp_reward, coin_reward')
-        .order('xp_reward', { ascending: true });
+export class CareerQuestService {
+  /**
+   * Fetch active quests, joined with the user's progress if logged in.
+   */
+  static async getQuests(userId?: string): Promise<CareerQuest[]> {
+    const { data: quests, error: questError } = await supabase
+      .from('career_quests' as any)
+      .select('*')
+      .eq('is_active', true)
+      .order('category', { ascending: true })
+      .order('xp_reward', { ascending: true });
 
-      // If database has quests, map them
-      if (!error && dbQuests && dbQuests.length > 0) {
-        // Query user quest completions if available
-        const completedQuestIds = new Set<string>();
-        if (userId && userId !== 'demo_user_id') {
-          const { data: userQuests } = await supabase
-            .from('career_user_quests')
-            .select('quest_id, status')
-            .eq('user_id', userId)
-            .eq('status', 'completed');
+    if (questError) {
+      console.error('Error fetching quests:', questError);
+      throw questError;
+    }
 
-          userQuests?.forEach((q) => completedQuestIds.add(q.quest_id));
-        } else {
-          // Default: first quest checked like screenshot
-          completedQuestIds.add(dbQuests[0].id);
+    if (!userId || userId === 'guest') {
+      return (quests as any[]).map(q => ({
+        ...q,
+        user_progress: {
+          status: 'available',
+          progress: 0,
+          completed_at: null,
+          claimed_at: null
         }
-
-        return dbQuests.map((q, idx) => ({
-          id: q.id,
-          title: q.title,
-          description: q.description || '',
-          category: (q.category as any) || 'daily',
-          xp_reward: q.xp_reward || 50,
-          coin_reward: q.coin_reward || 10,
-          completed: completedQuestIds.has(q.id) || (idx === 0 && (!userId || userId === 'demo_user_id')),
-        }));
-      }
-
-      // Default baseline matching reference screenshot
-      return this.getDefaultQuests();
-    } catch (err) {
-      console.warn('careerQuestService.getUserQuestsWithStatus fallback:', err);
-      return this.getDefaultQuests();
+      }));
     }
-  },
 
-  async completeQuest(userId: string, questId: string): Promise<{ success: boolean; xp_awarded: number }> {
-    try {
-      const quests = await this.getUserQuestsWithStatus(userId);
-      const quest = quests.find((q) => q.id === questId);
-      const xpReward = quest ? quest.xp_reward : 50;
+    // Fetch user progress
+    const { data: progressList, error: progressError } = await supabase
+      .from('career_player_quests' as any)
+      .select('*')
+      .eq('player_id', userId);
 
-      const idempotencyKey = `quest_complete_${userId}_${questId}_${new Date().toISOString().slice(0, 10)}`;
-
-      // Award XP through authoritative ledger
-      await careerPlayerService.addXP(
-        userId,
-        xpReward,
-        `Completed quest: ${quest?.title || questId}`,
-        'quest',
-        questId,
-        idempotencyKey
-      );
-
-      // Record in career_user_quests
-      if (userId && userId !== 'demo_user_id') {
-        await supabase
-          .from('career_user_quests')
-          .upsert({
-            user_id: userId,
-            quest_id: questId,
-            status: 'completed',
-            completed_at: new Date().toISOString(),
-          }, { onConflict: 'user_id,quest_id' });
-      }
-
-      return { success: true, xp_awarded: xpReward };
-    } catch (err) {
-      console.error('Error completing quest:', err);
-      return { success: false, xp_awarded: 0 };
+    if (progressError) {
+      console.warn('Error fetching player quest progress:', progressError);
     }
-  },
 
-  getDefaultQuests(): CareerQuest[] {
-    return [
-      {
-        id: 'q_passport',
-        title: 'Update your Career Passport',
-        description: 'Verify your latest skills and education credentials to keep recruiters updated.',
-        category: 'daily',
-        xp_reward: 50,
-        coin_reward: 10,
-        completed: true,
-      },
-      {
-        id: 'q_react',
-        title: 'Complete a React challenge',
-        description: 'Solve an algorithmic or UI challenge using React hooks and state management.',
-        category: 'daily',
-        xp_reward: 100,
-        coin_reward: 20,
-        completed: false,
-      },
-      {
-        id: 'q_mentor',
-        title: 'Connect with 1 mentor',
-        description: 'Initiate a verified networking dialogue with an active industry leader.',
-        category: 'daily',
-        xp_reward: 75,
-        coin_reward: 15,
-        completed: false,
-      },
-      {
-        id: 'q_interview',
-        title: 'Take a mock interview',
-        description: 'Practice answering 5 technical scenario questions with the AI interviewer.',
-        category: 'daily',
-        xp_reward: 150,
-        coin_reward: 30,
-        completed: false,
-      },
-    ];
-  },
-};
+    const progressMap = new Map<string, any>();
+    (progressList || []).forEach((p: any) => {
+      progressMap.set(p.quest_id, p);
+    });
+
+    return (quests as any[]).map(q => {
+      const p = progressMap.get(q.id);
+      return {
+        ...q,
+        user_progress: p ? {
+          status: p.status,
+          progress: p.progress,
+          completed_at: p.completed_at,
+          claimed_at: p.claimed_at
+        } : {
+          status: 'available',
+          progress: 0,
+          completed_at: null,
+          claimed_at: null
+        }
+      };
+    });
+  }
+
+  /**
+   * Mark a quest as started or in progress.
+   */
+  static async startQuest(userId: string, questId: string): Promise<void> {
+    const { error } = await supabase
+      .from('career_player_quests' as any)
+      .upsert({
+        player_id: userId,
+        quest_id: questId,
+        status: 'in_progress',
+        progress: 25
+      }, { onConflict: 'player_id,quest_id' });
+
+    if (error) {
+      console.error('Error starting quest:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Submit completion and claim rewards server-side.
+   */
+  static async completeAndClaimQuest(userId: string, quest: CareerQuest): Promise<{
+    new_xp: number;
+    new_level: number;
+    new_coins: number;
+    leveled_up: boolean;
+  }> {
+    // 1. Award XP server-authoritatively via idempotent RPC
+    const idempotencyKey = `quest_${quest.id}_${userId}_${new Date().toISOString().slice(0, 10)}`;
+    const awardResult = await CareerPlayerService.awardXP({
+      userId,
+      amount: quest.xp_reward,
+      coins: quest.coins_reward,
+      action: `Completed Quest: ${quest.title}`,
+      sourceType: 'quest',
+      sourceId: quest.id,
+      idempotencyKey,
+      metadata: { quest_title: quest.title, category: quest.category }
+    });
+
+    // 2. Update player quest status
+    const { error } = await supabase
+      .from('career_player_quests' as any)
+      .upsert({
+        player_id: userId,
+        quest_id: quest.id,
+        status: 'claimed',
+        progress: 100,
+        completed_at: new Date().toISOString(),
+        claimed_at: new Date().toISOString()
+      }, { onConflict: 'player_id,quest_id' });
+
+    if (error) {
+      console.error('Error updating player quest claim status:', error);
+    }
+
+    return awardResult;
+  }
+}

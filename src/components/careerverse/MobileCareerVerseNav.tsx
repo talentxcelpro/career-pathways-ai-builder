@@ -1,50 +1,64 @@
 import React from 'react';
-import { Home, CheckSquare, GitBranch, Swords, Trophy } from 'lucide-react';
-import { CareerVerseNavSection } from './CareerVerseSidebar';
+import { Home, Gamepad2, Target, Briefcase, User } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
-interface MobileCareerVerseNavProps {
-  activeSection: CareerVerseNavSection;
-  onSelectSection: (section: CareerVerseNavSection) => void;
+interface MobileNavProps {
+  onOpenQuests: () => void;
+  onOpenProfile: () => void;
 }
 
-export const MobileCareerVerseNav: React.FC<MobileCareerVerseNavProps> = ({
-  activeSection,
-  onSelectSection,
+export const MobileCareerVerseNav: React.FC<MobileNavProps> = ({
+  onOpenQuests,
+  onOpenProfile
 }) => {
-  const tabs = [
-    { id: 'home' as CareerVerseNavSection, label: 'RPG', icon: <Home className="w-5 h-5" /> },
-    { id: 'quests' as CareerVerseNavSection, label: 'Quests', icon: <CheckSquare className="w-5 h-5" /> },
-    { id: 'skills' as CareerVerseNavSection, label: 'Skills', icon: <GitBranch className="w-5 h-5" /> },
-    { id: 'boss-battles' as CareerVerseNavSection, label: 'Battles', icon: <Swords className="w-5 h-5" /> },
-    { id: 'leaderboards' as CareerVerseNavSection, label: 'Rankings', icon: <Trophy className="w-5 h-5" /> },
-  ];
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#071329]/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 flex items-center justify-around">
-      {tabs.map((tab) => {
-        const isActive = activeSection === tab.id;
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#071329]/95 backdrop-blur-lg border-t border-[#101E3B] px-3 py-2 flex items-center justify-around shadow-2xl safe-area-bottom">
+      <Link
+        to="/"
+        className={`flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition-colors ${
+          currentPath === '/' ? 'text-[#36D9F5]' : 'text-slate-400 hover:text-white'
+        }`}
+      >
+        <Home className="w-5 h-5" />
+        <span className="text-[10px] font-bold">Home</span>
+      </Link>
 
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onSelectSection(tab.id)}
-            className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-all ${
-              isActive
-                ? 'text-[#36D9F5] scale-105'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            <div
-              className={`p-1 rounded-lg ${
-                isActive ? 'bg-[#7047F5]/30 shadow-[0_0_10px_rgba(54,217,245,0.4)]' : ''
-              }`}
-            >
-              {tab.icon}
-            </div>
-            <span className="text-[10px] font-bold">{tab.label}</span>
-          </button>
-        );
-      })}
+      <Link
+        to="/play"
+        className={`flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition-colors ${
+          currentPath === '/play' ? 'text-[#36D9F5]' : 'text-slate-400 hover:text-white'
+        }`}
+      >
+        <Gamepad2 className="w-5 h-5" />
+        <span className="text-[10px] font-bold">Play</span>
+      </Link>
+
+      <button
+        onClick={onOpenQuests}
+        className="flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-slate-400 hover:text-white transition-colors"
+      >
+        <Target className="w-5 h-5" />
+        <span className="text-[10px] font-bold">Quests</span>
+      </button>
+
+      <Link
+        to="/jobs"
+        className="flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-slate-400 hover:text-white transition-colors"
+      >
+        <Briefcase className="w-5 h-5" />
+        <span className="text-[10px] font-bold">Jobs</span>
+      </Link>
+
+      <button
+        onClick={onOpenProfile}
+        className="flex flex-col items-center gap-1 py-1 px-2 rounded-xl text-slate-400 hover:text-white transition-colors"
+      >
+        <User className="w-5 h-5" />
+        <span className="text-[10px] font-bold">Profile</span>
+      </button>
     </nav>
   );
 };

@@ -1,238 +1,155 @@
 import { supabase } from '@/integrations/supabase/client';
 
-export interface CareerEvent {
-  id: string;
-  title: string;
-  description: string;
-  date_display: string;
-  category: string;
-  xp_reward?: number;
-  banner_color?: string;
-}
-
 export interface CareerBadge {
   id: string;
   name: string;
-  category: string;
-  icon_name: string;
-  earned: boolean;
-  earned_date?: string;
-  description?: string;
+  description: string;
+  icon: string;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  is_unlocked: boolean;
+  unlocked_at?: string;
 }
 
 export interface CareerReward {
   id: string;
   title: string;
   description: string;
-  cost_coins: number;
   category: string;
-  unlocked: boolean;
+  coin_cost: number;
+  stock: number;
 }
 
-export const careerEventsService = {
-  async getEvents(userId?: string): Promise<CareerEvent[]> {
-    try {
-      const { data: events, error } = await supabase
-        .from('career_events')
-        .select('*')
-        .limit(5);
+export interface CareerEvent {
+  id: string;
+  title: string;
+  description: string;
+  event_date: string;
+  category: string;
+  is_registered?: boolean;
+}
 
-      if (!error && events && events.length > 0) {
-        return events.map((e) => ({
-          id: e.id,
-          title: e.title,
-          description: e.description || '',
-          date_display: e.date_display || 'Apr 20',
-          category: e.category || 'competition',
-          xp_reward: e.xp_reward || 300,
-        }));
-      }
+export class CareerBadgeAndRewardsService {
+  static async getBadges(userId?: string): Promise<CareerBadge[]> {
+    const { data: badges, error } = await supabase
+      .from('career_badges' as any)
+      .select('*')
+      .order('id', { ascending: true });
 
-      return this.getDefaultEvents();
-    } catch (err) {
-      console.warn('careerEventsService.getEvents fallback:', err);
-      return this.getDefaultEvents();
+    if (error) {
+      console.error('Error fetching badges:', error);
+      throw error;
     }
-  },
 
-  getDefaultEvents(): CareerEvent[] {
-    return [
-      {
-        id: 'event_campus_arena',
-        title: 'Campus Code Arena',
-        description: 'Inter-college React competition',
-        date_display: 'Apr 20',
-        category: 'competition',
-        xp_reward: 350,
-      },
-      {
-        id: 'event_company_case',
-        title: 'Company Case Challenge',
-        description: 'Solve a real business problem',
-        date_display: 'Apr 25',
-        category: 'hackathon',
-        xp_reward: 500,
-      },
-    ];
-  },
-};
-
-export const careerBadgeService = {
-  async getBadgesWithUserEarned(userId: string): Promise<CareerBadge[]> {
-    try {
-      const { data: badges, error } = await supabase
-        .from('career_badges')
-        .select('*');
-
-      if (!error && badges && badges.length > 0) {
-        return badges.map((b, idx) => ({
-          id: b.id,
-          name: b.name,
-          category: b.category || 'achievement',
-          icon_name: b.icon_name || 'trophy',
-          earned: idx < 3,
-          description: b.description,
-        }));
-      }
-
-      return this.getDefaultBadges();
-    } catch (err) {
-      console.warn('careerBadgeService.getBadgesWithUserEarned fallback:', err);
-      return this.getDefaultBadges();
+    if (!userId || userId === 'guest') {
+      return (badges as any[]).map(b => ({
+        ...b,
+        is_unlocked: false
+      }));
     }
-  },
 
-  getDefaultBadges(): CareerBadge[] {
-    return [
-      {
-        id: 'badge_first_quest',
-        name: 'First Quest',
-        category: 'starter',
-        icon_name: 'star',
-        earned: true,
-        earned_date: '2026-10-15',
-        description: 'Completed your very first career quest in TalentXcel.',
-      },
-      {
-        id: 'badge_code_warrior',
-        name: 'Code Warrior',
-        category: 'skills',
-        icon_name: 'code',
-        earned: true,
-        earned_date: '2026-10-22',
-        description: 'Submitted 10 verified algorithm solutions.',
-      },
-      {
-        id: 'badge_interview_ready',
-        name: 'Interview Ready',
-        category: 'recruitment',
-        icon_name: 'mic',
-        earned: true,
-        earned_date: '2026-10-29',
-        description: 'Passed 3 technical AI mock interviews with 80%+ score.',
-      },
-      {
-        id: 'badge_boss_slayer',
-        name: 'Boss Slayer',
-        category: 'challenge',
-        icon_name: 'shield',
-        earned: false,
-        description: 'Defeat an employer challenge to earn fast-track interview status.',
-      },
-      {
-        id: 'badge_streak_master',
-        name: '7-Day Streak',
-        category: 'consistency',
-        icon_name: 'flame',
-        earned: true,
-        description: 'Maintained 7 consecutive days of career actions.',
-      },
-    ];
-  },
-};
+    const { data: unlocked } = await supabase
+      .from('career_player_badges' as any)
+      .select('badge_id, unlocked_at')
+      .eq('player_id', userId);
 
-export const careerRewardsService = {
-  async getRewards(): Promise<CareerReward[]> {
-    try {
-      const { data: dbRewards, error } = await supabase
-        .from('career_rewards')
-        .select('*');
+    const unlockedMap = new Map<string, string>();
+    (unlocked || []).forEach((u: any) => {
+      unlockedMap.set(u.badge_id, u.unlocked_at);
+    });
 
-      if (!error && dbRewards && dbRewards.length > 0) {
-        return dbRewards.map((r) => ({
-          id: r.id,
-          title: r.title,
-          description: r.description || '',
-          cost_coins: r.cost_coins || 200,
-          category: r.category || 'digital',
-          unlocked: true,
-        }));
-      }
+    return (badges as any[]).map(b => ({
+      ...b,
+      is_unlocked: unlockedMap.has(b.id),
+      unlocked_at: unlockedMap.get(b.id)
+    }));
+  }
 
-      return this.getDefaultRewards();
-    } catch (err) {
-      console.warn('careerRewardsService.getRewards fallback:', err);
-      return this.getDefaultRewards();
+  static async getRewards(): Promise<CareerReward[]> {
+    const { data, error } = await supabase
+      .from('career_rewards' as any)
+      .select('*')
+      .gt('stock', 0)
+      .order('coin_cost', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching rewards:', error);
+      throw error;
     }
-  },
+    return data as CareerReward[];
+  }
 
-  async redeemReward(userId: string, rewardId: string): Promise<{ success: boolean; message: string }> {
-    try {
-      if (userId && userId !== 'demo_user_id') {
-        const { error } = await supabase
-          .from('career_reward_redemptions')
-          .insert({
-            user_id: userId,
-            reward_id: rewardId,
-            redeemed_at: new Date().toISOString(),
-          });
-
-        if (error) {
-          console.warn('Could not record redemption in database:', error.message);
-        }
-      }
-
-      return { success: true, message: 'Reward successfully claimed!' };
-    } catch (err) {
-      console.error('Redeem reward error:', err);
-      return { success: false, message: 'Failed to claim reward.' };
+  static async redeemReward(userId: string, reward: CareerReward, currentCoins: number): Promise<void> {
+    if (currentCoins < reward.coin_cost) {
+      throw new Error(`Insufficient Career Coins. You need ${reward.coin_cost} coins, but have ${currentCoins}.`);
     }
-  },
 
-  getDefaultRewards(): CareerReward[] {
-    return [
-      {
-        id: 'rew_mock_pass',
-        title: 'Unlimited AI Mock Interviews Pass',
-        description: '30-day all-access pass to real-time generative technical mock interviews.',
-        cost_coins: 200,
-        category: 'interview',
-        unlocked: true,
-      },
-      {
-        id: 'rew_recruiter_fast',
-        title: 'Priority Recruiter Beacon Feature',
-        description: 'Highlight your Career Passport to top 50 hiring enterprise recruiters for 14 days.',
-        cost_coins: 350,
-        category: 'recruitment',
-        unlocked: true,
-      },
-      {
-        id: 'rew_avatar_border',
-        title: 'Cyberpunk Master Avatar Frame',
-        description: 'Exclusive glowing holographic frame for your player badge and public profile.',
-        cost_coins: 150,
-        category: 'cosmetic',
-        unlocked: true,
-      },
-      {
-        id: 'rew_resume_review',
-        title: 'Executive Resume Deep Audit',
-        description: 'Algorithmic ATS scoring + 1-on-1 feedback breakdown from senior FAANG recruiters.',
-        cost_coins: 500,
-        category: 'service',
-        unlocked: true,
-      },
-    ];
-  },
-};
+    // 1. Record redemption
+    const { error: redError } = await supabase
+      .from('career_reward_redemptions' as any)
+      .insert({
+        player_id: userId,
+        reward_id: reward.id,
+        coins_spent: reward.coin_cost
+      });
+
+    if (redError) {
+      console.error('Error recording reward redemption:', redError);
+      throw redError;
+    }
+
+    // 2. Deduct coins from player
+    const { error: playerError } = await supabase
+      .from('career_players' as any)
+      .update({
+        career_coins: currentCoins - reward.coin_cost
+      })
+      .eq('id', userId);
+
+    if (playerError) {
+      console.error('Error deducting player coins:', playerError);
+      throw playerError;
+    }
+  }
+
+  static async getEvents(userId?: string): Promise<CareerEvent[]> {
+    const { data: events, error } = await supabase
+      .from('career_events' as any)
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching events:', error);
+      throw error;
+    }
+
+    if (!userId || userId === 'guest') {
+      return (events as any[]).map(e => ({ ...e, is_registered: false }));
+    }
+
+    const { data: registrations } = await supabase
+      .from('career_event_registrations' as any)
+      .select('event_id')
+      .eq('player_id', userId);
+
+    const regSet = new Set((registrations || []).map((r: any) => r.event_id));
+
+    return (events as any[]).map(e => ({
+      ...e,
+      is_registered: regSet.has(e.id)
+    }));
+  }
+
+  static async registerForEvent(userId: string, eventId: string): Promise<void> {
+    const { error } = await supabase
+      .from('career_event_registrations' as any)
+      .insert({
+        player_id: userId,
+        event_id: eventId
+      });
+
+    if (error) {
+      console.error('Error registering for event:', error);
+      throw error;
+    }
+  }
+}

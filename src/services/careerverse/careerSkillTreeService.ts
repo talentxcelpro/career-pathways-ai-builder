@@ -1,122 +1,121 @@
 import { supabase } from '@/integrations/supabase/client';
-import { careerPlayerService } from './careerPlayerService';
+import { CareerPlayerService } from './careerPlayerService';
 
-export interface CareerSkillNode {
+export interface CareerSkillPath {
   id: string;
-  name: string;
-  level_range: string;
-  category: string;
-  status: 'unlocked' | 'active' | 'locked' | 'mastered';
-  prerequisites: string[];
-  xp_required?: number;
-  description?: string;
-  verification_status?: 'verified' | 'in_progress' | 'unverified';
+  title: string;
+  description: string;
+  icon: string;
 }
 
-export const careerSkillTreeService = {
-  async getTreeNodes(pathCategory: string = 'technology', userId?: string): Promise<CareerSkillNode[]> {
-    try {
-      // 1. Fetch skills from career_tree_skills
-      const { data: dbSkills, error } = await supabase
-        .from('career_tree_skills')
-        .select('id, name, category, level_range, prerequisites');
+export interface CareerTreeSkill {
+  id: string;
+  path_id: string;
+  title: string;
+  level_range: string;
+  prerequisite_id: string | null;
+  xp_required: number;
+  xp_reward: number;
+  order_index: number;
+  user_status?: 'locked' | 'unlocked' | 'mastered';
+  user_progress?: number;
+}
 
-      if (!error && dbSkills && dbSkills.length > 0) {
-        return dbSkills.map((s, idx) => {
-          let status: CareerSkillNode['status'] = 'locked';
-          if (idx === 0) status = 'mastered';
-          else if (idx === 1) status = 'active';
-          else if (idx === 2) status = 'unlocked';
+export class CareerSkillTreeService {
+  static async getPaths(): Promise<CareerSkillPath[]> {
+    const { data, error } = await supabase
+      .from('career_skill_paths' as any)
+      .select('*')
+      .order('id', { ascending: true });
 
-          return {
-            id: s.id,
-            name: s.name,
-            level_range: s.level_range || 'Lv. 1–5',
-            category: s.category || pathCategory,
-            status,
-            prerequisites: Array.isArray(s.prerequisites) ? s.prerequisites : [],
-            verification_status: idx === 0 ? 'verified' : 'unverified',
-          };
-        });
+    if (error) {
+      console.error('Error fetching skill paths:', error);
+      throw error;
+    }
+    return data as CareerSkillPath[];
+  }
+
+  static async getSkillsForPath(pathId: string, userId?: string): Promise<CareerTreeSkill[]> {
+    const { data: skills, error } = await supabase
+      .from('career_tree_skills' as any)
+      .select('*')
+      .eq('path_id', pathId)
+      .order('order_index', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching tree skills:', error);
+      throw error;
+    }
+
+    if (!userId || userId === 'guest') {
+      return (skills as any[]).map(s => ({
+        ...s,
+        user_status: s.prerequisite_id === null ? 'unlocked' : 'locked',
+        user_progress: s.prerequisite_id === null ? 50 : 0
+      }));
+    }
+
+    const { data: userSkills } = await supabase
+      .from('career_player_skills' as any)
+      .select('*')
+      .eq('player_id', userId);
+
+    const userSkillMap = new Map<string, any>();
+    (userSkills || []).forEach((us: any) => {
+      userSkillMap.set(us.skill_id, us);
+    });
+
+    return (skills as any[]).map(s => {
+      const us = userSkillMap.get(s.id);
+      let status: 'locked' | 'unlocked' | 'mastered' = 'locked';
+      let progress = 0;
+
+      if (us) {
+        status = us.status;
+        progress = us.progress;
+      } else if (!s.prerequisite_id) {
+        status = 'unlocked';
+      } else {
+        const prereq = userSkillMap.get(s.prerequisite_id);
+        if (prereq && prereq.status === 'mastered') {
+          status = 'unlocked';
+        }
       }
 
-      return this.getDefaultTreeNodes();
-    } catch (err) {
-      console.warn('careerSkillTreeService.getTreeNodes fallback:', err);
-      return this.getDefaultTreeNodes();
-    }
-  },
+      return {
+        ...s,
+        user_status: status,
+        user_progress: progress
+      };
+    });
+  }
 
-  async verifySkill(userId: string, skillId: string): Promise<{ success: boolean; xp_awarded: number }> {
-    try {
-      const idempotencyKey = `skill_verify_${userId}_${skillId}_${Date.now()}`;
-      await careerPlayerService.addXP(
-        userId,
-        120,
-        `Mastered and verified skill node: ${skillId}`,
-        'skill_tree',
-        skillId,
-        idempotencyKey
-      );
-      return { success: true, xp_awarded: 120 };
-    } catch (err) {
-      console.error('Error verifying skill node:', err);
-      return { success: false, xp_awarded: 0 };
-    }
-  },
-
-  getDefaultTreeNodes(): CareerSkillNode[] {
-    return [
-      {
-        id: 'node_frontend',
-        name: 'Frontend',
-        level_range: 'Lv. 1–5',
-        category: 'core',
+  static async unlockOrMasterSkill(userId: string, skill: CareerTreeSkill): Promise<void> {
+    // 1. Mark mastered in player skills
+    const { error } = await supabase
+      .from('career_player_skills' as any)
+      .upsert({
+        player_id: userId,
+        skill_id: skill.id,
         status: 'mastered',
-        prerequisites: [],
-        description: 'HTML5, CSS3, DOM APIs, Responsive Design and Web Core Vitals.',
-        verification_status: 'verified',
-      },
-      {
-        id: 'node_react',
-        name: 'React',
-        level_range: 'Lv. 6–10',
-        category: 'specialization',
-        status: 'active',
-        prerequisites: ['node_frontend'],
-        description: 'Modern React 19, JSX, Hooks, State Architecture & Server Components.',
-        verification_status: 'in_progress',
-      },
-      {
-        id: 'node_backend',
-        name: 'Backend',
-        level_range: 'Lv. 6–10',
-        category: 'specialization',
-        status: 'unlocked',
-        prerequisites: ['node_frontend'],
-        description: 'Node.js, Express, RESTful APIs, PostgREST & Database Schemas.',
-        verification_status: 'unverified',
-      },
-      {
-        id: 'node_fullstack',
-        name: 'Full Stack',
-        level_range: 'Lv. 11–15',
-        category: 'advanced',
-        status: 'unlocked',
-        prerequisites: ['node_react', 'node_backend'],
-        description: 'End-to-end architectural engineering, Supabase SSR, Auth & Caching.',
-        verification_status: 'unverified',
-      },
-      {
-        id: 'node_aiml',
-        name: 'AI/ML',
-        level_range: 'Lv. 11–15',
-        category: 'advanced',
-        status: 'locked',
-        prerequisites: ['node_backend'],
-        description: 'LLM Integration, Prompt Engineering, Vector Embeddings & Agentic Systems.',
-        verification_status: 'unverified',
-      },
-    ];
-  },
-};
+        progress: 100,
+        verified_at: new Date().toISOString()
+      }, { onConflict: 'player_id,skill_id' });
+
+    if (error) {
+      console.error('Error mastering skill:', error);
+      throw error;
+    }
+
+    // 2. Award XP
+    await CareerPlayerService.awardXP({
+      userId,
+      amount: skill.xp_reward,
+      coins: 25,
+      action: `Mastered Skill: ${skill.title}`,
+      sourceType: 'skill',
+      sourceId: skill.id,
+      idempotencyKey: `skill_${skill.id}_${userId}`
+    });
+  }
+}

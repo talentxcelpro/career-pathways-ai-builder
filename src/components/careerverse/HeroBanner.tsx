@@ -1,83 +1,132 @@
 import React from 'react';
-import { BookOpen, Code, Trophy, Briefcase } from 'lucide-react';
+import { BookOpen, Code2, Trophy, Briefcase, Sparkles, Map, Compass } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface HeroBannerProps {
-  onSelectPortal?: (portal: 'learn' | 'practice' | 'compete' | 'get-hired') => void;
+  onOpenWorldMap?: () => void;
+  onOpenQuickQuest?: () => void;
 }
 
-export const HeroBanner: React.FC<HeroBannerProps> = ({ onSelectPortal }) => {
+export const HeroBanner: React.FC<HeroBannerProps> = ({
+  onOpenWorldMap,
+  onOpenQuickQuest,
+}) => {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0B1730] via-[#101E3B] to-[#071329] border border-[#7047F5]/30 p-6 md:p-8 shadow-2xl">
-      {/* Background Stargate Ambient Artwork with Floating Mountain Silhouettes */}
-      <div className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen overflow-hidden">
-        <div className="absolute -top-24 -right-10 w-96 h-96 bg-[#7047F5]/30 rounded-full blur-3xl animate-pulse-subtle" />
-        <div className="absolute top-1/2 left-1/3 w-80 h-80 bg-[#36D9F5]/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-[#20D994]/15 rounded-full blur-2xl" />
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#071329] via-[#0E1E40] to-[#121B38] border border-[#7047F5]/30 p-6 md:p-8 shadow-2xl">
+      {/* Visual Citadel / Holographic Stargate Backdrop */}
+      <div className="absolute right-0 top-0 bottom-0 w-full md:w-3/5 opacity-40 md:opacity-55 pointer-events-none overflow-hidden select-none">
+        {/* Glow Spheres */}
+        <div className="absolute right-10 top-[-20%] w-96 h-96 rounded-full bg-gradient-to-br from-[#7047F5] via-[#278DFF] to-[#36D9F5] blur-3xl opacity-50 animate-pulse" />
+        <div className="absolute right-1/3 bottom-[-10%] w-64 h-64 rounded-full bg-[#20D994]/20 blur-2xl" />
+
+        {/* Holographic Stargate Arches SVG */}
+        <svg
+          viewBox="0 0 500 320"
+          className="absolute right-0 top-1/2 -translate-y-1/2 w-full h-full max-w-[580px] object-contain opacity-80"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Central Stargate Core */}
+          <circle cx="280" cy="160" r="110" stroke="url(#gateGlow)" strokeWidth="2" strokeDasharray="6 6" />
+          <circle cx="280" cy="160" r="85" stroke="#36D9F5" strokeWidth="1.5" opacity="0.6" />
+          <circle cx="280" cy="160" r="60" stroke="#7047F5" strokeWidth="2" opacity="0.8" />
+          <circle cx="280" cy="160" r="30" fill="url(#coreGlow)" opacity="0.7" />
+
+          {/* Citadel Spires & Towers */}
+          <path d="M190 280 L210 130 L225 150 L240 90 L255 140 L280 60 L305 140 L320 90 L335 150 L350 130 L370 280 Z" fill="#071329" stroke="#36D9F5" strokeWidth="1" opacity="0.6" />
+          <path d="M220 280 L235 150 L250 170 L280 100 L310 170 L325 150 L340 280 Z" fill="#0C1B3E" stroke="#7047F5" strokeWidth="1.5" opacity="0.8" />
+
+          {/* Radiant Portal Rays */}
+          <line x1="280" y1="50" x2="280" y2="20" stroke="#36D9F5" strokeWidth="2" strokeLinecap="round" opacity="0.8" />
+          <line x1="200" y1="100" x2="175" y2="80" stroke="#7047F5" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+          <line x1="360" y1="100" x2="385" y2="80" stroke="#7047F5" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+
+          <defs>
+            <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#36D9F5" stopOpacity="0.9" />
+              <stop offset="60%" stopColor="#7047F5" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#071329" stopOpacity="0" />
+            </radialGradient>
+            <linearGradient id="gateGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#36D9F5" />
+              <stop offset="50%" stopColor="#278DFF" />
+              <stop offset="100%" stopColor="#7047F5" />
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
 
-      <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        {/* Left Headline */}
-        <div className="max-w-md space-y-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white leading-tight">
-            Your Career Journey <br />
-            <span className="bg-gradient-to-r from-[#A34EFF] via-[#36D9F5] to-[#20D994] bg-clip-text text-transparent">
-              as a Game
-            </span>
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 font-medium tracking-wide">
-            Learn • Build Skills • Compete • Get Hired
-          </p>
+      {/* Main Content */}
+      <div className="relative z-10 max-w-2xl">
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7047F5]/20 border border-[#7047F5]/40 text-xs font-semibold text-[#A34EFF] shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-[#36D9F5]" />
+            <span>TalentXcel CareerVerse</span>
+          </div>
+
+          {onOpenWorldMap && (
+            <button
+              onClick={onOpenWorldMap}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#278DFF]/20 hover:bg-[#278DFF]/30 border border-[#278DFF]/40 text-xs font-semibold text-[#36D9F5] transition-all"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>World Map (2.5D)</span>
+            </button>
+          )}
         </div>
 
-        {/* Center-Right Interactive Portal Banners matching reference screenshot */}
-        <div className="w-full md:w-auto grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 items-center">
-          {/* 1. LEARN BANNER */}
-          <button
-            onClick={() => onSelectPortal?.('learn')}
-            className="flex flex-col items-center p-3 rounded-2xl bg-[#071329]/90 border border-[#7047F5]/40 hover:border-[#7047F5] shadow-lg shadow-[#7047F5]/20 transform hover:-translate-y-1 transition-all group"
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mb-2">
+          Your Career Journey <br />
+          <span className="bg-gradient-to-r from-[#36D9F5] via-[#278DFF] to-[#A34EFF] bg-clip-text text-transparent">
+            as a Game
+          </span>
+        </h1>
+
+        <p className="text-sm sm:text-base text-slate-300 font-medium mb-6">
+          Learn · Build Skills · Compete · Get Hired
+        </p>
+
+        {/* 4 Interactive Gateway Action Banners */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
+          <Link
+            to="/learning"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#36D9F5]/60 transition-all group backdrop-blur-md"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7047F5] to-[#A34EFF] flex items-center justify-center text-white mb-1.5 shadow-[0_0_12px_rgba(112,71,245,0.6)] group-hover:scale-110 transition-transform">
-              <BookOpen className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-[#7047F5]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <BookOpen className="w-4 h-4 text-[#36D9F5]" />
             </div>
             <span className="text-xs font-bold text-white">Learn</span>
-            <span className="text-[10px] text-[#A34EFF]">Academy</span>
-          </button>
+          </Link>
 
-          {/* 2. PRACTICE BANNER */}
           <button
-            onClick={() => onSelectPortal?.('practice')}
-            className="flex flex-col items-center p-3 rounded-2xl bg-[#071329]/90 border border-[#278DFF]/40 hover:border-[#278DFF] shadow-lg shadow-[#278DFF]/20 transform hover:-translate-y-1 transition-all group"
+            onClick={onOpenQuickQuest}
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#278DFF]/60 transition-all group backdrop-blur-md text-left"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#278DFF] to-[#36D9F5] flex items-center justify-center text-white mb-1.5 shadow-[0_0_12px_rgba(39,141,255,0.6)] group-hover:scale-110 transition-transform">
-              <Code className="w-4 h-4" />
+            <div className="w-9 h-9 rounded-xl bg-[#278DFF]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <Code2 className="w-4 h-4 text-[#278DFF]" />
             </div>
             <span className="text-xs font-bold text-white">Practice</span>
-            <span className="text-[10px] text-[#36D9F5]">Skill Tree</span>
           </button>
 
-          {/* 3. COMPETE BANNER */}
-          <button
-            onClick={() => onSelectPortal?.('compete')}
-            className="flex flex-col items-center p-3 rounded-2xl bg-[#071329]/90 border border-[#FFCA55]/40 hover:border-[#FFCA55] shadow-lg shadow-[#FFCA55]/20 transform hover:-translate-y-1 transition-all group"
+          <a
+            href="#leaderboard-section"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#FFCA55]/60 transition-all group backdrop-blur-md"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FFCA55] to-[#FFA726] flex items-center justify-center text-slate-950 mb-1.5 shadow-[0_0_12px_rgba(255,202,85,0.6)] group-hover:scale-110 transition-transform">
-              <Trophy className="w-4 h-4 font-black" />
+            <div className="w-9 h-9 rounded-xl bg-[#FFCA55]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <Trophy className="w-4 h-4 text-[#FFCA55]" />
             </div>
             <span className="text-xs font-bold text-white">Compete</span>
-            <span className="text-[10px] text-[#FFCA55]">Boss Battle</span>
-          </button>
+          </a>
 
-          {/* 4. GET HIRED BANNER */}
-          <button
-            onClick={() => onSelectPortal?.('get-hired')}
-            className="flex flex-col items-center p-3 rounded-2xl bg-[#071329]/90 border border-[#20D994]/40 hover:border-[#20D994] shadow-lg shadow-[#20D994]/20 transform hover:-translate-y-1 transition-all group"
+          <Link
+            to="/jobs"
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#20D994]/60 transition-all group backdrop-blur-md"
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#20D994] to-[#00E676] flex items-center justify-center text-slate-950 mb-1.5 shadow-[0_0_12px_rgba(32,217,148,0.6)] group-hover:scale-110 transition-transform">
-              <Briefcase className="w-4 h-4 font-black" />
+            <div className="w-9 h-9 rounded-xl bg-[#20D994]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <Briefcase className="w-4 h-4 text-[#20D994]" />
             </div>
             <span className="text-xs font-bold text-white">Get Hired</span>
-            <span className="text-[10px] text-[#20D994]">Victory</span>
-          </button>
+          </Link>
         </div>
       </div>
     </div>

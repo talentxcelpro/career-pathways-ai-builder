@@ -1,53 +1,59 @@
 import React from 'react';
-import { Users, Code, ChevronRight } from 'lucide-react';
-import { CareerGuild } from '@/services/careerverse/careerLeaderboardService';
+import { Users, Shield, ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CampusGuild } from '@/services/careerverse/careerLeaderboardService';
 
-interface GuildWidgetProps {
-  guild: CareerGuild | null;
-  onOpenGuildHub?: () => void;
+interface GuildProps {
+  guild: CampusGuild | null;
+  onOpenGuildHub: () => void;
 }
 
-export const GuildWidget: React.FC<GuildWidgetProps> = ({
-  guild,
-  onOpenGuildHub,
-}) => {
+export const GuildWidget: React.FC<GuildProps> = ({ guild, onOpenGuildHub }) => {
+  const defaultGuild = {
+    name: 'TechTitans – ABC College',
+    member_count: 42,
+    campus_rank: 3,
+    college: 'ABC College of Technology'
+  };
+
+  const g = guild || defaultGuild;
+
   return (
-    <div className="bg-[#101E3B] border border-white/10 rounded-2xl p-5 shadow-xl space-y-4">
+    <div className="bg-[#101E3B] border border-white/5 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-[#A34EFF]/20 flex items-center justify-center text-[#A34EFF]">
+        <div className="w-7 h-7 rounded-lg bg-[#A34EFF]/15 flex items-center justify-center text-[#A34EFF]">
           <Users className="w-4 h-4" />
         </div>
         <h3 className="font-bold text-white text-base">My Guild</h3>
       </div>
 
-      {/* Guild Details matching reference screenshot */}
-      <div className="flex items-center gap-3.5 p-3 rounded-xl bg-[#071329]/60 border border-white/5">
-        {/* Holographic Shield Emblem */}
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#7047F5] via-[#A34EFF] to-[#36D9F5] p-0.5 shadow-[0_0_15px_rgba(112,71,245,0.4)] shrink-0 flex items-center justify-center">
-          <div className="w-full h-full bg-[#101E3B] rounded-[10px] flex items-center justify-center text-[#36D9F5]">
-            <Code className="w-6 h-6" />
+      {/* Guild Details */}
+      <div className="flex items-center gap-3.5">
+        {/* Shield Emblem */}
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#7047F5] to-[#278DFF] p-0.5 shadow-lg shadow-[#7047F5]/25 flex-shrink-0">
+          <div className="w-full h-full bg-[#071329] rounded-[10px] flex items-center justify-center text-[#36D9F5]">
+            <span className="font-mono font-black text-sm">&lt;/&gt;</span>
           </div>
         </div>
 
-        <div className="min-w-0 flex-1">
-          <h4 className="text-xs font-black text-white truncate">
-            {guild?.name || 'TechTitans'} – {guild?.campus_name || 'ABC College'}
-          </h4>
-          <p className="text-[11px] text-slate-400 font-medium">
-            {guild?.member_count || 42} Members • Rank #{guild?.campus_rank || 3} (Campus)
+        <div className="flex-1 min-w-0">
+          <h4 className="text-sm font-black text-white truncate">{g.name}</h4>
+          <p className="text-xs text-slate-400 mt-0.5">
+            {g.member_count} Members · <span className="text-[#FFCA55] font-bold">Rank #{g.campus_rank}</span> (Campus)
           </p>
         </div>
       </div>
 
-      {/* Guild Hub Action */}
-      <button
+      {/* Guild Hub Button */}
+      <Button
         onClick={onOpenGuildHub}
-        className="w-full py-2 px-3 rounded-xl bg-[#7047F5]/20 hover:bg-[#7047F5]/30 border border-[#7047F5]/50 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
+        variant="outline"
+        className="w-full bg-[#071329] hover:bg-[#16274D] border-white/10 text-white font-bold text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
       >
         <span>Guild Hub</span>
-        <ChevronRight className="w-3.5 h-3.5" />
-      </button>
+        <ArrowRight className="w-3.5 h-3.5" />
+      </Button>
     </div>
   );
 };
