@@ -20,9 +20,6 @@ const VALID_STATIC_JOB_ROUTES = new Set([
 
 export const config = {
   matcher: [
-    '/',
-    '/sitemap.xml',
-    '/robots.txt',
     '/passport/public/:username*',
     '/company/:slug*',
     '/jobs/:path*',
@@ -62,119 +59,8 @@ export default async function middleware(req: Request) {
     return Response.redirect(cleanUrl.toString(), 301);
   }
 
-  // 2. Subdomain dedicated sitemap and robots.txt routing
-  const host = (req.headers.get('x-forwarded-host') || req.headers.get('host') || url.hostname || '').toLowerCase();
-  const subdomain = host.split('.')[0];
-
-  // 3. Subdomain root entry delivery (/ -> /index-${subdomain}.html)
-  if (url.pathname === '/') {
-    const subdomainFileMap: Record<string, string> = {
-      jobs: '/index-jobs.html',
-      resume: '/index-resume.html',
-      salary: '/index-salary.html',
-      careers: '/index-careers.html',
-      learning: '/index-learning.html',
-      colleges: '/index-colleges.html',
-      employers: '/index-employers.html',
-      employer: '/index-employers.html',
-      government: '/index-government.html',
-      passport: '/index-passport.html',
-    };
-
-    const targetIndex = subdomainFileMap[subdomain];
-    if (targetIndex) {
-      try {
-        const targetUrl = new URL(targetIndex, req.url);
-        const fileRes = await fetch(targetUrl);
-        if (fileRes.ok) {
-          const body = req.method === 'HEAD' ? null : await fileRes.text();
-          return new Response(body, {
-            status: 200,
-            headers: {
-              'content-type': 'text/html; charset=utf-8',
-              'cache-control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
-            },
-          });
-        }
-      } catch (err) {
-        // Fallback to pass through
-      }
-    }
-  }
-
-  if (url.pathname === '/sitemap.xml') {
-    const subdomainMap: Record<string, string> = {
-      jobs: '/sitemap-jobs.xml',
-      resume: '/sitemap-resume.xml',
-      salary: '/sitemap-salary.xml',
-      careers: '/sitemap-careers.xml',
-      learning: '/sitemap-learning.xml',
-      colleges: '/sitemap-colleges.xml',
-      employers: '/sitemap-employers.xml',
-      employer: '/sitemap-employers.xml',
-      government: '/sitemap-government.xml',
-      passport: '/sitemap-passport.xml',
-    };
-
-    const targetFile = subdomainMap[subdomain];
-    if (targetFile) {
-      try {
-        const targetUrl = new URL(targetFile, req.url);
-        const fileRes = await fetch(targetUrl);
-        if (fileRes.ok) {
-          const body = req.method === 'HEAD' ? null : await fileRes.text();
-          return new Response(body, {
-            status: 200,
-            headers: {
-              'content-type': 'application/xml; charset=utf-8',
-              'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
-              'access-control-allow-origin': '*',
-            },
-          });
-        }
-      } catch (err) {
-        // Fallback to 301 redirect if internal fetch is unavailable
-        return Response.redirect(new URL(targetFile, req.url).toString(), 301);
-      }
-    }
-  }
-
-  if (url.pathname === '/robots.txt') {
-    const robotsMap: Record<string, string> = {
-      jobs: '/robots-jobs.txt',
-      resume: '/robots-resume.txt',
-      salary: '/robots-salary.txt',
-      careers: '/robots-careers.txt',
-      learning: '/robots-learning.txt',
-      colleges: '/robots-colleges.txt',
-      employers: '/robots-employers.txt',
-      employer: '/robots-employers.txt',
-      government: '/robots-government.txt',
-      passport: '/robots-passport.txt',
-    };
-
-    const targetFile = robotsMap[subdomain];
-    if (targetFile) {
-      try {
-        const targetUrl = new URL(targetFile, req.url);
-        const fileRes = await fetch(targetUrl);
-        if (fileRes.ok) {
-          const body = req.method === 'HEAD' ? null : await fileRes.text();
-          return new Response(body, {
-            status: 200,
-            headers: {
-              'content-type': 'text/plain; charset=utf-8',
-              'cache-control': 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
-              'access-control-allow-origin': '*',
-            },
-          });
-        }
-      } catch (err) {
-        return Response.redirect(new URL(targetFile, req.url).toString(), 301);
-      }
-    }
-  }
-
+  // 2. Human vs Bot Traffic Gate
+  // Human traffic passes through untouched to Vite React SPA at edge speed
   const ua = req.headers.get('user-agent') || '';
   if (!BOT_UA.test(ua)) {
     return; // real human user — pass through untouched to Vite React SPA
