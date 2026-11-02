@@ -124,14 +124,7 @@ export const generateJobStructuredData = (job: JobSEOData & { id: string; extern
       "value": `TXL-${(job.id || 'job').substring(0, 8)}`
     },
     "datePosted": job.postedDate || new Date().toISOString(),
-    "validThrough": (() => {
-      try {
-        const d = job.expiryDate ? new Date(job.expiryDate) : new Date(Date.now() + 60 * 24 * 60 * 60 * 1000);
-        return isNaN(d.getTime()) ? new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString() : d.toISOString();
-      } catch {
-        return new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
-      }
-    })(),
+    "validThrough": job.expiryDate && !isNaN(new Date(job.expiryDate).getTime()) ? new Date(job.expiryDate).toISOString() : undefined,
     "employmentType": job.employmentType?.toLowerCase().includes('full') ? 'FULL_TIME' :
                      job.employmentType?.toLowerCase().includes('part') ? 'PART_TIME' :
                      job.employmentType?.toLowerCase().includes('contract') ? 'CONTRACTOR' :
