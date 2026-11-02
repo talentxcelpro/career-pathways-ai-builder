@@ -50,8 +50,6 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
       return [];
 
     // Jobs Page Navigation
-    case basePath === '/play' || basePath === '/careerverse' || basePath === '/rpg':
-      return [];
     case basePath === '/jobs' || basePath.startsWith('/jobs/'):
       return [
         {

@@ -37,6 +37,11 @@ export const UniversalProfileRouteHandler: React.FC = () => {
   const cleanUsername = username.startsWith('@') ? username.slice(1).trim() : username.trim();
   const lowerClean = cleanUsername.toLowerCase();
 
+  // If hitting CareerVerse / RPG directly, route to CareerVerse
+  if (lowerClean === 'play' || lowerClean === 'careerverse' || lowerClean === 'rpg') {
+    return <Navigate to={'/' + lowerClean} replace />;
+  }
+
   // Check if reserved or static asset file extension (.xml, .json, .ico, .png, etc.)
   const isReserved = RESERVED_ROUTES.has(lowerClean);
   const isStaticFile = /\.(xml|json|ico|png|jpg|jpeg|svg|css|js|txt)$/i.test(lowerClean);
