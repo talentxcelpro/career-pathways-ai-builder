@@ -104,7 +104,7 @@ export class CareerSkillTreeService {
     const { data: userSkills } = await supabase
       .from('career_player_skills' as any)
       .select('*')
-      .eq('player_id', userId);
+      .eq('user_id', userId);
 
     const userSkillMap = new Map<string, any>();
     (userSkills || []).forEach((us: any) => {
@@ -117,8 +117,8 @@ export class CareerSkillTreeService {
       let progress = 0;
 
       if (us) {
-        status = us.status;
-        progress = us.progress;
+        status = us.status || 'locked';
+        progress = us.status === 'mastered' ? 100 : (us.level ? us.level * 20 : 50);
       } else if (!s.prerequisite_id) {
         status = 'unlocked';
       } else {
@@ -141,12 +141,11 @@ export class CareerSkillTreeService {
     const { error } = await supabase
       .from('career_player_skills' as any)
       .upsert({
-        player_id: userId,
+        user_id: userId,
         skill_id: skill.id,
         status: 'mastered',
-        progress: 100,
-        verified_at: new Date().toISOString()
-      }, { onConflict: 'player_id,skill_id' });
+        level: 5
+      }, { onConflict: 'user_id,skill_id' });
 
     if (error) {
       console.error('Error mastering skill:', error);

@@ -85,11 +85,32 @@ export const careerIntelligenceEngine = {
         .eq('id', userId)
         .maybeSingle();
 
-      // 4. Fetch User Assessments if any exist
-      const { data: userAssessments } = await supabase
-        .from('user_assessments')
-        .select('*, assessments(*)')
-        .eq('user_id', userId);
+      // 4. Fetch User Assessments if any exist (two-step fetch to avoid schema foreign-key cache miss)
+      let userAssessments: any[] = [];
+      try {
+        const { data: uaData } = await supabase
+          .from('user_assessments')
+          .select('*')
+          .eq('user_id', userId);
+
+        if (uaData && uaData.length > 0) {
+          const assessmentIds = Array.from(new Set(uaData.map((u: any) => u.assessment_id).filter(Boolean)));
+          const assessMap = new Map<string, any>();
+          if (assessmentIds.length > 0) {
+            const { data: aData } = await supabase
+              .from('assessments')
+              .select('*')
+              .in('id', assessmentIds);
+            (aData || []).forEach((a: any) => assessMap.set(a.id, a));
+          }
+          userAssessments = uaData.map((u: any) => ({
+            ...u,
+            assessments: assessMap.get(u.assessment_id) || null
+          }));
+        }
+      } catch (uaErr) {
+        console.warn('Could not query user assessments:', uaErr);
+      }
 
       // 5. Fetch Resume if available
       const { data: resumes } = await supabase

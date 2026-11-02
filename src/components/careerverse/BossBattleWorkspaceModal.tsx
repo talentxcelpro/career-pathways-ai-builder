@@ -40,6 +40,10 @@ export function optimizedSearch(candidates, query) {
 
   if (!battle) return null;
 
+  const rawStages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+  const currentStageObj = rawStages[currentStage - 1];
+  const currentStageName = typeof currentStageObj === 'string' ? currentStageObj : (currentStageObj?.name || 'Completed');
+
   const handleRunAndAdvance = async () => {
     if (userId === 'guest') {
       toast.error('Please log in to submit challenge stages and earn fast-track interview status.');
@@ -84,7 +88,7 @@ export function optimizedSearch(candidates, query) {
                   {battle.company_name}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Stage {currentStage} of 4: {battle.stages[currentStage - 1] || 'Completed'}</p>
+              <p className="text-xs text-slate-400">Stage {currentStage} of 4: {currentStageName}</p>
             </div>
           </div>
 
@@ -95,13 +99,16 @@ export function optimizedSearch(candidates, query) {
 
         {/* 4 Pipeline Stages Header */}
         <div className="grid grid-cols-4 gap-2">
-          {battle.stages.map((stage, idx) => {
+          {rawStages.map((stageItem: any, idx: number) => {
             const num = idx + 1;
             const isDone = num < currentStage;
             const isCurrent = num === currentStage;
+            const stageName = typeof stageItem === 'string' ? stageItem : (stageItem?.name || `Stage ${num}`);
+            const stageKey = typeof stageItem === 'string' ? `${stageItem}_${idx}` : (stageItem?.id ? `ws_stage_${stageItem.id}` : `ws_stage_${idx}`);
+
             return (
               <div
-                key={stage}
+                key={stageKey}
                 className={`p-2.5 rounded-xl border text-center text-xs font-bold ${
                   isDone
                     ? 'bg-[#20D994]/15 border-[#20D994]/40 text-[#20D994]'
@@ -110,7 +117,7 @@ export function optimizedSearch(candidates, query) {
                     : 'bg-[#071329] border-white/5 text-slate-500'
                 }`}
               >
-                {stage}
+                {stageName}
               </div>
             );
           })}
