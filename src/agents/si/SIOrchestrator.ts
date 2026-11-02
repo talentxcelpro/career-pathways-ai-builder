@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { kernelEventBus } from '../kernel/EventBus';
 import { kernelToolRegistry } from '../kernel/ToolRegistry';
 import { coreAgentOrchestrator } from '../core/AgentOrchestrator';
+import { approvalGovernanceEngine } from './governance/ApprovalGovernanceEngine';
 import type { SIEngine, SIEngineId, SITask, SIApprovalRequest } from './types';
 
 // Engine definitions — map existing 48 agents to 6 SI engines

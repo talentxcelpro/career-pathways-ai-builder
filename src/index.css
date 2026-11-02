@@ -1,6 +1,7 @@
 
 @import url('./styles/mobile-first-global.css');
 @import './styles/apple-dark-text.css';
+@import './styles/careerverse.css';
 
 @font-face {
   font-family: 'Inter';

@@ -45,6 +45,10 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
   const basePath = currentPath.split('?')[0]; // Remove query params
   
   switch (true) {
+    // CareerVerse / RPG / Play routes - delegated to specialized MobileCareerVerseNav
+    case basePath === '/play' || basePath === '/careerverse' || basePath === '/rpg':
+      return [];
+
     // Jobs Page Navigation
     case basePath === '/jobs' || basePath.startsWith('/jobs/'):
       return [
@@ -461,7 +465,7 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
   console.log('PageSpecificBottomNav - isMobile:', isMobile, 'currentPath:', location.pathname);
   
   // Don't render on desktop or in certain contexts
-  if (!isMobile) {
+  if (!isMobile || navigationItems.length === 0) {
     console.log('PageSpecificBottomNav - Not mobile, returning null');
     return null;
   }
