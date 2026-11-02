@@ -149,39 +149,27 @@ export function validateJobPosting(job: RawJobData): JobValidationResult {
     errors.push('Job is inactive, closed, or expired');
   }
 
-  // 7. validThrough / Expiration Date
+  // 7. validThrough / Expiration Date (SEO-006 Mandate: Zero Rolling Fabrication)
+  // Use actual vacancy deadlines and verified closure dates only.
+  // Never generate arbitrary rolling 30/45/60/90-day expiration dates.
+  // When no reliable expiry date exists, omit validThrough (null) per Google JobPosting spec.
   let resolvedValidThrough: string | null = null;
   const rawExpiry = job.expires_at || job.expiry_date;
   if (rawExpiry) {
     const expDate = new Date(rawExpiry);
     if (!isNaN(expDate.getTime())) {
       if (expDate <= new Date()) {
-        if (isActive) {
-          // If marked active in database, extend validity so Google doesn't drop it
-          const extended = new Date();
-          extended.setDate(extended.getDate() + 60);
-          resolvedValidThrough = extended.toISOString();
-        } else {
+        if (!isActive) {
           errors.push('Job has expired (expires_at is in the past)');
         }
+        // If past deadline, omit validThrough rather than fabricating a future date
       } else {
+        // Genuine, verified future deadline
         resolvedValidThrough = expDate.toISOString();
       }
     }
   }
-
-  // If no explicit expires_at, default to 90 days from datePosted or 60 days from now
-  if (!resolvedValidThrough && resolvedDatePosted) {
-    const base = new Date(resolvedDatePosted);
-    base.setDate(base.getDate() + 90);
-    if (base <= new Date() && isActive) {
-      const future = new Date();
-      future.setDate(future.getDate() + 60);
-      resolvedValidThrough = future.toISOString();
-    } else {
-      resolvedValidThrough = base.toISOString();
-    }
-  }
+  // When no reliable rawExpiry exists, resolvedValidThrough remains null.
 
   // 8. Location Quality (Warnings vs Errors)
   if (job.is_remote) {

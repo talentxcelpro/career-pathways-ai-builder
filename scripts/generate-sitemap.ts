@@ -395,7 +395,7 @@ export async function generateProductionSitemaps() {
     { filename: 'sitemap-employers.xml', entries: employerEntries, origin: 'https://employers.talentxcel.in' },
     { filename: 'sitemap-colleges.xml', entries: collegeOverviewEntries, origin: 'https://colleges.talentxcel.in' },
     { filename: 'sitemap-careers.xml', entries: careersEntries, origin: 'https://careers.talentxcel.in' },
-    { filename: 'sitemap-salary.xml', entries: salaryEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-salary.xml', entries: salaryEntries, origin: 'https://salary.talentxcel.in' },
     { filename: 'sitemap-resume.xml', entries: resumeEntries, origin: 'https://resume.talentxcel.in' },
     { filename: 'sitemap-career-paths.xml', entries: pathwayEntries, origin: 'https://careers.talentxcel.in' },
     { filename: 'sitemap-posts.xml', entries: postEntries, origin: 'https://talentxcel.in' },
