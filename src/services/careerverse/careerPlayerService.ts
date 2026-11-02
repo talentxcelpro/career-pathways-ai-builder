@@ -54,36 +54,73 @@ export const GUEST_PLAYER: CareerPlayer = {
 
 export class CareerPlayerService {
   /**
-   * Fetch player profile for a given user ID, or automatically initialize one via RPC if missing.
+   * Fetch player profile for a given user ID, or automatically initialize one using authentic profile data.
    */
   static async getOrActivatePlayer(userId: string, defaultName?: string): Promise<CareerPlayer> {
     try {
+      // 1. Check existing career_players record
       const { data, error } = await supabase
         .from('career_players' as any)
         .select('*')
         .eq('id', userId)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.warn('Error fetching player, falling back to activate:', error);
-      }
-
       if (data) {
         return data as unknown as CareerPlayer;
       }
 
-      // Activate via server-side RPC
-      const { data: rpcData, error: rpcError } = await (supabase.rpc as any)('activate_career_player', {
-        p_user_id: userId,
-        p_display_name: defaultName || 'Adventurer'
-      });
+      // 2. Try inserting new player record if authenticated
+      const { data: inserted } = await supabase
+        .from('career_players' as any)
+        .insert({
+          id: userId,
+          display_name: defaultName || 'Candidate',
+          career_title: 'Career Explorer',
+          college: '',
+          career_path: 'technology',
+          xp: 0,
+          level: 1,
+          career_coins: 0,
+          streak_count: 0
+        })
+        .select()
+        .maybeSingle();
 
-      if (rpcError) {
-        console.error('Failed to activate career player:', rpcError);
-        throw rpcError;
+      if (inserted) {
+        return inserted as unknown as CareerPlayer;
       }
 
-      return (rpcData as any)?.player as CareerPlayer;
+      // 3. Fallback: Hydrate player record directly from authentic profiles table
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      const topEdu = Array.isArray(profile?.education_history) && profile.education_history.length > 0
+        ? profile.education_history[0]
+        : null;
+
+      const playerFromProfile: CareerPlayer = {
+        id: userId,
+        display_name: profile?.full_name || defaultName || 'TalentXcel Candidate',
+        career_title: profile?.headline || profile?.title || profile?.current_job_title || profile?.primary_role || 'Career Explorer',
+        avatar_url: profile?.profile_photo_url || profile?.profile_picture_url || null,
+        college: topEdu?.college || topEdu?.school || topEdu?.institution || '',
+        xp: profile?.xp || 0,
+        level: Math.max(1, Math.floor((profile?.xp || 0) / 250) + 1),
+        career_coins: profile?.txc_coins || 0,
+        current_streak: profile?.current_streak || 0,
+        last_active_at: new Date().toISOString(),
+        stats: {
+          javascript: 0,
+          react: 0,
+          communication: 0
+        },
+        guild_id: null
+      };
+
+      return playerFromProfile;
     } catch (err) {
       console.error('CareerPlayerService.getOrActivatePlayer error:', err);
       throw err;
@@ -91,7 +128,7 @@ export class CareerPlayerService {
   }
 
   /**
-   * Award XP and Coins server-authoritatively using unique idempotency key.
+   * Award XP server-authoritatively using unique idempotency key.
    */
   static async awardXP(params: {
     userId: string;
@@ -115,12 +152,10 @@ export class CareerPlayerService {
     const { data, error } = await (supabase.rpc as any)('award_career_xp', {
       p_user_id: params.userId,
       p_amount: params.amount,
-      p_coins: params.coins || 0,
-      p_action: params.action,
+      p_reason: params.action,
       p_source_type: params.sourceType,
       p_source_id: params.sourceId || null,
-      p_idempotency_key: key,
-      p_metadata: params.metadata || {}
+      p_idempotency_key: key
     });
 
     if (error) {
