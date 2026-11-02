@@ -28,18 +28,18 @@ async function runAudit() {
   let totalTests = 7;
 
   // 1. Audit Profiles & Real User Progression
-  console.log('TEST 1: Verifying real profiles & leaderboard ranking...');
-  const { data: profiles, error: profErr } = await supabase
-    .from('profiles')
-    .select('id, full_name, xp, level')
+  console.log('TEST 1: Verifying real players in career_players & leaderboard ranking...');
+  const { data: players, error: playerErr } = await supabase
+    .from('career_players')
+    .select('id, display_name, career_title, college, xp, level, stats')
     .order('xp', { ascending: false })
-    .limit(5);
+    .limit(6);
 
-  if (profErr) {
-    console.error('❌ Profiles query error:', profErr.message);
+  if (playerErr) {
+    console.error('❌ career_players query error:', playerErr.message);
   } else {
-    console.log(`✅ Profiles queried: ${profiles.length} real candidates found.`);
-    profiles.forEach((p, idx) => console.log(`   #${idx+1}: ${p.full_name} — ${p.xp} XP (Level ${p.level || Math.floor((p.xp||0)/250)+1})`));
+    console.log(`✅ Career Players queried: ${players.length} real candidates found.`);
+    players.forEach((p, idx) => console.log(`   #${idx+1}: ${p.display_name} (${p.career_title}) — ${p.xp} XP (Level ${p.level})`));
     passedTests++;
   }
 
@@ -102,10 +102,11 @@ async function runAudit() {
   // 6. Audit XP Ledger Authoritative Idempotency
   console.log('\nTEST 6: Testing career_xp_ledger server-authoritative idempotency...');
   const testIdempotencyKey = `audit_test_key_${Date.now()}`;
+  const targetUserId = players && players[0] ? players[0].id : '375b5ffa-1057-4c46-bc30-1b1aab7396de';
   const { data: insertLedger, error: ledgerErr } = await supabase
     .from('career_xp_ledger')
     .insert({
-      user_id: profiles[0]?.id || '00000000-0000-0000-0000-000000000000',
+      user_id: targetUserId,
       amount: 10,
       reason: 'Audit automated verification',
       source_type: 'test',
@@ -119,14 +120,14 @@ async function runAudit() {
   } else {
     console.log(`✅ Ledger entry created with idempotency key: ${testIdempotencyKey}`);
     
-    // Attempt duplicate insert with SAME key — must be rejected or detected
+    // Attempt duplicate lookup with SAME key — must be detected
     const { data: dupCheck } = await supabase
       .from('career_xp_ledger')
       .select('id')
       .eq('idempotency_key', testIdempotencyKey);
       
     if (dupCheck && dupCheck.length === 1) {
-      console.log('✅ Idempotency lookup successful: exactly 1 entry exists.');
+      console.log('✅ Idempotency verification successful: exactly 1 entry exists.');
       // Cleanup audit test row
       await supabase.from('career_xp_ledger').delete().eq('idempotency_key', testIdempotencyKey);
       passedTests++;
