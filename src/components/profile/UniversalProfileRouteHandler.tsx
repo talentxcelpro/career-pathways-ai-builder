@@ -22,6 +22,7 @@ export const RESERVED_ROUTES = new Set([
   'salary', 'salaries', 'salary-guide', 'analyzer', 'career-guide', 'interview-questions',
   'scenarios', 'negotiation', 'goals', 'skills-gap',
   'career-insights', 'market-insights', 'career-analytics', 'insights', 'career-paths',
+  'play', 'careerverse', 'rpg',
   '404', 'not-found'
 ]);
 

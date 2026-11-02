@@ -108,4 +108,10 @@ export class CareerBossBattleService {
       });
     }
   }
+  static async advanceStage(userId: string, battleId: string, nextStage: number, codeSubmission?: string) {
+    return this.advanceBattleStage(userId, battleId, nextStage, codeSubmission);
+  }
 }
+
+export const careerBossBattleService = CareerBossBattleService;
+export default CareerBossBattleService;

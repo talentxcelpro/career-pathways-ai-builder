@@ -19,14 +19,19 @@ export const DailyQuestsCard: React.FC<DailyQuestsProps> = ({
 }) => {
   const dailyQuests = quests.filter(q => q.category === 'daily').slice(0, 4);
 
-  const days = [
-    { label: 'Mon', active: true },
-    { label: 'Tue', active: true },
-    { label: 'Wed', active: true },
-    { label: 'Fri', active: true },
-    { label: 'Sat', active: true },
-    { label: 'Sun', active: false },
-  ];
+  // Authentically compute 7-day activity checkmarks based on player streak
+  const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const todayDayIndex = (new Date().getDay() + 6) % 7; // 0 for Mon, 6 for Sun
+  const activeDaysCount = Math.min(streak, 7);
+
+  const days = dayLabels.map((label, idx) => {
+    const isPastOrToday = idx <= todayDayIndex;
+    const isWithinStreak = (todayDayIndex - idx) < activeDaysCount && (todayDayIndex - idx) >= 0;
+    return {
+      label,
+      active: streak > 0 && isPastOrToday && isWithinStreak,
+    };
+  });
 
   return (
     <div className="bg-[#101E3B] border border-white/10 rounded-2xl p-5 shadow-2xl flex flex-col justify-between gap-4 relative overflow-hidden backdrop-blur-xl">
@@ -118,8 +123,8 @@ export const DailyQuestsCard: React.FC<DailyQuestsProps> = ({
             <Flame className="w-4 h-4 fill-[#FFCA55] text-[#FFCA55]" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xs font-black text-white">{streak || 7} Day Streak</span>
-            <span className="text-[10px] text-slate-400">Keep it going!</span>
+            <span className="text-xs font-black text-white">{streak} Day Streak</span>
+            <span className="text-[10px] text-slate-400">{streak > 0 ? 'Keep it going!' : 'Complete a quest to start!'}</span>
           </div>
         </div>
 

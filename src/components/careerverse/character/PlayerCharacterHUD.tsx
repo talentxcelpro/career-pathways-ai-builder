@@ -47,21 +47,21 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
   // If assessed skills exist, use them. Otherwise show declared or unassessed indicators.
   const displaySkills = [
     {
-      name: profile.assessedSkills[0]?.name || profile.unassessedDeclaredSkills[0] || 'JavaScript',
+      name: profile.assessedSkills[0]?.name || profile.unassessedDeclaredSkills[0] || (profile.isGuest ? 'Skill Discovery' : 'Technical Skill'),
       score: profile.assessedSkills[0]?.score ?? null,
       status: profile.assessedSkills[0] ? 'assessed' : profile.unassessedDeclaredSkills[0] ? 'declared' : 'unassessed',
       icon: Code2,
       accent: '#FFCA55',
     },
     {
-      name: profile.assessedSkills[1]?.name || profile.unassessedDeclaredSkills[1] || 'React',
+      name: profile.assessedSkills[1]?.name || profile.unassessedDeclaredSkills[1] || (profile.isGuest ? 'Skill Challenge' : 'Domain Skill'),
       score: profile.assessedSkills[1]?.score ?? null,
       status: profile.assessedSkills[1] ? 'assessed' : profile.unassessedDeclaredSkills[1] ? 'declared' : 'unassessed',
       icon: Zap,
       accent: '#36D9F5',
     },
     {
-      name: profile.assessedSkills[2]?.name || profile.unassessedDeclaredSkills[2] || 'Communication',
+      name: profile.assessedSkills[2]?.name || profile.unassessedDeclaredSkills[2] || (profile.isGuest ? 'Career Readiness' : 'Interpersonal Skill'),
       score: profile.assessedSkills[2]?.score ?? null,
       status: profile.assessedSkills[2] ? 'assessed' : profile.unassessedDeclaredSkills[2] ? 'declared' : 'unassessed',
       icon: MessageSquare,
@@ -118,7 +118,7 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
           </div>
           <p className="text-xs font-semibold text-[#36D9F5] truncate mt-0.5">{profile.headline}</p>
           <p className="text-[11px] text-slate-400 truncate mt-0.5">
-            {profile.collegeName || (profile.isGuest ? 'TalentXcel Academy' : 'Career Explorer')}
+            {profile.collegeName || (profile.isGuest ? 'Guest Mode · Preview' : 'Independent Candidate')}
           </p>
         </div>
       </div>

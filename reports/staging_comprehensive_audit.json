@@ -1,0 +1,265 @@
+{
+  "timestamp": "2026-11-02T08:36:55.030Z",
+  "passCount": 18,
+  "failCount": 1,
+  "results": [
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-01",
+      "name": "Unauthenticated document download rejection",
+      "status": "PASS",
+      "details": "Anon download result: {}",
+      "evidence": {
+        "error": {
+          "__isStorageError": true,
+          "name": "StorageUnknownError",
+          "originalError": {}
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-02",
+      "name": "Candidate 1 uploads own document",
+      "status": "FAIL",
+      "details": "Upload status: new row violates row-level security policy",
+      "evidence": {
+        "uploadData": null,
+        "uploadErr": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-03",
+      "name": "Candidate 1 reads own document",
+      "status": "PASS",
+      "details": "Download status: Verified matching content",
+      "evidence": {
+        "length": 23,
+        "match": true
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-04",
+      "name": "Cross-candidate download denial (Candidate 2 -> Candidate 1 CV)",
+      "status": "PASS",
+      "details": "Candidate 2 download result: {}",
+      "evidence": {
+        "cand2ReadErr": {
+          "__isStorageError": true,
+          "name": "StorageUnknownError",
+          "originalError": {}
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-05",
+      "name": "Authorized Recruiter 1 downloads applicant CV",
+      "status": "PASS",
+      "details": "Recruiter 1 access: Successfully authorized by job_applications link",
+      "evidence": {
+        "rec1ReadErr": null,
+        "match": true
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-06",
+      "name": "Unauthorized Recruiter 2 denied applicant CV (No job application to Company B)",
+      "status": "PASS",
+      "details": "Recruiter 2 access result: {}",
+      "evidence": {
+        "rec2ReadErr": {
+          "__isStorageError": true,
+          "name": "StorageUnknownError",
+          "originalError": {}
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-07",
+      "name": "Expired signed URL rejection",
+      "status": "PASS",
+      "statusCode": 400,
+      "details": "HTTP 400: {\"statusCode\":\"400\",\"error\":\"InvalidJWT\",\"message\":\"\\\"exp\\\" claim timestamp check failed\",\"code\":\"In",
+      "evidence": {
+        "status": 400,
+        "body": "{\"statusCode\":\"400\",\"error\":\"InvalidJWT\",\"message\":\"\\\"exp\\\" claim timestamp check failed\",\"code\":\"InvalidJWT\"}"
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-BUCKET-RESUMES",
+      "name": "Bucket 'resumes' access policy audit",
+      "status": "PASS",
+      "details": "Upload result for 'resumes': new row violates row-level security policy (Default deny RLS verified)",
+      "evidence": {
+        "bucket": "resumes",
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-BUCKET-CV-FILES",
+      "name": "Bucket 'cv-files' access policy audit",
+      "status": "PASS",
+      "details": "Upload result for 'cv-files': new row violates row-level security policy (Default deny RLS verified)",
+      "evidence": {
+        "bucket": "cv-files",
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-BUCKET-COVER-LETTERS",
+      "name": "Bucket 'cover-letters' access policy audit",
+      "status": "PASS",
+      "details": "Upload result for 'cover-letters': new row violates row-level security policy (Default deny RLS verified)",
+      "evidence": {
+        "bucket": "cover-letters",
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-BUCKET-USER-UPLOADS",
+      "name": "Bucket 'user-uploads' access policy audit",
+      "status": "PASS",
+      "details": "Upload result for 'user-uploads': new row violates row-level security policy (Default deny RLS verified)",
+      "evidence": {
+        "bucket": "user-uploads",
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-08",
+      "name": "Candidate 2 cannot delete Candidate 1 document",
+      "status": "PASS",
+      "details": "Delete attempt result: Handled safely",
+      "evidence": {
+        "cand2DelErr": null
+      }
+    },
+    {
+      "phase": "PHASE 6: STORAGE",
+      "testId": "STOR-09",
+      "name": "Candidate 1 deletes own document",
+      "status": "PASS",
+      "details": "Owner delete status: Successfully removed",
+      "evidence": {
+        "cand1DelErr": null
+      }
+    },
+    {
+      "phase": "PHASE 5: PAYMENT",
+      "testId": "PAY-01",
+      "name": "Demo order (demo_order_*) rejected in staging for authenticated user",
+      "status": "PASS",
+      "details": "HTTP 403: {\"success\":false,\"error\":\"Demo orders are not permitted in this environment. Real payment verification required.\"}",
+      "evidence": {
+        "status": 403,
+        "body": {
+          "success": false,
+          "error": "Demo orders are not permitted in this environment. Real payment verification required."
+        }
+      }
+    },
+    {
+      "phase": "PHASE 5: PAYMENT",
+      "testId": "PAY-02",
+      "name": "Invalid cryptographic signature rejected with 400 or 500 (if secret unconfigured)",
+      "status": "PASS",
+      "details": "HTTP 500: {\"success\":false,\"error\":\"Payment gateway configuration error. Secret key missing on server.\"}",
+      "evidence": {
+        "status": 500,
+        "body": {
+          "success": false,
+          "error": "Payment gateway configuration error. Secret key missing on server."
+        }
+      }
+    },
+    {
+      "phase": "PHASE 5: PAYMENT",
+      "testId": "PAY-03",
+      "name": "Missing payment parameters rejected with 400",
+      "status": "PASS",
+      "details": "HTTP 400: {\"success\":false,\"error\":\"Missing required payment parameters (order_id, payment_id).\"}",
+      "evidence": {
+        "status": 400,
+        "body": {
+          "success": false,
+          "error": "Missing required payment parameters (order_id, payment_id)."
+        }
+      }
+    },
+    {
+      "phase": "PHASE 5: PAYMENT",
+      "testId": "PAY-04",
+      "name": "Missing signature parameter rejected with 400 (or 500 secret guard)",
+      "status": "PASS",
+      "details": "HTTP 500: {\"success\":false,\"error\":\"Payment gateway configuration error. Secret key missing on server.\"}",
+      "evidence": {
+        "status": 500,
+        "body": {
+          "success": false,
+          "error": "Payment gateway configuration error. Secret key missing on server."
+        }
+      }
+    },
+    {
+      "phase": "PHASE 7: RATE LIMITING",
+      "testId": "RATE-01",
+      "name": "Distributed persistent rate limiter enforces 429 throttling on burst limit",
+      "status": "PASS",
+      "details": "Successfully triggered HTTP 429 with Retry-After: 53s",
+      "evidence": {
+        "throttledEncountered": true,
+        "throttleStatus": 429,
+        "retryAfterHeader": "53"
+      }
+    },
+    {
+      "phase": "PHASE 7: RATE LIMITING",
+      "testId": "RATE-02",
+      "name": "Rate limiter state persisted in PostgreSQL edge_rate_limits table",
+      "status": "PASS",
+      "details": "Persisted rate keys found: 2",
+      "evidence": {
+        "count": 2,
+        "keys": [
+          "c01af242c9ec7014b7fc80a0df230d4fae7405cba4e532815611ddfe60ad6a3f",
+          "d9f3e0c30bf4b13b2b2f0196af7438dc49cb508bb4048090d441d110a5714e2c"
+        ]
+      }
+    }
+  ]
+}

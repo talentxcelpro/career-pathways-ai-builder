@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '@/styles/careerverse.css';
-import { useOptimizedAuth } from '@/hooks/useOptimizedAuth';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import type { User } from '@supabase/supabase-js';
 import {
   CareerPlayer,
   GUEST_PLAYER,
@@ -51,14 +53,19 @@ import { FullSkillTreeModal } from '@/components/careerverse/FullSkillTreeModal'
 import { RewardsStoreModal } from '@/components/careerverse/RewardsStoreModal';
 import { AchievementsModal } from '@/components/careerverse/AchievementsModal';
 import { AICareerCompanionModal } from '@/components/careerverse/AICareerCompanionModal';
-import { Loader2, Sparkles, LogIn, UserPlus, X, MapPin } from 'lucide-react';
+import { Loader2, Sparkles, LogIn, UserPlus, X, MapPin, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export const CareerVersePage: React.FC = () => {
-  const { user, isAuthenticated, loading: authLoading } = useOptimizedAuth();
+  const { user: contextUser, loading: contextAuthLoading } = useOptimizedAuth();
   const navigate = useNavigate();
 
-  // Primary State
+  // Active Authenticated Session & In-flight States
+  const [activeUser, setActiveUser] = useState<User | null>(contextUser ?? null);
+  const [authResolved, setAuthResolved] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // Primary Game State
   const [player, setPlayer] = useState<CareerPlayer>(GUEST_PLAYER);
   const [unifiedProfile, setUnifiedProfile] = useState<UnifiedSkillProfile>(
     careerIntelligenceEngine.getGuestProfile()
@@ -84,87 +91,164 @@ export const CareerVersePage: React.FC = () => {
   const [isAchievementsModalOpen, setIsAchievementsModalOpen] = useState(false);
   const [isAICoachOpen, setIsAICoachOpen] = useState(false);
 
-  const isGuest = !isAuthenticated || !user;
+  const isGuest = !activeUser;
 
-  // Refresh player & intelligence profile state
-  const loadPlayerData = useCallback(async () => {
+  // Requirement 1 & 2: Resolve active Supabase session on page load & subscribe to auth state changes
+  useEffect(() => {
+    let isMounted = true;
+
+    // 1. Resolve active session on page load
+    const resolveAuthSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (isMounted) {
+          const resolvedUser = session?.user ?? contextUser ?? null;
+          setActiveUser(resolvedUser);
+          setAuthResolved(true);
+        }
+      } catch (err) {
+        console.warn('Error resolving initial Supabase auth session:', err);
+        if (isMounted) {
+          setActiveUser(contextUser ?? null);
+          setAuthResolved(true);
+        }
+      }
+    };
+
+    resolveAuthSession();
+
+    // 2. Subscribe to authentication state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!isMounted) return;
+      console.log('[CareerVerse Auth Event]:', event, session?.user?.id);
+
+      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
+        if (session?.user) {
+          // Requirement 9: Immediately transition from guest mode to real player profile
+          setActiveUser(session.user);
+          setFetchError(null);
+        }
+      } else if (event === 'SIGNED_OUT') {
+        // Requirement 10: Ensure logout immediately removes authenticated private data from interface
+        setActiveUser(null);
+        setPlayer(GUEST_PLAYER);
+        setUnifiedProfile(careerIntelligenceEngine.getGuestProfile());
+        setGuild(null);
+        setFetchError(null);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
+  }, [contextUser]);
+
+  // Requirement 3, 4, 5, 8, 11: Join Career Passport, profiles, skills, education, experience and calculate real progress
+  const loadCareerData = useCallback(async (userToLoad: User | null) => {
     try {
-      const pProfile = await careerIntelligenceEngine.evaluateUserProfile(user?.id);
+      setPageLoading(true);
+      setFetchError(null);
+
+      if (!userToLoad) {
+        // Requirement 7: Honest guest preview
+        const guestProf = careerIntelligenceEngine.getGuestProfile();
+        setUnifiedProfile(guestProf);
+        setPlayer(GUEST_PLAYER);
+
+        const [qData, sData, bData, eData, lb] = await Promise.all([
+          CareerQuestService.getQuests('guest'),
+          CareerSkillTreeService.getSkillsForPath('technology', 'guest'),
+          CareerBossBattleService.getLiveBattles('guest'),
+          CareerBadgeAndRewardsService.getEvents('guest'),
+          CareerLeaderboardService.getLeaderboard(leaderboardTab, 'guest', undefined)
+        ]);
+
+        const pQuests = await careerQuestEngine.getPersonalizedQuests(guestProf);
+        setQuests(qData);
+        setTreeSkills(sData);
+        setBossBattles(bData);
+        setEvents(eData);
+        setLeaderboard(lb);
+        setPlayableQuests(pQuests);
+        setGuild(null);
+        return;
+      }
+
+      // Authenticated User: Retrieve actual profile using auth.uid()
+      const uid = userToLoad.id;
+
+      // Join candidate profile, skills, education, experience, assessments, and passport records
+      const profData = await careerIntelligenceEngine.evaluateUserProfile(uid);
+      setUnifiedProfile(profData);
+
+      // Get or activate authenticated player record
+      const pData = await CareerPlayerService.getOrActivatePlayer(
+        uid,
+        userToLoad.user_metadata?.full_name || userToLoad.email?.split('@')[0]
+      );
+      setPlayer(pData);
+
+      // Concurrently query related real database systems
+      const [qData, sData, bData, gData, eData, lb] = await Promise.all([
+        CareerQuestService.getQuests(uid),
+        CareerSkillTreeService.getSkillsForPath(profData.careerPath || 'technology', uid),
+        CareerBossBattleService.getLiveBattles(uid),
+        CareerLeaderboardService.getCampusGuild(pData.guild_id),
+        CareerBadgeAndRewardsService.getEvents(uid),
+        CareerLeaderboardService.getLeaderboard(leaderboardTab, uid, pData.college)
+      ]);
+
+      setQuests(qData);
+      setTreeSkills(sData);
+      setBossBattles(bData);
+      setGuild(gData);
+      setEvents(eData);
+      setLeaderboard(lb);
+
+      const pQuests = await careerQuestEngine.getPersonalizedQuests(profData);
+      setPlayableQuests(pQuests);
+    } catch (err: any) {
+      console.error('Error loading authentic CareerVerse player data:', err);
+      // Requirement 8: If profile retrieval fails, show loading/error state and retry option. Never silently substitute demo data!
+      setFetchError(err?.message || 'Failed to retrieve authentic player profile from Supabase.');
+    } finally {
+      setPageLoading(false);
+    }
+  }, [leaderboardTab]);
+
+  // Initial and reactive load whenever auth status resolves or active user changes
+  useEffect(() => {
+    if (authResolved) {
+      loadCareerData(activeUser);
+    }
+  }, [authResolved, activeUser, loadCareerData]);
+
+  // Refresh single player & intelligence profile state after quest/battle completion
+  const loadPlayerData = useCallback(async () => {
+    if (!activeUser?.id) return;
+    try {
+      const pProfile = await careerIntelligenceEngine.evaluateUserProfile(activeUser.id);
       setUnifiedProfile(pProfile);
 
       const pQuests = await careerQuestEngine.getPersonalizedQuests(pProfile);
       setPlayableQuests(pQuests);
 
-      if (user && user.id) {
-        const p = await CareerPlayerService.getOrActivatePlayer(
-          user.id,
-          user.user_metadata?.full_name || user.email?.split('@')[0]
-        );
-        setPlayer(p);
-      } else {
-        setPlayer(GUEST_PLAYER);
-      }
+      const p = await CareerPlayerService.getOrActivatePlayer(
+        activeUser.id,
+        activeUser.user_metadata?.full_name || activeUser.email?.split('@')[0]
+      );
+      setPlayer(p);
     } catch (err) {
-      console.warn('Failed to reload profile, using fallback:', err);
+      console.warn('Failed to refresh authentic profile:', err);
     }
-  }, [user]);
-
-  // Initial Data Load
-  useEffect(() => {
-    let isMounted = true;
-    const initData = async () => {
-      try {
-        setPageLoading(true);
-        const playerId = user?.id || 'guest';
-
-        // Concurrently load authentic intelligence profile, gameplay quests, and database entities
-        const [profData, pData, qData, sData, bData, gData, eData] = await Promise.all([
-          careerIntelligenceEngine.evaluateUserProfile(user?.id),
-          user ? CareerPlayerService.getOrActivatePlayer(user.id, user.user_metadata?.full_name) : Promise.resolve(GUEST_PLAYER),
-          CareerQuestService.getQuests(playerId),
-          CareerSkillTreeService.getSkillsForPath('technology', playerId),
-          CareerBossBattleService.getLiveBattles(playerId),
-          CareerLeaderboardService.getCampusGuild(),
-          CareerBadgeAndRewardsService.getEvents(playerId)
-        ]);
-
-        if (!isMounted) return;
-
-        setUnifiedProfile(profData);
-        setPlayer(pData);
-        setQuests(qData);
-        setTreeSkills(sData);
-        setBossBattles(bData);
-        setGuild(gData);
-        setEvents(eData);
-
-        const pQuests = await careerQuestEngine.getPersonalizedQuests(profData);
-        if (isMounted) setPlayableQuests(pQuests);
-
-        // Fetch leaderboard with player context
-        const lb = await CareerLeaderboardService.getLeaderboard(leaderboardTab, pData.id, pData.college);
-        if (isMounted) setLeaderboard(lb);
-      } catch (err) {
-        console.error('Error initializing CareerVerse data:', err);
-      } finally {
-        if (isMounted) setPageLoading(false);
-      }
-    };
-
-    if (!authLoading) {
-      initData();
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [authLoading, user, leaderboardTab]);
+  }, [activeUser]);
 
   // Realtime subscription for authenticated user
   useEffect(() => {
-    if (!user?.id) return;
+    if (!activeUser?.id) return;
 
-    const channel = CareerRealtimeService.subscribeToPlayerUpdates(user.id, (updated) => {
+    const channel = CareerRealtimeService.subscribeToPlayerUpdates(activeUser.id, (updated) => {
       setPlayer((prev) => ({
         ...prev,
         ...updated
@@ -181,7 +265,7 @@ export const CareerVersePage: React.FC = () => {
     return () => {
       CareerRealtimeService.unsubscribe(channel);
     };
-  }, [user]);
+  }, [activeUser]);
 
   // Reload leaderboard when tab changes
   const handleLeaderboardTabChange = async (tab: 'college' | 'react' | 'overall') => {
@@ -209,7 +293,8 @@ export const CareerVersePage: React.FC = () => {
     }
   };
 
-  if (authLoading || pageLoading) {
+  // Requirement 8: Explicit loading state
+  if (!authResolved || pageLoading) {
     return (
       <div className="min-h-screen bg-[#071329] flex flex-col items-center justify-center gap-4 text-white">
         <div className="relative">
@@ -221,6 +306,42 @@ export const CareerVersePage: React.FC = () => {
         <div className="text-center">
           <h3 className="font-black text-lg text-white">Connecting to CareerVerse...</h3>
           <p className="text-xs text-slate-400 mt-1">Calibrating authentic player credentials and live combat arenas</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Requirement 8: Explicit error state with retry option. Never silently substitute demo data!
+  if (fetchError) {
+    return (
+      <div className="min-h-screen bg-[#071329] flex flex-col items-center justify-center gap-5 text-white p-4">
+        <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 shadow-xl">
+          <AlertTriangle className="w-8 h-8" />
+        </div>
+        <div className="text-center max-w-md">
+          <h3 className="font-black text-xl text-white">Profile Synchronization Failed</h3>
+          <p className="text-sm text-slate-400 mt-2">
+            {fetchError}
+          </p>
+          <p className="text-xs text-slate-500 mt-1">
+            TalentXcel CareerVerse requires authentic player profile records and will never silently substitute demo data.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 mt-2">
+          <Button
+            onClick={() => loadCareerData(activeUser)}
+            className="bg-[#278DFF] hover:bg-[#1a7ae0] text-white font-bold px-5 py-2 rounded-xl flex items-center gap-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry Connection
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/')}
+            className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl"
+          >
+            Go to Home
+          </Button>
         </div>
       </div>
     );

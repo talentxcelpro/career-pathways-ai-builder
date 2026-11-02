@@ -98,6 +98,13 @@ export const careerIntelligenceEngine = {
         .eq('user_id', userId)
         .limit(1);
 
+      // 6. Fetch Career Passport if available
+      const { data: careerPassport } = await supabase
+        .from('career_passports' as any)
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+
       // Collect declared skills
       const declaredRaw: string[] = [];
       if (profile?.skills && Array.isArray(profile.skills)) {
@@ -164,7 +171,7 @@ export const careerIntelligenceEngine = {
       // Determine Career Path & Role Target
       const careerGoals = profile?.career_goals || [];
       const primaryTargetRole =
-        careerGoals[0] || profile?.headline || profile?.primary_role || 'Frontend Engineer';
+        careerGoals[0] || profile?.headline || profile?.primary_role || profile?.title || profile?.current_job_title || 'Career Explorer';
       const careerPath = this.detectCareerPath(primaryTargetRole, uniqueSkills);
 
       // Compute Skill Gaps against target path
@@ -180,16 +187,32 @@ export const careerIntelligenceEngine = {
       const careerCoins = careerPlayer?.career_coins || profile?.txc_coins || 0;
       const streakDays = careerPlayer?.streak_count || profile?.current_streak || 0;
 
+      // Extract authentic college / institution without hardcoding
+      let resolvedCollege: string | undefined = undefined;
+      if (careerPlayer?.college && careerPlayer.college !== 'General' && careerPlayer.college !== 'TalentXcel Academy') {
+        resolvedCollege = careerPlayer.college;
+      } else if (Array.isArray(profile?.education_history) && profile.education_history.length > 0) {
+        const topEdu = profile.education_history[0];
+        resolvedCollege = topEdu.college || topEdu.school || topEdu.institution || topEdu.university;
+      }
+
+      // Authentic Display Name, Headline, and Avatar
+      const resolvedDisplayName = profile?.full_name || careerPlayer?.display_name || 'TalentXcel Candidate';
+      const resolvedHeadline = profile?.headline || profile?.title || profile?.current_job_title || profile?.primary_role || careerPlayer?.career_title || primaryTargetRole;
+      const resolvedAvatar =
+        profile?.profile_photo_url ||
+        profile?.profile_picture_url ||
+        profile?.avatar_url ||
+        careerPlayer?.avatar_url ||
+        `https://api.dicebear.com/7.x/bottts/svg?seed=${userId}`;
+
       return {
         userId: profile?.id || userId,
         isGuest: false,
-        displayName: profile?.full_name || 'TalentXcel Candidate',
-        headline: profile?.headline || primaryTargetRole,
-        avatarUrl:
-          profile?.avatar_url ||
-          profile?.profile_picture_url ||
-          `https://api.dicebear.com/7.x/bottts/svg?seed=${userId}`,
-        collegeName: profile?.about?.includes('College') ? undefined : undefined,
+        displayName: resolvedDisplayName,
+        headline: resolvedHeadline,
+        avatarUrl: resolvedAvatar,
+        collegeName: resolvedCollege,
         careerPath,
         primaryTargetRole,
         assessedSkills,
@@ -212,7 +235,8 @@ export const careerIntelligenceEngine = {
       };
     } catch (err) {
       console.error('Error in careerIntelligenceEngine.evaluateUserProfile:', err);
-      return this.getGuestProfile();
+      // Re-throw error so CareerVersePage can render explicit error and retry state per Requirement 8
+      throw err;
     }
   },
 

@@ -9,14 +9,42 @@ interface GuildProps {
 }
 
 export const GuildWidget: React.FC<GuildProps> = ({ guild, onOpenGuildHub }) => {
-  const defaultGuild = {
-    name: 'TechTitans – ABC College',
-    member_count: 42,
-    campus_rank: 3,
-    college: 'ABC College of Technology'
-  };
+  if (!guild) {
+    return (
+      <div className="bg-[#101E3B] border border-white/5 rounded-2xl p-5 shadow-xl flex flex-col gap-3">
+        {/* Header */}
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-[#A34EFF]/15 flex items-center justify-center text-[#A34EFF]">
+            <Users className="w-4 h-4" />
+          </div>
+          <h3 className="font-bold text-white text-base">Campus Guild</h3>
+        </div>
 
-  const g = guild || defaultGuild;
+        {/* Unjoined State */}
+        <div className="flex items-center gap-3 py-1">
+          <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 flex-shrink-0">
+            <Shield className="w-5 h-5 text-slate-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs font-bold text-slate-200">No Guild Joined Yet</h4>
+            <p className="text-[11px] text-slate-400 mt-0.5 leading-tight">
+              Connect with your campus peers to compete on the college leaderboard.
+            </p>
+          </div>
+        </div>
+
+        {/* Guild Hub Button */}
+        <Button
+          onClick={onOpenGuildHub}
+          variant="outline"
+          className="w-full bg-[#071329] hover:bg-[#16274D] border-white/10 text-white font-bold text-xs h-8 rounded-xl flex items-center justify-center gap-1.5 mt-1"
+        >
+          <span>Discover Campus Guilds</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#101E3B] border border-white/5 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
@@ -38,9 +66,9 @@ export const GuildWidget: React.FC<GuildProps> = ({ guild, onOpenGuildHub }) => 
         </div>
 
         <div className="flex-1 min-w-0">
-          <h4 className="text-sm font-black text-white truncate">{g.name}</h4>
+          <h4 className="text-sm font-black text-white truncate">{guild.name}</h4>
           <p className="text-xs text-slate-400 mt-0.5">
-            {g.member_count} Members · <span className="text-[#FFCA55] font-bold">Rank #{g.campus_rank}</span> (Campus)
+            {guild.member_count} Members · <span className="text-[#FFCA55] font-bold">Rank #{guild.campus_rank}</span> (Campus)
           </p>
         </div>
       </div>

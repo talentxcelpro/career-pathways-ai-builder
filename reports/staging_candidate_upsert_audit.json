@@ -1,0 +1,201 @@
+{
+  "timestamp": "2026-11-02T10:17:52.639Z",
+  "environment": "staging",
+  "projectRef": "pvwwtquuexhyydwihjbi",
+  "totalTests": 12,
+  "passed": 11,
+  "failed": 1,
+  "allPassed": false,
+  "results": [
+    {
+      "testId": "UPSERT-01",
+      "category": "UPSERT_CORE",
+      "name": "Candidate A initial CV upload",
+      "expected": "Upload succeeds with HTTP 200, error null",
+      "actual": "Success: path=0b28a473-bcbb-4c49-b291-f9ea0daf4add/authoritative_test_cv.pdf",
+      "status": "PASS",
+      "details": {
+        "data": {
+          "path": "0b28a473-bcbb-4c49-b291-f9ea0daf4add/authoritative_test_cv.pdf",
+          "id": "0214112d-9071-4f1f-8a8c-4bba3f4717df",
+          "fullPath": "documents/0b28a473-bcbb-4c49-b291-f9ea0daf4add/authoritative_test_cv.pdf"
+        },
+        "error": null
+      }
+    },
+    {
+      "testId": "UPSERT-02",
+      "category": "UPSERT_CORE",
+      "name": "Candidate A replaces same CV with upsert: true (The 002H Defect)",
+      "expected": "Upsert succeeds without RLS violation (HTTP 200)",
+      "actual": "Success: path=0b28a473-bcbb-4c49-b291-f9ea0daf4add/authoritative_test_cv.pdf",
+      "status": "PASS",
+      "details": {
+        "data": {
+          "path": "0b28a473-bcbb-4c49-b291-f9ea0daf4add/authoritative_test_cv.pdf",
+          "id": "0214112d-9071-4f1f-8a8c-4bba3f4717df",
+          "fullPath": "documents/0b28a473-bcbb-4c49-b291-f9ea0daf4add/authoritative_test_cv.pdf"
+        },
+        "error": null
+      }
+    },
+    {
+      "testId": "UPSERT-03",
+      "category": "UPSERT_CORE",
+      "name": "Updated document content integrity",
+      "expected": "Downloaded content matches Version 2.0 exactly",
+      "actual": "Content matches Version 2.0 exactly",
+      "status": "PASS",
+      "details": {
+        "match": true,
+        "downloadedText": "TalentXcel Task 002I Candidate CV Version 2.0 (Upserted & Replaced)",
+        "error": null
+      }
+    },
+    {
+      "testId": "ISOLATION-01",
+      "category": "CROSS_CANDIDATE",
+      "name": "Candidate B cannot overwrite Candidate A's document",
+      "expected": "Denied with RLS policy violation",
+      "actual": "Correctly denied: new row violates row-level security policy",
+      "status": "PASS",
+      "details": {
+        "data": null,
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "testId": "ISOLATION-02",
+      "category": "CROSS_FOLDER",
+      "name": "Candidate A cannot upload into Candidate B's folder (Initial Insert)",
+      "expected": "Denied with RLS violation (folder mismatch)",
+      "actual": "Correctly denied: new row violates row-level security policy",
+      "status": "PASS",
+      "details": {
+        "data": null,
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "testId": "ISOLATION-03",
+      "category": "CROSS_FOLDER",
+      "name": "Candidate A cannot replace Candidate B's existing document",
+      "expected": "Denied with RLS policy violation on UPDATE",
+      "actual": "Correctly denied: new row violates row-level security policy",
+      "status": "PASS",
+      "details": {
+        "data": null,
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "testId": "AUTH-01",
+      "category": "AUTHENTICATION",
+      "name": "Unauthenticated update rejection",
+      "expected": "Anonymous update denied with 401 or 403",
+      "actual": "Correctly rejected: signature verification failed",
+      "status": "PASS",
+      "details": {
+        "data": null,
+        "error": {
+          "name": "StorageApiError",
+          "message": "signature verification failed",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "testId": "AUTH-02",
+      "category": "ROLE_BOUNDARY",
+      "name": "Employer cannot overwrite candidate documents",
+      "expected": "Employer write denied by RLS",
+      "actual": "Correctly denied: new row violates row-level security policy",
+      "status": "PASS",
+      "details": {
+        "data": null,
+        "error": {
+          "name": "StorageApiError",
+          "message": "new row violates row-level security policy",
+          "status": 400,
+          "statusCode": "403"
+        }
+      }
+    },
+    {
+      "testId": "RECRUITER-01",
+      "category": "RECRUITER_ACCESS",
+      "name": "Authorized recruiter read access to applicant CV",
+      "expected": "Recruiter 1 downloads Candidate A updated CV V2.0",
+      "actual": "Successfully downloaded updated CV V2.0",
+      "status": "PASS",
+      "details": {
+        "match": true,
+        "error": null
+      }
+    },
+    {
+      "testId": "RECRUITER-02",
+      "category": "RECRUITER_ACCESS",
+      "name": "Unauthorized recruiter read access denial (Direct & Signed URL)",
+      "expected": "Recruiter 2 access denied on Candidate A CV",
+      "actual": "Both direct download and signed URL access denied to Recruiter 2",
+      "status": "PASS",
+      "details": {
+        "directDenied": true,
+        "signedFetchDenied": true,
+        "rec2Err": {
+          "__isStorageError": true,
+          "name": "StorageUnknownError",
+          "originalError": {}
+        },
+        "signedErr": {
+          "name": "StorageApiError",
+          "message": "Object not found",
+          "status": 400,
+          "statusCode": "404"
+        }
+      }
+    },
+    {
+      "testId": "DELETION-01",
+      "category": "DELETION_CONTROL",
+      "name": "Candidate A deletes own permitted document",
+      "expected": "Document successfully removed from bucket",
+      "actual": "Document successfully removed (list confirms absent)",
+      "status": "PASS",
+      "details": {
+        "fileFound": false,
+        "removeErr": null
+      }
+    },
+    {
+      "testId": "DELETION-02",
+      "category": "DELETION_CONTROL",
+      "name": "Unauthorized deletion rejection and database integrity",
+      "expected": "Candidate B document protected; database resume records unaffected",
+      "actual": "Failed: bStillExists=true, bAfterRec=true, resumeIntact=false",
+      "status": "FAIL",
+      "details": {
+        "bStillExists": true,
+        "bStillExistsAfterRecruiter": true,
+        "resumeRecordIntact": false
+      }
+    }
+  ]
+}

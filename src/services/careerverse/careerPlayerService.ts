@@ -32,22 +32,22 @@ export const getLevelFloorXP = (currentLevel: number): number => {
   return (currentLevel - 1) * 250;
 };
 
-// Default guest profile when not logged in (clearly labelled, genuine preview state)
+// Default guest profile when not logged in (strictly unassessed, zero fabricated stats)
 export const GUEST_PLAYER: CareerPlayer = {
   id: 'guest',
   display_name: 'Guest Explorer',
-  career_title: 'Aspiring Engineer',
+  career_title: 'Guest Adventurer',
   avatar_url: null,
-  college: 'TalentXcel Academy',
+  college: '',
   xp: 0,
   level: 1,
   career_coins: 0,
-  current_streak: 1,
+  current_streak: 0,
   last_active_at: new Date().toISOString(),
   stats: {
-    javascript: 20,
-    react: 15,
-    communication: 30
+    javascript: 0,
+    react: 0,
+    communication: 0
   },
   guild_id: null
 };
@@ -145,4 +145,28 @@ export class CareerPlayerService {
       throw error;
     }
   }
+  /**
+   * Convenience alias for awardXP with positional arguments.
+   */
+  static async addXP(
+    userId: string,
+    amount: number,
+    action: string,
+    sourceType: string,
+    sourceId?: string,
+    idempotencyKey?: string,
+    metadata?: Record<string, any>
+  ) {
+    return this.awardXP({
+      userId,
+      amount,
+      action,
+      sourceType,
+      sourceId,
+      idempotencyKey,
+      metadata
+    });
+  }
 }
+
+export const careerPlayerService = CareerPlayerService;

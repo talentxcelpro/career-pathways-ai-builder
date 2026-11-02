@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Swords, Shield, Zap, Heart, Award, Star, CheckCircle2, AlertTriangle, ArrowRight, Skull } from 'lucide-react';
-import { CareerBossBattle, careerBossBattleService } from '@/services/careerverse/careerBossBattleService';
+import { CareerBossBattle, CareerBossBattleService } from '@/services/careerverse/careerBossBattleService';
 import { toast } from 'sonner';
 
 interface PlayableBossBattleArenaProps {
@@ -105,7 +105,7 @@ export const PlayableBossBattleArena: React.FC<PlayableBossBattleArenaProps> = (
             ...prev,
             `👑 VICTORY! Boss eliminated! Interview Fast-Track and Verified Skill Badge Unlocked!`,
           ]);
-          await careerBossBattleService.advanceStage(userId, battle.id, 4);
+          await CareerBossBattleService.advanceBattleStage(userId, battle.id, 4);
           onVictory();
         }
       } else {

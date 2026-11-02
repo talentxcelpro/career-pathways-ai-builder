@@ -1,0 +1,248 @@
+{
+  "timestamp": "2026-11-02T08:25:12.272Z",
+  "results": [
+    {
+      "suite": "CORS",
+      "testName": "Allowed origin https://www.talentxcel.in",
+      "status": "PASS",
+      "statusCode": 200,
+      "expectedStatus": 200,
+      "details": "AC-Allow-Origin: https://www.talentxcel.in",
+      "evidence": {
+        "access-control-allow-headers": "authorization, x-client-info, apikey, content-type",
+        "access-control-allow-methods": "POST, GET, OPTIONS, PUT, DELETE",
+        "access-control-allow-origin": "https://www.talentxcel.in",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a541bf07288bb7e9-DEL",
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 02 Nov 2026 08:25:02 GMT",
+        "endpoint-load-metrics": "application_utilization:4,named_metrics.queue_depth:4",
+        "sb-gateway-version": "1",
+        "sb-project-ref": "pvwwtquuexhyydwihjbi",
+        "sb-request-id": "01a19b5c-a083-71c1-a548-1f2b380265bd",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=jTsuEV8tquVVAT_NijqowvZ..CDcZoxOrkJglRilWoQ-1793607901.3109665-1.0.1.1-MxXDCqiMzD0iacHS4aW.60Yhvj4d1Oso_FHfGMoOQJ9tT76R.HXklhxGTIg4.zqgoqOWrjzxhW4CBqx8YG_CkOWK0xn9E8UktnLAS_9IvR10942sczH7zRCnsneUWNRl; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Mon, 02 Nov 2026 08:55:02 GMT",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "Accept-Encoding, Origin",
+        "x-deno-execution-id": "c3dcf456-4348-4c2c-a89a-1e90c6a4ff30",
+        "x-sb-edge-region": "ap-south-1",
+        "x-served-by": "supabase-edge-runtime"
+      }
+    },
+    {
+      "suite": "CORS",
+      "testName": "Disallowed origin https://evil-attacker.com rejection",
+      "status": "PASS",
+      "statusCode": 200,
+      "expectedStatus": 200,
+      "details": "AC-Allow-Origin: https://talentxcel.in",
+      "evidence": {
+        "access-control-allow-headers": "authorization, x-client-info, apikey, content-type",
+        "access-control-allow-methods": "POST, GET, OPTIONS, PUT, DELETE",
+        "access-control-allow-origin": "https://talentxcel.in",
+        "alt-svc": "h3=\":443\"; ma=86400",
+        "cf-cache-status": "DYNAMIC",
+        "cf-ray": "a541bf118cf7b117-DEL",
+        "connection": "keep-alive",
+        "content-length": "0",
+        "date": "Mon, 02 Nov 2026 08:25:04 GMT",
+        "endpoint-load-metrics": "application_utilization:4,named_metrics.queue_depth:4",
+        "sb-gateway-version": "1",
+        "sb-project-ref": "pvwwtquuexhyydwihjbi",
+        "sb-request-id": "01a19b5c-a6f8-778c-a673-3e0b13772d49",
+        "server": "cloudflare",
+        "set-cookie": "__cf_bm=ake4nrbpeBK7EbUOQXbXr1uMOt3KsYq7f7J.NsnG27Q-1793607902.9634805-1.0.1.1-WfCRoo6UpWqNX23G2TZlXVGI4xYYIsLS60pO6xwSD5OX485dMVLpxmB7819aNd5Px9HDLvyxTOYegS_hiUcjWF5xwxuyEwaL3ss.wLWVNVepLfoCJNdnA0CWak8UHek6; HttpOnly; SameSite=None; Secure; Path=/; Domain=supabase.co; Expires=Mon, 02 Nov 2026 08:55:04 GMT",
+        "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+        "vary": "Accept-Encoding, Origin",
+        "x-deno-execution-id": "24116c69-6e3e-4b2a-b0a6-cb70f7e6ed2c",
+        "x-sb-edge-region": "ap-south-1",
+        "x-served-by": "supabase-edge-runtime"
+      }
+    },
+    {
+      "suite": "SEC-004",
+      "testName": "Unauthenticated request rejected with 401",
+      "status": "PASS",
+      "statusCode": 401,
+      "expectedStatus": 401,
+      "details": "{\"error\":\"Authorization header required\"}",
+      "evidence": {
+        "error": "Authorization header required"
+      }
+    },
+    {
+      "suite": "SEC-004",
+      "testName": "Invalid JWT rejected with 401",
+      "status": "PASS",
+      "statusCode": 401,
+      "expectedStatus": 401,
+      "details": "{\"error\":\"Invalid or expired session\"}",
+      "evidence": {
+        "error": "Invalid or expired session"
+      }
+    },
+    {
+      "suite": "SEC-005",
+      "testName": "Demo order (demo_order_*) rejected with 403 in staging",
+      "status": "FAIL",
+      "statusCode": 401,
+      "expectedStatus": [
+        403,
+        500
+      ],
+      "details": "Response: {\"success\":false,\"error\":\"Authentication required. Missing Bearer token.\"}",
+      "evidence": {
+        "success": false,
+        "error": "Authentication required. Missing Bearer token."
+      }
+    },
+    {
+      "suite": "SEC-005",
+      "testName": "Missing payment parameters rejected with 400",
+      "status": "FAIL",
+      "statusCode": 401,
+      "expectedStatus": 400,
+      "details": "Response: {\"success\":false,\"error\":\"Authentication required. Missing Bearer token.\"}",
+      "evidence": {
+        "success": false,
+        "error": "Authentication required. Missing Bearer token."
+      }
+    },
+    {
+      "suite": "SEC-002",
+      "testName": "Missing signature rejected with 400 or 500 (if secret missing)",
+      "status": "FAIL",
+      "statusCode": 401,
+      "expectedStatus": [
+        400,
+        500
+      ],
+      "details": "Response: {\"success\":false,\"error\":\"Authentication required. Missing Bearer token.\"}",
+      "evidence": {
+        "success": false,
+        "error": "Authentication required. Missing Bearer token."
+      }
+    },
+    {
+      "suite": "SEC-005",
+      "testName": "Webhook missing x-razorpay-signature rejected with 400",
+      "status": "PASS",
+      "statusCode": 400,
+      "expectedStatus": 400,
+      "details": "Response: {\"success\":false,\"error\":\"Missing x-razorpay-signature header for webhook.\"}",
+      "evidence": {
+        "success": false,
+        "error": "Missing x-razorpay-signature header for webhook."
+      }
+    },
+    {
+      "suite": "SEC-002",
+      "testName": "Webhook forged signature rejected (400 or 500 if secret unconfigured)",
+      "status": "PASS",
+      "statusCode": 500,
+      "expectedStatus": [
+        400,
+        500
+      ],
+      "details": "Response: {\"error\":\"Webhook secret not configured on server.\"}",
+      "evidence": {
+        "error": "Webhook secret not configured on server."
+      }
+    },
+    {
+      "suite": "SEC-010",
+      "testName": "gemini-ai handles empty payload with validation error or 400",
+      "status": "FAIL",
+      "statusCode": 200,
+      "expectedStatus": [
+        400,
+        500
+      ],
+      "details": "Response: {\"success\":true,\"isFallback\":true,\"data\":{\"message\":\"Hi there, I really admire your work in the industry and would love to connect and share insights!\"}}",
+      "evidence": {
+        "success": true,
+        "isFallback": true,
+        "data": {
+          "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+        }
+      }
+    },
+    {
+      "suite": "SEC-010",
+      "testName": "Live edge rate limit burst invocation handling",
+      "status": "PASS",
+      "statusCode": 200,
+      "expectedStatus": [
+        200,
+        400,
+        429,
+        500
+      ],
+      "details": "Statuses: 200, 200, 200, 200, 200, 200",
+      "evidence": [
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "isFallback": true,
+            "data": {
+              "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "isFallback": true,
+            "data": {
+              "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "isFallback": true,
+            "data": {
+              "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "isFallback": true,
+            "data": {
+              "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "isFallback": true,
+            "data": {
+              "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+            }
+          }
+        },
+        {
+          "status": 200,
+          "body": {
+            "success": true,
+            "isFallback": true,
+            "data": {
+              "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

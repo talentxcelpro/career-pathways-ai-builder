@@ -153,3 +153,7 @@ export class CareerBadgeAndRewardsService {
     }
   }
 }
+
+
+export const careerBadgeAndRewardsService = CareerBadgeAndRewardsService;
+export default CareerBadgeAndRewardsService;

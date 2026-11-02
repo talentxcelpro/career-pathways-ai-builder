@@ -1,0 +1,208 @@
+{
+  "timestamp": "2026-11-02T08:42:18.468Z",
+  "passCount": 9,
+  "total": 10,
+  "results": [
+    {
+      "journeyId": 1,
+      "name": "Candidate Registration & Auth Session",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "User session active for audit_cand1@talentxcel-audit.local",
+      "evidence": {
+        "userId": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+        "email": "audit_cand1@talentxcel-audit.local"
+      }
+    },
+    {
+      "journeyId": 2,
+      "name": "Candidate Profile Management",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Profile saved for Audit Candidate Alpha",
+      "evidence": {
+        "profData": {
+          "id": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+          "full_name": "Audit Candidate Alpha",
+          "title": null,
+          "location": null,
+          "email": "audit_cand1@talentxcel-audit.local",
+          "phone": null,
+          "website": null,
+          "about": "Senior Cloud Security Engineer",
+          "profile_picture_url": null,
+          "cover_image_url": null,
+          "skills": null,
+          "experience_years": 0,
+          "industry": null,
+          "current_company": null,
+          "linkedin_url": null,
+          "github_url": null,
+          "portfolio_url": null,
+          "resume_url": null,
+          "is_profile_public": true,
+          "looking_for_job": false,
+          "open_to_remote": true,
+          "preferred_salary_min": null,
+          "preferred_salary_max": null,
+          "preferred_locations": null,
+          "created_at": "2026-11-02T08:28:39.744221+00:00",
+          "updated_at": "2026-11-02T08:28:39.744221+00:00",
+          "user_role": "job_seeker"
+        },
+        "error": null
+      }
+    },
+    {
+      "journeyId": 3,
+      "name": "Resume Record Creation",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Resume created: Master Cybersecurity Resume",
+      "evidence": {
+        "resumeData": {
+          "id": "77777777-7777-7777-7777-777777777777",
+          "user_id": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+          "title": "Master Cybersecurity Resume",
+          "content": "{\"skills\":[\"Penetration Testing\",\"Cloud Security\"],\"experience\":\"7 years\"}",
+          "template_id": null,
+          "is_primary": true,
+          "file_url": null,
+          "created_at": "2026-11-02T08:39:13.36208+00:00",
+          "updated_at": "2026-11-02T08:39:13.36208+00:00"
+        },
+        "error": null
+      }
+    },
+    {
+      "journeyId": 4,
+      "name": "Resume Download Tracking (Atomic Counter)",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Atomic download recorded count: 5",
+      "evidence": {
+        "rpcDown": {
+          "success": true,
+          "download_count": 5
+        },
+        "rpcDownErr": null
+      }
+    },
+    {
+      "journeyId": 5,
+      "name": "ATS and AI Analysis Gateway",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Edge AI response status HTTP 200",
+      "evidence": {
+        "status": 200,
+        "body": {
+          "success": true,
+          "isFallback": true,
+          "data": {
+            "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
+          }
+        }
+      }
+    },
+    {
+      "journeyId": 6,
+      "name": "Job Search & Browsing",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Found 2 active jobs for candidate search",
+      "evidence": {
+        "count": 2,
+        "jobs": [
+          {
+            "id": "33333333-3333-3333-3333-333333333333",
+            "title": "Senior Audit Engineer",
+            "description": "Lead auditor for security validation.",
+            "company_id": "11111111-aaaa-aaaa-aaaa-111111111111",
+            "is_active": true
+          },
+          {
+            "id": "44444444-4444-4444-4444-444444444444",
+            "title": "Security Analyst",
+            "description": "Security analyst role.",
+            "company_id": "22222222-bbbb-bbbb-bbbb-222222222222",
+            "is_active": true
+          }
+        ]
+      }
+    },
+    {
+      "journeyId": 7,
+      "name": "Job Application Submission",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Application submitted successfully (88888888-8888-8888-8888-888888888888)",
+      "evidence": {
+        "appData": {
+          "id": "88888888-8888-8888-8888-888888888888",
+          "job_id": "44444444-4444-4444-4444-444444444444",
+          "user_id": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+          "resume_url": null,
+          "cover_letter": null,
+          "status": "applied",
+          "applied_at": "2026-11-02T08:39:14.26945+00:00",
+          "updated_at": "2026-11-02T08:39:14.26945+00:00",
+          "assigned_to": null,
+          "ai_match_score": null,
+          "last_activity_at": "2026-11-02T08:39:14.26945+00:00"
+        },
+        "error": null
+      }
+    },
+    {
+      "journeyId": 8,
+      "name": "Employer Dashboard & Applicant Visibility",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Employer successfully viewed 1 applications for company job",
+      "evidence": {
+        "count": 1,
+        "apps": [
+          {
+            "id": "55555555-5555-5555-5555-555555555555",
+            "job_id": "33333333-3333-3333-3333-333333333333",
+            "user_id": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+            "status": "applied"
+          }
+        ]
+      }
+    },
+    {
+      "journeyId": 9,
+      "name": "Admin Operations & Role Escalation Defense",
+      "status": "PASS",
+      "mode": "STAGING_RUNTIME",
+      "details": "Candidate self-elevation blocked: YES (Denied). is_app_admin: false",
+      "evidence": {
+        "roleEscalateErr": {
+          "code": "42501",
+          "details": null,
+          "hint": "Grant the required privileges to the current role with: GRANT INSERT ON public.user_roles TO authenticated;",
+          "message": "permission denied for table user_roles"
+        },
+        "candAdminCheck": false
+      }
+    },
+    {
+      "journeyId": 10,
+      "name": "Subscriptions and Entitlements",
+      "status": "FAIL",
+      "mode": "STAGING_RUNTIME",
+      "details": "Error: Could not find the table 'public.pro_subscription_tiers' in the schema cache",
+      "evidence": {
+        "tiers": null,
+        "error": {
+          "code": "PGRST205",
+          "details": null,
+          "hint": null,
+          "message": "Could not find the table 'public.pro_subscription_tiers' in the schema cache"
+        }
+      }
+    }
+  ]
+}

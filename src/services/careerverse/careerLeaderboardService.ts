@@ -110,3 +110,7 @@ export class CareerLeaderboardService {
     return data as CampusGuild | null;
   }
 }
+
+
+export const careerLeaderboardService = CareerLeaderboardService;
+export default CareerLeaderboardService;

@@ -143,3 +143,7 @@ export class CareerQuestService {
     return awardResult;
   }
 }
+
+
+export const careerQuestService = CareerQuestService;
+export default CareerQuestService;

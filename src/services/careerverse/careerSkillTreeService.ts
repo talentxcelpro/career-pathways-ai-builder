@@ -119,3 +119,7 @@ export class CareerSkillTreeService {
     });
   }
 }
+
+
+export const careerSkillTreeService = CareerSkillTreeService;
+export default CareerSkillTreeService;
