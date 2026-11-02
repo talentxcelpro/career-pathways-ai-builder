@@ -464,13 +464,12 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
 
   console.log('PageSpecificBottomNav - isMobile:', isMobile, 'currentPath:', location.pathname);
   
-  // Don't render on desktop or in certain contexts
+  const navigationItems = getPageNavigation(location.pathname, navigate);
+
+  // Don't render on desktop or if page has no custom navigation
   if (!isMobile || navigationItems.length === 0) {
-    console.log('PageSpecificBottomNav - Not mobile, returning null');
     return null;
   }
-
-  const navigationItems = getPageNavigation(location.pathname, navigate);
   const isDefaultNav = location.pathname === '/';
   const isNetworkPage = location.pathname === '/network' || location.pathname.startsWith('/network/');
 

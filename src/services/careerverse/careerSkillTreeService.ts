@@ -4,6 +4,7 @@ import { CareerPlayerService } from './careerPlayerService';
 export interface CareerSkillPath {
   id: string;
   title: string;
+  name?: string;
   description: string;
   icon: string;
 }
@@ -12,8 +13,14 @@ export interface CareerTreeSkill {
   id: string;
   path_id: string;
   title: string;
+  name?: string;
   level_range: string;
+  category?: string;
+  description?: string;
+  prerequisites?: string[];
   prerequisite_id: string | null;
+  position_x?: number;
+  position_y?: number;
   xp_required: number;
   xp_reward: number;
   order_index: number;
@@ -32,23 +39,62 @@ export class CareerSkillTreeService {
       console.error('Error fetching skill paths:', error);
       throw error;
     }
-    return data as CareerSkillPath[];
+    return (data as any[] || []).map((p: any) => ({
+      id: p.id,
+      title: p.name || p.title || p.id,
+      name: p.name || p.title || p.id,
+      description: p.description || '',
+      icon: p.icon || 'code'
+    }));
   }
 
-  static async getSkillsForPath(pathId: string, userId?: string): Promise<CareerTreeSkill[]> {
-    const { data: skills, error } = await supabase
+  static async getSkillsForPath(pathId: string = 'technology', userId?: string): Promise<CareerTreeSkill[]> {
+    let resolvedPathId = pathId || 'technology';
+    let { data: rawSkills, error } = await supabase
       .from('career_tree_skills' as any)
       .select('*')
-      .eq('path_id', pathId)
-      .order('order_index', { ascending: true });
+      .eq('path_id', resolvedPathId)
+      .order('position_y', { ascending: true });
+
+    // Resilient fallback to 'technology' if candidate's specific subdiscipline path is not seeded
+    if ((error || !rawSkills || rawSkills.length === 0) && resolvedPathId !== 'technology') {
+      const fallback = await supabase
+        .from('career_tree_skills' as any)
+        .select('*')
+        .eq('path_id', 'technology')
+        .order('position_y', { ascending: true });
+      if (!fallback.error && fallback.data && fallback.data.length > 0) {
+        rawSkills = fallback.data;
+        error = null;
+      }
+    }
 
     if (error) {
       console.error('Error fetching tree skills:', error);
       throw error;
     }
 
+    const skills: CareerTreeSkill[] = (rawSkills || []).map((s: any) => ({
+      id: s.id,
+      path_id: s.path_id,
+      title: s.name || s.title || 'Skill Node',
+      name: s.name || s.title || 'Skill Node',
+      level_range: s.level_range || 'Lv. 1-5',
+      category: s.category || 'Core',
+      description: s.description || '',
+      prerequisites: s.prerequisites || [],
+      prerequisite_id: (Array.isArray(s.prerequisites) && s.prerequisites.length > 0)
+        ? s.prerequisites[0]
+        : (s.prerequisite_id || null),
+      xp_required: (s.min_player_level || 1) * 100,
+      xp_reward: 150,
+      order_index: (s.position_y ?? 0) * 10 + (s.position_x ?? 0),
+      position_x: s.position_x ?? 0,
+      position_y: s.position_y ?? 0,
+    }));
+
     if (!userId || userId === 'guest') {
-      return (skills as any[]).map(s => ({
+      return skills.map(s => ({
         ...s,
         user_status: s.prerequisite_id === null ? 'unlocked' : 'locked',
         user_progress: s.prerequisite_id === null ? 50 : 0
@@ -65,7 +111,7 @@ export class CareerSkillTreeService {
       userSkillMap.set(us.skill_id, us);
     });
 
-    return (skills as any[]).map(s => {
+    return skills.map(s => {
       const us = userSkillMap.get(s.id);
       let status: 'locked' | 'unlocked' | 'mastered' = 'locked';
       let progress = 0;
@@ -119,7 +165,6 @@ export class CareerSkillTreeService {
     });
   }
 }
-
 
 export const careerSkillTreeService = CareerSkillTreeService;
 export default CareerSkillTreeService;
