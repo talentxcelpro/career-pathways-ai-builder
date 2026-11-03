@@ -219,27 +219,6 @@ const Network: React.FC = () => {
               {/* MIDDLE COLUMN: GLOBAL SEARCH, ENHANCED CREATE POST & FEED */}
               <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
                 
-                {/* Concept C: Your Professional Day Briefing */}
-                <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white rounded-xl p-3 shadow-sm border border-blue-800/40">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="h-7 w-7 rounded-lg bg-blue-500/20 flex items-center justify-center border border-blue-400/30">
-                        <Sparkles className="h-4 w-4 text-cyan-300" />
-                      </div>
-                      <div>
-                        <h2 className="text-xs font-bold text-white tracking-wide uppercase">Your Professional Day</h2>
-                        <p className="text-[11px] text-blue-200">Intelligence, community recommendations and career momentum</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => navigate('/network/creator-studio')}
-                      className="text-[11px] font-semibold bg-blue-500/30 hover:bg-blue-500/50 text-blue-100 border border-blue-400/40 rounded-lg px-2.5 py-1 transition-colors"
-                    >
-                      Creator Studio ->
-                    </button>
-                  </div>
-                </div>
-
                 {/* 1. Global Search Bar matching mockup */}
                 <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-1 shadow-xs flex items-center gap-2">
                   <Search className="h-3.5 w-3.5 text-muted-foreground ml-2 shrink-0" />
@@ -300,6 +279,32 @@ const Network: React.FC = () => {
 
               {/* RIGHT COLUMN: PRO SPONSORED CARDS & PEOPLE YOU MAY KNOW */}
               <div className="md:col-span-12 lg:col-span-3 space-y-3">
+                {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
+                <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-400/30">
+                      <Sparkles className="w-3 h-3 text-cyan-300" />
+                      Daily Briefing
+                    </span>
+                    <span className="text-[10px] text-blue-300/70 font-medium">Concept C</span>
+                  </div>
+
+                  <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
+                    Your Professional Day
+                  </h3>
+                  <p className="text-xs text-blue-200/90 leading-relaxed mt-1.5 mb-3.5">
+                    Intelligence, community recommendations and career momentum
+                  </p>
+
+                  <button
+                    onClick={() => navigate('/network/creator-studio')}
+                    className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 group-hover:shadow-md cursor-pointer"
+                  >
+                    <span>Creator Studio</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
+
                 <AdvertisingSidebar />
               </div>
 
