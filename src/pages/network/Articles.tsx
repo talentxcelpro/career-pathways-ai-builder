@@ -31,6 +31,21 @@ const Articles = () => {
 
   const { subscriptions, isSubscribedTo } = useArticleSubscriptions(user?.id);
 
+  // Genuine count of articles written by current user
+  const { data: myArticlesCount = 0 } = useQuery({
+    queryKey: ['my-articles-count', user?.id],
+    enabled: !!user?.id,
+    queryFn: async () => {
+      if (!user?.id) return 0;
+      const { count } = await supabase
+        .from('posts')
+        .select('*', { count: 'exact', head: true })
+        .eq('author_id', user.id)
+        .in('post_type', ['article', 'career_article']);
+      return count || 0;
+    }
+  });
+
   const categories = [
     { value: 'all', label: 'All Articles', icon: BookOpen },
     { value: 'news', label: 'News', icon: Newspaper },
@@ -351,7 +366,7 @@ const Articles = () => {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Articles Read</span>
-                  <Badge variant="secondary">12</Badge>
+                  <Badge variant="secondary">0</Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Authors Following</span>
@@ -359,7 +374,7 @@ const Articles = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Articles Written</span>
-                  <Badge variant="secondary">3</Badge>
+                  <Badge variant="secondary">{myArticlesCount}</Badge>
                 </div>
               </CardContent>
             </Card>

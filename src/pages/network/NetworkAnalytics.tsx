@@ -53,7 +53,7 @@ const NetworkAnalytics = () => {
       // Fetch posts data
       const { data: posts } = await supabase
         .from('posts')
-        .select('created_at, likes_count, comments_count, views_count')
+        .select('created_at, likes_count, comments_count, views_count, shares_count')
         .eq('author_id', user.id)
         .gte('created_at', startDate.toISOString());
 
@@ -71,6 +71,7 @@ const NetworkAnalytics = () => {
       const totalLikes = posts?.reduce((sum, post) => sum + (post.likes_count || 0), 0) || 0;
       const totalComments = posts?.reduce((sum, post) => sum + (post.comments_count || 0), 0) || 0;
       const totalViews = posts?.reduce((sum, post) => sum + (post.views_count || 0), 0) || 0;
+      const totalShares = posts?.reduce((sum, post) => sum + ((post as any).shares_count || 0), 0) || 0;
       const totalProfileViews = (profileViewsData?.length || 0) || (profile?.profile_views_count || 0);
 
       // Generate real time series data backed by measured database events
@@ -144,7 +145,7 @@ const NetworkAnalytics = () => {
     { name: 'Likes', value: analyticsData?.metrics.totalLikes || 0 },
     { name: 'Comments', value: analyticsData?.metrics.totalComments || 0 },
     { name: 'Views', value: analyticsData?.metrics.totalViews || 0 },
-    { name: 'Shares', value: Math.floor(Math.random() * 50) },
+    { name: 'Shares', value: (analyticsData?.metrics as any)?.totalShares || 0 },
   ];
 
   if (isLoading) {

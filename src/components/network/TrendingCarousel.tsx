@@ -22,50 +22,10 @@ interface TrendingCarouselProps {
 
 export const TrendingCarousel: React.FC<TrendingCarouselProps> = ({ items = [] }) => {
   // Mock trending data - this would be fetched from API/Supabase
-  const mockTrendingItems: TrendingItem[] = [
-    {
-      id: '1',
-      type: 'job_news',
-      title: 'Google hiring 5,000 engineers in India 🚀',
-      summary: 'Google announces massive hiring drive focusing on AI and cloud technologies',
-      tags: ['#AIJobs', '#GoogleCareers', '#TechHiring'],
-      engagement: 2450,
-      timeAgo: '2h',
-      source: 'TechCrunch'
-    },
-    {
-      id: '2',
-      type: 'skill_trend',
-      title: 'Python salaries grew 20% in 2025',
-      summary: 'Latest salary report shows significant growth in Python developer compensation',
-      tags: ['#PythonDev', '#SalaryTrends', '#TechCareers'],
-      engagement: 1890,
-      timeAgo: '4h',
-      source: 'Stack Overflow'
-    },
-    {
-      id: '3',
-      type: 'career_news',
-      title: 'Remote work policies evolving globally',
-      summary: 'Companies adapting hybrid models with new productivity metrics',
-      tags: ['#RemoteWork', '#FutureOfWork', '#HybridJobs'],
-      engagement: 3200,
-      timeAgo: '6h',
-      source: 'Forbes'
-    },
-    {
-      id: '4',
-      type: 'company_news',
-      title: 'Startups raising $10B+ in Q1 2025',
-      summary: 'Record funding rounds create thousands of new job opportunities',
-      tags: ['#StartupJobs', '#Funding', '#GreenCareers'],
-      engagement: 1650,
-      timeAgo: '8h',
-      source: 'Crunchbase'
-    }
-  ];
-
-  const trendingData = items.length > 0 ? items : mockTrendingItems;
+  if (items.length === 0) {
+    return null;
+  }
+  const trendingData = items;
 
   const getTypeIcon = (type: string) => {
     switch (type) {

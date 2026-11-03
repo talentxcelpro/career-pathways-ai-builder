@@ -38,6 +38,7 @@ const Verified = lazy(() => import('../pages/network/Verified'));
 const Communities = lazy(() => import('../pages/network/Communities'));
 const Leaderboards = lazy(() => import('../pages/network/Leaderboards'));
 const CreatorStudio = lazy(() => import('../pages/network/CreatorStudio'));
+const TXCMining = lazy(() => import('../pages/TXCMining'));
 
 export const networkRoutes = [
   {
@@ -51,7 +52,7 @@ export const networkRoutes = [
     title: "TXC Mining",
     to: "/txc/mining",
     icon: <Coins className="h-4 w-4" />,
-    page: <div>TXC Mining</div>,
+    page: <Suspense fallback={null}><TXCMining /></Suspense>,
     isPublic: true,
   },
   {

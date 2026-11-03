@@ -46,7 +46,7 @@ export const MobileNetwork = () => {
         title: post.headline || post.content?.split('\n')[0] || 'Professional Update',
         company: post.profiles?.current_company || post.profiles?.full_name || 'Professional',
         location: 'Remote',
-        salary: post.post_type === 'job_posting' ? '$80k - $120k' : undefined,
+        salary: post.metadata?.salary || undefined,
         image: post.media_urls?.[0],
         description: post.content || 'Professional update...',
         tags: ['Professional', 'Career', 'Growth'],

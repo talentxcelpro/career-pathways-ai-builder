@@ -191,7 +191,7 @@ export const EventlessNetworking = () => {
                     onClick={() => handleLike(video.id)}
                   >
                     <Heart className="w-4 h-4 mr-1" />
-                    {Math.floor(Math.random() * 20) + 1}
+                    Like
                   </Button>
                   <Button 
                     size="sm" 

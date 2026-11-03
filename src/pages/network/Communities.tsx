@@ -202,7 +202,7 @@ export const Communities: React.FC = () => {
   const [newCircleDesc, setNewCircleDesc] = useState('');
   const [newCircleTags, setNewCircleTags] = useState('');
 
-  // 1. Fetch live communities from Supabase groups table
+  // 1. Fetch live communities from Supabase groups table (Strict Zero-Fake-Data)
   const { data: communities = [], isLoading } = useQuery({
     queryKey: ['network-communities'],
     queryFn: async (): Promise<ProfessionalCommunity[]> => {
@@ -213,13 +213,28 @@ export const Communities: React.FC = () => {
           .order('member_count', { ascending: false });
 
         if (error) {
-          console.warn('Groups fetch error, utilizing foundation circles:', error);
-          return FOUNDATION_CIRCLES.map(c => ({ ...c, online_count: Math.max(1, Math.floor(c.member_count * 0.08)) }));
+          console.warn('Groups fetch error:', error);
+          return [];
         }
 
-        // If table has records, format them
-        if (dbGroups && dbGroups.length > 0) {
-          return dbGroups.map((g: any) => ({
+        if (!dbGroups || dbGroups.length === 0) {
+          return [];
+        }
+
+        // Fetch creators from profiles table for authentic community host details
+        const creatorIds = Array.from(new Set(dbGroups.map((g: any) => g.created_by).filter(Boolean)));
+        let creatorMap = new Map<string, any>();
+        if (creatorIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, full_name, title, profile_picture_url')
+            .in('id', creatorIds);
+          (profiles || []).forEach((p: any) => creatorMap.set(p.id, p));
+        }
+
+        return dbGroups.map((g: any) => {
+          const host = creatorMap.get(g.created_by);
+          return {
             id: g.id,
             name: g.name,
             headline: g.description?.slice(0, 75) || 'Professional Technical Circle on TalentXcel',
@@ -229,40 +244,21 @@ export const Communities: React.FC = () => {
             hub: 'remote',
             hub_label: 'Worldwide',
             member_count: g.member_count || 1,
-            online_count: Math.max(1, Math.floor((g.member_count || 10) * 0.06)),
+            online_count: 0,
             is_private: !g.is_public,
-            is_featured: (g.member_count || 0) > 200,
+            is_featured: (g.member_count || 0) > 10,
             cover_gradient: 'from-indigo-900 via-purple-950 to-slate-900',
             tags: g.rules ? g.rules.split(',').map((t: string) => t.trim()) : ['#TalentXcel', '#Community'],
-            host_name: 'Circle Lead',
-            host_title: 'Community Moderator',
-            host_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+            host_name: host?.full_name || 'Community Moderator',
+            host_title: host?.title || 'Circle Lead',
+            host_avatar: host?.profile_picture_url || '',
             created_by: g.created_by,
             created_at: g.created_at
-          }));
-        }
-
-        // Auto-seed foundation circles into groups table if empty
-        if (user?.id) {
-          try {
-            for (const c of FOUNDATION_CIRCLES) {
-              await supabase.from('groups').insert({
-                name: c.name,
-                description: c.description,
-                category: c.category,
-                is_public: true,
-                member_count: c.member_count,
-                rules: c.tags.join(', ')
-              });
-            }
-          } catch (seedErr) {
-            console.warn('Auto-seed groups notice:', seedErr);
-          }
-        }
-
-        return FOUNDATION_CIRCLES.map(c => ({ ...c, online_count: Math.max(1, Math.floor(c.member_count * 0.08)) }));
+          };
+        });
       } catch (err) {
-        return FOUNDATION_CIRCLES.map(c => ({ ...c, online_count: Math.max(1, Math.floor(c.member_count * 0.08)) }));
+        console.error('Error fetching communities:', err);
+        return [];
       }
     }
   });

@@ -58,7 +58,7 @@ const CreatorStudio: React.FC = () => {
       const { count: viewsCount } = await supabase
         .from('profile_views')
         .select('*', { count: 'exact', head: true })
-        .eq('viewed_id', user.id);
+        .eq('profile_id', user.id);
 
       // Compute weighted reward points:
       // Reach (25%) + Engagement (25%) + Knowledge (20%) + Community (15%) + Growth (10%) + Trust (5%)
