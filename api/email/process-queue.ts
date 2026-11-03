@@ -9,7 +9,7 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { renderTemplate } from './send';
+import { renderTemplate } from '../../src/lib/email/templates';
 
 const DOMAIN = 'talentxcel.in';
 const DEFAULT_REGION = 'us-east-1';
@@ -36,6 +36,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Content-Type', 'application/json');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
+
+  // Diagnostic GET for health monitoring
+  if (req.method === 'GET' && !req.headers['x-vercel-cron'] && !req.headers.authorization) {
+    const emailMode = (process.env.EMAIL_MODE || 'console').toLowerCase();
+    const hasAwsSdkKeys = !!((process.env.AWS_ACCESS_KEY_ID || process.env.AWS_SES_ACCESS_KEY_ID) && (process.env.AWS_SECRET_ACCESS_KEY || process.env.AWS_SES_SECRET_ACCESS_KEY));
+    const hasSmtpKeys = !!((process.env.SMTP_PASS || process.env.SMTP_PASSWORD || process.env.AWS_SMTP_PASSWORD));
+    return res.status(200).json({
+      status: 'healthy',
+      service: 'TalentXcel Email Queue Worker',
+      emailMode,
+      hasAwsKeys: hasAwsSdkKeys || hasSmtpKeys,
+      region: process.env.AWS_REGION || DEFAULT_REGION,
+      timestamp: new Date().toISOString()
+    });
+  }
 
   // 1. Mandatory Authorization Check (Cron Secret, Vercel Cron, or Service Role Key)
   const authHeader = req.headers.authorization;
