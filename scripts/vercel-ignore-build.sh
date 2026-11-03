@@ -80,6 +80,11 @@ DOCS_ONLY_COUNT=0
 # Critical pattern check: If any file matches application, config, or build assets, PROCEED IMMEDIATELY
 while IFS= read -r file; do
   [ -z "$file" ] && continue
+
+  # Strip leading and trailing quotes if Git quoted filename
+  file="${file%\"}"
+  file="${file#\"}"
+
   TOTAL_FILES=$((TOTAL_FILES + 1))
 
   # 1. Critical Application Files (MUST ALWAYS BUILD)

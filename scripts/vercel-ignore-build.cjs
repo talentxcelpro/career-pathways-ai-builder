@@ -74,7 +74,8 @@ function run() {
   // Step 3: Classify changed files
   let docsOnlyCount = 0;
 
-  for (const file of changedFiles) {
+  for (let file of changedFiles) {
+    file = file.replace(/^"|"$/g, '');
     // 1. Critical Application Files (MUST ALWAYS BUILD)
     if (
       file.startsWith('src/') ||
