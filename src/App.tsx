@@ -138,6 +138,7 @@ const JobsByRole                      = lazy(() => import('@/pages/seo/JobsByRol
 const JobsByLocation                  = lazy(() => import('@/pages/seo/JobsByLocation'));
 const JobsBySkill                     = lazy(() => import('@/pages/seo/JobsBySkill'));
 const IndustryJobs                    = lazy(() => import('@/pages/seo/IndustryJobs'));
+const CareerVersePage                 = lazy(() => import('./pages/CareerVersePage'));
 const PrivacyPolicy                   = lazy(() => import('./pages/PrivacyPolicy'));
 const Terms                           = lazy(() => import('./pages/auth/Terms'));
 const Platform                        = lazy(() => import('./pages/Platform'));
@@ -955,7 +956,9 @@ const App = () => {
                                 <Route path="/ai/navigator" element={<Suspense fallback={<div>Loading...</div>}><NavigatorPage /></Suspense>} />
                                 <Route path="/talent-beacon" element={<Suspense fallback={<div>Loading...</div>}><TalentBeacon /></Suspense>} />
                                 <Route path="/beacon" element={<Suspense fallback={<div>Loading...</div>}><TalentBeacon /></Suspense>} />
-                                <Route path="/gamification" element={<GamificationCenter />} />
+                                <Route path="/gamification" element={<Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>} />
+                                <Route path="/play" element={<Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>} />
+                                <Route path="/careerverse" element={<Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>} />
                                 <Route path="/t/@:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/t/:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/p/@:username" element={<UniversalProfileRouteHandler />} />

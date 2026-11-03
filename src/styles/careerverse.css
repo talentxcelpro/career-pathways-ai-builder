@@ -1,0 +1,164 @@
+/* ============================================================================
+   TALENTXCEL CAREERVERSE / CAREER RPG DESIGN SYSTEM
+   Matches primary design reference: Dark Navy, Electric Purple, Cyan & Neon Highlights
+   ============================================================================ */
+
+:root,
+.careerverse-theme {
+  --cv-bg: #071329;
+  --cv-bg-secondary: #0B1730;
+  --cv-panel: #101E3B;
+  --cv-panel-border: rgba(112, 71, 245, 0.25);
+  --cv-panel-border-hover: rgba(54, 217, 245, 0.45);
+  --cv-purple-primary: #7047F5;
+  --cv-purple-secondary: #A34EFF;
+  --cv-blue-electric: #278DFF;
+  --cv-cyan-accent: #36D9F5;
+  --cv-green-success: #20D994;
+  --cv-gold: #FFCA55;
+  --cv-text-primary: #F5F7FF;
+  --cv-text-secondary: #A9B5D0;
+  --cv-text-muted: #64748B;
+}
+
+/* Base CareerVerse Theme Container */
+.careerverse-theme {
+  background-color: var(--cv-bg);
+  color: var(--cv-text-primary);
+  min-height: 100vh;
+  font-family: inherit;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Glassmorphic Cyber Panels */
+.cv-panel {
+  background: linear-gradient(135deg, rgba(16, 30, 59, 0.85) 0%, rgba(11, 23, 48, 0.95) 100%);
+  border: 1px solid var(--cv-panel-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cv-panel-hover:hover {
+  border-color: var(--cv-panel-border-hover);
+  box-shadow: 0 12px 36px -4px rgba(112, 71, 245, 0.25), 0 0 16px 0 rgba(54, 217, 245, 0.15);
+  transform: translateY(-2px);
+}
+
+.cv-glass-panel {
+  background: rgba(16, 30, 59, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(112, 71, 245, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.cv-glass-panel:hover {
+  border-color: rgba(54, 217, 245, 0.35);
+}
+
+/* Glowing Accent Elements */
+.cv-glow-purple {
+  box-shadow: 0 0 24px rgba(112, 71, 245, 0.45);
+}
+
+.cv-glow-cyan {
+  box-shadow: 0 0 20px rgba(54, 217, 245, 0.4);
+}
+
+.cv-glow-success {
+  box-shadow: 0 0 16px rgba(32, 217, 148, 0.4);
+}
+
+.cv-glow-gold {
+  box-shadow: 0 0 18px rgba(255, 202, 85, 0.45);
+}
+
+.cv-card-glow {
+  box-shadow: 0 0 20px -5px rgba(112, 71, 245, 0.3);
+}
+
+.cv-cyan-glow {
+  box-shadow: 0 0 20px -5px rgba(54, 217, 245, 0.35);
+}
+
+.cv-gold-glow {
+  box-shadow: 0 0 25px -5px rgba(255, 202, 85, 0.4);
+}
+
+.cv-gradient-border {
+  border: 1px solid transparent;
+  background-image: linear-gradient(rgba(16, 30, 59, 0.95), rgba(16, 30, 59, 0.95)),
+    linear-gradient(135deg, #7047F5, #278DFF, #36D9F5);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* Cyber Buttons */
+.cv-btn-primary {
+  background: linear-gradient(135deg, #7047F5 0%, #A34EFF 100%);
+  color: #FFFFFF;
+  font-weight: 600;
+  border: 1px solid rgba(163, 78, 255, 0.5);
+  box-shadow: 0 4px 16px rgba(112, 71, 245, 0.35);
+  transition: all 0.2s ease;
+}
+
+.cv-btn-primary:hover {
+  background: linear-gradient(135deg, #7C53FC 0%, #AE5DFE 100%);
+  box-shadow: 0 6px 24px rgba(112, 71, 245, 0.55);
+  transform: scale(1.02);
+}
+
+/* RPG XP Progress Bar */
+.cv-progress-track {
+  background: rgba(7, 19, 41, 0.85);
+  border: 1px solid rgba(112, 71, 245, 0.3);
+  border-radius: 9999px;
+  overflow: hidden;
+  height: 0.65rem;
+}
+
+.cv-progress-fill {
+  background: linear-gradient(90deg, #7047F5 0%, #278DFF 50%, #36D9F5 100%);
+  height: 100%;
+  border-radius: 9999px;
+  box-shadow: 0 0 12px rgba(54, 217, 245, 0.6);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Subtle Sci-Fi Grid Overlay */
+.cv-grid-bg {
+  background-image: 
+    linear-gradient(rgba(112, 71, 245, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(112, 71, 245, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Custom Scrollbar for Career RPG panels */
+.cv-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.cv-scrollbar::-webkit-scrollbar-track {
+  background: rgba(7, 19, 41, 0.6);
+  border-radius: 8px;
+}
+.cv-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(112, 71, 245, 0.4);
+  border-radius: 8px;
+}
+.cv-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(163, 78, 255, 0.7);
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
+}

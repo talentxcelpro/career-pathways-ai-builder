@@ -21,9 +21,12 @@ import {
   MessageSquare, 
   Search, 
   SlidersHorizontal,
-  RotateCw
+  RotateCw,
+  BookOpen,
+  Gamepad2
 } from "lucide-react";
 import Posts from './network/Posts';
+import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { Discover } from './network/Discover';
 import { CreatorStudio } from './network/CreatorStudio';
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
@@ -58,6 +61,7 @@ const Network: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending'>('all');
+  const [discoverSubTab, setDiscoverSubTab] = useState<'articles' | 'people'>('articles');
   const queryClient = useQueryClient();
   
   const handleRefreshFeed = () => {
@@ -372,9 +376,32 @@ const Network: React.FC = () => {
           {/* ============================================================================ */}
           <TabsContent value="gamification" className="mt-0">
             {renderUniformLayout(
-              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Gamification...</div>}>
-                <GamificationDashboard />
-              </React.Suspense>
+              <div className="space-y-4">
+                <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-4 text-white shadow-lg">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="space-y-1 text-center sm:text-left">
+                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-[11px] font-bold tracking-wide uppercase">
+                        <Sparkles className="h-3 w-3" /> Career RPG World Map 2.5D
+                      </div>
+                      <h3 className="text-base sm:text-lg font-extrabold text-white">Your Career Journey as a Game</h3>
+                      <p className="text-xs text-slate-300 max-w-md">
+                        Learn, build skills, battle bosses, complete quests, and climb college &amp; global leaderboards.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={() => navigate('/gamification')}
+                      className="shrink-0 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all hover:scale-105"
+                    >
+                      <Gamepad2 className="h-4 w-4 mr-1.5" />
+                      Launch Career RPG &rarr;
+                    </Button>
+                  </div>
+                </div>
+
+                <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Gamification...</div>}>
+                  <GamificationDashboard />
+                </React.Suspense>
+              </div>
             )}
           </TabsContent>
 
@@ -435,9 +462,45 @@ const Network: React.FC = () => {
           {/* ============================================================================ */}
           <TabsContent value="discover" className="mt-0">
             {renderUniformLayout(
-              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Discover Directory...</div>}>
-                <Discover isEmbedded={true} />
-              </React.Suspense>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-border/60">
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant={discoverSubTab === 'articles' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDiscoverSubTab('articles')}
+                      className={`text-xs font-bold rounded-lg h-8 px-3.5 transition-all ${
+                        discoverSubTab === 'articles' ? 'bg-primary text-white shadow-xs' : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <BookOpen className="h-3.5 w-3.5 mr-1.5" />
+                      Articles &amp; Career Hub
+                    </Button>
+                    <Button
+                      variant={discoverSubTab === 'people' ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setDiscoverSubTab('people')}
+                      className={`text-xs font-bold rounded-lg h-8 px-3.5 transition-all ${
+                        discoverSubTab === 'people' ? 'bg-primary text-white shadow-xs' : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Users className="h-3.5 w-3.5 mr-1.5" />
+                      People Directory
+                    </Button>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">
+                    {discoverSubTab === 'articles' ? 'Knowledge Discovery' : 'Member Directory'}
+                  </Badge>
+                </div>
+
+                <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Discovery Content...</div>}>
+                  {discoverSubTab === 'articles' ? (
+                    <CareerContentHub />
+                  ) : (
+                    <Discover isEmbedded={true} />
+                  )}
+                </React.Suspense>
+              </div>
             )}
           </TabsContent>
 

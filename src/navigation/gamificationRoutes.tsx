@@ -1,15 +1,36 @@
 import { lazy, Suspense } from 'react';
-import { Trophy } from "lucide-react";
+import { Gamepad2, Trophy } from "lucide-react";
 import { NavItem } from "../types/nav-item";
 
-const Navigate = lazy(() => import('react-router-dom').then(m => ({ default: m.Navigate })));
+const CareerVersePage = lazy(() => import('../pages/CareerVersePage'));
 
 export const gamificationRoutes: NavItem[] = [
+  {
+    title: "CareerVerse RPG",
+    to: "/play",
+    icon: <Gamepad2 className="h-4 w-4 text-[#36D9F5]" />,
+    page: <Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Career RPG",
+    to: "/careerverse",
+    icon: <Gamepad2 className="h-4 w-4" />,
+    page: <Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Career RPG",
+    to: "/rpg",
+    icon: <Gamepad2 className="h-4 w-4" />,
+    page: <Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>,
+    isPublic: true,
+  },
   {
     title: "Gamification Center",
     to: "/gamification",
     icon: <Trophy className="h-4 w-4" />,
-    page: <Suspense fallback={null}><Navigate to="/txc/mining" replace /></Suspense>,
+    page: <Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>,
     isPublic: true,
   },
 ];
