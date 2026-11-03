@@ -37,7 +37,10 @@
     "backlink:top25": "node backlink-engine/cli.cjs stage-top25",
     "backlink:b2b": "node backlink-engine/cli.cjs b2b-directories",
     "backlink:stage4.1": "node backlink-engine/cli.cjs stage4.1",
-    "backlink:stage5": "node backlink-engine/cli.cjs stage5"
+    "backlink:stage5": "node backlink-engine/cli.cjs stage5",
+    "build:prod": "node -e \"require('child_process').execSync('npm run build', {stdio:'inherit', env: {...process.env, BUILD_MODE:'production'}});\"",
+    "build:preview": "node -e \"require('child_process').execSync('npm run build', {stdio:'inherit', env: {...process.env, BUILD_MODE:'preview'}});\"",
+    "ignore:build": "node scripts/vercel-ignore-build.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",

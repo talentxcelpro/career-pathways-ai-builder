@@ -63,6 +63,22 @@ function toMetaDescription(source: string, maxLength = 160): string {
 }
 
 async function prerender() {
+  const isProduction = process.env.VERCEL_ENV === 'production' || process.env.BUILD_MODE === 'production';
+  const isPreview = !isProduction;
+
+  if (!isProduction) {
+    console.log('================================================================');
+    console.log('ℹ️  FINOPS OPTIMISATION: PREVIEW / DEVELOPMENT BUILD DETECTED');
+    console.log('    VERCEL_ENV =', process.env.VERCEL_ENV || '(unset)');
+    console.log('    BUILD_MODE =', process.env.BUILD_MODE || '(unset)');
+    console.log('    Prerendering representative archetypes across all surfaces');
+    console.log('    Full 14,235-document static generation runs on production main (VERCEL_ENV=production)');
+    console.log('================================================================\n');
+  } else {
+    console.log('================================================================');
+    console.log('🚀 PRODUCTION BUILD DETECTED: Executing Full 14,235 Static Prerender Suite');
+    console.log('================================================================\n');
+  }
   console.log('🚀 Starting Static SEO Pre-rendering Pipeline for Priority Class A URLs...\n');
 
   if (!fs.existsSync(DIST_DIR)) {
@@ -847,7 +863,8 @@ async function prerender() {
       .eq('job_status', 'open');
 
     if (dbJobs) {
-      for (const job of dbJobs) {
+      const jobsToRender = isProduction ? dbJobs : dbJobs.slice(0, 10);
+      for (const job of jobsToRender) {
         const schema = buildJobPostingSchema(job);
         const slug = job.seo_slug || job.id;
         const canonical = formatCanonicalUrl(`/jobs/${slug}`);
@@ -1383,7 +1400,8 @@ async function prerender() {
       // ── 5C. Individual Post Pages: /post/:id and /network/posts/:id ─────────
       // Process up to 300 posts with comments
       let postProcessCount = 0;
-      for (const post of dbPosts) {
+      const postsToRender = isProduction ? dbPosts : dbPosts.slice(0, 5);
+      for (const post of postsToRender) {
         const canonical = `${BASE_URL}/post/${post.id}`;
         const cleanContent = (post.content || '').trim();
         const headline = cleanContent.split(/[.!?\n]/)[0]?.slice(0, 80).trim() || 'Career & Hiring Insight';
@@ -1482,8 +1500,9 @@ async function prerender() {
 
   // 6. Pre-render 1,509 Higher Ed Institutions
   // 6. Pre-render 1,509 Higher Ed Institutions
-  console.log(`Pre-rendering ${INDIAN_INSTITUTIONS_CATALOG.length} Higher Ed Institutions...`);
-  for (const inst of INDIAN_INSTITUTIONS_CATALOG) {
+    const institutionsToRender = isProduction ? INDIAN_INSTITUTIONS_CATALOG : INDIAN_INSTITUTIONS_CATALOG.slice(0, 15);
+  console.log(`Pre-rendering ${institutionsToRender.length} Higher Ed Institutions${isProduction ? '' : ' (Representative Sample)'}...`);
+  for (const inst of institutionsToRender) {
     const slug = inst.slug;
     const canonical = formatCanonicalUrl(`/colleges/${slug}`);
     const feeMin = inst.annual_fee_min || 50000;
@@ -1625,8 +1644,9 @@ async function prerender() {
   }
 
   // 7. Pre-render 100 Global Degree Programs
-  console.log(`Pre-rendering ${SEED_PROGRAMS.length} Global Degree Programs...`);
-  for (const prog of SEED_PROGRAMS) {
+    const programsToRender = isProduction ? SEED_PROGRAMS : SEED_PROGRAMS.slice(0, 5);
+  console.log(`Pre-rendering ${programsToRender.length} Global Degree Programs${isProduction ? '' : ' (Representative Sample)'}...`);
+  for (const prog of programsToRender) {
     const slug = (prog as any).slug || prog.program_title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const canonical = formatCanonicalUrl(`/colleges/global-programs/${slug}`);
     const tuition = (prog as any).tuition_annual_display || (prog.tuition_cost_usd === 0 ? 'â‚¬0 Tuition' : `$${prog.tuition_cost_usd}`);
@@ -1764,7 +1784,8 @@ async function prerender() {
     { name: 'Kolkata', slug: 'kolkata' },
   ];
 
-  for (const role of ALL_CANONICAL_ROLES) {
+  const rolesToRender = isProduction ? ALL_CANONICAL_ROLES : ALL_CANONICAL_ROLES.slice(0, 5);
+  for (const role of rolesToRender) {
     const slug = role.slug;
     const displayRole = role.title.replace(/\b\w/g, (c) => c.toUpperCase());
     const title = `${displayRole} Career Overview | TalentXcel`;
