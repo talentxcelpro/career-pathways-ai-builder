@@ -97,6 +97,8 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
             navigate('/', { replace: true });
           }
         } else if (event === 'SIGNED_IN' && session?.user) {
+          // Guarantee real-time auto-connection with main account for every joining user
+          supabase.rpc('create_admin_connections', { target_user_id: session.user.id }).catch(() => {});
           const currentPath = window.location.pathname;
           
           // Only redirect if on auth pages
