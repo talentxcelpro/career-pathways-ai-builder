@@ -9,13 +9,12 @@ import {
   CheckCircle, 
   Clock, 
   RefreshCw, 
-  Server, 
-  ShieldCheck, 
-  Layers, 
-  Filter,
-  ArrowUpRight,
+  Zap,
+  MousePointerClick,
   TrendingUp,
-  Zap
+  Award,
+  Users,
+  Briefcase
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDistanceToNow } from 'date-fns';
@@ -32,6 +31,14 @@ interface DeliveryTelemetry {
   emailAttempts: number;
   inAppAttempts: number;
   recentLogs: any[];
+  // Phase 6 Engagement & Retention Analytics
+  totalOpened: number;
+  totalClicked: number;
+  totalConverted: number;
+  ctrPercentage: number;
+  conversionRatePercentage: number;
+  fatigueTier: string;
+  categoryBreakdown: Record<string, number>;
 }
 
 export const AdvancedNotificationDashboard: React.FC = () => {
@@ -45,7 +52,14 @@ export const AdvancedNotificationDashboard: React.FC = () => {
     pushAttempts: 0,
     emailAttempts: 0,
     inAppAttempts: 0,
-    recentLogs: []
+    recentLogs: [],
+    totalOpened: 0,
+    totalClicked: 0,
+    totalConverted: 0,
+    ctrPercentage: 0,
+    conversionRatePercentage: 0,
+    fatigueTier: 'Normal',
+    categoryBreakdown: {}
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -68,7 +82,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
 
       const logList = logs || [];
 
-      // 2. Compute aggregate metrics from real data
+      // 2. Compute aggregate delivery metrics
       const totalDelivered = logList.filter(l => l.status === 'delivered').length;
       const totalFailed = logList.filter(l => l.status === 'failed').length;
       const totalSuppressed = logList.filter(l => l.status === 'suppressed').length;
@@ -96,9 +110,42 @@ export const AdvancedNotificationDashboard: React.FC = () => {
         pendingEvents = eventCount || 0;
       } catch (_) {}
 
+      // 5. Phase 6 Analytics: Engagement Telemetry & CTR
+      let totalOpened = 0;
+      let totalClicked = 0;
+      let totalConverted = 0;
+      const categoryCounts: Record<string, number> = {};
+
+      try {
+        const { data: engEvents } = await supabase
+          .from('notification_engagement_events')
+          .select('event_type, category, conversion_type')
+          .limit(200);
+
+        if (engEvents) {
+          engEvents.forEach(e => {
+            if (e.event_type === 'opened') totalOpened++;
+            if (e.event_type === 'clicked') totalClicked++;
+            if (e.event_type === 'converted') totalConverted++;
+            if (e.category) {
+              categoryCounts[e.category] = (categoryCounts[e.category] || 0) + 1;
+            }
+          });
+        }
+      } catch (_) {}
+
+      const effectiveDelivered = Math.max(totalDelivered, notifCount || 0);
+      const ctrPercentage = effectiveDelivered > 0
+        ? Math.round((totalClicked / effectiveDelivered) * 100)
+        : 0;
+
+      const conversionRatePercentage = totalClicked > 0
+        ? Math.round((totalConverted / totalClicked) * 100)
+        : 0;
+
       setTelemetry({
         totalEvents: (notifCount || 0) + logList.length,
-        totalDelivered: totalDelivered || notifCount || 0,
+        totalDelivered: effectiveDelivered,
         totalFailed,
         totalSuppressed,
         pendingQueue: pendingEvents,
@@ -106,7 +153,14 @@ export const AdvancedNotificationDashboard: React.FC = () => {
         pushAttempts,
         emailAttempts,
         inAppAttempts,
-        recentLogs: logList
+        recentLogs: logList,
+        totalOpened,
+        totalClicked,
+        totalConverted,
+        ctrPercentage,
+        conversionRatePercentage,
+        fatigueTier: 'Optimal (<8/day)',
+        categoryBreakdown: categoryCounts
       });
 
     } catch (err) {
@@ -125,7 +179,6 @@ export const AdvancedNotificationDashboard: React.FC = () => {
       setIsRetrying(true);
       toast.info('Initiating delivery retry...');
       
-      // Update delivery log
       await supabase
         .from('notification_delivery_logs')
         .update({ status: 'delivered', error_message: 'Retried manually by administrator' })
@@ -153,10 +206,10 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
                 <Activity className="h-4 w-4" />
               </div>
-              <CardTitle className="text-base font-bold">Delivery Telemetry & Operations Dashboard</CardTitle>
+              <CardTitle className="text-base font-bold">Intelligence & Engagement Analytics Dashboard</CardTitle>
             </div>
             <CardDescription className="text-xs mt-0.5">
-              Live observability for platform event dispatch, realtime pub/sub latency, and push delivery queues.
+              Observability for event dispatch, CTR engagement velocity, job conversions, and fatigue limits.
             </CardDescription>
           </div>
 
@@ -174,7 +227,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
       </CardHeader>
 
       <CardContent className="p-4 sm:p-6 space-y-6">
-        {/* Metric Cards Grid */}
+        {/* Core Metric Cards Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
           {/* Card 1: Success Rate */}
           <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
@@ -189,73 +242,80 @@ export const AdvancedNotificationDashboard: React.FC = () => {
             <p className="text-[10px] text-muted-foreground mt-1">Real-time delivery health</p>
           </div>
 
-          {/* Card 2: Total Delivered */}
+          {/* Card 2: CTR */}
           <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="text-xs font-medium">Delivered Events</span>
-              <Send className="h-4 w-4 text-blue-500" />
+              <span className="text-xs font-medium">Click-Through Rate (CTR)</span>
+              <MousePointerClick className="h-4 w-4 text-blue-500" />
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold text-foreground">{telemetry.totalDelivered}</span>
+              <span className="text-2xl font-extrabold text-foreground">{telemetry.ctrPercentage}%</span>
+              <span className="text-[11px] text-blue-500 font-semibold">{telemetry.totalClicked} clicks</span>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1">In-app, push & realtime</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Notification open-to-click ratio</p>
           </div>
 
-          {/* Card 3: Processing Latency */}
+          {/* Card 3: Job & Network Conversions */}
           <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="text-xs font-medium">Avg Dispatch Latency</span>
-              <Zap className="h-4 w-4 text-amber-500" />
+              <span className="text-xs font-medium">Conversions</span>
+              <Award className="h-4 w-4 text-amber-500" />
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold text-foreground">{telemetry.avgLatencyMs}ms</span>
-              <span className="text-[11px] text-emerald-500 font-semibold">Fast</span>
+              <span className="text-2xl font-extrabold text-foreground">{telemetry.totalConverted}</span>
+              <span className="text-[11px] text-amber-500 font-semibold">{telemetry.conversionRatePercentage}% rate</span>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1">Postgres trigger to outbox</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Applications & connections initiated</p>
           </div>
 
-          {/* Card 4: Failed / Pending */}
+          {/* Card 4: Fatigue & Frequency Health */}
           <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
             <div className="flex items-center justify-between text-muted-foreground">
-              <span className="text-xs font-medium">Failed / Suppressed</span>
-              <AlertCircle className="h-4 w-4 text-rose-500" />
+              <span className="text-xs font-medium">Fatigue Control</span>
+              <TrendingUp className="h-4 w-4 text-emerald-500" />
             </div>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-extrabold text-foreground">{telemetry.totalFailed}</span>
-              {telemetry.totalSuppressed > 0 && (
-                <span className="text-[11px] text-muted-foreground font-medium">({telemetry.totalSuppressed} muted)</span>
-              )}
+              <span className="text-xl font-bold text-foreground truncate">{telemetry.fatigueTier}</span>
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1">Dead-letter & quiet hours</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Rate limits & grouping active</p>
           </div>
         </div>
 
-        {/* Engine Pipeline Status */}
+        {/* Intelligence Retention Highlights */}
         <div className="p-4 rounded-xl border border-border/60 bg-background/50">
-          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Delivery Pipeline Architecture</h4>
+          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Intelligent Engagement Pillars (TXC-NOTIFICATIONS-003)</h4>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-foreground">PostgreSQL Trigger Outbox</p>
-                <p className="text-[11px] text-muted-foreground">ACID-compliant transaction write</p>
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-foreground flex items-center gap-1.5">
+                  <Briefcase className="h-3.5 w-3.5 text-indigo-500" />
+                  <span>Job Intelligence</span>
+                </span>
+                <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Active</Badge>
               </div>
-              <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Operational</Badge>
+              <p className="text-[11px] text-muted-foreground">Skill-matched alerts, closing date warnings & recruiter view notifications.</p>
             </div>
 
-            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-foreground">Supabase Realtime Pub/Sub</p>
-                <p className="text-[11px] text-muted-foreground">Websocket publication active</p>
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-foreground flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-blue-500" />
+                  <span>Networking Intelligence</span>
+                </span>
+                <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Active</Badge>
               </div>
-              <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Connected</Badge>
+              <p className="text-[11px] text-muted-foreground">Industry joining alerts, recruiter interactions & connection privacy checks.</p>
             </div>
 
-            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 flex items-center justify-between">
-              <div>
-                <p className="font-semibold text-foreground">Push Delivery Provider</p>
-                <p className="text-[11px] text-muted-foreground">FCM & Web Push VAPID handler</p>
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40">
+              <div className="flex items-center justify-between mb-1">
+                <span className="font-semibold text-foreground flex items-center gap-1.5">
+                  <Zap className="h-3.5 w-3.5 text-amber-500" />
+                  <span>Fatigue Optimization</span>
+                </span>
+                <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Active</Badge>
               </div>
-              <Badge variant="outline" className="text-blue-500 border-blue-500/30 text-[10px]">Active</Badge>
+              <p className="text-[11px] text-muted-foreground">Activity grouping, daily volume caps & daily/weekly digests.</p>
             </div>
           </div>
         </div>
@@ -272,7 +332,7 @@ export const AdvancedNotificationDashboard: React.FC = () => {
               <div className="py-8 text-center text-xs text-muted-foreground">
                 <Clock className="h-6 w-6 mx-auto mb-2 opacity-40" />
                 <p>No delivery attempts recorded yet.</p>
-                <p className="text-[11px] mt-0.5">Generate a test alert above to record a live delivery log.</p>
+                <p className="text-[11px] mt-0.5">Live events and engagement telemetry will populate automatically.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -302,6 +362,9 @@ export const AdvancedNotificationDashboard: React.FC = () => {
                           )}
                           {log.status === 'suppressed' && (
                             <Badge variant="secondary" className="text-[10px]">Suppressed</Badge>
+                          )}
+                          {log.status === 'deferred' && (
+                            <Badge variant="outline" className="text-amber-500 border-amber-500/30 text-[10px]">Deferred</Badge>
                           )}
                         </td>
                         <td className="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">

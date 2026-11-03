@@ -18,7 +18,9 @@ import {
   Sparkles,
   ExternalLink,
   ShieldCheck,
-  Check
+  Check,
+  TrendingUp,
+  Clock
 } from 'lucide-react';
 import { useNotifications, Notification } from '@/contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
@@ -26,8 +28,9 @@ import { useNavigate } from 'react-router-dom';
 
 const FILTER_TABS = [
   { id: 'all', label: 'All', icon: Bell },
-  { id: 'network', label: 'Networking', icon: Users },
+  { id: 'recommended', label: 'Top Recommended', icon: TrendingUp },
   { id: 'jobs', label: 'Jobs', icon: Briefcase },
+  { id: 'network', label: 'Networking', icon: Users },
   { id: 'messages', label: 'Messages', icon: MessageSquare },
   { id: 'companies', label: 'Companies', icon: Building },
   { id: 'system', label: 'System', icon: Sparkles }
@@ -46,18 +49,21 @@ export const NotificationCenter: React.FC = () => {
     setUnreadOnly,
     searchQuery,
     setSearchQuery,
+    sortBy,
+    setSortBy,
     subscribeToPush,
     unsubscribeFromPush,
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    trackInteraction,
     sendTestNotification,
     playNotificationSound
   } = useNotifications();
 
   const navigate = useNavigate();
 
-  // Filtered notifications
+  // Filtered and Scored notifications
   const filteredNotifications = useMemo(() => {
     return notifications.filter((notif) => {
       // 1. Module / Category Filter
@@ -66,19 +72,18 @@ export const NotificationCenter: React.FC = () => {
         const notifCategory = (notif.category || '').toLowerCase();
         const notifType = (notif.event_type || notif.type || '').toLowerCase();
 
-        if (activeFilter === 'network' && !(notifModule === 'network' || notifType.includes('connection') || notifCategory.includes('social'))) {
+        if (activeFilter === 'recommended') {
+          // Items with relevance score >= 0.70
+          if ((notif.relevance_score || 0) < 0.70) return false;
+        } else if (activeFilter === 'network' && !(notifModule === 'network' || notifType.includes('connection') || notifCategory.includes('social'))) {
           return false;
-        }
-        if (activeFilter === 'jobs' && !(notifModule === 'jobs' || notifModule === 'employer' || notifType.includes('job') || notifCategory.includes('job') || notifCategory.includes('app'))) {
+        } else if (activeFilter === 'jobs' && !(notifModule === 'jobs' || notifModule === 'employer' || notifType.includes('job') || notifCategory.includes('job') || notifCategory.includes('app'))) {
           return false;
-        }
-        if (activeFilter === 'messages' && !(notifCategory === 'messages' || notifType.includes('message'))) {
+        } else if (activeFilter === 'messages' && !(notifCategory === 'messages' || notifType.includes('message'))) {
           return false;
-        }
-        if (activeFilter === 'companies' && !(notifModule === 'companies' || notifType.includes('company'))) {
+        } else if (activeFilter === 'companies' && !(notifModule === 'companies' || notifType.includes('company'))) {
           return false;
-        }
-        if (activeFilter === 'system' && !(notifCategory === 'system_updates' || notifType.includes('system') || notifType.includes('platform'))) {
+        } else if (activeFilter === 'system' && !(notifCategory === 'system_updates' || notifType.includes('system') || notifType.includes('platform'))) {
           return false;
         }
       }
@@ -101,6 +106,7 @@ export const NotificationCenter: React.FC = () => {
   }, [notifications, activeFilter, unreadOnly, searchQuery]);
 
   const handleNotificationClick = (notif: Notification) => {
+    trackInteraction(notif.id, 'click');
     if (!notif.is_read) {
       markAsRead(notif.id);
     }
@@ -133,7 +139,7 @@ export const NotificationCenter: React.FC = () => {
               </div>
               <div>
                 <CardTitle className="text-lg font-bold flex items-center gap-2">
-                  <span>Notification Center</span>
+                  <span>Intelligent Notification Center</span>
                   {unreadCount > 0 && (
                     <Badge variant="destructive" className="rounded-full px-2 py-0.5 text-xs">
                       {unreadCount} new
@@ -141,13 +147,34 @@ export const NotificationCenter: React.FC = () => {
                   )}
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Real-time updates, activity alerts, and opportunities.
+                  Personalized career recommendations, activity grouping, and real-time alerts.
                 </CardDescription>
               </div>
             </div>
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
+            {/* Sorting Toggle: Relevance vs Recent */}
+            <Button
+              variant={sortBy === 'relevance' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSortBy(sortBy === 'relevance' ? 'recent' : 'relevance')}
+              className="h-8 rounded-xl text-xs gap-1.5"
+              title="Toggle AI relevance ordering"
+            >
+              {sortBy === 'relevance' ? (
+                <>
+                  <TrendingUp className="h-3.5 w-3.5 text-amber-300" />
+                  <span>Top Match</span>
+                </>
+              ) : (
+                <>
+                  <Clock className="h-3.5 w-3.5" />
+                  <span>Latest First</span>
+                </>
+              )}
+            </Button>
+
             <Button
               variant="outline"
               size="sm"
@@ -330,6 +357,18 @@ export const NotificationCenter: React.FC = () => {
                       </h4>
                       {!notification.is_read && (
                         <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0" />
+                      )}
+                      {/* Grouped badge if grouped */}
+                      {Boolean(notification.group_count && notification.group_count > 1) && (
+                        <Badge variant="secondary" className="text-[10px] bg-muted px-1.5 py-0 font-medium">
+                          +{notification.group_count} grouped
+                        </Badge>
+                      )}
+                      {/* Relevance badge */}
+                      {Boolean(notification.relevance_score && notification.relevance_score >= 0.80) && (
+                        <Badge variant="outline" className="text-[10px] text-amber-500 border-amber-500/30 bg-amber-500/10 px-1.5 py-0">
+                          {Math.round(notification.relevance_score * 100)}% Match
+                        </Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">

@@ -24,6 +24,13 @@ export interface Notification {
   sound?: boolean;
   sound_enabled?: boolean;
   delivery_status?: string;
+  relevance_score?: number;
+  group_key?: string;
+  group_count?: number;
+  opened_at?: string;
+  clicked_at?: string;
+  converted_at?: string;
+  conversion_type?: string;
   created_at: string;
   updated_at?: string;
   read_at?: string;
@@ -42,12 +49,15 @@ interface NotificationContextType {
   setUnreadOnly: (unreadOnly: boolean) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  sortBy: 'recent' | 'relevance';
+  setSortBy: (sort: 'recent' | 'relevance') => void;
   subscribeToPush: () => Promise<void>;
   unsubscribeFromPush: () => Promise<void>;
   unregisterDeviceToken: (token?: string) => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
   markAllAsRead: (module?: string) => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
+  trackInteraction: (id: string, action: 'open' | 'click' | 'convert' | 'dismiss', conversionType?: string) => Promise<void>;
   sendTestNotification: () => Promise<void>;
   playNotificationSound: (priority?: string) => void;
   refreshNotifications: () => Promise<void>;
@@ -91,6 +101,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [unreadOnly, setUnreadOnly] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [sortBy, setSortBy] = useState<'recent' | 'relevance'>('recent');
 
   // Audio Context initialization on first user interaction
   useEffect(() => {
@@ -104,7 +115,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     return () => document.removeEventListener('click', initAudio);
   }, [audioContext]);
 
-  // Load notifications from database
+  // Load notifications from database with optional relevance ordering
   const loadNotifications = useCallback(async () => {
     if (!user) {
       setNotifications([]);
@@ -113,12 +124,20 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
 
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(100);
+        .eq('user_id', user.id);
+
+      if (sortBy === 'relevance') {
+        query = query
+          .order('relevance_score', { ascending: false })
+          .order('created_at', { ascending: false });
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      const { data, error } = await query.limit(100);
 
       if (error) throw error;
       setNotifications((data || []) as Notification[]);
@@ -127,7 +146,25 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, sortBy]);
+
+  // Track user engagement and conversion events (Phase 6 Telemetry)
+  const trackInteraction = useCallback(async (
+    id: string, 
+    action: 'open' | 'click' | 'convert' | 'dismiss', 
+    conversionType?: string
+  ) => {
+    try {
+      await supabase.rpc('record_notification_interaction', {
+        p_notification_id: id,
+        p_action: action,
+        p_conversion_type: conversionType || null,
+        p_metadata: { timestamp: new Date().toISOString() }
+      });
+    } catch (err) {
+      console.warn('Interaction tracking note:', err);
+    }
+  }, []);
 
   // Cross-Tab Synchronization (BroadcastChannel)
   useEffect(() => {
@@ -333,12 +370,15 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
       } catch (_) {}
     }
 
-    // In-app visual toast with deep link navigation
+    // In-app visual toast with deep link navigation & click tracking
     toast(notifTitle, {
       description: notifMessage,
       action: {
         label: 'View',
         onClick: () => {
+          if (notification.id) {
+            trackInteraction(notification.id, 'click');
+          }
           if (destinationUrl) {
             window.location.href = destinationUrl;
           }
@@ -500,14 +540,15 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     // 1. Optimistic Update with Rollback snapshot
     const prevNotifications = [...notifications];
     setNotifications(prev =>
-      prev.map(n => n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n)
+      prev.map(n => n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString(), opened_at: new Date().toISOString() } : n)
     );
     broadcastSync({ type: 'MARK_READ', id });
+    trackInteraction(id, 'open');
 
     try {
       const { error } = await supabase
         .from('notifications')
-        .update({ is_read: true, read_at: new Date().toISOString() })
+        .update({ is_read: true, read_at: new Date().toISOString(), opened_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
@@ -557,6 +598,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     const prevNotifications = [...notifications];
     setNotifications(prev => prev.filter(n => n.id !== id));
     broadcastSync({ type: 'DELETE', id });
+    trackInteraction(id, 'dismiss');
 
     try {
       const { error } = await supabase
@@ -589,6 +631,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
           module: 'network',
           category: 'system_updates',
           priority: 'medium',
+          relevance_score: 0.900,
           link: '/notifications',
           is_read: false,
           delivery_status: 'delivered',
@@ -628,12 +671,15 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     setUnreadOnly,
     searchQuery,
     setSearchQuery,
+    sortBy,
+    setSortBy,
     subscribeToPush,
     unsubscribeFromPush,
     unregisterDeviceToken,
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    trackInteraction,
     sendTestNotification,
     playNotificationSound,
     refreshNotifications: loadNotifications
