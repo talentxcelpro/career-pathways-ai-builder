@@ -39,6 +39,57 @@ import {
   Info
 } from 'lucide-react';
 
+interface MetricTargetProgressProps {
+  title: string;
+  description: string;
+  current: number | null;
+  target: number;
+  unit: string;
+  icon?: React.ReactNode;
+}
+
+const MetricTargetProgress: React.FC<MetricTargetProgressProps> = ({
+  title,
+  description,
+  current,
+  target,
+  unit,
+  icon
+}) => {
+  const actualVal = current ?? 0;
+  const progressPercent = Math.min(100, Math.round((actualVal / (target || 1)) * 100));
+  const remaining = Math.max(0, target - actualVal);
+
+  return (
+    <div className="p-3 border rounded-xl bg-white dark:bg-card space-y-2 text-xs shadow-2xs">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="font-bold text-xs text-foreground">{title}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-foreground">
+            {actualVal.toLocaleString()} <span className="text-muted-foreground font-normal">/ {target.toLocaleString()} {unit}</span>
+          </span>
+          <Badge className={`text-[10px] font-bold ${
+            actualVal >= target ? 'bg-emerald-600 text-white' : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300'
+          }`}>
+            {actualVal >= target ? 'Target Met' : `${remaining} to target`}
+          </Badge>
+        </div>
+      </div>
+      <p className="text-[11px] text-muted-foreground leading-relaxed">{description}</p>
+      <div className="space-y-1 pt-0.5">
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>Progress: {progressPercent}%</span>
+          <span>Target: {target} {unit}</span>
+        </div>
+        <Progress value={progressPercent} className="h-1.5" />
+      </div>
+    </div>
+  );
+};
+
 interface CreatorStudioProps {
   isEmbedded?: boolean;
 }
