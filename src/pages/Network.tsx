@@ -208,14 +208,18 @@ const Network: React.FC = () => {
                 <span>Smart Feed</span>
               </TabsTrigger>
 
-              {/* 3. Gamification */}
-              <TabsTrigger 
-                value="gamification" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+              {/* 3. Gamification (Opens separately) */}
+              <a 
+                href="/gamification" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all text-slate-700 dark:text-slate-300 hover:text-foreground hover:bg-slate-100 dark:hover:bg-muted/60 flex items-center gap-1.5 cursor-pointer no-underline select-none"
+                title="Open Career RPG in separate tab"
               >
-                <Trophy className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
+                <Trophy className="w-3.5 h-3.5 text-amber-500" />
                 <span>Gamification</span>
-              </TabsTrigger>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">↗</span>
+              </a>
 
               {/* 4. Refer & Earn */}
               <TabsTrigger 
@@ -235,14 +239,18 @@ const Network: React.FC = () => {
                 <span>Connections</span>
               </TabsTrigger>
 
-              {/* 6. Discover */}
-              <TabsTrigger 
-                value="discover" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+              {/* 6. Discover (Opens separately) */}
+              <a 
+                href="/network/discover" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all text-slate-700 dark:text-slate-300 hover:text-foreground hover:bg-slate-100 dark:hover:bg-muted/60 flex items-center gap-1.5 cursor-pointer no-underline select-none"
+                title="Open Discover Hub in separate tab"
               >
-                <UserPlus className="w-3.5 h-3.5 text-emerald-500 data-[state=active]:text-white" />
+                <UserPlus className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Discover</span>
-              </TabsTrigger>
+                <span className="text-[10px] text-muted-foreground/80 font-mono">↗</span>
+              </a>
 
               {/* 7. Analytics */}
               <TabsTrigger 
