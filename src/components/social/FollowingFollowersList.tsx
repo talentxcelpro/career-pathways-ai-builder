@@ -56,6 +56,23 @@ export function FollowingFollowersList() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_follows' }, () => {
         loadUserData();
       })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, async (payload) => {
+        const newProfile = payload.new as any;
+        const ADMIN_ID = '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062';
+        if (newProfile?.id && newProfile.id !== ADMIN_ID) {
+          try {
+            await supabase.from('connections').insert({
+              requester_id: newProfile.id,
+              recipient_id: ADMIN_ID,
+              status: 'accepted',
+              connected_at: new Date().toISOString()
+            });
+          } catch (e) {
+            console.warn('Realtime auto-connect handled:', e);
+          }
+        }
+        loadUserData();
+      })
       .subscribe();
 
     return () => {
