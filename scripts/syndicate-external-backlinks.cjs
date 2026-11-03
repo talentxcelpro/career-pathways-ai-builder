@@ -336,6 +336,11 @@ If you use this dataset in your research, academic publications, or blog posts, 
   console.log('✓ Successfully generated 4 high-density XML feeds in public/feeds/!');
 
   // ── 3. DISPATCH WEBSUB / PUBSUBHUBBUB PINGS ────────────────────────────────
+  const isProduction = process.env.VERCEL_ENV === 'production' || process.env.BUILD_MODE === 'production';
+  if (!isProduction) {
+    console.log('\n3. [Preview Mode] Skipping external Google WebSub pings on preview deployment (unindexed SSO environment).');
+    return;
+  }
   console.log('\n3. Dispatching Real-Time WebSub / PubSubHubbub Pings to Google...');
   const HUB_URL = 'https://pubsubhubbub.appspot.com/';
   const feedsToPing = [
