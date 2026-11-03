@@ -1087,10 +1087,37 @@ EXCEPTION WHEN OTHERS THEN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS trg_company_follows_notification ON public.company_follows;
-CREATE TRIGGER trg_company_follows_notification
-    AFTER INSERT ON public.company_follows
-    FOR EACH ROW EXECUTE FUNCTION public.trg_fn_company_follow_notification();
+-- Ensure public.company_follows exists
+CREATE TABLE IF NOT EXISTS public.company_follows (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(user_id, company_id)
+);
+
+ALTER TABLE public.company_follows ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'company_follows' AND policyname = 'Users can manage their own company follows') THEN
+        CREATE POLICY "Users can manage their own company follows" ON public.company_follows FOR ALL USING (auth.uid() = user_id);
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'company_follows' AND policyname = 'Anyone can view company follows count') THEN
+        CREATE POLICY "Anyone can view company follows count" ON public.company_follows FOR SELECT USING (true);
+    END IF;
+END $$;
+
+CREATE INDEX IF NOT EXISTS idx_company_follows_user ON public.company_follows(user_id);
+CREATE INDEX IF NOT EXISTS idx_company_follows_company ON public.company_follows(company_id);
+
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'company_follows') THEN
+        DROP TRIGGER IF EXISTS trg_company_follows_notification ON public.company_follows;
+        CREATE TRIGGER trg_company_follows_notification
+            AFTER INSERT ON public.company_follows
+            FOR EACH ROW EXECUTE FUNCTION public.trg_fn_company_follow_notification();
+    END IF;
+END $$;
 
 -- Company Verification Trigger
 CREATE OR REPLACE FUNCTION public.trg_fn_company_verified_notification()
@@ -1439,7 +1466,7 @@ BEGIN
             );
         EXCEPTION WHEN OTHERS THEN
             NULL;
-        END IF;
+        END;
     END IF;
 
     RETURN NEW;
@@ -1582,7 +1609,7 @@ CREATE POLICY "delivery_logs_select_policy" ON public.notification_delivery_logs
         auth.uid() = user_id 
         OR EXISTS (
             SELECT 1 FROM public.user_roles 
-            WHERE user_id = auth.uid() AND role IN ('admin', 'superadmin')
+            WHERE user_id = auth.uid() AND role::text IN ('admin', 'super_admin', 'superadmin')
         )
     );
 
@@ -1596,7 +1623,7 @@ CREATE POLICY "events_admin_only_policy" ON public.notification_events
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.user_roles 
-            WHERE user_id = auth.uid() AND role IN ('admin', 'superadmin')
+            WHERE user_id = auth.uid() AND role::text IN ('admin', 'super_admin', 'superadmin')
         )
     );
 

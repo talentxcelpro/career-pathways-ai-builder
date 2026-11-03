@@ -6,25 +6,61 @@
 
 BEGIN;
 
--- 1. Drop Triggers
-DROP TRIGGER IF EXISTS trg_connections_notification ON public.connections;
-DROP TRIGGER IF EXISTS trg_profile_views_notification ON public.profile_views;
-DROP TRIGGER IF EXISTS trg_post_likes_notification ON public.post_likes;
-DROP TRIGGER IF EXISTS trg_post_comments_notification ON public.post_comments;
-DROP TRIGGER IF EXISTS trg_post_mentions_notification ON public.posts;
-DROP TRIGGER IF EXISTS trg_post_shares_notification ON public.post_shares;
-DROP TRIGGER IF EXISTS trg_job_applications_notification ON public.job_applications;
-DROP TRIGGER IF EXISTS trg_job_published_notification ON public.jobs;
-DROP TRIGGER IF EXISTS trg_messages_notification ON public.messages;
-DROP TRIGGER IF EXISTS trg_company_follows_notification ON public.company_follows;
-DROP TRIGGER IF EXISTS trg_company_verified_notification ON public.companies;
-DROP TRIGGER IF EXISTS trg_company_created_notification ON public.companies;
-DROP TRIGGER IF EXISTS trg_interview_schedules_notification ON public.interview_schedules;
-DROP TRIGGER IF EXISTS trg_job_recommendations_notification ON public.job_recommendations;
-DROP TRIGGER IF EXISTS trg_skill_endorsements_notification ON public.skill_endorsements;
-DROP TRIGGER IF EXISTS trg_user_courses_notification ON public.user_courses;
-DROP TRIGGER IF EXISTS trg_user_assessment_notification ON public.user_assessment_results;
-DROP TRIGGER IF EXISTS trg_notification_events_dispatch ON public.notification_events;
+-- 1. Drop Triggers Defensively
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'connections') THEN
+        DROP TRIGGER IF EXISTS trg_connections_notification ON public.connections;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profile_views') THEN
+        DROP TRIGGER IF EXISTS trg_profile_views_notification ON public.profile_views;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'post_likes') THEN
+        DROP TRIGGER IF EXISTS trg_post_likes_notification ON public.post_likes;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'post_comments') THEN
+        DROP TRIGGER IF EXISTS trg_post_comments_notification ON public.post_comments;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'posts') THEN
+        DROP TRIGGER IF EXISTS trg_post_mentions_notification ON public.posts;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'post_shares') THEN
+        DROP TRIGGER IF EXISTS trg_post_shares_notification ON public.post_shares;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'job_applications') THEN
+        DROP TRIGGER IF EXISTS trg_job_applications_notification ON public.job_applications;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'jobs') THEN
+        DROP TRIGGER IF EXISTS trg_job_published_notification ON public.jobs;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'messages') THEN
+        DROP TRIGGER IF EXISTS trg_messages_notification ON public.messages;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'company_follows') THEN
+        DROP TRIGGER IF EXISTS trg_company_follows_notification ON public.company_follows;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'companies') THEN
+        DROP TRIGGER IF EXISTS trg_company_verified_notification ON public.companies;
+        DROP TRIGGER IF EXISTS trg_company_created_notification ON public.companies;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'interview_schedules') THEN
+        DROP TRIGGER IF EXISTS trg_interview_schedules_notification ON public.interview_schedules;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'job_recommendations') THEN
+        DROP TRIGGER IF EXISTS trg_job_recommendations_notification ON public.job_recommendations;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'skill_endorsements') THEN
+        DROP TRIGGER IF EXISTS trg_skill_endorsements_notification ON public.skill_endorsements;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_courses') THEN
+        DROP TRIGGER IF EXISTS trg_user_courses_notification ON public.user_courses;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'user_assessment_results') THEN
+        DROP TRIGGER IF EXISTS trg_user_assessment_notification ON public.user_assessment_results;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'notification_events') THEN
+        DROP TRIGGER IF EXISTS trg_notification_events_dispatch ON public.notification_events;
+    END IF;
+END $$;
 
 -- 2. Drop Trigger Functions
 DROP FUNCTION IF EXISTS public.trg_fn_connection_notification();
