@@ -1,9 +1,34 @@
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode, FC } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, ReactNode, FC } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { PushNotifications } from '@capacitor/push-notifications';
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  actor_id?: string;
+  type: string;
+  event_type?: string;
+  title: string;
+  message: string;
+  data?: any;
+  is_read: boolean;
+  link?: string;
+  action_url?: string;
+  module?: string;
+  category?: string;
+  priority: 'low' | 'normal' | 'medium' | 'high' | 'urgent';
+  icon?: string;
+  sound?: boolean;
+  sound_enabled?: boolean;
+  delivery_status?: string;
+  created_at: string;
+  updated_at?: string;
+  read_at?: string;
+  expires_at?: string;
+}
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -11,27 +36,21 @@ interface NotificationContextType {
   isSubscribed: boolean;
   isLoading: boolean;
   permission: NotificationPermission;
+  activeFilter: string;
+  setActiveFilter: (filter: string) => void;
+  unreadOnly: boolean;
+  setUnreadOnly: (unreadOnly: boolean) => void;
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
   subscribeToPush: () => Promise<void>;
   unsubscribeFromPush: () => Promise<void>;
+  unregisterDeviceToken: (token?: string) => Promise<void>;
   markAsRead: (id: string) => Promise<void>;
-  markAllAsRead: () => Promise<void>;
+  markAllAsRead: (module?: string) => Promise<void>;
   deleteNotification: (id: string) => Promise<void>;
   sendTestNotification: () => Promise<void>;
-  playNotificationSound: () => void;
-}
-
-interface Notification {
-  id: string;
-  user_id: string;
-  type: string;
-  title: string;
-  message: string;
-  data?: any;
-  is_read: boolean;
-  action_url?: string;
-  priority: 'low' | 'normal' | 'high';
-  created_at: string;
-  sound_enabled?: boolean;
+  playNotificationSound: (priority?: string) => void;
+  refreshNotifications: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -44,18 +63,39 @@ export const useNotifications = () => {
   return context;
 };
 
+// Helper for multi-tab synchronization
+const broadcastSync = (payload: any) => {
+  try {
+    if (typeof window !== 'undefined' && 'BroadcastChannel' in window) {
+      const channel = new BroadcastChannel('talentxcel_notification_sync');
+      channel.postMessage(payload);
+      channel.close();
+    }
+  } catch (_) {
+    // Graceful fallback for non-supporting browsers
+  }
+};
+
 export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { user } = useOptimizedAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [permission, setPermission] = useState<NotificationPermission>(() => {
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      return Notification.permission;
+    }
+    return 'default';
+  });
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [unreadOnly, setUnreadOnly] = useState<boolean>(false);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
-  // Initialize audio context for sound
+  // Audio Context initialization on first user interaction
   useEffect(() => {
     const initAudio = () => {
-      if (!audioContext && 'AudioContext' in window) {
+      if (!audioContext && typeof window !== 'undefined' && 'AudioContext' in window) {
         setAudioContext(new AudioContext());
       }
     };
@@ -64,33 +104,85 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     return () => document.removeEventListener('click', initAudio);
   }, [audioContext]);
 
-  // Load notifications
+  // Load notifications from database
   const loadNotifications = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setNotifications([]);
+      return;
+    }
 
     try {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from('notifications')
-        .select('id, title, message, type, is_read, created_at, link, icon, module, priority, related_id')
+        .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-        .limit(50);
+        .limit(100);
 
       if (error) throw error;
-      setNotifications(data || []);
+      setNotifications((data || []) as Notification[]);
     } catch (error) {
       console.error('Error loading notifications:', error);
+    } finally {
+      setIsLoading(false);
     }
   }, [user]);
 
-  // Subscribe to real-time notifications
+  // Cross-Tab Synchronization (BroadcastChannel)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return;
+    const syncChannel = new BroadcastChannel('talentxcel_notification_sync');
+
+    syncChannel.onmessage = (event) => {
+      const data = event.data;
+      if (!data) return;
+
+      if (data.type === 'MARK_READ' && data.id) {
+        setNotifications(prev =>
+          prev.map(n => n.id === data.id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n)
+        );
+      } else if (data.type === 'MARK_ALL_READ') {
+        setNotifications(prev =>
+          prev.map(n => (!data.module || n.module === data.module) ? { ...n, is_read: true, read_at: new Date().toISOString() } : n)
+        );
+      } else if (data.type === 'DELETE' && data.id) {
+        setNotifications(prev => prev.filter(n => n.id !== data.id));
+      } else if (data.type === 'REFRESH') {
+        loadNotifications();
+      }
+    };
+
+    return () => {
+      syncChannel.close();
+    };
+  }, [loadNotifications]);
+
+  // Tab Focus & Online Reconnection Reconciliation
+  useEffect(() => {
+    if (!user) return;
+
+    const handleFocusOrOnline = () => {
+      loadNotifications();
+    };
+
+    window.addEventListener('focus', handleFocusOrOnline);
+    window.addEventListener('online', handleFocusOrOnline);
+
+    return () => {
+      window.removeEventListener('focus', handleFocusOrOnline);
+      window.removeEventListener('online', handleFocusOrOnline);
+    };
+  }, [user, loadNotifications]);
+
+  // Real-time Postgres Changes Subscription
   useEffect(() => {
     if (!user) return;
 
     loadNotifications();
 
     const channel = supabase
-      .channel(`notifications_${user.id}`)
+      .channel(`user_notifications_${user.id}`)
       .on(
         'postgres_changes',
         {
@@ -100,11 +192,13 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
           filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          const newNotification = payload.new as Notification;
-          setNotifications(prev => [newNotification, ...prev]);
+          const newNotif = payload.new as Notification;
+          setNotifications(prev => {
+            if (prev.some(n => n.id === newNotif.id)) return prev;
+            return [newNotif, ...prev];
+          });
           
-          // Play sound and show browser notification
-          handleNewNotification(newNotification);
+          handleNewNotification(newNotif);
         }
       )
       .on(
@@ -118,19 +212,37 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
         (payload) => {
           const updated = payload.new as Notification;
           setNotifications(prev => 
-            prev.map(n => n.id === updated.id ? updated : n)
+            prev.map(n => n.id === updated.id ? { ...n, ...updated } : n)
           );
         }
       )
-      .subscribe();
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'notifications',
+          filter: `user_id=eq.${user.id}`
+        },
+        (payload) => {
+          const deletedId = (payload.old as any)?.id;
+          if (deletedId) {
+            setNotifications(prev => prev.filter(n => n.id !== deletedId));
+          }
+        }
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime notifications connected for user:', user.id);
+        }
+      });
 
     return () => {
-      channel.unsubscribe();
       supabase.removeChannel(channel);
     };
   }, [user, loadNotifications]);
 
-  // Initialize push notifications
+  // Initialize Web / Native Push
   useEffect(() => {
     if (user) {
       initializePushNotifications();
@@ -145,58 +257,31 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
         await initializeWebPush();
       }
     } catch (error) {
-      console.error('Push notification initialization failed:', error);
+      console.error('Push notification initialization error:', error);
     }
   };
 
   const initializeWebPush = async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-      console.log('Push messaging is not supported');
-      return;
-    }
-
-    // In Lovable preview/sandbox environments, disable SW to avoid stale caches
-    const host = location.hostname;
-    const isPreview = host.includes('lovable.app') || host.includes('sandbox.lovable.dev') || host.includes('id-preview');
-    if (isPreview) {
-      try {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(regs.map(r => r.unregister()));
-        if ('caches' in window) {
-          const keys = await caches.keys();
-          await Promise.all(keys.map(k => caches.delete(k)));
-        }
-        console.log('Service Worker disabled in preview. Unregistered and cleared caches.');
-      } catch (e) {
-        console.warn('Error while disabling SW in preview:', e);
-      }
-      // Keep state consistent
-      setPermission(Notification.permission);
-      setIsSubscribed(false);
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
       return;
     }
 
     try {
-      // Register service worker (production only)
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('Service Worker registered:', registration);
-
-      // Check current permission
       setPermission(Notification.permission);
 
-      // Check existing subscription
-      const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
+      if ('PushManager' in window && registration.pushManager) {
+        const subscription = await registration.pushManager.getSubscription();
+        setIsSubscribed(!!subscription);
+      }
 
-      // Listen for messages from service worker
       navigator.serviceWorker.addEventListener('message', (event) => {
         if (event.data?.type === 'PUSH_NOTIFICATION_RECEIVED') {
           handleNewNotification(event.data.data);
         }
       });
-
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      console.warn('Service Worker registration note:', error);
     }
   };
 
@@ -214,131 +299,177 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
         setPermission('granted');
       }
 
-      // Listen for registration token
       PushNotifications.addListener('registration', async (token) => {
-        console.log('Push registration success, token: ' + token.value);
-        await registerPushToken(token.value, 'mobile');
+        await registerDeviceToken(token.value, 'mobile', 'fcm');
       });
 
-      // Listen for push notifications
       PushNotifications.addListener('pushNotificationReceived', (notification) => {
-        console.log('Push received: ' + JSON.stringify(notification));
         handleNewNotification(notification);
       });
-
-      // Handle notification tap
-      PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-        console.log('Push action performed: ' + JSON.stringify(notification));
-      });
-
     } catch (error) {
-      console.error('Native push setup failed:', error);
+      console.warn('Native push setup note:', error);
     }
   };
 
   const handleNewNotification = (notification: any) => {
-    // Play notification sound
-    if (notification.sound_enabled !== false) {
-      playNotificationSound();
+    // Play alert audio
+    if (notification.sound !== false && notification.sound_enabled !== false) {
+      playNotificationSound(notification.priority);
     }
 
-    // Show browser notification if not on mobile
-    if (!Capacitor.isNativePlatform() && Notification.permission === 'granted') {
-      new Notification(notification.title, {
-        body: notification.message || notification.body,
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
-        tag: notification.id,
-        requireInteraction: notification.priority === 'high'
-      });
+    const notifTitle = notification.title || 'New Notification';
+    const notifMessage = notification.message || notification.body || '';
+    const destinationUrl = notification.link || notification.action_url || notification.data?.url || '/notifications';
+
+    // Show native desktop notification if window is blurred
+    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted' && document.hidden) {
+      try {
+        new Notification(notifTitle, {
+          body: notifMessage,
+          icon: '/icon-192.png',
+          badge: '/icon-192.png',
+          tag: notification.id || `notif_${Date.now()}`
+        });
+      } catch (_) {}
     }
 
-    // Show toast notification
-    toast(notification.title, {
-      description: notification.message || notification.body,
-      action: notification.action_url ? {
+    // In-app visual toast with deep link navigation
+    toast(notifTitle, {
+      description: notifMessage,
+      action: {
         label: 'View',
-        onClick: () => window.open(notification.action_url, '_blank')
-      } : undefined
+        onClick: () => {
+          if (destinationUrl) {
+            window.location.href = destinationUrl;
+          }
+        }
+      }
     });
   };
 
-  const playNotificationSound = () => {
+  const playNotificationSound = useCallback((priority: string = 'medium') => {
     try {
-      // Play system notification sound
       if (audioContext && audioContext.state === 'running') {
-        const oscillator = audioContext.createOscillator();
+        const oscillator = audioContext.createGain ? audioContext.createOscillator() : null;
+        if (!oscillator) return;
         const gainNode = audioContext.createGain();
-        
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-        
+
+        const freq = priority === 'high' || priority === 'urgent' ? 880 : priority === 'low' ? 440 : 660;
+        oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.35);
+
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.5);
+        oscillator.stop(audioContext.currentTime + 0.35);
       } else {
-        // Fallback: try to play audio file
         const audio = new Audio('/sounds/notification.mp3');
-        audio.volume = 0.5;
-        audio.play().catch(() => {
-          console.log('Could not play notification sound');
-        });
+        audio.volume = 0.4;
+        audio.play().catch(() => {});
       }
-    } catch (error) {
-      console.error('Error playing notification sound:', error);
+    } catch (e) {
+      console.warn('Audio play error:', e);
     }
-  };
+  }, [audioContext]);
 
-  const subscribeToPush = async () => {
-    setIsLoading(true);
-    try {
-      const permissionResult = await Notification.requestPermission();
-      setPermission(permissionResult);
-
-      if (permissionResult === 'granted') {
-        if (Capacitor.isNativePlatform()) {
-          await PushNotifications.register();
-          setIsSubscribed(true);
-        } else {
-          const registration = await navigator.serviceWorker.ready;
-          
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-              'BEl62iUYgUivxIkv69yViEuiBIa40HI80NM9f40SawaN-F72YOFApNfUpVJ4LxoLHCkFCVRJfySpZ8_Q24eWBJA'
-            )
-          });
-
-          await registerPushToken(JSON.stringify(subscription), 'web');
-          setIsSubscribed(true);
-        }
-        
-        toast.success('Push notifications enabled!');
-      } else {
-        toast.error('Notification permission denied');
-      }
-    } catch (error) {
-      console.error('Push subscription failed:', error);
-      toast.error('Failed to enable notifications');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const registerPushToken = async (token: string, platform: string) => {
+  const registerDeviceToken = async (
+    token: string, 
+    platform: string = 'web', 
+    provider: string = 'web_push',
+    subscriptionDetails: any = {}
+  ) => {
     if (!user) return;
 
     try {
       await supabase.functions.invoke('register-push-token', {
-        body: { push_token: token, platform, user_id: user.id }
+        body: {
+          action: 'register',
+          token,
+          platform,
+          provider,
+          endpoint: subscriptionDetails.endpoint,
+          p256dh: subscriptionDetails.keys?.p256dh,
+          auth_secret: subscriptionDetails.keys?.auth,
+          device_info: {
+            userAgent: navigator.userAgent,
+            language: navigator.language,
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight
+          }
+        }
       });
     } catch (error) {
-      console.error('Failed to register push token:', error);
+      console.error('Failed to register device token:', error);
+    }
+  };
+
+  const unregisterDeviceToken = async (token?: string) => {
+    if (!user) return;
+    try {
+      await supabase.functions.invoke('register-push-token', {
+        body: {
+          action: 'unregister',
+          token: token || null
+        }
+      });
+    } catch (error) {
+      console.warn('Device unregister note:', error);
+    }
+  };
+
+  const subscribeToPush = async () => {
+    if (typeof window === 'undefined') return;
+    setIsLoading(true);
+
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const permStatus = await PushNotifications.requestPermissions();
+        if (permStatus.receive === 'granted') {
+          await PushNotifications.register();
+          setIsSubscribed(true);
+          setPermission('granted');
+          toast.success('Push notifications enabled!');
+        } else {
+          toast.error('Permission denied for notifications');
+        }
+      } else {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+          toast.error('Push messaging is not supported in this browser');
+          return;
+        }
+
+        const perm = await Notification.requestPermission();
+        setPermission(perm);
+
+        if (perm === 'granted') {
+          const registration = await navigator.serviceWorker.ready;
+          const vapidPublicKey = 'BEl62iUYgUivxIkv69yViEuiBIa40HI80NM9f40SawaN-F72YOFApNfUpVJ4LxoLHCkFCVRJfySpZ8_Q24eWBJA';
+
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+          });
+
+          const subJson = subscription.toJSON();
+          await registerDeviceToken(
+            subscription.endpoint,
+            'web',
+            'web_push',
+            subJson
+          );
+
+          setIsSubscribed(true);
+          toast.success('Push notifications enabled!');
+        } else {
+          toast.error('Notification permission denied');
+        }
+      }
+    } catch (error: any) {
+      console.error('Push subscription failed:', error);
+      toast.error('Failed to enable push notifications');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -347,17 +478,18 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     try {
       if (Capacitor.isNativePlatform()) {
         await PushNotifications.removeAllListeners();
-      } else {
+      } else if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.getSubscription();
         if (subscription) {
           await subscription.unsubscribe();
+          await unregisterDeviceToken(subscription.endpoint);
         }
       }
       setIsSubscribed(false);
       toast.success('Push notifications disabled');
     } catch (error) {
-      console.error('Unsubscribe failed:', error);
+      console.error('Unsubscribe error:', error);
       toast.error('Failed to disable notifications');
     } finally {
       setIsLoading(false);
@@ -365,35 +497,67 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
   };
 
   const markAsRead = async (id: string) => {
+    // 1. Optimistic Update with Rollback snapshot
+    const prevNotifications = [...notifications];
+    setNotifications(prev =>
+      prev.map(n => n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n)
+    );
+    broadcastSync({ type: 'MARK_READ', id });
+
     try {
       const { error } = await supabase
         .from('notifications')
-        .update({ is_read: true })
+        .update({ is_read: true, read_at: new Date().toISOString() })
         .eq('id', id);
 
       if (error) throw error;
     } catch (error) {
       console.error('Error marking notification as read:', error);
+      setNotifications(prevNotifications);
+      toast.error('Failed to update notification');
     }
   };
 
-  const markAllAsRead = async () => {
-    if (!user) return;
+  const markAllAsRead = async (module?: string) => {
+    // 1. Optimistic Update with Rollback snapshot
+    const prevNotifications = [...notifications];
+    setNotifications(prev =>
+      prev.map(n => {
+        if (!module || n.module === module) {
+          return { ...n, is_read: true, read_at: new Date().toISOString() };
+        }
+        return n;
+      })
+    );
+    broadcastSync({ type: 'MARK_ALL_READ', module });
 
     try {
-      const { error } = await supabase
+      let query = supabase
         .from('notifications')
-        .update({ is_read: true })
-        .eq('user_id', user.id)
+        .update({ is_read: true, read_at: new Date().toISOString() })
+        .eq('user_id', user?.id)
         .eq('is_read', false);
 
+      if (module) {
+        query = query.eq('module', module);
+      }
+
+      const { error } = await query;
       if (error) throw error;
+      toast.success('All notifications marked as read');
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
+      setNotifications(prevNotifications);
+      toast.error('Failed to mark all as read');
     }
   };
 
   const deleteNotification = async (id: string) => {
+    // 1. Optimistic Update with Rollback snapshot
+    const prevNotifications = [...notifications];
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    broadcastSync({ type: 'DELETE', id });
+
     try {
       const { error } = await supabase
         .from('notifications')
@@ -401,8 +565,11 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
         .eq('id', id);
 
       if (error) throw error;
+      toast.success('Notification dismissed');
     } catch (error) {
       console.error('Error deleting notification:', error);
+      setNotifications(prevNotifications);
+      toast.error('Failed to dismiss notification');
     }
   };
 
@@ -410,17 +577,27 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     if (!user) return;
 
     try {
-      await supabase.functions.invoke('send-push-notification', {
-        body: {
-          user_ids: [user.id],
-          title: 'Test Notification',
-          body: 'This is a test notification from TalentXcel!',
-          data: { test: true },
-          priority: 'normal'
-        }
-      });
-      toast.success('Test notification sent!');
-    } catch (error) {
+      const { error } = await supabase
+        .from('notifications')
+        .insert({
+          user_id: user.id,
+          actor_id: user.id,
+          type: 'platform_test',
+          event_type: 'PLATFORM_ANNOUNCEMENT',
+          title: 'TalentXcel Notification Engine Online',
+          message: 'Real-time delivery, audio indicators, and deep links are active.',
+          module: 'network',
+          category: 'system_updates',
+          priority: 'medium',
+          link: '/notifications',
+          is_read: false,
+          delivery_status: 'delivered',
+          created_at: new Date().toISOString()
+        });
+
+      if (error) throw error;
+      toast.success('Test notification generated successfully!');
+    } catch (error: any) {
       console.error('Failed to send test notification:', error);
       toast.error('Failed to send test notification');
     }
@@ -445,13 +622,21 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     isSubscribed,
     isLoading,
     permission,
+    activeFilter,
+    setActiveFilter,
+    unreadOnly,
+    setUnreadOnly,
+    searchQuery,
+    setSearchQuery,
     subscribeToPush,
     unsubscribeFromPush,
+    unregisterDeviceToken,
     markAsRead,
     markAllAsRead,
     deleteNotification,
     sendTestNotification,
-    playNotificationSound
+    playNotificationSound,
+    refreshNotifications: loadNotifications
   };
 
   return (

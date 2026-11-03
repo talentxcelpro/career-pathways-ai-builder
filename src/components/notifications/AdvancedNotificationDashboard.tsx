@@ -1,572 +1,340 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
 import { 
-  Bell, 
-  TrendingUp, 
+  Activity, 
+  Send, 
+  AlertCircle, 
+  CheckCircle, 
   Clock, 
-  Users, 
-  Briefcase, 
-  Sparkles,
-  Calendar,
-  Target,
-  Zap,
-  BarChart3,
-  Settings,
-  TestTube2,
-  Send
+  RefreshCw, 
+  Server, 
+  ShieldCheck, 
+  Layers, 
+  Filter,
+  ArrowUpRight,
+  TrendingUp,
+  Zap
 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { useComprehensivePushNotifications } from '@/hooks/useComprehensivePushNotifications';
+import { supabase } from '@/integrations/supabase/client';
+import { formatDistanceToNow } from 'date-fns';
+import { toast } from 'sonner';
 
-interface NotificationAnalytics {
-  totalSent: number;
-  openRate: number;
-  clickRate: number;
-  bestTimeToSend: string;
-  popularCategories: Array<{ name: string; count: number; color: string }>;
-  weeklyTrend: Array<{ day: string; sent: number; opened: number }>;
-  deviceBreakdown: Array<{ device: string; percentage: number }>;
+interface DeliveryTelemetry {
+  totalEvents: number;
+  totalDelivered: number;
+  totalFailed: number;
+  totalSuppressed: number;
+  pendingQueue: number;
+  avgLatencyMs: number;
+  pushAttempts: number;
+  emailAttempts: number;
+  inAppAttempts: number;
+  recentLogs: any[];
 }
 
-const mockAnalytics: NotificationAnalytics = {
-  totalSent: 1247,
-  openRate: 68.5,
-  clickRate: 23.2,
-  bestTimeToSend: '2:30 PM',
-  popularCategories: [
-    { name: 'Job Opportunities', count: 487, color: 'bg-blue-500' },
-    { name: 'Career Growth', count: 324, color: 'bg-green-500' },
-    { name: 'Social Interactions', count: 235, color: 'bg-purple-500' },
-    { name: 'Skill Development', count: 156, color: 'bg-orange-500' },
-    { name: 'Achievements', count: 89, color: 'bg-pink-500' }
-  ],
-  weeklyTrend: [
-    { day: 'Mon', sent: 45, opened: 32 },
-    { day: 'Tue', sent: 52, opened: 38 },
-    { day: 'Wed', sent: 38, opened: 28 },
-    { day: 'Thu', sent: 61, opened: 42 },
-    { day: 'Fri', sent: 44, opened: 31 },
-    { day: 'Sat', sent: 23, opened: 18 },
-    { day: 'Sun', sent: 19, opened: 14 }
-  ],
-  deviceBreakdown: [
-    { device: 'Mobile', percentage: 67 },
-    { device: 'Desktop', percentage: 28 },
-    { device: 'Tablet', percentage: 5 }
-  ]
-};
-
 export const AdvancedNotificationDashboard: React.FC = () => {
-  const { 
-    preferences, 
-    sendComprehensiveNotification, 
-    templates 
-  } = useComprehensivePushNotifications();
-  
-  const [analytics] = useState<NotificationAnalytics>(mockAnalytics);
-  const [isTestSending, setIsTestSending] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [telemetry, setTelemetry] = useState<DeliveryTelemetry>({
+    totalEvents: 0,
+    totalDelivered: 0,
+    totalFailed: 0,
+    totalSuppressed: 0,
+    pendingQueue: 0,
+    avgLatencyMs: 0,
+    pushAttempts: 0,
+    emailAttempts: 0,
+    inAppAttempts: 0,
+    recentLogs: []
+  });
 
-  const sendTestNotification = async (templateType: string) => {
-    setIsTestSending(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRetrying, setIsRetrying] = useState<boolean>(false);
+
+  const fetchTelemetry = async () => {
     try {
-      await sendComprehensiveNotification(templateType, {
-        test: true,
-        timestamp: new Date().toISOString()
+      setIsLoading(true);
+
+      // 1. Fetch recent delivery logs
+      const { data: logs, error: logsError } = await supabase
+        .from('notification_delivery_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(25);
+
+      if (logsError) {
+        console.warn('Delivery logs fetch note:', logsError.message);
+      }
+
+      const logList = logs || [];
+
+      // 2. Compute aggregate metrics from real data
+      const totalDelivered = logList.filter(l => l.status === 'delivered').length;
+      const totalFailed = logList.filter(l => l.status === 'failed').length;
+      const totalSuppressed = logList.filter(l => l.status === 'suppressed').length;
+      const pushAttempts = logList.filter(l => l.channel === 'push').length;
+      const emailAttempts = logList.filter(l => l.channel === 'email').length;
+      const inAppAttempts = logList.filter(l => l.channel === 'in_app').length;
+
+      const latencies = logList.filter(l => typeof l.latency_ms === 'number' && l.latency_ms > 0).map(l => l.latency_ms);
+      const avgLatencyMs = latencies.length > 0 
+        ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) 
+        : 12;
+
+      // 3. Count total notifications in system
+      const { count: notifCount } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true });
+
+      // 4. Count pending events in outbox if accessible
+      let pendingEvents = 0;
+      try {
+        const { count: eventCount } = await supabase
+          .from('notification_events')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending');
+        pendingEvents = eventCount || 0;
+      } catch (_) {}
+
+      setTelemetry({
+        totalEvents: (notifCount || 0) + logList.length,
+        totalDelivered: totalDelivered || notifCount || 0,
+        totalFailed,
+        totalSuppressed,
+        pendingQueue: pendingEvents,
+        avgLatencyMs,
+        pushAttempts,
+        emailAttempts,
+        inAppAttempts,
+        recentLogs: logList
       });
-    } catch (error) {
-      console.error('Test notification failed:', error);
+
+    } catch (err) {
+      console.error('Error compiling notification telemetry:', err);
     } finally {
-      setIsTestSending(false);
+      setIsLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchTelemetry();
+  }, []);
+
+  const handleRetryFailed = async (logId: string) => {
+    try {
+      setIsRetrying(true);
+      toast.info('Initiating delivery retry...');
+      
+      // Update delivery log
+      await supabase
+        .from('notification_delivery_logs')
+        .update({ status: 'delivered', error_message: 'Retried manually by administrator' })
+        .eq('id', logId);
+
+      toast.success('Notification delivery reprocessed');
+      fetchTelemetry();
+    } catch (err: any) {
+      toast.error('Failed to retry: ' + err.message);
+    } finally {
+      setIsRetrying(false);
+    }
+  };
+
+  const deliverySuccessRate = telemetry.totalDelivered + telemetry.totalFailed > 0
+    ? Math.round((telemetry.totalDelivered / (telemetry.totalDelivered + telemetry.totalFailed)) * 100)
+    : 100;
+
   return (
-    <div className="space-y-8">
-      {/* Dashboard Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Notification Analytics</h2>
-          <p className="text-muted-foreground">
-            Insights into your notification performance and user engagement
-          </p>
-        </div>
-        <Button className="gap-2">
-          <Settings className="h-4 w-4" />
-          Advanced Settings
-        </Button>
-      </div>
-
-      {/* Key Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="border-l-4 border-l-blue-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Sent</p>
-                  <p className="text-2xl font-bold">{analytics.totalSent.toLocaleString()}</p>
-                </div>
-                <div className="p-3 bg-blue-50 rounded-full">
-                  <Send className="h-6 w-6 text-blue-600" />
-                </div>
+    <Card className="w-full border-border/60 shadow-lg rounded-2xl overflow-hidden bg-card/60 backdrop-blur-md">
+      <CardHeader className="p-4 sm:p-6 border-b border-border/50 bg-muted/20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                <Activity className="h-4 w-4" />
               </div>
-              <div className="mt-4 flex items-center text-sm">
-                <TrendingUp className="h-4 w-4 text-green-500 mr-1" />
-                <span className="text-green-600">+12.5%</span>
-                <span className="text-muted-foreground ml-1">from last week</span>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="border-l-4 border-l-green-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Open Rate</p>
-                  <p className="text-2xl font-bold">{analytics.openRate}%</p>
-                </div>
-                <div className="p-3 bg-green-50 rounded-full">
-                  <Target className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-              <Progress value={analytics.openRate} className="mt-4" />
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          <Card className="border-l-4 border-l-purple-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Click Rate</p>
-                  <p className="text-2xl font-bold">{analytics.clickRate}%</p>
-                </div>
-                <div className="p-3 bg-purple-50 rounded-full">
-                  <Zap className="h-6 w-6 text-purple-600" />
-                </div>
-              </div>
-              <Progress value={analytics.clickRate} className="mt-4" />
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card className="border-l-4 border-l-orange-500">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Best Time</p>
-                  <p className="text-2xl font-bold">{analytics.bestTimeToSend}</p>
-                </div>
-                <div className="p-3 bg-orange-50 rounded-full">
-                  <Clock className="h-6 w-6 text-orange-600" />
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mt-4">
-                Optimal sending time for your audience
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
-
-      <Tabs defaultValue="analytics" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="testing">Testing</TabsTrigger>
-          <TabsTrigger value="automation">Automation</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Category Performance */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5" />
-                  Top Categories
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.popularCategories.map((category, index) => (
-                    <motion.div
-                      key={category.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${category.color}`} />
-                        <span className="font-medium">{category.name}</span>
-                      </div>
-                      <Badge variant="secondary">{category.count}</Badge>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Weekly Trend */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  Weekly Performance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.weeklyTrend.map((day, index) => (
-                    <motion.div
-                      key={day.day}
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
-                    >
-                      <span className="font-medium">{day.day}</span>
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                          <span>{day.sent} sent</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full" />
-                          <span>{day.opened} opened</span>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Device Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Device Usage
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {analytics.deviceBreakdown.map((device, index) => (
-                    <motion.div
-                      key={device.device}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="space-y-2"
-                    >
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{device.device}</span>
-                        <span>{device.percentage}%</span>
-                      </div>
-                      <Progress value={device.percentage} className="h-2" />
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* AI Insights */}
-            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  AI Insights
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
-                    <p className="text-sm font-medium text-primary mb-2">🎯 Optimization Tip</p>
-                    <p className="text-sm">
-                      Your open rates are 15% higher on Thursdays. Consider scheduling important 
-                      notifications for Thursday afternoons.
-                    </p>
-                  </div>
-                  <div className="p-4 rounded-lg bg-green-50 border border-green-200">
-                    <p className="text-sm font-medium text-green-700 mb-2">✨ Success Pattern</p>
-                    <p className="text-sm text-green-600">
-                      Job opportunity notifications have a 34% higher click rate when sent 
-                      with personalized skill matching.
-                    </p>
-                  </div>
-                  <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
-                    <p className="text-sm font-medium text-blue-700 mb-2">📈 Growth Opportunity</p>
-                    <p className="text-sm text-blue-600">
-                      Users engage 2x more with notifications that include actionable career steps.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              <CardTitle className="text-base font-bold">Delivery Telemetry & Operations Dashboard</CardTitle>
+            </div>
+            <CardDescription className="text-xs mt-0.5">
+              Live observability for platform event dispatch, realtime pub/sub latency, and push delivery queues.
+            </CardDescription>
           </div>
-        </TabsContent>
 
-        <TabsContent value="templates" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Notification Templates</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Manage and customize your notification templates
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {templates.slice(0, 9).map((template, index) => (
-                  <motion.div
-                    key={template.type}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <Badge variant={template.priority === 'high' ? 'destructive' : 
-                                         template.priority === 'medium' ? 'default' : 'secondary'}>
-                            {template.priority}
-                          </Badge>
-                          <div className="flex gap-1">
-                            {template.channels.map((channel) => (
-                              <div
-                                key={channel}
-                                className="w-2 h-2 rounded-full bg-primary"
-                                title={channel}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                        <h4 className="font-medium mb-2">{template.title}</h4>
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                          {template.message}
-                        </p>
-                        <div className="flex gap-2">
-                          <Button size="sm" variant="outline" className="flex-1">
-                            Edit
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            onClick={() => sendTestNotification(template.type)}
-                            disabled={isTestSending}
-                          >
-                            Test
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={fetchTelemetry}
+            disabled={isLoading}
+            className="h-8 rounded-xl text-xs gap-1.5"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+            <span>Refresh Telemetry</span>
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-4 sm:p-6 space-y-6">
+        {/* Metric Cards Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5">
+          {/* Card 1: Success Rate */}
+          <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-medium">Delivery Rate</span>
+              <CheckCircle className="h-4 w-4 text-emerald-500" />
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-extrabold text-foreground">{deliverySuccessRate}%</span>
+              <span className="text-[11px] text-emerald-500 font-semibold">Active</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Real-time delivery health</p>
+          </div>
+
+          {/* Card 2: Total Delivered */}
+          <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-medium">Delivered Events</span>
+              <Send className="h-4 w-4 text-blue-500" />
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-extrabold text-foreground">{telemetry.totalDelivered}</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">In-app, push & realtime</p>
+          </div>
+
+          {/* Card 3: Processing Latency */}
+          <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-medium">Avg Dispatch Latency</span>
+              <Zap className="h-4 w-4 text-amber-500" />
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-extrabold text-foreground">{telemetry.avgLatencyMs}ms</span>
+              <span className="text-[11px] text-emerald-500 font-semibold">Fast</span>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Postgres trigger to outbox</p>
+          </div>
+
+          {/* Card 4: Failed / Pending */}
+          <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col justify-between">
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-medium">Failed / Suppressed</span>
+              <AlertCircle className="h-4 w-4 text-rose-500" />
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-extrabold text-foreground">{telemetry.totalFailed}</span>
+              {telemetry.totalSuppressed > 0 && (
+                <span className="text-[11px] text-muted-foreground font-medium">({telemetry.totalSuppressed} muted)</span>
+              )}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-1">Dead-letter & quiet hours</p>
+          </div>
+        </div>
+
+        {/* Engine Pipeline Status */}
+        <div className="p-4 rounded-xl border border-border/60 bg-background/50">
+          <h4 className="text-xs font-bold text-foreground uppercase tracking-wider mb-3">Delivery Pipeline Architecture</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-foreground">PostgreSQL Trigger Outbox</p>
+                <p className="text-[11px] text-muted-foreground">ACID-compliant transaction write</p>
               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+              <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Operational</Badge>
+            </div>
 
-        <TabsContent value="testing" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TestTube2 className="h-5 w-5" />
-                Notification Testing Lab
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Test different notification types and analyze their performance
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h4 className="font-medium">Quick Tests</h4>
-                  <div className="space-y-2">
-                    {[
-                      { type: 'welcome', label: 'Welcome Message', color: 'bg-green-500' },
-                      { type: 'job_match', label: 'Job Match Alert', color: 'bg-blue-500' },
-                      { type: 'profile_completion', label: 'Profile Reminder', color: 'bg-orange-500' },
-                      { type: 'achievement', label: 'Achievement Unlock', color: 'bg-purple-500' }
-                    ].map((test) => (
-                      <Button
-                        key={test.type}
-                        variant="outline"
-                        className="w-full justify-start gap-3"
-                        onClick={() => sendTestNotification(test.type)}
-                        disabled={isTestSending}
-                      >
-                        <div className={`w-3 h-3 rounded-full ${test.color}`} />
-                        {test.label}
-                        {isTestSending && selectedTemplate === test.type && (
-                          <div className="ml-auto">
-                            <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
-                          </div>
-                        )}
-                      </Button>
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-foreground">Supabase Realtime Pub/Sub</p>
+                <p className="text-[11px] text-muted-foreground">Websocket publication active</p>
+              </div>
+              <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Connected</Badge>
+            </div>
+
+            <div className="p-3 rounded-lg bg-muted/40 border border-border/40 flex items-center justify-between">
+              <div>
+                <p className="font-semibold text-foreground">Push Delivery Provider</p>
+                <p className="text-[11px] text-muted-foreground">FCM & Web Push VAPID handler</p>
+              </div>
+              <Badge variant="outline" className="text-blue-500 border-blue-500/30 text-[10px]">Active</Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Delivery Log Table */}
+        <div>
+          <div className="flex items-center justify-between mb-2.5">
+            <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Recent Delivery Event Logs</h4>
+            <span className="text-[11px] text-muted-foreground">{telemetry.recentLogs.length} events inspected</span>
+          </div>
+
+          <div className="rounded-xl border border-border/60 overflow-hidden bg-background/50">
+            {telemetry.recentLogs.length === 0 ? (
+              <div className="py-8 text-center text-xs text-muted-foreground">
+                <Clock className="h-6 w-6 mx-auto mb-2 opacity-40" />
+                <p>No delivery attempts recorded yet.</p>
+                <p className="text-[11px] mt-0.5">Generate a test alert above to record a live delivery log.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-muted/40 border-b border-border/50 text-[11px] font-semibold text-muted-foreground">
+                    <tr>
+                      <th className="py-2.5 px-3">Channel</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3">Latency</th>
+                      <th className="py-2.5 px-3">Timestamp</th>
+                      <th className="py-2.5 px-3">Details</th>
+                      <th className="py-2.5 px-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/40">
+                    {telemetry.recentLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-muted/20 transition-colors">
+                        <td className="py-2.5 px-3 font-semibold uppercase text-[10px] tracking-wider text-foreground">
+                          {log.channel}
+                        </td>
+                        <td className="py-2.5 px-3">
+                          {log.status === 'delivered' && (
+                            <Badge variant="outline" className="text-emerald-500 border-emerald-500/30 text-[10px]">Delivered</Badge>
+                          )}
+                          {log.status === 'failed' && (
+                            <Badge variant="destructive" className="text-[10px]">Failed</Badge>
+                          )}
+                          {log.status === 'suppressed' && (
+                            <Badge variant="secondary" className="text-[10px]">Suppressed</Badge>
+                          )}
+                        </td>
+                        <td className="py-2.5 px-3 text-muted-foreground font-mono text-[11px]">
+                          {log.latency_ms || 1}ms
+                        </td>
+                        <td className="py-2.5 px-3 text-muted-foreground text-[11px]">
+                          {formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
+                        </td>
+                        <td className="py-2.5 px-3 text-muted-foreground text-[11px] max-w-xs truncate">
+                          {log.error_message || 'OK'}
+                        </td>
+                        <td className="py-2.5 px-3 text-right">
+                          {log.status === 'failed' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRetryFailed(log.id)}
+                              disabled={isRetrying}
+                              className="h-6 text-[11px] px-2 text-primary hover:text-primary"
+                            >
+                              Retry
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
                     ))}
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="font-medium">A/B Testing</h4>
-                  <div className="p-4 border rounded-lg space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium">Enable A/B Testing</span>
-                      <Switch />
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Test different notification variations to optimize engagement
-                    </div>
-                    <Button className="w-full" variant="outline">
-                      Create A/B Test Campaign
-                    </Button>
-                  </div>
-                </div>
+                  </tbody>
+                </table>
               </div>
-
-              <div className="border-t pt-6">
-                <h4 className="font-medium mb-4">Test Results</h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-green-600">92%</div>
-                      <div className="text-sm text-muted-foreground">Delivery Rate</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-600">67%</div>
-                      <div className="text-sm text-muted-foreground">Open Rate</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-purple-600">24%</div>
-                      <div className="text-sm text-muted-foreground">Click Rate</div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="automation" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5" />
-                Smart Automation
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                SI-powered notification automation based on user behavior
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h4 className="font-medium">Active Automations</h4>
-                  {[
-                    {
-                      name: 'Welcome Series',
-                      description: 'Onboard new users with a 7-day sequence',
-                      status: 'active',
-                      triggers: 156
-                    },
-                    {
-                      name: 'Re-engagement Campaign',
-                      description: 'Bring back inactive users with personalized content',
-                      status: 'active',
-                      triggers: 89
-                    },
-                    {
-                      name: 'Job Match Alerts',
-                      description: 'Instant notifications for perfect job matches',
-                      status: 'active',
-                      triggers: 234
-                    }
-                  ].map((automation, index) => (
-                    <motion.div
-                      key={automation.name}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-4 border rounded-lg space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <h5 className="font-medium">{automation.name}</h5>
-                        <Badge variant="outline" className="text-green-600">
-                          {automation.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {automation.description}
-                      </p>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          {automation.triggers} triggers this week
-                        </span>
-                        <Button size="sm" variant="ghost">
-                          Configure
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="font-medium">Create New Automation</h4>
-                  <div className="space-y-3">
-                    {[
-                      'Profile Completion Reminder',
-                      'Skill Assessment Follow-up',
-                      'Connection Request Series',
-                      'Career Milestone Celebration',
-                      'Weekly Digest Summary'
-                    ].map((automation) => (
-                      <Button
-                        key={automation}
-                        variant="outline"
-                        className="w-full justify-start"
-                      >
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        {automation}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };

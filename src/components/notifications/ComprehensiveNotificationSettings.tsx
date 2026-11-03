@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -12,7 +12,6 @@ import {
   Bell, 
   Mail, 
   MessageSquare, 
-  Phone, 
   Clock, 
   Settings, 
   Sparkles,
@@ -21,490 +20,415 @@ import {
   Trophy,
   BookOpen,
   AlertTriangle,
-  Volume2,
-  VolumeX,
   Moon,
-  Sun
+  Save,
+  CheckCircle2,
+  Loader2
 } from 'lucide-react';
-import { useComprehensivePushNotifications } from '@/hooks/useComprehensivePushNotifications';
+import { supabase } from '@/integrations/supabase/client';
+import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { toast } from 'sonner';
 
-interface CategoryConfig {
-  key: string;
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-  priority: 'low' | 'medium' | 'high';
+export interface UserPreferencesState {
+  // Channels
+  in_app_enabled: boolean;
+  push_enabled: boolean;
+  email_enabled: boolean;
+  sms_enabled: boolean;
+  // Categories
+  career_growth_enabled: boolean;
+  job_opportunities_enabled: boolean;
+  social_interactions_enabled: boolean;
+  messages_enabled: boolean;
+  applications_enabled: boolean;
+  tool_engagement_enabled: boolean;
+  system_updates_enabled: boolean;
+  // Timing
+  quiet_hours_enabled: boolean;
+  quiet_hours_start: string;
+  quiet_hours_end: string;
+  timezone: string;
+  frequency: 'instant' | 'digest_daily' | 'digest_weekly';
 }
 
-const NOTIFICATION_CATEGORIES: CategoryConfig[] = [
-  {
-    key: 'career_growth',
-    label: 'Career Growth',
-    description: 'Profile completion, skill assessments, career milestones',
-    icon: <Briefcase className="h-4 w-4" />,
-    priority: 'high'
-  },
-  {
-    key: 'job_opportunities',
-    label: 'Job Opportunities',
-    description: 'Job matches, application updates, salary insights',
-    icon: <Sparkles className="h-4 w-4" />,
-    priority: 'high'
-  },
-  {
-    key: 'social_interactions',
-    label: 'Social & Networking',
-    description: 'Connection requests, profile views, network updates',
-    icon: <Users className="h-4 w-4" />,
-    priority: 'medium'
-  },
-  {
-    key: 'tool_engagement',
-    label: 'Tool Suggestions',
-    description: 'Resume tips, AI assistant recommendations',
-    icon: <Settings className="h-4 w-4" />,
-    priority: 'medium'
-  },
-  {
-    key: 'skill_development',
-    label: 'Skill Development',
-    description: 'Learning paths, industry trends, course recommendations',
-    icon: <BookOpen className="h-4 w-4" />,
-    priority: 'medium'
-  },
-  {
-    key: 'achievement_milestones',
-    label: 'Achievements',
-    description: 'Milestones, certifications, accomplishments',
-    icon: <Trophy className="h-4 w-4" />,
-    priority: 'low'
-  },
-  {
-    key: 'urgent_alerts',
-    label: 'Urgent Alerts',
-    description: 'Deadlines, interview reminders, time-sensitive updates',
-    icon: <AlertTriangle className="h-4 w-4" />,
-    priority: 'high'
-  },
-  {
-    key: 'system_updates',
-    label: 'System Updates',
-    description: 'Platform updates, maintenance notifications',
-    icon: <Settings className="h-4 w-4" />,
-    priority: 'low'
-  }
-];
+const DEFAULT_PREFERENCES: UserPreferencesState = {
+  in_app_enabled: true,
+  push_enabled: true,
+  email_enabled: true,
+  sms_enabled: false,
+  career_growth_enabled: true,
+  job_opportunities_enabled: true,
+  social_interactions_enabled: true,
+  messages_enabled: true,
+  applications_enabled: true,
+  tool_engagement_enabled: true,
+  system_updates_enabled: true,
+  quiet_hours_enabled: false,
+  quiet_hours_start: '22:00',
+  quiet_hours_end: '08:00',
+  timezone: 'Asia/Kolkata',
+  frequency: 'instant'
+};
 
 export const ComprehensiveNotificationSettings: React.FC = () => {
-  const {
-    preferences,
-    savePreferences,
-    subscribeToPush,
-    permission,
-    isLoading
-  } = useComprehensivePushNotifications();
+  const { user } = useOptimizedAuth();
+  const [prefs, setPrefs] = useState<UserPreferencesState>(DEFAULT_PREFERENCES);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>('channels');
 
-  const [localPreferences, setLocalPreferences] = useState(preferences);
+  useEffect(() => {
+    if (!user) {
+      setIsLoading(false);
+      return;
+    }
 
-  const updateCategoryPreference = (category: string, enabled: boolean) => {
-    if (!localPreferences) return;
-    
-    const updated = {
-      ...localPreferences,
-      categories: {
-        ...localPreferences.categories,
-        [category]: enabled
+    const loadUserPreferences = async () => {
+      try {
+        setIsLoading(true);
+        const { data, error } = await supabase
+          .from('notification_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        if (error) {
+          console.warn('Preferences load notice:', error.message);
+        }
+
+        if (data) {
+          setPrefs({
+            in_app_enabled: data.in_app_enabled ?? true,
+            push_enabled: data.push_enabled ?? true,
+            email_enabled: data.email_enabled ?? true,
+            sms_enabled: data.sms_enabled ?? false,
+            career_growth_enabled: data.career_growth_enabled ?? true,
+            job_opportunities_enabled: data.job_opportunities_enabled ?? true,
+            social_interactions_enabled: data.social_interactions_enabled ?? true,
+            messages_enabled: data.messages_enabled ?? true,
+            applications_enabled: data.applications_enabled ?? true,
+            tool_engagement_enabled: data.tool_engagement_enabled ?? true,
+            system_updates_enabled: data.system_updates_enabled ?? true,
+            quiet_hours_enabled: data.quiet_hours_enabled ?? false,
+            quiet_hours_start: data.quiet_hours_start || '22:00',
+            quiet_hours_end: data.quiet_hours_end || '08:00',
+            timezone: data.timezone || 'Asia/Kolkata',
+            frequency: (data.frequency as any) || 'instant'
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching notification preferences:', err);
+      } finally {
+        setIsLoading(false);
       }
     };
-    setLocalPreferences(updated);
-  };
 
-  const updateChannelPreference = (channel: string, enabled: boolean) => {
-    if (!localPreferences) return;
-    
-    const updated = {
-      ...localPreferences,
-      channels: {
-        ...localPreferences.channels,
-        [channel]: enabled
-      }
-    };
-    setLocalPreferences(updated);
-  };
+    loadUserPreferences();
+  }, [user]);
 
-  const updateTimingPreference = (key: string, value: string | boolean) => {
-    if (!localPreferences) return;
-    
-    const updated = {
-      ...localPreferences,
-      timing: {
-        ...localPreferences.timing,
-        [key]: value
-      }
-    };
-    setLocalPreferences(updated);
-  };
+  const handleSavePreferences = async () => {
+    if (!user) {
+      toast.error('Please log in to save preferences');
+      return;
+    }
 
-  const updateFrequencyPreference = (key: string, value: string | number | boolean) => {
-    if (!localPreferences) return;
-    
-    const updated = {
-      ...localPreferences,
-      frequency: {
-        ...localPreferences.frequency,
-        [key]: value
-      }
-    };
-    setLocalPreferences(updated);
-  };
+    try {
+      setIsSaving(true);
+      const { error } = await supabase
+        .from('notification_preferences')
+        .upsert({
+          user_id: user.id,
+          ...prefs,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
 
-  const updatePersonalizationPreference = (key: string, enabled: boolean) => {
-    if (!localPreferences) return;
-    
-    const updated = {
-      ...localPreferences,
-      personalization: {
-        ...localPreferences.personalization,
-        [key]: enabled
-      }
-    };
-    setLocalPreferences(updated);
-  };
-
-  const handleSave = async () => {
-    if (!localPreferences) return;
-    await savePreferences(localPreferences);
-  };
-
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'border-red-200 bg-red-50';
-      case 'medium': return 'border-yellow-200 bg-yellow-50';
-      case 'low': return 'border-gray-200 bg-gray-50';
-      default: return 'border-gray-200 bg-gray-50';
+      if (error) throw error;
+      toast.success('Notification preferences updated successfully');
+    } catch (err: any) {
+      console.error('Error saving notification preferences:', err);
+      toast.error('Failed to save preferences');
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const getChannelIcon = (channel: string) => {
-    switch (channel) {
-      case 'push_notifications': return <Bell className="h-4 w-4" />;
-      case 'email_notifications': return <Mail className="h-4 w-4" />;
-      case 'in_app_notifications': return <MessageSquare className="h-4 w-4" />;
-      case 'sms_notifications': return <Phone className="h-4 w-4" />;
-      default: return <Bell className="h-4 w-4" />;
-    }
+  const updateField = <K extends keyof UserPreferencesState>(key: K, value: UserPreferencesState[K]) => {
+    setPrefs(prev => ({ ...prev, [key]: value }));
   };
 
-  if (!localPreferences) {
+  if (isLoading) {
     return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading notification preferences...</p>
-        </CardContent>
+      <Card className="w-full border-border/60 rounded-2xl p-8 flex items-center justify-center">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
+        <span className="ml-3 text-sm text-muted-foreground">Loading notification preferences...</span>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5" />
-            Comprehensive Notification Settings
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Control how and when you receive notifications across all TalentXcel features
-          </p>
-        </CardHeader>
-      </Card>
-
-      <Tabs defaultValue="categories" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="channels">Channels</TabsTrigger>
-          <TabsTrigger value="timing">Timing</TabsTrigger>
-          <TabsTrigger value="frequency">Frequency</TabsTrigger>
-          <TabsTrigger value="personalization">AI & Personal</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="categories" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                Notification Categories
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Choose which types of notifications you want to receive
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {NOTIFICATION_CATEGORIES.map((category) => (
-                <div
-                  key={category.key}
-                  className={`p-4 rounded-lg border ${getPriorityColor(category.priority)}`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start gap-3 flex-1">
-                      <div className="mt-1">
-                        {category.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Label className="font-medium">{category.label}</Label>
-                          <Badge variant="outline" className="text-xs">
-                            {category.priority}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {category.description}
-                        </p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={localPreferences.categories[category.key as keyof typeof localPreferences.categories]}
-                      onCheckedChange={(checked) => updateCategoryPreference(category.key, checked)}
-                    />
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="channels" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Delivery Channels
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Choose how you want to receive notifications
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {Object.entries(localPreferences.channels).map(([channel, enabled]) => (
-                <div key={channel} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    {getChannelIcon(channel)}
-                    <div>
-                      <Label className="font-medium">
-                        {channel.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                      </Label>
-                      <p className="text-sm text-muted-foreground">
-                        {channel === 'push_notifications' && 'Browser and mobile push notifications'}
-                        {channel === 'email_notifications' && 'Email notifications to your registered email'}
-                        {channel === 'in_app_notifications' && 'Notifications within the TalentXcel app'}
-                        {channel === 'sms_notifications' && 'SMS notifications to your phone'}
-                      </p>
-                      {channel === 'push_notifications' && permission !== 'granted' && (
-                        <div className="mt-2">
-                          <Button size="sm" onClick={subscribeToPush} disabled={isLoading}>
-                            Enable Push Notifications
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <Switch
-                    checked={enabled as boolean}
-                    onCheckedChange={(checked) => updateChannelPreference(channel, checked)}
-                    disabled={channel === 'push_notifications' && permission !== 'granted'}
-                  />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="timing" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Timing & Schedule
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Control when you receive notifications
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Quiet Hours Start</Label>
-                  <div className="flex items-center gap-2">
-                    <Moon className="h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="time"
-                      value={localPreferences.timing.quiet_hours_start}
-                      onChange={(e) => updateTimingPreference('quiet_hours_start', e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label>Quiet Hours End</Label>
-                  <div className="flex items-center gap-2">
-                    <Sun className="h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="time"
-                      value={localPreferences.timing.quiet_hours_end}
-                      onChange={(e) => updateTimingPreference('quiet_hours_end', e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Timezone</Label>
-                <Select
-                  value={localPreferences.timing.timezone}
-                  onValueChange={(value) => updateTimingPreference('timezone', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Asia/Kolkata">Asia/Kolkata (IST)</SelectItem>
-                    <SelectItem value="America/New_York">America/New_York (EST)</SelectItem>
-                    <SelectItem value="Europe/London">Europe/London (GMT)</SelectItem>
-                    <SelectItem value="America/Los_Angeles">America/Los_Angeles (PST)</SelectItem>
-                    <SelectItem value="Asia/Tokyo">Asia/Tokyo (JST)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <Label className="font-medium">Optimal Time Delivery</Label>
-                  <p className="text-sm text-muted-foreground">
-                    AI will choose the best time to send notifications based on your activity
-                  </p>
-                </div>
-                <Switch
-                  checked={localPreferences.timing.optimal_time_enabled}
-                  onCheckedChange={(checked) => updateTimingPreference('optimal_time_enabled', checked)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="frequency" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Volume2 className="h-4 w-4" />
-                Frequency & Limits
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Control how often you receive notifications
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>Maximum Daily Notifications</Label>
-                <Input
-                  type="number"
-                  min="1"
-                  max="50"
-                  value={localPreferences.frequency.max_daily_notifications}
-                  onChange={(e) => updateFrequencyPreference('max_daily_notifications', parseInt(e.target.value) || 10)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Limit the total number of notifications per day (urgent alerts always come through)
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Digest Frequency</Label>
-                <Select
-                  value={localPreferences.frequency.digest_frequency}
-                  onValueChange={(value) => updateFrequencyPreference('digest_frequency', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Digest</SelectItem>
-                    <SelectItem value="daily">Daily Digest</SelectItem>
-                    <SelectItem value="weekly">Weekly Digest</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Receive a summary of low-priority notifications
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between p-4 border rounded-lg">
-                <div>
-                  <Label className="font-medium">Instant Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive notifications immediately as they happen
-                  </p>
-                </div>
-                <Switch
-                  checked={localPreferences.frequency.instant_notifications}
-                  onCheckedChange={(checked) => updateFrequencyPreference('instant_notifications', checked)}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="personalization" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                AI & Personalization
-              </CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Let AI optimize your notification experience
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {Object.entries(localPreferences.personalization).map(([key, enabled]) => (
-                <div key={key} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div>
-                    <Label className="font-medium">
-                      {key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      {key === 'use_ai_optimization' && 'AI learns your preferences and optimizes delivery timing'}
-                      {key === 'location_based' && 'Customize notifications based on your location and timezone'}
-                      {key === 'skill_based' && 'Personalize content based on your skills and interests'}
-                      {key === 'activity_based' && 'Adapt frequency based on your app usage patterns'}
-                    </p>
-                  </div>
-                  <Switch
-                    checked={enabled as boolean}
-                    onCheckedChange={(checked) => updatePersonalizationPreference(key, checked)}
-                  />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="font-medium">Save Changes</h3>
-              <p className="text-sm text-muted-foreground">
-                Apply your notification preferences across all channels
-              </p>
-            </div>
-            <Button onClick={handleSave} disabled={isLoading}>
-              {isLoading ? 'Saving...' : 'Save Preferences'}
-            </Button>
+    <Card className="w-full border-border/60 shadow-lg rounded-2xl overflow-hidden bg-card/60 backdrop-blur-md">
+      <CardHeader className="p-4 sm:p-6 border-b border-border/50 bg-muted/20">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <Settings className="h-5 w-5 text-primary" />
+              <span>Notification Preferences</span>
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Manage how and when TalentXcel delivers activities, recommendations, and direct updates.
+            </CardDescription>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+
+          <Button
+            size="sm"
+            onClick={handleSavePreferences}
+            disabled={isSaving}
+            className="h-9 px-4 rounded-xl text-xs gap-1.5 font-semibold shadow-sm"
+          >
+            {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+            <span>Save Settings</span>
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent className="p-4 sm:p-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid grid-cols-3 w-full max-w-md bg-muted/50 p-1 rounded-xl">
+            <TabsTrigger value="channels" className="text-xs rounded-lg">Delivery Channels</TabsTrigger>
+            <TabsTrigger value="categories" className="text-xs rounded-lg">Categories</TabsTrigger>
+            <TabsTrigger value="schedule" className="text-xs rounded-lg">Quiet Hours</TabsTrigger>
+          </TabsList>
+
+          {/* Tab 1: Channels */}
+          <TabsContent value="channels" className="space-y-4">
+            <div className="space-y-3">
+              {/* In-App Notifications */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                    <Bell className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-semibold">In-App Notification Stream</Label>
+                    <p className="text-xs text-muted-foreground">Notification bell, real-time alerts, and notification dropdown.</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.in_app_enabled}
+                  onCheckedChange={(checked) => updateField('in_app_enabled', checked)}
+                />
+              </div>
+
+              {/* Push Notifications */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                    <Sparkles className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-semibold">Push Notifications</Label>
+                    <p className="text-xs text-muted-foreground">Instant desktop browser and mobile device alerts.</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.push_enabled}
+                  onCheckedChange={(checked) => updateField('push_enabled', checked)}
+                />
+              </div>
+
+              {/* Email Notifications */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                    <Mail className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-semibold">Email Alerts & Digests</Label>
+                    <p className="text-xs text-muted-foreground">Important updates delivered to your registered email.</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.email_enabled}
+                  onCheckedChange={(checked) => updateField('email_enabled', checked)}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Tab 2: Categories */}
+          <TabsContent value="categories" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Job Opportunities */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                    <Briefcase className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold">Job Matches & Opportunities</Label>
+                    <p className="text-[11px] text-muted-foreground">Recommended roles & closing jobs</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.job_opportunities_enabled}
+                  onCheckedChange={(checked) => updateField('job_opportunities_enabled', checked)}
+                />
+              </div>
+
+              {/* Job Applications */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-purple-500/10 text-purple-500 flex items-center justify-center">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold">Application Status</Label>
+                    <p className="text-[11px] text-muted-foreground">Interviews, shortlists, offers</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.applications_enabled}
+                  onCheckedChange={(checked) => updateField('applications_enabled', checked)}
+                />
+              </div>
+
+              {/* Professional Networking */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                    <Users className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold">Social & Connections</Label>
+                    <p className="text-[11px] text-muted-foreground">Requests, likes, comments, shares</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.social_interactions_enabled}
+                  onCheckedChange={(checked) => updateField('social_interactions_enabled', checked)}
+                />
+              </div>
+
+              {/* Direct Messages */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                    <MessageSquare className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold">Direct Messages</Label>
+                    <p className="text-[11px] text-muted-foreground">Incoming chats & group messages</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.messages_enabled}
+                  onCheckedChange={(checked) => updateField('messages_enabled', checked)}
+                />
+              </div>
+
+              {/* Career Growth & Learning */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center">
+                    <Trophy className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold">Career Growth & Scores</Label>
+                    <p className="text-[11px] text-muted-foreground">Assessments, milestones, badges</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.career_growth_enabled}
+                  onCheckedChange={(checked) => updateField('career_growth_enabled', checked)}
+                />
+              </div>
+
+              {/* System & Security */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-border/60 bg-background/50">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-lg bg-red-500/10 text-red-500 flex items-center justify-center">
+                    <AlertTriangle className="h-4 w-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs font-semibold">Platform Announcements</Label>
+                    <p className="text-[11px] text-muted-foreground">Essential maintenance & updates</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.system_updates_enabled}
+                  onCheckedChange={(checked) => updateField('system_updates_enabled', checked)}
+                />
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* Tab 3: Quiet Hours & Frequency */}
+          <TabsContent value="schedule" className="space-y-4">
+            <div className="p-4 rounded-xl border border-border/60 bg-background/50 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center">
+                    <Moon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-semibold">Enable Quiet Hours</Label>
+                    <p className="text-xs text-muted-foreground">Mute push and sound notifications during specified hours.</p>
+                  </div>
+                </div>
+                <Switch
+                  checked={prefs.quiet_hours_enabled}
+                  onCheckedChange={(checked) => updateField('quiet_hours_enabled', checked)}
+                />
+              </div>
+
+              {prefs.quiet_hours_enabled && (
+                <div className="pt-3 border-t border-border/40 grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-xs text-muted-foreground">Start Time</Label>
+                    <Input
+                      type="time"
+                      value={prefs.quiet_hours_start}
+                      onChange={(e) => updateField('quiet_hours_start', e.target.value)}
+                      className="h-8 text-xs mt-1 rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-muted-foreground">End Time</Label>
+                    <Input
+                      type="time"
+                      value={prefs.quiet_hours_end}
+                      onChange={(e) => updateField('quiet_hours_end', e.target.value)}
+                      className="h-8 text-xs mt-1 rounded-lg"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 rounded-xl border border-border/60 bg-background/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <Label className="text-sm font-semibold">Delivery Frequency</Label>
+                <p className="text-xs text-muted-foreground">Choose immediate delivery or batched digest.</p>
+              </div>
+              <Select
+                value={prefs.frequency}
+                onValueChange={(val: any) => updateField('frequency', val)}
+              >
+                <SelectTrigger className="w-40 h-8 text-xs rounded-lg">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="instant">Immediate</SelectItem>
+                  <SelectItem value="digest_daily">Daily Digest</SelectItem>
+                  <SelectItem value="digest_weekly">Weekly Digest</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </CardContent>
+    </Card>
   );
 };
