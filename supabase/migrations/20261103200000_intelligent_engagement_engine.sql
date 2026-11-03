@@ -8,6 +8,17 @@
 BEGIN;
 
 -- ----------------------------------------------------------------------------
+-- Ensure public.company_follows exists
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.company_follows (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(user_id, company_id)
+);
+
+-- ----------------------------------------------------------------------------
 -- 1. Schema Enhancements on public.notifications
 -- ----------------------------------------------------------------------------
 ALTER TABLE public.notifications

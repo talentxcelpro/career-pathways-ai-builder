@@ -6,10 +6,18 @@
 
 BEGIN;
 
--- 1. Drop Triggers
-DROP TRIGGER IF EXISTS trg_attr_application_submitted ON public.job_applications;
-DROP TRIGGER IF EXISTS trg_attr_company_followed ON public.company_follows;
-DROP TRIGGER IF EXISTS trg_attr_payment_realized ON public.payments;
+-- 1. Drop Triggers Defensively
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'job_applications') THEN
+        DROP TRIGGER IF EXISTS trg_attr_application_submitted ON public.job_applications;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'company_follows') THEN
+        DROP TRIGGER IF EXISTS trg_attr_company_followed ON public.company_follows;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'payments') THEN
+        DROP TRIGGER IF EXISTS trg_attr_payment_realized ON public.payments;
+    END IF;
+END $$;
 
 -- 2. Drop Trigger Functions
 DROP FUNCTION IF EXISTS public.trg_fn_attr_application_submitted();

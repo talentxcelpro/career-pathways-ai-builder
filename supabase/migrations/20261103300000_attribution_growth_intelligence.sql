@@ -8,6 +8,17 @@
 BEGIN;
 
 -- ----------------------------------------------------------------------------
+-- Ensure public.company_follows exists
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.company_follows (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    company_id UUID REFERENCES public.companies(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(user_id, company_id)
+);
+
+-- ----------------------------------------------------------------------------
 -- 1. Notification Attribution Touchpoints Table (Phase 1)
 -- Persistent touchpoint tracking across the complete engagement-to-product journey
 -- ----------------------------------------------------------------------------
@@ -711,14 +722,14 @@ DROP POLICY IF EXISTS "revenue_attr_user_policy" ON public.notification_revenue_
 CREATE POLICY "revenue_attr_user_policy" ON public.notification_revenue_attributions
     FOR SELECT USING (
         auth.uid() = user_id 
-        OR EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role IN ('admin', 'superadmin'))
+        OR EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role::text IN ('admin', 'super_admin', 'superadmin'))
     );
 
 DROP POLICY IF EXISTS "retention_segments_admin_policy" ON public.notification_retention_segments;
 CREATE POLICY "retention_segments_admin_policy" ON public.notification_retention_segments
     FOR SELECT USING (
         auth.uid() = user_id 
-        OR EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role IN ('admin', 'superadmin'))
+        OR EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = auth.uid() AND role::text IN ('admin', 'super_admin', 'superadmin'))
     );
 
 COMMIT;

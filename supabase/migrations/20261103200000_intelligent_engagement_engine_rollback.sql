@@ -6,11 +6,19 @@
 
 BEGIN;
 
--- 1. Drop Triggers
-DROP TRIGGER IF EXISTS trg_jobs_intelligent_matching ON public.jobs;
-DROP TRIGGER IF EXISTS trg_application_viewed_notification ON public.job_applications;
-DROP TRIGGER IF EXISTS trg_recruiter_profile_interaction ON public.profile_views;
-DROP TRIGGER IF EXISTS trg_employer_qualified_applicant ON public.job_applications;
+-- 1. Drop Triggers Defensively
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'jobs') THEN
+        DROP TRIGGER IF EXISTS trg_jobs_intelligent_matching ON public.jobs;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'job_applications') THEN
+        DROP TRIGGER IF EXISTS trg_application_viewed_notification ON public.job_applications;
+        DROP TRIGGER IF EXISTS trg_employer_qualified_applicant ON public.job_applications;
+    END IF;
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'profile_views') THEN
+        DROP TRIGGER IF EXISTS trg_recruiter_profile_interaction ON public.profile_views;
+    END IF;
+END $$;
 
 -- 2. Drop Trigger Functions
 DROP FUNCTION IF EXISTS public.trg_fn_job_intelligent_matching();
