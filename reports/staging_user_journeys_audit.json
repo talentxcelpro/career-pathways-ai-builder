@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-02T08:42:18.468Z",
-  "passCount": 9,
+  "timestamp": "2026-11-02T17:25:44.194Z",
+  "passCount": 8,
   "total": 10,
   "results": [
     {
@@ -79,11 +79,11 @@
       "name": "Resume Download Tracking (Atomic Counter)",
       "status": "PASS",
       "mode": "STAGING_RUNTIME",
-      "details": "Atomic download recorded count: 5",
+      "details": "Atomic download recorded count: 6",
       "evidence": {
         "rpcDown": {
           "success": true,
-          "download_count": 5
+          "download_count": 6
         },
         "rpcDownErr": null
       }
@@ -91,17 +91,14 @@
     {
       "journeyId": 5,
       "name": "ATS and AI Analysis Gateway",
-      "status": "PASS",
+      "status": "FAIL",
       "mode": "STAGING_RUNTIME",
-      "details": "Edge AI response status HTTP 200",
+      "details": "Edge AI response status HTTP 429",
       "evidence": {
-        "status": 200,
+        "status": 429,
         "body": {
-          "success": true,
-          "isFallback": true,
-          "data": {
-            "message": "Hi there, I really admire your work in the industry and would love to connect and share insights!"
-          }
+          "error": "Too many AI requests. Please wait before retrying.",
+          "retryAfter": 33
         }
       }
     },
@@ -145,11 +142,11 @@
           "resume_url": null,
           "cover_letter": null,
           "status": "applied",
-          "applied_at": "2026-11-02T08:39:14.26945+00:00",
-          "updated_at": "2026-11-02T08:39:14.26945+00:00",
+          "applied_at": "2026-11-02T17:25:43.121984+00:00",
+          "updated_at": "2026-11-02T17:25:43.121984+00:00",
           "assigned_to": null,
           "ai_match_score": null,
-          "last_activity_at": "2026-11-02T08:39:14.26945+00:00"
+          "last_activity_at": "2026-11-02T17:25:43.121984+00:00"
         },
         "error": null
       }
