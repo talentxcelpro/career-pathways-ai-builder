@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { useResolvedMediaUrl } from "@/hooks/usePostMedia";
 
 interface NetworkPost {
   id: string;
