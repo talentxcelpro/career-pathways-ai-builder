@@ -315,7 +315,6 @@ const Network: React.FC = () => {
                   <Posts feedType={postFilter === 'latest' ? 'all' : postFilter} searchTerm={searchTerm} />
                 </React.Suspense>
               </>
-              )
             )}
           </TabsContent>
 
