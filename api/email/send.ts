@@ -664,7 +664,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         html: rendered.html,
         text: rendered.plainText,
         headers: {
-          'X-SES-CONFIGURATION-SET': 'talentxcel-production',
           'X-TalentXcel-Category': rendered.category,
           'X-TalentXcel-Template': template
         }
