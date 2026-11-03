@@ -1,4 +1,3 @@
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,23 +12,21 @@ export const useFollow = () => {
       if (!user) throw new Error('Not authenticated');
 
       if (isFollowing) {
-        // Unfollow
+        // Unfollow using canonical user_follows table
         const { error } = await supabase
-          .from('follows')
+          .from('user_follows')
           .delete()
           .eq('follower_id', user.id)
-          .eq('followed_id', userId)
-          .eq('followed_type', 'user');
+          .eq('following_id', userId);
         
         if (error) throw error;
       } else {
-        // Follow
+        // Follow using canonical user_follows table
         const { error } = await supabase
-          .from('follows')
+          .from('user_follows')
           .insert({
             follower_id: user.id,
-            followed_id: userId,
-            followed_type: 'user'
+            following_id: userId
           });
         
         if (error) throw error;
@@ -38,7 +35,12 @@ export const useFollow = () => {
       return !isFollowing;
     },
     onSuccess: (newFollowState, variables) => {
-      // Update cache
+      // Invalidate relevant follow caches across entire application
+      queryClient.invalidateQueries({ queryKey: ['user-follows'] });
+      queryClient.invalidateQueries({ queryKey: ['following'] });
+      queryClient.invalidateQueries({ queryKey: ['followers'] });
+      queryClient.invalidateQueries({ queryKey: ['userConnections'] });
+
       queryClient.setQueryData(['reels-feed', user?.id], (oldData: any) => {
         if (!oldData?.pages) return oldData;
         

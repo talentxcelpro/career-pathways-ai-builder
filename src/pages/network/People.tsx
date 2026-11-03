@@ -245,31 +245,42 @@ const People: React.FC = () => {
   }, [filteredProfiles, visibleCount]);
 
   const handleConnect = useCallback(async (userId: string, userName: string) => {
-    setConnectedIds(prev => {
-      const next = new Set(prev);
-      next.add(userId);
-      return next;
-    });
-
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.success(`Connection request sent to ${userName}! Sign in to sync across devices.`);
+        toast.error("Please sign in to send connection requests.");
+        navigate('/auth');
         return;
       }
 
-      await supabase.from('connections').insert({
+      if (user.id === userId) {
+        toast.info("You cannot connect with your own profile.");
+        return;
+      }
+
+      const { error } = await supabase.from('connections').insert({
         requester_id: user.id,
         recipient_id: userId,
         status: 'pending',
-        message: `Hi ${userName}! I'd love to connect on the Global Talent Network.`
+        message: `Hi ${userName}! I'd love to connect on the TalentXcel Professional Network.`
       });
 
-      toast.success(`Connected! Connection request sent to ${userName}.`);
-    } catch (err) {
-      toast.success(`Connection invitation queued for ${userName}.`);
+      if (error) {
+        if (error.code === '23505') {
+          toast.info(`A connection request with ${userName} already exists.`);
+        } else {
+          throw error;
+        }
+      } else {
+        toast.success(`Connection request sent to ${userName}!`);
+      }
+
+      setConnectedIds(prev => new Set(prev).add(userId));
+    } catch (err: any) {
+      console.error("Connection error:", err);
+      toast.error(err.message || "Failed to send connection request. Please try again.");
     }
-  }, []);
+  }, [navigate]);
 
   const handleToggleBookmark = useCallback((userId: string) => {
     setBookmarkedIds(prev => {

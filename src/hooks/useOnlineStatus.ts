@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface OnlineUser {
@@ -8,50 +8,94 @@ interface OnlineUser {
 }
 
 export const useOnlineStatus = (userId: string | null) => {
-  const [isOnline, setIsOnline] = useState(true); // Default to online
-  const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
+  const [isOnline, setIsOnline] = useState(true);
+  const [onlineUserIds, setOnlineUserIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!userId) return;
 
-    // Simple online status - for now just return true
-    // In a real app, you'd implement presence tracking
-    setIsOnline(true);
+    // Supabase Realtime Presence Channel
+    const channel = supabase.channel('online_presence_room', {
+      config: {
+        presence: {
+          key: userId,
+        },
+      },
+    });
 
-    // TODO: Implement real-time presence tracking
-    // This would involve:
-    // 1. Creating a presence table in Supabase
-    // 2. Updating user status on mount/unmount
-    // 3. Subscribing to real-time changes
-    
-    const updatePresence = async () => {
-      try {
-        // Placeholder for updating user presence
-        console.log('Updating presence for user:', userId);
-      } catch (error) {
-        console.error('Error updating presence:', error);
-      }
+    const updatePresenceState = () => {
+      const state = channel.presenceState();
+      const activeIds = new Set<string>();
+
+      Object.keys(state).forEach((key) => {
+        activeIds.add(key);
+      });
+
+      setOnlineUserIds(activeIds);
+      setIsOnline(true);
     };
 
-    updatePresence();
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        updatePresenceState();
+      })
+      .on('presence', { event: 'join' }, ({ key }) => {
+        setOnlineUserIds((prev) => new Set(prev).add(key));
+      })
+      .on('presence', { event: 'leave' }, ({ key }) => {
+        setOnlineUserIds((prev) => {
+          const next = new Set(prev);
+          next.delete(key);
+          return next;
+        });
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            user_id: userId,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
 
-    // Update presence every 30 seconds
-    const interval = setInterval(updatePresence, 30000);
+    // Browser network events
+    const handleOnline = () => {
+      setIsOnline(true);
+      channel.track({ user_id: userId, online_at: new Date().toISOString() });
+    };
+    const handleOffline = () => {
+      setIsOnline(false);
+      channel.untrack();
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
 
     return () => {
-      clearInterval(interval);
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      channel.untrack();
+      supabase.removeChannel(channel);
     };
   }, [userId]);
 
-  const getUserOnlineStatus = (targetUserId: string): boolean => {
-    // For now, return true for all users
-    // In a real app, check the onlineUsers array
-    return true;
-  };
+  const getUserOnlineStatus = useCallback(
+    (targetUserId: string): boolean => {
+      if (!targetUserId) return false;
+      return onlineUserIds.has(targetUserId);
+    },
+    [onlineUserIds]
+  );
+
+  const onlineUsers: OnlineUser[] = Array.from(onlineUserIds).map((id) => ({
+    id,
+    last_seen: new Date().toISOString(),
+    is_online: true,
+  }));
 
   return {
     isUserOnline: isOnline,
     onlineUsers,
-    getUserOnlineStatus
+    getUserOnlineStatus,
   };
 };

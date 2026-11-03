@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'react-router-dom';
-import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy, X, BookOpen, ArrowRight, FileText } from "lucide-react";
+import { CheckCircle2, Globe, Send, Share2, ThumbsUp, MessageSquare, MoreHorizontal, Copy, X, BookOpen, ArrowRight, FileText, Bookmark } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSection";
@@ -26,6 +26,8 @@ interface NetworkPost {
   likes_count?: number;
   comments_count?: number;
   shares_count?: number;
+  isLiked?: boolean;
+  isSaved?: boolean;
   profiles?: {
     id: string;
     full_name?: string;
@@ -74,9 +76,17 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
     }
   }, [openComments, post.id]);
 
-  // 1. Fetch REAL live engagement counts and like status from Supabase
+  // 1. Fetch REAL live engagement counts, like and save status from Supabase
   const { data: engagement, refetch: refetchEngagement } = useQuery({
     queryKey: ['post-engagement-real', post.id, user?.id],
+    initialData: {
+      likesCount: post.likes_count ?? 0,
+      isLiked: post.isLiked ?? false,
+      commentsCount: post.comments_count ?? 0,
+      sharesCount: post.shares_count ?? 0,
+      isSaved: post.isSaved ?? false,
+    },
+    staleTime: 30000,
     queryFn: async () => {
       // Real likes count
       const { count: likesCount } = await supabase
@@ -86,6 +96,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
 
       // Check if current user liked this post
       let isLikedByUser = false;
+      let isSavedByUser = false;
       if (user?.id) {
         const { data: userLike } = await supabase
           .from('post_likes')
@@ -94,6 +105,14 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           .eq('user_id', user.id)
           .maybeSingle();
         isLikedByUser = !!userLike;
+
+        const { data: userSave } = await supabase
+          .from('post_saves')
+          .select('id')
+          .eq('post_id', post.id)
+          .eq('user_id', user.id)
+          .maybeSingle();
+        isSavedByUser = !!userSave;
       }
 
       // Real comments count
@@ -113,14 +132,45 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         isLiked: isLikedByUser,
         commentsCount: commentsCount !== null && commentsCount !== undefined ? commentsCount : (post.comments_count || 0),
         sharesCount: sharesCount !== null && sharesCount !== undefined ? sharesCount : (post.shares_count || 0),
+        isSaved: isSavedByUser,
       };
     }
   });
 
   const realLikesCount = engagement?.likesCount ?? post.likes_count ?? 0;
   const isLiked = engagement?.isLiked ?? false;
+  const isSaved = engagement?.isSaved ?? false;
   const realCommentsCount = engagement?.commentsCount ?? post.comments_count ?? 0;
   const realSharesCount = engagement?.sharesCount ?? post.shares_count ?? 0;
+
+  // Toggle Bookmark / Save Post with real Supabase mutation
+  const handleToggleBookmark = async () => {
+    if (!user?.id) {
+      toast.error("Please log in to save posts");
+      return;
+    }
+
+    try {
+      if (isSaved) {
+        await supabase
+          .from('post_saves')
+          .delete()
+          .eq('post_id', post.id)
+          .eq('user_id', user.id);
+        toast.success("Post removed from saved items");
+      } else {
+        await supabase
+          .from('post_saves')
+          .insert({ post_id: post.id, user_id: user.id });
+        toast.success("Post saved successfully!");
+      }
+      refetchEngagement();
+      queryClient.invalidateQueries({ queryKey: ['saved-posts'] });
+    } catch (err: any) {
+      console.error("Failed to update saved post:", err);
+      toast.error("Could not update saved status");
+    }
+  };
 
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -435,7 +485,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         </div>
 
         {/* Action Buttons Row */}
-        <div className="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100 dark:border-border/60 text-xs font-bold">
+        <div className="grid grid-cols-4 gap-2 pt-1 border-t border-slate-100 dark:border-border/60 text-xs font-bold">
           <button 
             onClick={handleToggleLike}
             className={`flex items-center justify-center gap-2 py-2 rounded-2xl transition-colors ${
@@ -462,6 +512,17 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           >
             <Share2 className="h-4 w-4" />
             Share
+          </button>
+
+          <button 
+            onClick={handleToggleBookmark}
+            title={isSaved ? "Saved" : "Save post"}
+            className={`flex items-center justify-center gap-2 py-2 rounded-2xl transition-colors ${
+              isSaved ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600' : 'hover:bg-slate-100 dark:hover:bg-muted text-slate-700 dark:text-slate-200'
+            }`}
+          >
+            <Bookmark className={`h-4 w-4 ${isSaved ? 'fill-amber-600 text-amber-600' : ''}`} />
+            {isSaved ? 'Saved' : 'Save'}
           </button>
         </div>
 
