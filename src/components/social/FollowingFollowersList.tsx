@@ -47,6 +47,20 @@ export function FollowingFollowersList() {
 
   useEffect(() => {
     loadUserData();
+
+    const channel = supabase
+      .channel('connections-realtime-sync-' + Date.now())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        loadUserData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_follows' }, () => {
+        loadUserData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadUserData = async () => {

@@ -255,6 +255,21 @@ export const useReferralData = () => {
     }
   }, [user]);
 
+  // Realtime subscription on referrals table
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel('referrals-realtime-' + user.id)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'referrals', filter: 'referrer_id=eq.' + user.id }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id]);
+
   const refreshData = () => fetchData();
 
   return {

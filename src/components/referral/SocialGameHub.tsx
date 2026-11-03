@@ -83,8 +83,8 @@ export const SocialGameHub: React.FC = () => {
            activity.type === 'reward_earned' ? 'milestone' : 'referral',
     description: activity.description,
     timestamp: new Date(activity.timestamp).toLocaleDateString(),
-    likes: Math.floor(Math.random() * 20) + 5,
-    comments: Math.floor(Math.random() * 10) + 1,
+    likes: 0,
+    comments: 0,
     reward: activity.reward ? `${activity.reward} TXC` : undefined
   }));
 

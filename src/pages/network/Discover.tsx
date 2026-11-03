@@ -79,7 +79,11 @@ function calculateCompleteness(p: any): number {
   return score;
 }
 
-export const Discover: React.FC = () => {
+interface DiscoverProps {
+  isEmbedded?: boolean;
+}
+
+export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { sendConnectionRequest } = useConnectionRequests();
@@ -254,6 +258,129 @@ export const Discover: React.FC = () => {
       // Handled by hook error toast
     }
   };
+
+  if (isEmbedded) {
+    return (
+      <div className="space-y-4">
+        {/* Compact Embedded Header */}
+        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-3.5 sm:p-4 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div>
+              <div className="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full text-[10px] font-bold border border-blue-200 dark:border-blue-800 mb-1">
+                <Users className="h-3 w-3" />
+                Live Professional Directory
+              </div>
+              <h2 className="text-base font-extrabold tracking-tight text-foreground">
+                Discover Professionals
+              </h2>
+              <p className="text-muted-foreground text-xs mt-0.5">
+                Connect with industry leaders, active talents, and verified specialists.
+              </p>
+            </div>
+
+            {/* Quick Filter Buttons */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <Button
+                variant={selectedFilter === 'all' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFilter('all')}
+                className="text-xs h-7 px-2.5 rounded-lg"
+              >
+                All Ranked
+              </Button>
+              <Button
+                variant={selectedFilter === 'recent' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFilter('recent')}
+                className="text-xs h-7 px-2.5 rounded-lg gap-1"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                Recently Active
+              </Button>
+              <Button
+                variant={selectedFilter === 'complete' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFilter('complete')}
+                className="text-xs h-7 px-2.5 rounded-lg gap-1"
+              >
+                <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
+                Complete
+              </Button>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative mt-2.5">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by name, title, company, skills, or location..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8.5 h-8 text-xs bg-slate-50/60 dark:bg-slate-800/40 border-slate-200/80 rounded-lg"
+            />
+          </div>
+        </div>
+
+        {/* Categorized Sections */}
+        {isLoading ? (
+          <div className="p-8 text-center text-xs text-muted-foreground">Loading directory...</div>
+        ) : (
+          <div className="space-y-4">
+            {categorizedSections.map((section) => (
+              <Card key={section.id} className="border-slate-200/80 dark:border-border/60 bg-white dark:bg-card rounded-xl shadow-xs overflow-hidden">
+                <CardHeader className="p-3 border-b bg-slate-50/40 dark:bg-slate-800/20 flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className={`${section.badgeColor} font-bold text-[10px] py-0.5 px-2 rounded-md flex items-center gap-1`}>
+                      {section.icon}
+                      {section.title}
+                    </Badge>
+                    <span className="text-[11px] text-muted-foreground font-semibold">
+                      ({section.people.length})
+                    </span>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {section.people.slice(0, 8).map((person) => {
+                      const avatarUrl = getStandardAvatarUrl(person.profile_picture_url);
+                      const targetSlug = person.slug || person.custom_profile_url || generatePersonProfileSlug(person.full_name);
+                      const profileLink = getPublicProfilePath(targetSlug);
+                      return (
+                        <div key={person.id} className="p-2.5 rounded-lg border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between gap-2.5">
+                          <Link to={profileLink} className="flex items-center gap-2.5 min-w-0">
+                            <Avatar className="w-9 h-9 shrink-0">
+                              {avatarUrl ? <AvatarImage src={avatarUrl} alt={person.full_name} /> : null}
+                              <AvatarFallback className="bg-blue-600 text-white font-bold text-xs">
+                                {(person.full_name || 'U').charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="min-w-0">
+                              <p className="font-bold text-xs truncate hover:text-primary">{person.full_name}</p>
+                              <p className="text-[10px] text-muted-foreground truncate">{person.title || person.current_company || 'Member'}</p>
+                            </div>
+                          </Link>
+                          <Button
+                            size="sm"
+                            onClick={() => handleConnect(person.id, person.full_name)}
+                            disabled={sendConnectionRequest.isPending}
+                            className="h-6.5 px-2 text-[10px] font-bold rounded-lg shrink-0 bg-blue-600 hover:bg-blue-700 text-white"
+                          >
+                            <UserPlus className="h-3 w-3 mr-1" />
+                            Connect
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/40">

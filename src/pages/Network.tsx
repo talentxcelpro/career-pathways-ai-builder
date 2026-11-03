@@ -4,12 +4,13 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ProfessionalFeed } from "@/components/social/ProfessionalFeed";
-import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnectAI";
+import { GamificationDashboard } from "@/components/gamification/GamificationDashboard";
+import { RealTimeReferralDashboard } from "@/components/referral/RealTimeReferralDashboard";
 import { 
   Users, 
   Sparkles, 
@@ -20,12 +21,11 @@ import {
   MessageSquare, 
   Search, 
   SlidersHorizontal,
-  RotateCw,
-  ChevronDown,
-  Globe
+  RotateCw
 } from "lucide-react";
 import Posts from './network/Posts';
-import { updateMetaTags } from '@/utils/metaTags';
+import { Discover } from './network/Discover';
+import { CreatorStudio } from './network/CreatorStudio';
 import { NetworkMessagingSidebar } from "@/components/network/NetworkMessagingSidebar";
 import { LinkedInMobileFeed } from "@/components/mobile/LinkedInMobileFeed";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -47,6 +47,7 @@ const Network: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'feed';
+  
   const handleTabChange = (value: string) => {
     setSearchParams(prev => {
       const updated = new URLSearchParams(prev);
@@ -54,12 +55,16 @@ const Network: React.FC = () => {
       return updated;
     }, { replace: true });
   };
+
   const [searchTerm, setSearchTerm] = useState('');
   const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending'>('all');
   const queryClient = useQueryClient();
+  
   const handleRefreshFeed = () => {
     queryClient.invalidateQueries({ queryKey: ['network-feed'] });
     queryClient.invalidateQueries({ queryKey: ['posts'] });
+    queryClient.invalidateQueries({ queryKey: ['sidebar-connection-suggestions'] });
+    queryClient.invalidateQueries({ queryKey: ['enhanced-connection-suggestions'] });
   };
   
   // Enable real-time social updates
@@ -80,7 +85,12 @@ const Network: React.FC = () => {
   } = useLinkedInFeed();
 
   const seoHelmet = (
-    <SEOHead title="Professional Network | Connect with Professionals | TalentXcel" description="Join the global professional talent network to connect with professionals, build your career identity, and discover opportunities on TalentXcel." canonical="https://talentxcel.in/network" type="website" />
+    <SEOHead 
+      title="Professional Network | Connect with Professionals | TalentXcel" 
+      description="Join the global professional talent network to connect with professionals, build your career identity, and discover opportunities on TalentXcel." 
+      canonical="https://talentxcel.in/network" 
+      type="website" 
+    />
   );
 
   // Mobile interface
@@ -110,6 +120,51 @@ const Network: React.FC = () => {
     );
   }
 
+  // Consistent 3-column layout renderer ensuring 100% UI theme fidelity across all 9 tabs
+  const renderUniformLayout = (middleContent: React.ReactNode) => (
+    <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
+      {/* LEFT COLUMN: PROFILE CARD + QUICK METRICS */}
+      <div className="md:col-span-4 lg:col-span-3 space-y-3">
+        <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
+      </div>
+
+      {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT */}
+      <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
+        {middleContent}
+      </div>
+
+      {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO */}
+      <div className="md:col-span-12 lg:col-span-3 space-y-3">
+        {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
+        <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
+          <div className="flex items-center justify-between mb-2">
+            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-400/30">
+              <Sparkles className="w-3 h-3 text-cyan-300" />
+              Daily Briefing
+            </span>
+          </div>
+
+          <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
+            Your Professional Day
+          </h3>
+          <p className="text-xs text-blue-200/90 leading-relaxed mt-1.5 mb-3.5">
+            Intelligence, community recommendations and career momentum
+          </p>
+
+          <button
+            onClick={() => handleTabChange('creator-studio')}
+            className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 group-hover:shadow-md cursor-pointer"
+          >
+            <span>Creator Studio</span>
+            <span>&rarr;</span>
+          </button>
+        </div>
+
+        <AdvertisingSidebar />
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background/95 pb-20">
       {seoHelmet}
@@ -124,13 +179,14 @@ const Network: React.FC = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 space-y-2.5">
 
         {/* ============================================================================ */}
-        {/* 1. SUB-NAVIGATION PILL TAB BAR (COMPACT PADDING & MARGINS) */}
+        {/* SUB-NAVIGATION PILL TAB BAR (ALL 9 MODULES IN SAME UNIFIED THEME)            */}
         {/* ============================================================================ */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           
           <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
-            <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0">
+            <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0 min-w-max">
               
+              {/* 1. Feed */}
               <TabsTrigger 
                 value="feed" 
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
@@ -139,6 +195,7 @@ const Network: React.FC = () => {
                 <span>Feed</span>
               </TabsTrigger>
 
+              {/* 2. Smart Feed */}
               <TabsTrigger 
                 value="smart-feed" 
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
@@ -147,22 +204,25 @@ const Network: React.FC = () => {
                 <span>Smart Feed</span>
               </TabsTrigger>
 
-              <button
-                onClick={() => navigate('/gamification')}
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
+              {/* 3. Gamification */}
+              <TabsTrigger 
+                value="gamification" 
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
-                <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                <Trophy className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
                 <span>Gamification</span>
-              </button>
+              </TabsTrigger>
 
-              <button
-                onClick={() => navigate('/refer-and-earn')}
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
+              {/* 4. Refer & Earn */}
+              <TabsTrigger 
+                value="refer-and-earn" 
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
-                <Gift className="w-3.5 h-3.5 text-pink-500" />
+                <Gift className="w-3.5 h-3.5 text-pink-500 data-[state=active]:text-white" />
                 <span>Refer &amp; Earn</span>
-              </button>
+              </TabsTrigger>
 
+              {/* 5. Connections */}
               <TabsTrigger 
                 value="connections" 
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
@@ -171,6 +231,7 @@ const Network: React.FC = () => {
                 <span>Connections</span>
               </TabsTrigger>
 
+              {/* 6. Discover */}
               <TabsTrigger 
                 value="discover" 
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
@@ -179,6 +240,7 @@ const Network: React.FC = () => {
                 <span>Discover</span>
               </TabsTrigger>
 
+              {/* 7. Analytics */}
               <TabsTrigger 
                 value="analytics" 
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
@@ -187,6 +249,7 @@ const Network: React.FC = () => {
                 <span>Analytics</span>
               </TabsTrigger>
 
+              {/* 8. AI Connect */}
               <TabsTrigger 
                 value="ai-connect" 
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
@@ -194,32 +257,26 @@ const Network: React.FC = () => {
                 <Sparkles className="w-3.5 h-3.5 text-cyan-500 data-[state=active]:text-white" />
                 <span>AI Connect</span>
               </TabsTrigger>
-              <button
-                onClick={() => navigate('/network/creator-studio')}
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-colors text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted flex items-center gap-1.5"
+
+              {/* 9. Creator Studio */}
+              <TabsTrigger 
+                value="creator-studio" 
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <Sparkles className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
                 <span>Creator Studio</span>
-              </button>
+              </TabsTrigger>
 
             </TabsList>
           </div>
 
           {/* ============================================================================ */}
-          {/* TAB CONTENT: FEED (MAIN 3-COLUMN LAYOUT MATCHING MOCKUP 1:1) */}
+          {/* 1. TAB CONTENT: MAIN FEED                                                    */}
           {/* ============================================================================ */}
           <TabsContent value="feed" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
-
-              {/* LEFT COLUMN: PROFILE CARD + NAVIGATION MENU */}
-              <div className="md:col-span-4 lg:col-span-3 space-y-3">
-                <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
-              </div>
-
-              {/* MIDDLE COLUMN: GLOBAL SEARCH, ENHANCED CREATE POST & FEED */}
-              <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
-                
-                {/* 1. Global Search Bar matching mockup */}
+            {renderUniformLayout(
+              <>
+                {/* Global Search Bar */}
                 <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-1 shadow-xs flex items-center gap-2">
                   <Search className="h-3.5 w-3.5 text-muted-foreground ml-2 shrink-0" />
                   <Input
@@ -233,10 +290,10 @@ const Network: React.FC = () => {
                   </Button>
                 </div>
 
-                {/* 2. Enhanced Create Post Card matching mockup (compact by default) */}
+                {/* Enhanced Create Post Card */}
                 <EnhancedCreatePost />
 
-                {/* 3. Feed Controls Bar with real filtering & smooth refresh */}
+                {/* Feed Controls Bar */}
                 <div className="flex items-center justify-between pt-0.5">
                   <div className="flex items-center gap-1.5">
                     <button 
@@ -266,7 +323,7 @@ const Network: React.FC = () => {
                   </div>
                 </div>
 
-                {/* 4. Posts Feed with active search filtering */}
+                {/* Posts Feed */}
                 <React.Suspense fallback={
                   <div className="flex items-center justify-center p-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
@@ -274,115 +331,147 @@ const Network: React.FC = () => {
                 }>
                   <Posts feedType={postFilter === 'latest' ? 'all' : postFilter} searchTerm={searchTerm} />
                 </React.Suspense>
-
-              </div>
-
-              {/* RIGHT COLUMN: PRO SPONSORED CARDS & PEOPLE YOU MAY KNOW */}
-              <div className="md:col-span-12 lg:col-span-3 space-y-3">
-                {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
-                <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-400/30">
-                      <Sparkles className="w-3 h-3 text-cyan-300" />
-                      Daily Briefing
-                    </span>
-                  </div>
-
-                  <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
-                    Your Professional Day
-                  </h3>
-                  <p className="text-xs text-blue-200/90 leading-relaxed mt-1.5 mb-3.5">
-                    Intelligence, community recommendations and career momentum
-                  </p>
-
-                  <button
-                    onClick={() => navigate('/network/creator-studio')}
-                    className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 group-hover:shadow-md cursor-pointer"
-                  >
-                    <span>Creator Studio</span>
-                    <span>&rarr;</span>
-                  </button>
-                </div>
-
-                <AdvertisingSidebar />
-              </div>
-
-            </div>
+              </>
+            )}
           </TabsContent>
 
-          {/* TAB CONTENT: SMART FEED */}
+          {/* ============================================================================ */}
+          {/* 2. TAB CONTENT: SMART FEED                                                   */}
+          {/* ============================================================================ */}
           <TabsContent value="smart-feed" className="mt-0">
-            <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
-              <div className="md:col-span-4 lg:col-span-3 space-y-3">
-                <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
-              </div>
-              <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
-                <Posts feedType="connections" />
-              </div>
-              <div className="md:col-span-12 lg:col-span-3 space-y-3">
-                <AdvertisingSidebar />
-              </div>
-            </div>
+            {renderUniformLayout(
+              <>
+                <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-3 shadow-xs flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-600">
+                      <Sparkles className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xs text-foreground">Smart Connections Feed</h3>
+                      <p className="text-[11px] text-muted-foreground">Showing prioritized posts exclusively from your accepted professional connections.</p>
+                    </div>
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-purple-50 text-purple-700 dark:bg-purple-950/50 dark:text-purple-300 font-bold shrink-0">
+                    Connection Curated
+                  </Badge>
+                </div>
+
+                <React.Suspense fallback={
+                  <div className="flex items-center justify-center p-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                  </div>
+                }>
+                  <Posts feedType="connections" />
+                </React.Suspense>
+              </>
+            )}
           </TabsContent>
 
-          {/* TAB CONTENT: CONNECTIONS */}
-          <TabsContent value="connections" className="mt-0 space-y-4">
-            {/* Quick Hub Header Banner */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 sm:p-4 bg-white dark:bg-card rounded-xl border border-slate-200/80 dark:border-border/60 shadow-xs gap-3">
-              <div className="flex items-center gap-3">
-                <div className="p-2 sm:p-2.5 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-xl">
-                  <Users className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-foreground">Professional Connections Hub</h3>
-                  <p className="text-xs text-muted-foreground">Manage your connections, pending invitations, and message peers in real time.</p>
-                </div>
-              </div>
-              <Button 
-                size="sm" 
-                onClick={() => navigate('/network/connections')}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shrink-0"
-              >
-                Open Full Connections Hub &rarr;
-              </Button>
-            </div>
+          {/* ============================================================================ */}
+          {/* 3. TAB CONTENT: GAMIFICATION                                                 */}
+          {/* ============================================================================ */}
+          <TabsContent value="gamification" className="mt-0">
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Gamification...</div>}>
+                <GamificationDashboard />
+              </React.Suspense>
+            )}
+          </TabsContent>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-              <div className="lg:col-span-8">
-                <React.Suspense fallback={<div className="p-8 text-center">Loading Connections...</div>}>
+          {/* ============================================================================ */}
+          {/* 4. TAB CONTENT: REFER & EARN                                                 */}
+          {/* ============================================================================ */}
+          <TabsContent value="refer-and-earn" className="mt-0">
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Refer &amp; Earn...</div>}>
+                <RealTimeReferralDashboard />
+              </React.Suspense>
+            )}
+          </TabsContent>
+
+          {/* ============================================================================ */}
+          {/* 5. TAB CONTENT: CONNECTIONS                                                  */}
+          {/* ============================================================================ */}
+          <TabsContent value="connections" className="mt-0">
+            {renderUniformLayout(
+              <div className="space-y-3.5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3.5 bg-white dark:bg-card rounded-xl border border-slate-200/80 dark:border-border/60 shadow-xs gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-lg">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-xs text-foreground">Professional Connections Hub</h3>
+                      <p className="text-[11px] text-muted-foreground">Real-time accepted network members, followers, and active connection requests.</p>
+                    </div>
+                  </div>
+                  <Button 
+                    size="sm" 
+                    onClick={() => navigate('/network/connections')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-7 px-3 rounded-lg shrink-0"
+                  >
+                    Manage Hub &rarr;
+                  </Button>
+                </div>
+
+                <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Connections...</div>}>
                   <FollowingFollowersList />
                 </React.Suspense>
+
+                <div className="space-y-3 pt-2">
+                  <React.Suspense fallback={null}>
+                    <SubscriptionsManager />
+                  </React.Suspense>
+                  <React.Suspense fallback={null}>
+                    <SocialNotifications />
+                  </React.Suspense>
+                </div>
               </div>
-              <div className="lg:col-span-4 space-y-4">
-                <React.Suspense fallback={<div className="p-8 text-center">Loading Subscriptions...</div>}>
-                  <SubscriptionsManager />
-                </React.Suspense>
-                <React.Suspense fallback={<div className="p-8 text-center">Loading Notifications...</div>}>
-                  <SocialNotifications />
-                </React.Suspense>
-              </div>
-            </div>
+            )}
           </TabsContent>
 
-          {/* TAB CONTENT: DISCOVER */}
+          {/* ============================================================================ */}
+          {/* 6. TAB CONTENT: DISCOVER                                                     */}
+          {/* ============================================================================ */}
           <TabsContent value="discover" className="mt-0">
-            <React.Suspense fallback={<div className="p-8 text-center">Loading Discover...</div>}>
-              <CareerContentHub />
-            </React.Suspense>
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Discover Directory...</div>}>
+                <Discover isEmbedded={true} />
+              </React.Suspense>
+            )}
           </TabsContent>
 
-          {/* TAB CONTENT: ANALYTICS */}
+          {/* ============================================================================ */}
+          {/* 7. TAB CONTENT: ANALYTICS                                                    */}
+          {/* ============================================================================ */}
           <TabsContent value="analytics" className="mt-0">
-            <React.Suspense fallback={<div className="p-8 text-center">Loading Analytics...</div>}>
-              <NetworkAnalytics />
-            </React.Suspense>
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Network Analytics...</div>}>
+                <NetworkAnalytics />
+              </React.Suspense>
+            )}
           </TabsContent>
 
-          {/* TAB CONTENT: AI CONNECT */}
+          {/* ============================================================================ */}
+          {/* 8. TAB CONTENT: AI CONNECT                                                   */}
+          {/* ============================================================================ */}
           <TabsContent value="ai-connect" className="mt-0">
-            <React.Suspense fallback={<div className="p-8 text-center">Loading AI Connect...</div>}>
-              <EnhancedSmartConnectAI />
-            </React.Suspense>
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading AI Smart Connect...</div>}>
+                <EnhancedSmartConnectAI />
+              </React.Suspense>
+            )}
+          </TabsContent>
+
+          {/* ============================================================================ */}
+          {/* 9. TAB CONTENT: CREATOR STUDIO                                               */}
+          {/* ============================================================================ */}
+          <TabsContent value="creator-studio" className="mt-0">
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Creator Studio...</div>}>
+                <CreatorStudio isEmbedded={true} />
+              </React.Suspense>
+            )}
           </TabsContent>
 
         </Tabs>
@@ -398,4 +487,3 @@ const Network: React.FC = () => {
 };
 
 export default Network;
-
