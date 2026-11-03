@@ -37,6 +37,7 @@ const VideoIntros = lazy(() => import('../pages/network/VideoIntros'));
 const Verified = lazy(() => import('../pages/network/Verified'));
 const Communities = lazy(() => import('../pages/network/Communities'));
 const Leaderboards = lazy(() => import('../pages/network/Leaderboards'));
+const CreatorStudio = lazy(() => import('../pages/network/CreatorStudio'));
 
 export const networkRoutes = [
   {
@@ -204,5 +205,11 @@ export const networkRoutes = [
     title: "Leaderboards",
     to: "/network/leaderboards",
     page: <Suspense fallback={null}><Leaderboards /></Suspense>,
+  },
+  {
+    title: "Creator Studio",
+    to: "/network/creator-studio",
+    page: <Suspense fallback={null}><CreatorStudio /></Suspense>,
+    isPublic: true,
   },
 ];
