@@ -153,7 +153,7 @@ export class JobPostingValidator {
         'value': job.id,
       },
       'datePosted': validation.datePosted,
-      'validThrough': validation.validThrough || new Date(Date.now() + 30 * 86400000).toISOString(),
+      'validThrough': validation.validThrough || undefined,
       'employmentType': (job.employment_type || 'FULL_TIME').toUpperCase().replace('-', '_'),
       'hiringOrganization': {
         '@type': 'Organization',

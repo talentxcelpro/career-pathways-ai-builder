@@ -75,11 +75,7 @@ export const generateJobJSONLD = (job: JobData) => {
       }
     } : undefined,
     "datePosted": job.created_at.split('T')[0],
-    "validThrough": job.expires_at?.split('T')[0] || (() => {
-      const date = new Date(job.created_at);
-      date.setDate(date.getDate() + 30);
-      return date.toISOString().split('T')[0];
-    })(),
+    "validThrough": job.expires_at ? job.expires_at.split('T')[0] : undefined,
     "industry": "Information Technology",
     "url": `https://talentxcel.in/jobs/${job.seo_slug || job.id}`
   };

@@ -17,7 +17,7 @@ export const JobPostingStructuredData: React.FC<JobPostingStructuredDataProps> =
       "value": job.id
     },
     "datePosted": job.posted_at || job.created_at,
-    "validThrough": job.expires_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    "validThrough": job.expires_at ? new Date(job.expires_at).toISOString() : undefined,
     "employmentType": job.employment_type?.toUpperCase().replace('_', ''),
     "hiringOrganization": {
       "@type": "Organization",

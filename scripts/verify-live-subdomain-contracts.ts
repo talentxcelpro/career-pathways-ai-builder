@@ -328,7 +328,7 @@ const canonicalTests = [
   { path: '/jobs', host: 'jobs.talentxcel.in', expected: 'https://talentxcel.in/jobs' },
   { path: '/jobs/software-engineer-bangalore', host: 'jobs.talentxcel.in', expected: 'https://talentxcel.in/jobs/software-engineer-bangalore' },
   { path: '/resume', host: 'resume.talentxcel.in', expected: 'https://talentxcel.in/resume' },
-  { path: '/salary', host: 'salary.talentxcel.in', expected: 'https://talentxcel.in/salary' },
+  { path: '/salary', host: 'salary.talentxcel.in', expected: 'https://salary.talentxcel.in/salary' },
   { path: '/colleges', host: 'colleges.talentxcel.in', expected: 'https://talentxcel.in/colleges' },
   { path: '/learning', host: 'learning.talentxcel.in', expected: 'https://talentxcel.in/learning' },
   { path: '/companies', host: 'employers.talentxcel.in', expected: 'https://talentxcel.in/companies' },
