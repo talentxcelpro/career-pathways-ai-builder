@@ -332,8 +332,11 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       const fileExt = item.file.name.split('.').pop()?.toLowerCase() || (item.type === 'video' ? 'mp4' : 'jpg');
       const fileName = `${userId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-      // Primary target bucket: post-media, with fallback to avatars if post-media is not ready
-      let targetBucket = 'post-media';
+      // Choose bucket based on post privacy:
+      // Public posts -> post-media (public CDN cached)
+      // Connections-only / Private posts -> post-media-private (strict RLS protected)
+      const isPublic = privacy === 'public';
+      let targetBucket = isPublic ? 'post-media' : 'post-media-private';
       let uploadResult = await supabase.storage
         .from(targetBucket)
         .upload(fileName, item.file, {
@@ -342,7 +345,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
           contentType: item.file.type
         });
 
-      if (uploadResult.error) {
+      if (uploadResult.error && isPublic) {
         targetBucket = 'avatars';
         uploadResult = await supabase.storage
           .from(targetBucket)
@@ -360,14 +363,24 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         throw new Error(`Media upload rejected: ${errMsg}`);
       }
 
-      const { data: urlData } = supabase.storage.from(targetBucket).getPublicUrl(uploadResult.data.path);
-      if (!urlData?.publicUrl) {
-        setIsUploading(false);
-        toast.error(`Failed to retrieve public URL for ${item.file.name}`);
-        throw new Error('Public URL resolution failed');
+      let resolvedUrl = '';
+      if (targetBucket === 'post-media-private') {
+        const { data: signData } = await supabase.storage
+          .from(targetBucket)
+          .createSignedUrl(uploadResult.data.path, 3600 * 24 * 7); // 7-day initial signed token
+        resolvedUrl = signData?.signedUrl || `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/authenticated/post-media-private/${uploadResult.data.path}`;
+      } else {
+        const { data: urlData } = supabase.storage.from(targetBucket).getPublicUrl(uploadResult.data.path);
+        resolvedUrl = urlData?.publicUrl || '';
       }
 
-      uploadedUrls.push(urlData.publicUrl);
+      if (!resolvedUrl) {
+        setIsUploading(false);
+        toast.error(`Failed to retrieve media URL for ${item.file.name}`);
+        throw new Error('Media URL resolution failed');
+      }
+
+      uploadedUrls.push(resolvedUrl);
     }
 
     setIsUploading(false);

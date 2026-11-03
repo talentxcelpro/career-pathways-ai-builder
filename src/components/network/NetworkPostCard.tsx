@@ -53,6 +53,9 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   const [showComments, setShowComments] = React.useState(openComments === post.id);
   const [selectedMediaUrl, setSelectedMediaUrl] = React.useState<string | null>(null);
 
+  const rawPrimaryMedia = post.featured_image_url || (post.media_urls && post.media_urls[0]) || null;
+  const { url: resolvedMediaUrl } = useResolvedMediaUrl(rawPrimaryMedia);
+
   const isVideoUrl = (url?: string): boolean => {
     if (!url) return false;
     const cleanUrl = url.split('?')[0].toLowerCase();
@@ -380,7 +383,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
             {(post.featured_image_url || (post.media_urls && post.media_urls[0])) && (
               <Link to={`/network/articles/${post.id}`} className="block overflow-hidden rounded-2xl border border-slate-200 dark:border-border/60 group">
                 <img 
-                  src={post.featured_image_url || post.media_urls?.[0]} 
+                  src={resolvedMediaUrl || post.featured_image_url || post.media_urls?.[0]} 
                   alt={post.headline || "Article cover"} 
                   className="w-full max-h-[360px] object-cover group-hover:scale-[1.01] transition-transform duration-300"
                 />
@@ -437,7 +440,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
               <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-border/60 bg-slate-950/5 dark:bg-muted/30">
                 {isVideoUrl(post.media_urls[0]) || post.post_type === 'video' ? (
                   <video 
-                    src={post.media_urls[0]} 
+                    src={resolvedMediaUrl || post.media_urls[0]} 
                     controls 
                     playsInline
                     preload="metadata"
@@ -445,10 +448,10 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
                   />
                 ) : (
                   <img 
-                    src={post.media_urls[0]} 
+                    src={resolvedMediaUrl || post.media_urls[0]} 
                     alt="Post media" 
                     className="w-full max-h-[500px] object-cover cursor-pointer hover:opacity-95 transition-opacity rounded-2xl"
-                    onClick={() => setSelectedMediaUrl(post.media_urls[0])}
+                    onClick={() => setSelectedMediaUrl(resolvedMediaUrl || post.media_urls[0])}
                   />
                 )}
               </div>
