@@ -286,7 +286,6 @@ const Network: React.FC = () => {
                       <Sparkles className="w-3 h-3 text-cyan-300" />
                       Daily Briefing
                     </span>
-                    <span className="text-[10px] text-blue-300/70 font-medium">Concept C</span>
                   </div>
 
                   <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
