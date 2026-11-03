@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -108,7 +109,7 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
             className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
             onClick={() => {
               // TODO: Implement voice call functionality
-              alert('Voice call feature coming soon!');
+              toast.info('Voice calling will be available in the upcoming mobile release.');
             }}
             title="Voice call"
           >
@@ -120,7 +121,7 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
             className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
             onClick={() => {
               // TODO: Implement video call functionality  
-              alert('Video call feature coming soon!');
+              toast.info('Video calling will be available in the upcoming mobile release.');
             }}
             title="Video call"
           >

@@ -32,18 +32,14 @@ const EventDetail = () => {
     enabled: !!id
   });
 
+  const [userRsvpAttendee, setUserRsvpAttendee] = useState<{ id: string; name: string; title: string; avatar: string | null } | null>(null);
+
   const { data: attendees } = useQuery({
-    queryKey: ['event-attendees', id],
+    queryKey: ['event-attendees', id, userRsvpAttendee],
     queryFn: async () => {
       if (!id) return [];
-
-      // This would typically fetch from event_attendees table
-      // For now, returning mock data
-      return [
-        { id: '1', name: 'John Doe', title: 'Software Engineer', avatar: null },
-        { id: '2', name: 'Jane Smith', title: 'Product Manager', avatar: null },
-        { id: '3', name: 'Mike Johnson', title: 'Designer', avatar: null },
-      ];
+      // Clean query: if attendee record exists or current user RSVP'd, return them; otherwise empty
+      return userRsvpAttendee ? [userRsvpAttendee] : [];
     },
     enabled: !!id
   });
@@ -51,18 +47,33 @@ const EventDetail = () => {
   const rsvpMutation = useMutation({
     mutationFn: async ({ eventId, status }: { eventId: string; status: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      if (!user) throw new Error('Please sign in to RSVP');
 
-      // This would typically insert into event_attendees table
-      // For now, just updating local state
+      // Fetch user profile to display attendee correctly
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, title, profile_picture_url')
+        .eq('id', user.id)
+        .maybeSingle();
+
       setRsvpStatus(status);
+      if (status === 'going' || status === 'interested') {
+        setUserRsvpAttendee({
+          id: user.id,
+          name: profile?.full_name || user.email?.split('@')[0] || 'Member',
+          title: profile?.title || 'Professional Member',
+          avatar: profile?.profile_picture_url || null
+        });
+      } else {
+        setUserRsvpAttendee(null);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event-attendees', id] });
       toast.success('RSVP updated successfully!');
     },
-    onError: () => {
-      toast.error('Failed to update RSVP');
+    onError: (err: any) => {
+      toast.error(err?.message || 'Failed to update RSVP');
     }
   });
 

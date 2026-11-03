@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { sampleSkillExchanges } from './sample-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAdvancedNetworking } from '@/hooks/useAdvancedNetworking';
 import { useTokenBalance } from '@/hooks/useTokenBalance';
@@ -54,7 +53,7 @@ const SkillSwap: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('all');
   const [sortBy, setSortBy] = useState('recent');
-  const [userCredits, setUserCredits] = useState(250);
+  const [userCredits, setUserCredits] = useState(0);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
     skill_offered: '',
@@ -157,27 +156,6 @@ const SkillSwap: React.FC = () => {
             }
           };
         });
-      }
-
-      // Fallback to initial exchange opportunities if database has none
-      if (formattedData.length === 0) {
-        formattedData = sampleSkillExchanges.map(sample => ({
-          id: sample.id,
-          requester_id: undefined,
-          skill_offered: sample.skill_offered,
-          skill_sought: sample.skill_sought,
-          description: sample.description,
-          difficulty_level: sample.difficulty_level,
-          session_length: 60,
-          credits_required: sample.credits_offered,
-          status: 'active',
-          created_at: sample.created_at,
-          user_profile: {
-            full_name: sample.profiles.full_name,
-            title: 'Verified Specialist',
-            profile_picture_url: sample.profiles.profile_picture_url || undefined
-          }
-        }));
       }
       
       setSkillExchanges(formattedData);

@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useConnectionRequests } from "@/hooks/useConnectionRequests";
 import { supabase } from "@/integrations/supabase/client";
 
 interface AdvertisingSidebarProps {

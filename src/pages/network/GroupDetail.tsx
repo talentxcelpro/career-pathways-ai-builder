@@ -35,14 +35,30 @@ const GroupDetail = () => {
     queryKey: ['group-members', id],
     queryFn: async () => {
       if (!id) return [];
+      const { data: memberships, error } = await supabase
+        .from('group_memberships')
+        .select('user_id, role, joined_at')
+        .eq('group_id', id);
 
-      // This would typically join with group_members table
-      // For now, returning mock data
-      return [
-        { id: '1', name: 'John Doe', title: 'Software Engineer', avatar: null },
-        { id: '2', name: 'Jane Smith', title: 'Product Manager', avatar: null },
-        { id: '3', name: 'Mike Johnson', title: 'Designer', avatar: null },
-      ];
+      if (error || !memberships || memberships.length === 0) return [];
+
+      const userIds = memberships.map(m => m.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, title, profile_picture_url')
+        .in('id', userIds);
+
+      const profileMap = new Map((profiles || []).map(p => [p.id, p]));
+      return memberships.map(m => {
+        const p = profileMap.get(m.user_id);
+        return {
+          id: m.user_id,
+          name: p?.full_name || 'Community Member',
+          title: p?.title || (m.role === 'admin' ? 'Community Admin' : 'Member'),
+          avatar: p?.profile_picture_url || null,
+          role: m.role
+        };
+      });
     },
     enabled: !!id
   });
@@ -51,27 +67,36 @@ const GroupDetail = () => {
     queryKey: ['group-discussions', id],
     queryFn: async () => {
       if (!id) return [];
+      const { data: posts, error } = await supabase
+        .from('group_posts')
+        .select('id, content, created_at, author_id')
+        .eq('group_id', id)
+        .order('created_at', { ascending: false });
 
-      // This would typically fetch from group_discussions table
-      // For now, returning mock data
-      return [
-        {
-          id: '1',
-          title: 'Welcome to the group!',
-          content: 'Introduce yourself and let us know what you\'re working on.',
-          author: 'Group Admin',
-          created_at: new Date().toISOString(),
-          replies_count: 12
-        },
-        {
-          id: '2',
-          title: 'Best practices for React development',
-          content: 'Let\'s discuss the latest React patterns and best practices.',
-          author: 'John Doe',
-          created_at: new Date(Date.now() - 86400000).toISOString(),
-          replies_count: 8
-        }
-      ];
+      if (error || !posts || posts.length === 0) return [];
+
+      const authorIds = Array.from(new Set(posts.map(p => p.author_id).filter(Boolean)));
+      let authorMap = new Map();
+      if (authorIds.length > 0) {
+        const { data: authors } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url')
+          .in('id', authorIds);
+        authorMap = new Map((authors || []).map(a => [a.id, a]));
+      }
+
+      return posts.map(p => {
+        const author = authorMap.get(p.author_id);
+        return {
+          id: p.id,
+          title: p.content.slice(0, 60) + (p.content.length > 60 ? '...' : ''),
+          content: p.content,
+          author: author?.full_name || 'Group Member',
+          author_avatar: author?.profile_picture_url || null,
+          created_at: p.created_at,
+          replies_count: 0
+        };
+      });
     },
     enabled: !!id
   });

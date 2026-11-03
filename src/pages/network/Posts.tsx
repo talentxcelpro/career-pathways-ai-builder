@@ -3,12 +3,13 @@ import { EnhancedNetworkPostsFeed } from "@/components/network/EnhancedNetworkPo
 
 interface PostsProps {
   feedType?: 'all' | 'connections' | 'trending';
+  searchTerm?: string;
 }
 
-const Posts: React.FC<PostsProps> = ({ feedType = 'all' }) => {
+const Posts: React.FC<PostsProps> = ({ feedType = 'all', searchTerm }) => {
   return (
     <div className="w-full space-y-6">
-      <EnhancedNetworkPostsFeed feedType={feedType} />
+      <EnhancedNetworkPostsFeed feedType={feedType} searchTerm={searchTerm} />
     </div>
   );
 };

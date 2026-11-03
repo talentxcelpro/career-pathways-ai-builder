@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,11 @@ const Network: React.FC = () => {
   };
   const [searchTerm, setSearchTerm] = useState('');
   const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending'>('all');
+  const queryClient = useQueryClient();
+  const handleRefreshFeed = () => {
+    queryClient.invalidateQueries({ queryKey: ['network-feed'] });
+    queryClient.invalidateQueries({ queryKey: ['posts'] });
+  };
   
   // Enable real-time social updates
   useRealtimeSocialUpdates();
@@ -78,10 +84,15 @@ const Network: React.FC = () => {
   );
 
   // Mobile interface
-  if (isMobile && user) {
+  if (isMobile) {
     return (
       <MobileNavWrapper>
         {seoHelmet}
+        {!user && (
+          <div className="px-3 pt-2">
+            <GoogleOneTapStatus />
+          </div>
+        )}
         <LinkedInMobileFeed
           posts={posts}
           loading={loading}
@@ -218,37 +229,43 @@ const Network: React.FC = () => {
                 {/* 2. Enhanced Create Post Card matching mockup (compact by default) */}
                 <EnhancedCreatePost />
 
-                {/* 3. Feed Controls Bar matching mockup */}
+                {/* 3. Feed Controls Bar with real filtering & smooth refresh */}
                 <div className="flex items-center justify-between pt-0.5">
-                  <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-border/60 shadow-xs cursor-pointer">
-                    <span>All Posts</span>
-                    <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                  <div className="flex items-center gap-1.5">
+                    <button 
+                      onClick={() => setPostFilter('all')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
+                    >
+                      All Posts
+                    </button>
+                    <button 
+                      onClick={() => setPostFilter('trending')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'trending' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
+                    >
+                      Trending
+                    </button>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <div className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 bg-white dark:bg-card px-2.5 py-1 rounded-lg border border-slate-200/80 dark:border-border/60 shadow-xs cursor-pointer">
-                      <span>Latest</span>
-                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
-                    </div>
-
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      onClick={() => window.location.reload()} 
-                      className="rounded-lg h-7 w-7 p-0 border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-xs"
+                      title="Refresh feed"
+                      onClick={handleRefreshFeed} 
+                      className="rounded-lg h-7 w-7 p-0 border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-xs hover:bg-slate-50"
                     >
                       <RotateCw className="h-3 w-3 text-slate-600 dark:text-slate-300" />
                     </Button>
                   </div>
                 </div>
 
-                {/* 4. Posts Feed */}
+                {/* 4. Posts Feed with active search filtering */}
                 <React.Suspense fallback={
                   <div className="flex items-center justify-center p-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
                   </div>
                 }>
-                  <Posts feedType="all" />
+                  <Posts feedType={postFilter === 'latest' ? 'all' : postFilter} searchTerm={searchTerm} />
                 </React.Suspense>
 
               </div>
