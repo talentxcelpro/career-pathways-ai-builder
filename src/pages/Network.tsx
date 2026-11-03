@@ -97,48 +97,23 @@ const Network: React.FC = () => {
     />
   );
 
-  // Mobile interface
-  if (isMobile) {
-    return (
-      <MobileNavWrapper>
-        {seoHelmet}
-        {!user && (
-          <div className="px-3 pt-2">
-            <GoogleOneTapStatus />
-          </div>
-        )}
-        <LinkedInMobileFeed
-          posts={posts}
-          loading={loading}
-          onLike={handleLike}
-          onBookmark={handleBookmark}
-          onShare={handleShare}
-          onComment={handleComment}
-          onConnect={handleConnect}
-          onApply={handleApply}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
-          onLoadMore={fetchNextPage}
-        />
-      </MobileNavWrapper>
-    );
-  }
 
-  // Consistent 3-column layout renderer ensuring 100% UI theme fidelity across all 9 tabs
+
+  // Consistent responsive layout renderer ensuring 100% UI theme fidelity on both mobile & desktop
   const renderUniformLayout = (middleContent: React.ReactNode) => (
     <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
-      {/* LEFT COLUMN: PROFILE CARD + QUICK METRICS */}
-      <div className="md:col-span-4 lg:col-span-3 space-y-3">
+      {/* LEFT COLUMN: PROFILE CARD + QUICK METRICS (hidden on mobile, shown on md+) */}
+      <div className="hidden md:block md:col-span-4 lg:col-span-3 space-y-3">
         <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
       </div>
 
-      {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT */}
-      <div className="md:col-span-8 lg:col-span-6 space-y-2.5">
+      {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT (full-width on mobile, col-span-6 on lg) */}
+      <div className="col-span-12 md:col-span-8 lg:col-span-6 space-y-2.5">
         {middleContent}
       </div>
 
-      {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO */}
-      <div className="md:col-span-12 lg:col-span-3 space-y-3">
+      {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO (hidden on mobile, shown on lg+) */}
+      <div className="hidden lg:block lg:col-span-3 space-y-3">
         {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
         <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
           <div className="flex items-center justify-between mb-2">
@@ -170,7 +145,8 @@ const Network: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-background/95 pb-20">
+    <MobileNavWrapper>
+      <div className="min-h-screen bg-slate-50/50 dark:bg-background/95 pb-20">
       {seoHelmet}
       
       {/* One Tap Sign In Status for guests */}
@@ -273,10 +249,14 @@ const Network: React.FC = () => {
               {/* 9. Creator Studio */}
               <TabsTrigger 
                 value="creator-studio" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
+                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5 relative"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
                 <span>Creator Studio</span>
+                <span className="relative flex h-2 w-2 ml-0.5" title="New Creator Pool Active">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
               </TabsTrigger>
 
             </TabsList>
@@ -344,6 +324,7 @@ const Network: React.FC = () => {
                   <Posts feedType={postFilter === 'latest' ? 'all' : postFilter} searchTerm={searchTerm} />
                 </React.Suspense>
               </>
+              )
             )}
           </TabsContent>
 
@@ -553,7 +534,8 @@ const Network: React.FC = () => {
       <UserPresence userId={user?.id} />
       <NetworkMessagingSidebar />
 
-    </div>
+      </div>
+    </MobileNavWrapper>
   );
 };
 
