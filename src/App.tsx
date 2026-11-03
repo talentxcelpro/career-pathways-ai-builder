@@ -155,6 +155,7 @@ const VideoCall                       = lazy(() => import('@/components/realtime
 const RealTimeChat                    = lazy(() => import('@/components/realtime/RealTimeChat').then(m => ({ default: m.RealTimeChat })));
 const CommunitiesPage                 = lazy(() => import('./pages/network/Communities'));
 const MessagesPage                    = lazy(() => import('./pages/network/Messages'));
+const NotificationsPage               = lazy(() => import('./pages/NotificationsPage'));
 const PeopleDirectoryPage             = lazy(() => import('./pages/network/People'));
 const LiveEvent                       = lazy(() => import('@/components/realtime/LiveEvent').then(m => ({ default: m.LiveEvent })));
 const UserProfile                     = lazy(() => import('./pages/UserProfile'));
@@ -647,6 +648,13 @@ const App = () => {
                     <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Messages...</div>
                   }>
                     <MessagesPage />
+                  </Suspense>
+                } />
+                <Route path="/notifications" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Notifications...</div>
+                  }>
+                    <NotificationsPage />
                   </Suspense>
                 } />
                 <Route path="/messages/:id" element={

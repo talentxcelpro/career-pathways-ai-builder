@@ -1,0 +1,61 @@
+Template Key,Category,Source Location,Subject Pattern,Responsive HTML,Plain Text Alternative,Dynamic Variables,Unsubscribe Link,Production Status
+welcome,transactional,src/services/email/emailTemplates.ts,"Welcome to TalentXcel, {{firstName}}!",Yes,Yes,"firstName, name, ctaUrl",No (Transactional Exempt),Production Ready
+verify_email,transactional,src/services/email/emailTemplates.ts,"Verify your email address - TalentXcel",Yes,Yes,"firstName, verifyUrl, code, ctaUrl",No (Transactional Exempt),Production Ready
+password_reset,transactional,src/services/email/emailTemplates.ts,Reset your TalentXcel password,Yes,Yes,"firstName, resetUrl, expiresIn",No (Transactional Exempt),Production Ready
+application_confirmation,transactional,src/services/email/emailTemplates.ts,"Application Received: {{jobTitle}} at {{companyName}}",Yes,Yes,"candidateName, jobTitle, companyName, applicationId, ctaUrl",No (Transactional Exempt),Production Ready
+application_status,transactional,src/services/email/emailTemplates.ts,"Update on your application: {{jobTitle}} at {{companyName}}",Yes,Yes,"candidateName, jobTitle, companyName, status, note, ctaUrl",No (Transactional Exempt),Production Ready
+job_match,product_notification,src/services/email/emailTemplates.ts,"New Job Match: {{jobTitle}} at {{companyName}}",Yes,Yes,"firstName, jobTitle, companyName, location, salaryRange, matchScore, ctaUrl",Yes,Production Ready
+job_match_digest,product_notification,src/services/email/emailTemplates.ts,"You have {{jobCount}} new job matches on TalentXcel",Yes,Yes,"firstName, jobs (array), jobCount, ctaUrl",Yes,Production Ready
+career_recommendation,engagement,src/services/email/emailTemplates.ts,"Career Insight: {{recommendationTitle}}",Yes,Yes,"firstName, recommendationTitle, description, ctaUrl",Yes,Production Ready
+weekly_digest,engagement,src/services/email/emailTemplates.ts,Your TalentXcel Weekly Digest,Yes,Yes,"firstName, profileViews, matchCount, ctaUrl",Yes,Production Ready
+marketing,marketing,src/services/email/emailTemplates.ts,"{{headline}}",Yes,Yes,"headline, message, ctaLabel, ctaUrl",Yes,Production Ready
+activation_network_intro,engagement,api/email/_send.ts,Discover verified career opportunities on TalentXcel,Yes,Yes,"firstName, ctaUrl",Yes,Production Ready (Vercel Serverless)
+activation_profile_claim,engagement,api/email/_send.ts,Action required: Review and claim your TalentXcel profile,Yes,Yes,"firstName, headline, role, skills, claimUrl, optOutUrl",Yes,Production Ready (Vercel Serverless)
+activation_claim_followup,engagement,api/email/_send.ts,Reminder: Your TalentXcel profile invitation expires soon,Yes,Yes,"firstName, claimUrl, ctaUrl",Yes,Production Ready (Vercel Serverless)
+welcome_edge,transactional,supabase/functions/send-email-notification,"Welcome to {{platform_name}}!",Yes,No,"recipient_name, platform_name, current_year",No,Active in Edge Function
+profile_completion_edge,engagement,supabase/functions/send-email-notification,Complete Your {{platform_name}} Profile,Yes,No,"recipient_name, platform_name, current_year",No,Active in Edge Function
+job_match_edge,product_notification,supabase/functions/send-email-notification,New Job Match on {{platform_name}},Yes,No,"recipient_name, job_title, company_name, location",No,Active in Edge Function
+test_email_edge,administration,supabase/functions/send-email-notification,Test Email from {{platform_name}},Yes,No,"recipient_name, platform_name, timestamp",No,Active in Edge Function
+social.new_post_edge,engagement,supabase/functions/send-email-notification,"{{author_name}} shared a new post - TalentXcel",Yes,No,"recipient_name, author_name, post_preview",No,Active in Edge Function
+campaign.email_edge,marketing,supabase/functions/send-email-notification,"{{subject}}",Yes,No,"subject, html_content",No,Active in Edge Function
+welcome_legacy,transactional,src/lib/emailTemplates.ts,"Welcome to TalentXcel, {{name}}",Yes,No,"name",Yes,Legacy Lib (Deprecated)
+connection_accepted_legacy,engagement,src/lib/emailTemplates.ts,Connection Accepted! ✅,Yes,No,"recipient_name, name",Yes,Legacy Lib (Deprecated)
+message_notification_legacy,engagement,src/lib/emailTemplates.ts,New Message! 💬,Yes,No,"recipient_name, sender_name, message_preview",Yes,Legacy Lib (Deprecated)
+mention_notification_legacy,engagement,src/lib/emailTemplates.ts,You Were Mentioned! 📣,Yes,No,"mentioned_user, sender_name, post_id",Yes,Legacy Lib (Deprecated)
+job_status_update_legacy,transactional,src/lib/emailTemplates.ts,Job Application Status Update,Yes,No,"name, job_title, status",Yes,Legacy Lib (Deprecated)
+saved_job_reminder_legacy,engagement,src/lib/emailTemplates.ts,Don't Forget to Apply!,Yes,No,"name, job_title, company_name",Yes,Legacy Lib (Deprecated)
+daily_job_digest_legacy,product_notification,src/lib/emailTemplates.ts,Your Daily Job Digest,Yes,No,"name, jobs (array)",Yes,Legacy Lib (Deprecated)
+new_applicant_legacy,employer communication,src/lib/emailTemplates.ts,New Application Received!,Yes,No,"employer_name, applicant_name, job_title",Yes,Legacy Lib (Deprecated)
+employer_welcome_legacy,employer communication,src/lib/emailTemplates.ts,Welcome to TalentXcel for Employers!,Yes,No,"name, company_name",Yes,Legacy Lib (Deprecated)
+job_expiry_reminder_legacy,employer communication,src/lib/emailTemplates.ts,Job Posting Expiring Soon,Yes,No,"employer_name, job_title, expiry_date",Yes,Legacy Lib (Deprecated)
+new_connection_legacy,engagement,src/lib/emailTemplates.ts,New Connection Request!,Yes,No,"recipient_name, sender_name",Yes,Legacy Lib (Deprecated)
+job_opening_legacy,product_notification,src/lib/emailTemplates.ts,New Job Opening Matching Your Profile,Yes,No,"name, job_title, company_name",Yes,Legacy Lib (Deprecated)
+application_confirmation_legacy,transactional,src/lib/emailTemplates.ts,Application Submitted Successfully,Yes,No,"name, job_title, company_name",Yes,Legacy Lib (Deprecated)
+invite_member_legacy,administration,src/lib/emailTemplates.ts,Invitation to Join TalentXcel,Yes,No,"inviter_name, invitee_name, invite_link",Yes,Legacy Lib (Deprecated)
+password_reset_legacy,transactional,src/lib/emailTemplates.ts,Reset Your Password,Yes,No,"name, reset_link",Yes,Legacy Lib (Deprecated)
+interview_scheduled_legacy,recruitment,src/lib/emailTemplates.ts,Interview Scheduled!,Yes,No,"candidate_name, job_title, interview_time",Yes,Legacy Lib (Deprecated)
+monthly_digest_legacy,engagement,src/lib/emailTemplates.ts,Your Monthly TalentXcel Summary,Yes,No,"name, profile_views, connections_gained",Yes,Legacy Lib (Deprecated)
+company_follower_legacy,employer communication,src/lib/emailTemplates.ts,New Follower for Your Company,Yes,No,"company_name, follower_name",Yes,Legacy Lib (Deprecated)
+company_review_legacy,employer communication,src/lib/emailTemplates.ts,New Review for Your Company,Yes,No,"company_name, reviewer_role",Yes,Legacy Lib (Deprecated)
+brand_score_update_legacy,employer communication,src/lib/emailTemplates.ts,Your Employer Brand Score Has Changed,Yes,No,"company_name, score",Yes,Legacy Lib (Deprecated)
+resume_created_legacy,career services,src/lib/emailTemplates.ts,Your Resume Has Been Created!,Yes,No,"name, resume_title",Yes,Legacy Lib (Deprecated)
+resume_updated_legacy,career services,src/lib/emailTemplates.ts,Your Resume Has Been Updated!,Yes,No,"name, resume_title",Yes,Legacy Lib (Deprecated)
+resume_completion_reminder_legacy,career services,src/lib/emailTemplates.ts,Complete Your Resume for Better Visibility,Yes,No,"name, completion_percentage",Yes,Legacy Lib (Deprecated)
+resume_viewed_legacy,career services,src/lib/emailTemplates.ts,An Employer Viewed Your Resume!,Yes,No,"name, company_name",Yes,Legacy Lib (Deprecated)
+career_map_ready_legacy,career services,src/lib/emailTemplates.ts,Your Career Pathway Map is Ready,Yes,No,"name, target_role",Yes,Legacy Lib (Deprecated)
+tool_unlocked_legacy,career services,src/lib/emailTemplates.ts,You've Unlocked a New Career Tool!,Yes,No,"name, tool_name",Yes,Legacy Lib (Deprecated)
+new_service_legacy,career services,src/lib/emailTemplates.ts,New Career Service Available,Yes,No,"name, service_name",Yes,Legacy Lib (Deprecated)
+resume_feedback_legacy,career services,src/lib/emailTemplates.ts,Expert Feedback on Your Resume,Yes,No,"name, reviewer_name",Yes,Legacy Lib (Deprecated)
+course_recommendation_legacy,career services,src/lib/emailTemplates.ts,Recommended Course for Your Career Goals,Yes,No,"name, course_title",Yes,Legacy Lib (Deprecated)
+course_completion_legacy,career services,src/lib/emailTemplates.ts,Congratulations on Completing Your Course!,Yes,No,"name, course_title",Yes,Legacy Lib (Deprecated)
+learning_reminder_legacy,career services,src/lib/emailTemplates.ts,Continue Your Learning Journey,Yes,No,"name, course_title, progress",Yes,Legacy Lib (Deprecated)
+certificate_ready_legacy,career services,src/lib/emailTemplates.ts,Your Certificate is Ready to Download!,Yes,No,"name, certificate_title",Yes,Legacy Lib (Deprecated)
+campus_job_legacy,recruitment,src/lib/emailTemplates.ts,Exclusive Campus Hiring Opportunity,Yes,No,"name, job_title, college_name",Yes,Legacy Lib (Deprecated)
+event_invitation_legacy,recruitment,src/lib/emailTemplates.ts,Invitation to TalentXcel Career Fair,Yes,No,"name, event_title, event_date",Yes,Legacy Lib (Deprecated)
+resume_book_notification_legacy,recruitment,src/lib/emailTemplates.ts,Your Resume was Added to Recruiter Shortlist,Yes,No,"name, book_title",Yes,Legacy Lib (Deprecated)
+student_spotlight_legacy,engagement,src/lib/emailTemplates.ts,You've Been Featured in Student Spotlight!,Yes,No,"name, achievement",Yes,Legacy Lib (Deprecated)
+weekly_summary_legacy,engagement,src/lib/emailTemplates.ts,Your Weekly TalentXcel Performance,Yes,No,"name, metrics",Yes,Legacy Lib (Deprecated)
+milestone_achievement_legacy,engagement,src/lib/emailTemplates.ts,Milestone Achieved! 🎉,Yes,No,"name, milestone_name",Yes,Legacy Lib (Deprecated)
+reengagement_legacy,engagement,src/lib/emailTemplates.ts,We Miss You on TalentXcel!,Yes,No,"name, new_jobs_count",Yes,Legacy Lib (Deprecated)
+profile_incomplete_legacy,engagement,src/lib/emailTemplates.ts,Finish Your Profile to Unlock Matches,Yes,No,"name, missing_fields",Yes,Legacy Lib (Deprecated)
+base_email_template,system,src/utils/emailTemplates.ts,{{title}},Yes,No,"title, message, description",No,Template Studio Layout

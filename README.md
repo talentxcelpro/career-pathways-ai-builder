@@ -1,73 +1,78 @@
-# Welcome to your Lovable project
+# TalentXcel — AI-Powered Career Intelligence Platform
 
-## Project info
+> Global Career Platform | ATS Resume Diagnostics | Salary Benchmarks | Campus-to-Corporate Hiring
 
-**URL**: https://lovable.dev/projects/16bdb5f0-0ce9-4c42-843e-b9e7c9fae575
+**Live Platform:** [https://talentxcel.in](https://talentxcel.in)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## What Is TalentXcel?
 
-**Use Lovable**
+TalentXcel is an AI-native career operating system built for engineers, technical recruiters, and academic institutions across India and global tech ecosystems.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/16bdb5f0-0ce9-4c42-843e-b9e7c9fae575) and start prompting.
+The platform bridges the gap between job-seeking engineers and employer demand through:
 
-Changes made via Lovable will be committed automatically to this repo.
+- **ATS Resume Diagnostic Scanner** — Free AI-powered parser compatibility scoring and keyword optimization feedback for technical resumes → [talentxcel.in/resume/ats-check](https://talentxcel.in/resume/ats-check)
+- **Indian Tech Salary Benchmark Tool** — Verified compensation data across 50+ roles and 12 tech corridors (Bangalore, Hyderabad, Pune, NCR, Chennai) → [talentxcel.in/salary](https://talentxcel.in/salary)
+- **Employer Hiring Platform** — Zero-intermediary campus and direct hiring pipelines for technical teams → [talentxcel.in/employers/post-job](https://talentxcel.in/employers/post-job)
+- **Campus Partnership Programme** — Dedicated placement infrastructure for engineering colleges and IITs → [talentxcel.in/colleges](https://talentxcel.in/colleges)
+- **Learning & Career Acceleration** — Structured career pathways and skill-building modules → [talentxcel.in/learning](https://talentxcel.in/learning)
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Tech Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 18 + TypeScript + Vite |
+| Routing | React Router v6 (SPA, client-side) |
+| Styling | Tailwind CSS + shadcn/ui |
+| State | TanStack Query |
+| Backend | Supabase (Auth + PostgreSQL) |
+| Deployment | Vercel (Edge Network) |
+| AI Layer | Google Gemini API |
 
-Follow these steps:
+---
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Key Product Features
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 1. ATS Resume Diagnostic
+Analyzes resume structure, keyword density, parsing integrity, and ATS compatibility score against Indian and global job descriptions. Supports PDF and DOCX formats.
 
-# Step 3: Install the necessary dependencies.
-npm i
+### 2. Indian Salary Intelligence
+Real-time salary benchmarks segmented by:
+- Experience level (0–2, 2–5, 5–10, 10+ years)
+- Tech stack (Node.js, Python, Java, React, Go, Rust, etc.)
+- City tier (Bangalore, Mumbai, Hyderabad, Pune, NCR, Chennai, Kochi, Surat)
+- Industry vertical (Product, Services, Startup, MNC)
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+### 3. Campus Hiring OS
+Connects engineering placement cells directly with verified employers, eliminating placement agency intermediaries.
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Documentation
 
-**Use GitHub Codespaces**
+- [Platform Overview](https://talentxcel.in)
+- [ATS Resume Scanner](https://talentxcel.in/resume/ats-check)
+- [Salary Benchmarks](https://talentxcel.in/salary)
+- [For Employers](https://talentxcel.in/employers/post-job)
+- [For Colleges](https://talentxcel.in/colleges)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+## Contributing
 
-This project is built with:
+TalentXcel is a production platform. Contributions to open research tools, public datasets, and career intelligence APIs are welcome. Open an issue to discuss.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/16bdb5f0-0ce9-4c42-843e-b9e7c9fae575) and click on Share -> Publish.
+Proprietary — © 2026 TalentXcel. All rights reserved.
 
-## Can I connect a custom domain to my Lovable project?
+The public ATS diagnostic parser schema and Indian salary dataset methodology are available under CC BY 4.0 for research use.
 
-Yes, you can!
+---
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+*Built in India. Serving engineers worldwide.*

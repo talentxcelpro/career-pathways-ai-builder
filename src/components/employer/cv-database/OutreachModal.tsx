@@ -107,12 +107,24 @@ Best regards,
           candidateName: candidate.name
         }));
 
-      // Send emails via edge function
-      const response = await supabase.functions.invoke('send-bulk-outreach', {
-        body: { emails: emailsToSend }
-      });
-
-      if (response.error) throw response.error;
+      // Enqueue emails into email_automation_queue
+      for (const item of emailsToSend) {
+        await supabase.from('email_automation_queue').insert({
+          trigger_type: 'recruiter_outreach',
+          recipient_email: item.to,
+          recipient_name: item.candidateName,
+          category: 'engagement',
+          priority: 2,
+          template_data: {
+            subject: item.subject,
+            message: item.message,
+            candidateName: item.candidateName,
+            employerId: user.user.id
+          },
+          status: 'pending',
+          scheduled_at: new Date().toISOString()
+        });
+      }
 
       // Track usage
       await supabase.rpc('track_outreach_usage', {

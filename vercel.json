@@ -1,5 +1,11 @@
 {
   "trailingSlash": false,
+  "crons": [
+    {
+      "path": "/api/email/process-queue",
+      "schedule": "*/10 * * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
