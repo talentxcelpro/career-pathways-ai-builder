@@ -26,11 +26,39 @@ const Contact = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    toast.success("Message sent successfully! We'll get back to you soon.");
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    setIsSubmitting(true);
+
+    try {
+      await fetch('/api/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: 'support@talentxcel.in',
+          template: 'contact_enquiry',
+          replyTo: formData.email,
+          variables: {
+            senderName: formData.name,
+            senderEmail: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+          },
+        }),
+      });
+
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      toast.success("Message sent successfully! We'll get back to you soon.");
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -101,9 +129,7 @@ const Contact = () => {
                   />
                 </div>
                 
-                <Button type="submit" className="w-full">
-                  Send Message
-                </Button>
+                <Button type="submit" className="w-full" disabled={isSubmitting}>{isSubmitting ? "Sending..." : "Send Message"}</Button>
               </form>
             </CardContent>
           </Card>

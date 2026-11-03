@@ -22,7 +22,20 @@
     "growth:lab": "node scripts/growth-lab-command-center.cjs",
     "domain:seo": "node scripts/domain-seo-command-center.cjs",
     "verify:subdomains": "npx tsx scripts/verify-live-subdomain-contracts.ts",
-    "ota:push": "npx tsx scripts/ota-push.ts"
+    "ota:push": "npx tsx scripts/ota-push.ts",
+    "backlink:status": "node backlink-engine/cli.cjs status",
+    "backlink:run": "node backlink-engine/cli.cjs run-all",
+    "backlink:discover": "node backlink-engine/cli.cjs discover",
+    "backlink:qualify": "node backlink-engine/cli.cjs qualify",
+    "backlink:verify": "node backlink-engine/cli.cjs verify",
+    "backlink:export": "node backlink-engine/cli.cjs export",
+    "backlink:tpo": "node backlink-engine/cli.cjs campaign-tpo 100",
+    "backlink:audit-sources": "node backlink-engine/cli.cjs audit-sources 100",
+    "backlink:stage4": "node backlink-engine/cli.cjs stage4",
+    "backlink:top25": "node backlink-engine/cli.cjs stage-top25",
+    "backlink:b2b": "node backlink-engine/cli.cjs b2b-directories",
+    "backlink:stage4.1": "node backlink-engine/cli.cjs stage4.1",
+    "backlink:stage5": "node backlink-engine/cli.cjs stage5"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",
