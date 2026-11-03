@@ -2,6 +2,7 @@ import React from 'react';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { ComprehensiveNotificationSettings } from '@/components/notifications/ComprehensiveNotificationSettings';
 import { AdvancedNotificationDashboard } from '@/components/notifications/AdvancedNotificationDashboard';
+import { AttributionGrowthDashboard } from '@/components/notifications/AttributionGrowthDashboard';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { PageShell, Section } from '@/components/layout/PageShell';
 import { PageHeader } from '@/components/layout/PageHeader';
@@ -28,6 +29,10 @@ const NotificationsPage: React.FC = () => {
 
         <Section>
           <ComprehensiveNotificationSettings />
+        </Section>
+
+        <Section>
+          <AttributionGrowthDashboard />
         </Section>
 
         <Section>
