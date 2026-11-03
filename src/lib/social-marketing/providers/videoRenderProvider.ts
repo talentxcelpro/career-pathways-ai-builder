@@ -195,6 +195,22 @@ function buildDefaultScenes(input: VideoRenderInput, durationSec: number): Video
 }
 
 export class FfmpegVideoRenderer implements VideoRenderProvider {
+  private _hasFfmpeg: boolean | null = null;
+
+  public isFfmpegAvailable(): boolean {
+    if (this._hasFfmpeg !== null) {
+      return this._hasFfmpeg;
+    }
+    try {
+      const probe = process.platform === 'win32' ? 'where ffmpeg' : 'command -v ffmpeg';
+      execSync(probe, { stdio: 'ignore', timeout: 3000 });
+      this._hasFfmpeg = true;
+    } catch {
+      this._hasFfmpeg = false;
+    }
+    return this._hasFfmpeg;
+  }
+
   private computeFileChecksum(filePath: string): string {
     const data = fs.readFileSync(filePath);
     return computeSha256Prefixed(data);
@@ -394,6 +410,18 @@ export class FfmpegVideoRenderer implements VideoRenderProvider {
       };
     }
 
+    if (!this.isFfmpegAvailable()) {
+      return {
+        filePath: outputFilePath,
+        aspectRatio,
+        durationMs: 0,
+        fileSizeBytes: 0,
+        checksum: 'sha256:ffmpeg_unavailable',
+        status: 'FAILED',
+        error: 'FFmpeg binary not detected in environment (skipping video compilation)',
+      };
+    }
+
     const durationSec = Math.max(3, Math.min(60, Math.round(durationMs / 1000)));
     const resolution = aspectRatio === '9:16' ? '1080x1920' : '1920x1080';
     const bgColor = aspectRatio === '9:16' ? '0x090D16' : '0x0B0F19';
@@ -439,7 +467,8 @@ export class FfmpegVideoRenderer implements VideoRenderProvider {
         status: 'READY',
       };
     } catch (err: any) {
-      console.warn(`[VideoRenderer] FFmpeg rich render error for ${contentId}: ${err.message}`);
+      const summary = err?.message ? err.message.split('\n')[0].slice(0, 120) : 'Render error';
+      console.warn(`[VideoRenderer] Rich render deferred for ${contentId}: ${summary}`);
       // Fallback to basic render if rich render throws
       try {
         let fallbackCmd: string;
@@ -461,7 +490,8 @@ export class FfmpegVideoRenderer implements VideoRenderProvider {
           };
         }
       } catch (fallbackErr: any) {
-        console.warn(`[VideoRenderer] Fallback render also failed: ${fallbackErr.message}`);
+        const fallbackSummary = fallbackErr?.message ? fallbackErr.message.split('\n')[0].slice(0, 120) : 'Fallback error';
+        console.warn(`[VideoRenderer] Fallback render deferred for ${contentId}: ${fallbackSummary}`);
       }
 
       return {
@@ -471,7 +501,7 @@ export class FfmpegVideoRenderer implements VideoRenderProvider {
         fileSizeBytes: 0,
         checksum: 'sha256:render_failed',
         status: 'FAILED',
-        error: `FFmpeg render failed: ${err.message}`,
+        error: `FFmpeg render failed: ${summary}`,
       };
     }
   }
