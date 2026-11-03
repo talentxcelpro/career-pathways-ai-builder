@@ -181,17 +181,7 @@ export const SubdomainMeshFooter: React.FC = () => {
 
         <div className="pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
           <span>&copy; 2026 TalentXcel Global Professional Network. All subdomains actively indexed.</span>
-          <div className="flex flex-wrap items-center gap-3">
-            <a href="/directory" className="text-blue-400 hover:text-blue-300 underline font-semibold">
-              All-India College &amp; Job Directory &rarr;
-            </a>
-            <a href="/benchmarks/india-tech-salary-report-2026" className="text-emerald-400 hover:text-emerald-300 underline font-semibold">
-              2026 Tech Salary Report
-            </a>
-            <a href="/benchmarks/tier-2-city-jobs-index-2026" className="text-indigo-400 hover:text-indigo-300 underline font-semibold">
-              Tier-2 Jobs Index
-            </a>
-          </div>
+          <span>Empowering career mobility, skill verification, and compensation transparency across India.</span>
         </div>
       </div>
     </div>

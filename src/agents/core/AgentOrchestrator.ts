@@ -4,12 +4,7 @@
 
 import { coreBusinessMemory } from './BusinessMemory';
 import { coreObjectiveEngine } from './ObjectiveEngine';
-import { coreChannelRegistry } from './ChannelRegistry';
-import { coreDecisionEngine } from './DecisionEngine';
-import { coreKPIEngine } from './KPIEngine';
-import { coreGuardrails } from './Guardrails';
 import { kernelAgentRegistry } from '../kernel/AgentRegistry';
-import { kernelTaskQueue } from '../kernel/TaskQueue';
 import { kernelAuditEngine } from '../kernel/AuditEngine';
 import { kernelEventBus } from '../kernel/EventBus';
 import { executiveAgent } from '../executive/ExecutiveAgent';
@@ -23,6 +18,23 @@ import { revenueAgent } from '../revenue/RevenueAgent';
 
 export class AgentOrchestrator {
   private isCycleExecuting = false;
+
+  private async safelyPulseAgent(agent: any, agentId: string): Promise<number> {
+    try {
+      kernelAgentRegistry.setWorkerStatus(agentId, 'RUNNING');
+      if (typeof agent.runBusinessCycle === 'function') {
+        await agent.runBusinessCycle();
+      } else if (typeof agent.pulse === 'function') {
+        await agent.pulse();
+      }
+      kernelAgentRegistry.setWorkerStatus(agentId, 'IDLE');
+      return 1;
+    } catch (err: any) {
+      console.warn(`[Orchestrator] Warning during pulse for ${agentId}:`, err?.message || err);
+      kernelAgentRegistry.setWorkerStatus(agentId, 'IDLE');
+      return 0;
+    }
+  }
 
   /**
    * Executes a full closed-loop business operating cycle across all 9 departments.
@@ -45,89 +57,49 @@ export class AgentOrchestrator {
 
       // 1. Synchronize Verified Memory & Objectives
       const memory = await coreBusinessMemory.getVerifiedMetrics(true);
-      const goals = await coreObjectiveEngine.getSynchronizedGoals();
       const primaryGoal = coreObjectiveEngine.getPrimaryObjective();
 
       // 2. Department 1: Executive Office Evaluation
-      kernelAgentRegistry.setWorkerStatus('founder_ceo', 'RUNNING');
-      const execResult = await executiveAgent.runBusinessCycle();
-      actionsExecuted += execResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('founder_ceo', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(executiveAgent, 'founder_ceo');
 
       // 3. Department 2: Growth & Marketing (Prospects, Campaigns & Outreach)
-      kernelAgentRegistry.setWorkerStatus('marketing', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('prospect_discovery', 'RUNNING');
-      const marketingResult = await marketingAgent.runMarketingCycle();
-      actionsExecuted += marketingResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('marketing', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('prospect_discovery', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(marketingAgent, 'marketing');
 
       // 4. Department 3: Employer Acquisition (Hiring signals & Employer Verification)
-      kernelAgentRegistry.setWorkerStatus('employer_discovery', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('employer_qualification', 'RUNNING');
-      const employerResult = await employerAgent.runEmployerCycle();
-      actionsExecuted += employerResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('employer_discovery', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('employer_qualification', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(employerAgent, 'employer_discovery');
 
       // 5. Department 4: Jobs Division (Hygiene & Deduplication across 4,812 jobs)
-      kernelAgentRegistry.setWorkerStatus('job_quality', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('job_deduplication', 'RUNNING');
-      const jobResult = await jobAgent.runJobCycle();
-      actionsExecuted += jobResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('job_quality', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('job_deduplication', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(jobAgent, 'job_quality');
 
       // 6. Department 5: Candidate Growth (ATS & Job Matching)
-      kernelAgentRegistry.setWorkerStatus('matching', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('resume', 'RUNNING');
-      const candidateResult = await candidateAgent.runCandidateCycle();
-      actionsExecuted += candidateResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('matching', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('resume', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(candidateAgent, 'matching');
 
       // 7. Department 6: College Division (1,509 Verified Higher Education Catalog)
-      kernelAgentRegistry.setWorkerStatus('college_discovery', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('college_qualification', 'RUNNING');
-      const collegeResult = await collegeAgent.runCollegeCycle();
-      actionsExecuted += collegeResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('college_discovery', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('college_qualification', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(collegeAgent, 'college_discovery');
 
       // 8. Department 7: Claim #1 Revenue Engine (Bids, Outbids, Reclaim Calculations)
-      kernelAgentRegistry.setWorkerStatus('claim_discovery', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('outbid_reclaim', 'RUNNING');
-      const claimResult = await claim1Agent.runClaim1Cycle();
-      actionsExecuted += claimResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('claim_discovery', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('outbid_reclaim', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(claim1Agent, 'claim_discovery');
 
       // 9. Department 8: Revenue & Commercial (Billing Reconciliation & Cash Flow)
-      kernelAgentRegistry.setWorkerStatus('revenue', 'RUNNING');
-      kernelAgentRegistry.setWorkerStatus('billing', 'RUNNING');
-      const revResult = await revenueAgent.runRevenueCycle();
-      actionsExecuted += revResult.actionsTaken;
-      kernelAgentRegistry.setWorkerStatus('revenue', 'IDLE');
-      kernelAgentRegistry.setWorkerStatus('billing', 'IDLE');
+      actionsExecuted += await this.safelyPulseAgent(revenueAgent, 'revenue');
 
       // 10. Department 9: Product & Engineering (Audit and Telemetry)
       kernelAgentRegistry.setWorkerStatus('reliability', 'RUNNING');
       kernelAgentRegistry.setWorkerStatus('security_compliance', 'RUNNING');
       await kernelAuditEngine.record('orchestrator', 'executive', 'CYCLE_COMPLETED', {
-        actionsExecuted,
-        primaryGoal: primaryGoal.title,
+        inputs: { actionsExecuted, primaryGoal: primaryGoal?.title || 'Operational Scale' },
         success: true,
       });
       kernelAgentRegistry.setWorkerStatus('reliability', 'IDLE');
       kernelAgentRegistry.setWorkerStatus('security_compliance', 'IDLE');
 
       // Publish cycle completion event
-      kernelEventBus.publish({
-        type: 'BUSINESS_CYCLE_EXECUTED',
-        sourceAgent: 'AgentOrchestrator',
-        department: 'executive',
-        payload: { actionsExecuted, timestamp: new Date().toISOString() },
-      });
+      await kernelEventBus.publish(
+        'RELIABILITY_HEALTH_CHECK',
+        { actionsExecuted, timestamp: new Date().toISOString() },
+        'AgentOrchestrator',
+        'executive'
+      );
 
       return {
         success: true,

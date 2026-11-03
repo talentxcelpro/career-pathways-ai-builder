@@ -3,7 +3,8 @@
    Matches primary design reference: Dark Navy, Electric Purple, Cyan & Neon Highlights
    ============================================================================ */
 
-:root {
+:root,
+.careerverse-theme {
   --cv-bg: #071329;
   --cv-bg-secondary: #0B1730;
   --cv-panel: #101E3B;
@@ -12,8 +13,8 @@
   --cv-purple-primary: #7047F5;
   --cv-purple-secondary: #A34EFF;
   --cv-blue-electric: #278DFF;
-  --cv-cyan: #36D9F5;
-  --cv-success: #20D994;
+  --cv-cyan-accent: #36D9F5;
+  --cv-green-success: #20D994;
   --cv-gold: #FFCA55;
   --cv-text-primary: #F5F7FF;
   --cv-text-secondary: #A9B5D0;
@@ -26,6 +27,7 @@
   color: var(--cv-text-primary);
   min-height: 100vh;
   font-family: inherit;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 /* Glassmorphic Cyber Panels */
@@ -45,6 +47,18 @@
   transform: translateY(-2px);
 }
 
+.cv-glass-panel {
+  background: rgba(16, 30, 59, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(112, 71, 245, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.cv-glass-panel:hover {
+  border-color: rgba(54, 217, 245, 0.35);
+}
+
 /* Glowing Accent Elements */
 .cv-glow-purple {
   box-shadow: 0 0 24px rgba(112, 71, 245, 0.45);
@@ -60,6 +74,26 @@
 
 .cv-glow-gold {
   box-shadow: 0 0 18px rgba(255, 202, 85, 0.45);
+}
+
+.cv-card-glow {
+  box-shadow: 0 0 20px -5px rgba(112, 71, 245, 0.3);
+}
+
+.cv-cyan-glow {
+  box-shadow: 0 0 20px -5px rgba(54, 217, 245, 0.35);
+}
+
+.cv-gold-glow {
+  box-shadow: 0 0 25px -5px rgba(255, 202, 85, 0.4);
+}
+
+.cv-gradient-border {
+  border: 1px solid transparent;
+  background-image: linear-gradient(rgba(16, 30, 59, 0.95), rgba(16, 30, 59, 0.95)),
+    linear-gradient(135deg, #7047F5, #278DFF, #36D9F5);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
 }
 
 /* Cyber Buttons */
@@ -118,4 +152,13 @@
 }
 .cv-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(163, 78, 255, 0.7);
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 3s ease-in-out infinite;
 }
