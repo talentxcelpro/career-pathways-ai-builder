@@ -256,6 +256,16 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
   const qualityPostsTarget = getMetricTarget('quality_posts', currentTier);
   const growthTarget = getMetricTarget('audience_growth', currentTier);
 
+  const targets = {
+    qualityPosts: qualityPostsTarget?.targetValue ?? 8,
+    articles: articlesTarget?.targetValue ?? 2,
+    reach: reachTarget?.targetValue ?? 100,
+    engagements: engagementsTarget?.targetValue ?? 50,
+    growth: growthTarget?.targetValue ?? 15,
+    helpfulAnswers: helpfulAnswersTarget?.targetValue ?? 5,
+    mentorship: mentorshipTarget?.targetValue ?? 2,
+  };
+
   if (isEmbedded) {
     return (
       <div className="space-y-4">
@@ -320,7 +330,7 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
               <div>
                 <p className="text-[11px] font-semibold text-muted-foreground">MTD Views</p>
                 <h3 className="text-lg font-black text-foreground mt-0.5">
-                  {loadingMetrics ? '...' : (metrics?.profileViews ?? 0).toLocaleString()}
+                  {loadingMetrics ? '...' : (metrics?.qualifiedHumanReach ?? 0).toLocaleString()}
                 </h3>
               </div>
               <div className="p-2 bg-blue-50 dark:bg-blue-950/50 text-blue-600 rounded-lg">
@@ -334,7 +344,7 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
               <div>
                 <p className="text-[11px] font-semibold text-muted-foreground">MTD Posts</p>
                 <h3 className="text-lg font-black text-foreground mt-0.5">
-                  {loadingMetrics ? '...' : metrics?.postsPublished ?? 0}
+                  {loadingMetrics ? '...' : metrics?.qualityPostsCount ?? 0}
                 </h3>
               </div>
               <div className="p-2 bg-purple-50 dark:bg-purple-950/50 text-purple-600 rounded-lg">
@@ -348,7 +358,7 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
               <div>
                 <p className="text-[11px] font-semibold text-muted-foreground">MTD Interactions</p>
                 <h3 className="text-lg font-black text-foreground mt-0.5">
-                  {loadingMetrics ? '...' : (metrics?.engagementsReceived ?? 0).toLocaleString()}
+                  {loadingMetrics ? '...' : (metrics?.totalEngagements ?? 0).toLocaleString()}
                 </h3>
               </div>
               <div className="p-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 rounded-lg">
@@ -400,40 +410,40 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
                 <MetricTargetProgress
                   title="Monthly Published Posts"
                   description="Original posts shared to feed during this calendar month."
-                  current={metrics?.postsPublished ?? 0}
-                  target={targets.postsPublished}
+                  current={metrics?.qualityPostsCount ?? 0}
+                  target={targets.qualityPosts}
                   unit="posts"
                   icon={<FileText className="h-4 w-4 text-blue-500" />}
                 />
                 <MetricTargetProgress
                   title="Monthly Long-Form Articles"
                   description="Articles published to the Network knowledge base."
-                  current={metrics?.articlesPublished ?? 0}
-                  target={targets.articlesPublished}
+                  current={metrics?.technicalArticlesCount ?? 0}
+                  target={targets.articles}
                   unit="articles"
                   icon={<BookOpen className="h-4 w-4 text-indigo-500" />}
                 />
                 <MetricTargetProgress
                   title="Monthly Profile Views"
                   description="Authentic unique profile views recorded in this month."
-                  current={metrics?.profileViews ?? 0}
-                  target={targets.profileViews}
+                  current={metrics?.qualifiedHumanReach ?? 0}
+                  target={targets.reach}
                   unit="views"
                   icon={<Eye className="h-4 w-4 text-purple-500" />}
                 />
                 <MetricTargetProgress
                   title="Engagements Received"
                   description="Likes, reactions, and comments received on your content."
-                  current={metrics?.engagementsReceived ?? 0}
-                  target={targets.engagementsReceived}
+                  current={metrics?.totalEngagements ?? 0}
+                  target={targets.engagements}
                   unit="interactions"
                   icon={<ThumbsUp className="h-4 w-4 text-emerald-500" />}
                 />
                 <MetricTargetProgress
                   title="Net Audience Growth"
                   description="New accepted connections added this month."
-                  current={metrics?.networkGrowth ?? 0}
-                  target={targets.networkGrowth}
+                  current={metrics?.audienceGrowthCount ?? 0}
+                  target={targets.growth}
                   unit="connections"
                   icon={<UserPlus className="h-4 w-4 text-teal-500" />}
                 />
@@ -453,19 +463,19 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-muted-foreground">Total Views Generated:</span>
-                    <span className="font-bold">{metrics?.profileViews ?? 0}</span>
+                    <span className="font-bold">{metrics?.qualifiedHumanReach ?? 0}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-muted-foreground">Posts Published:</span>
-                    <span className="font-bold">{metrics?.postsPublished ?? 0}</span>
+                    <span className="font-bold">{metrics?.qualityPostsCount ?? 0}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b">
                     <span className="text-muted-foreground">Engagements Received:</span>
-                    <span className="font-bold">{metrics?.engagementsReceived ?? 0}</span>
+                    <span className="font-bold">{metrics?.totalEngagements ?? 0}</span>
                   </div>
                   <div className="flex justify-between py-2">
                     <span className="text-muted-foreground">New Connections:</span>
-                    <span className="font-bold">{metrics?.networkGrowth ?? 0}</span>
+                    <span className="font-bold">{metrics?.audienceGrowthCount ?? 0}</span>
                   </div>
                 </div>
               </CardContent>
