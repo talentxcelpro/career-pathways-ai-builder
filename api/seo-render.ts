@@ -109,7 +109,7 @@ export function resolveSeoMeta(
   }
 }
 
-function legacyGenericOkResponse(cleanPath: string, isDebug: boolean = false): Response {
+function legacyGenericOkResponse(cleanPath: string): Response {
   const formatTitle = (s: string) => s.split(/[-_]+/).map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   const title = `${formatTitle(cleanPath)} | TalentXcel`;
   const description = `Explore professional opportunities and resources for ${cleanPath} on TalentXcel.`;
@@ -121,7 +121,6 @@ function legacyGenericOkResponse(cleanPath: string, isDebug: boolean = false): R
       'Content-Type': 'text/html; charset=utf-8',
       'X-Robots-Tag': 'index, follow',
       'X-Render-Engine': 'TalentXcel-Legacy-CatchAll',
-      ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
     },
   });
 }
@@ -226,7 +225,7 @@ function privateRouteResponse(): Response {
   });
 }
 
-function notFoundResponse(cleanPath: string, isDebug: boolean = false): Response {
+function notFoundResponse(cleanPath: string): Response {
   const title = 'Page Not Found (404) | TalentXcel';
   const description = 'The requested resource does not exist on TalentXcel. Explore active jobs, colleges, career pathways, and salary intelligence.';
   const html = `<!DOCTYPE html>
@@ -285,7 +284,6 @@ function notFoundResponse(cleanPath: string, isDebug: boolean = false): Response
       'Cache-Control': 'public, max-age=0, s-maxage=3600',
       'X-Robots-Tag': 'noindex, nofollow',
       'X-Render-Engine': 'TalentXcel-Edge-404-Guard',
-      ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
     },
   });
 }
@@ -316,7 +314,6 @@ export default async function handler(req: Request) {
   const url = new URL(req.url);
   const pathParam = url.searchParams.get('path') || url.pathname.replace(/^\/api\/seo-render\/?/, '') || '/';
   const cleanPath = pathParam.replace(/^\//, '').replace(/\/$/, '');
-  const isDebug = req?.headers?.get('x-seo-debug') === 'internal';
 
   if (isPrivateRoute(cleanPath)) return privateRouteResponse();
 
@@ -330,9 +327,9 @@ export default async function handler(req: Request) {
   const result = await generateDynamicSeoHtml(cleanPath);
   if (!result || result.status === 404) {
     if (DEPLOYMENT_UNITS.SOFT_404_PROTECTION) {
-      return notFoundResponse(cleanPath, isDebug);
+      return notFoundResponse(cleanPath);
     } else {
-      return legacyGenericOkResponse(cleanPath, isDebug);
+      return legacyGenericOkResponse(cleanPath);
     }
   }
 
@@ -343,7 +340,6 @@ export default async function handler(req: Request) {
       'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
       'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
       'X-Robots-Tag': result.robotsDirective,
-      ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
     },
   });
 }

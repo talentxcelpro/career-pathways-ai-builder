@@ -467,3 +467,226 @@ Zero sitemaps have been submitted to Google Search Console.
 AWAITING EXPLICIT HUMAN EXECUTIVE AUTHORIZATION BEFORE EXECUTING STAGE F.
 ================================================================
 ```
+
+## 8. FINAL EXECUTIVE HARDENING & EVIDENCE VERIFICATION
+
+**Mission:** `TXC-STAGE-F-P1-FINAL-GATE-002`  
+**Date:** 3 November 2026  
+**Auditor:** Claude SEO Intelligence Engine (v2.5.0) & Antigravity  
+**Status:** **READ-ONLY VERIFICATION COMPLETE — BRANCH HARDENED — PRODUCTION FROZEN**  
+**Executive Gate Status:** **BLOCKED FOR AUTOMATED DEPLOYMENT; CONDITIONAL GO FOR DASHBOARD-ASSISTED EXECUTION**  
+
+---
+
+### 8.1 Rollback Correction and Verified Deployment Identifiers
+
+#### A. Correction of Previous Technical Misconceptions
+In previous draft reports, it was incorrectly posited that executing:
+```powershell
+# ❌ INCORRECT ARCHITECTURAL CLAIM:
+vercel env add SEO_DEPLOY_SOFT_404 production -v "false"
+```
+would dynamically mutate the environment variables of an active, already-running Vercel Serverless/Edge deployment in < 5 seconds without triggering a new deployment.
+
+**The Architectural Reality of Vercel Serverless & Edge Compute:**
+1. **Immutable Deployment Environment:** Environment variables in Vercel are bundled and frozen at build/deployment time.
+2. **Dynamic Mutation Does Not Exist:** Modifying an environment variable via the Vercel CLI or Web Dashboard updates the project-level environment configuration for *future* builds. It **does NOT** change environment variables inside currently running container lambdas or Edge V8 isolates.
+3. **Required Action for Flag Changes:** To apply a feature flag modification, an operator must trigger a redeployment of the commit or execute a new build.
+
+#### B. The Two Distinct Rollback Procedures
+
+```mermaid
+flowchart TD
+    Incident["Production Incident Detected\n(e.g., Legitimate Catalog Entity Returns 404)"]
+    Incident --> Decision{"Select Correct Rollback Strategy"}
+    
+    Decision -->|"Fastest Zero-Downtime Traffic Rollback\n(Time to effect: < 15 seconds)"| DeployRollback["Procedure 1: Vercel Deployment Instant Rollback\nPromote Known-Good Deployment ID in Vercel Dashboard\n(Reroutes 100% of Anycast traffic to pre-remediation build)"]
+    
+    Decision -->|"Code-Level Flag Disablement\n(Time to effect: ~90 seconds)"| FlagRollback["Procedure 2: Feature-Flag Disablement & Redeploy\n1. Update SEO_DEPLOY_SOFT_404=false in Vercel Env\n2. Trigger Redeploy of commit via Vercel\n3. Verify new deployment is active and serving catch-all"]
+
+    DeployRollback --> Restored["Production 100% Restored to Baseline"]
+    FlagRollback --> Restored
+```
+
+#### C. Verified Instant Rollback Procedure (Vercel Deployment Rollback)
+1. **Mechanism:** Uses Vercel's Anycast Edge routing table to point the production alias (`talentxcel.in`) to an existing, pre-built deployment ID (`dpl_...`).
+2. **Execution Steps:**
+   - Open Vercel Web Dashboard: `https://vercel.com/talentxcelpro/career-pathways-ai-builder/deployments`
+   - Locate the verified baseline deployment (serving commit `5b272955e5b746d4819b9da80b7e7475691819d9`).
+   - Click the three dots (`...`) context menu and select **Instant Rollback**.
+   - Confirm the rollback target. Edge routing updates globally within 15 seconds.
+   - *CLI Command Equivalent (Requires active authentication):*
+     ```powershell
+     vercel rollback [dpl_known_good_id] --yes
+     ```
+
+#### D. Verified Feature-Flag Rollback Procedure (Flag Toggle + Redeployment)
+1. **Step 1 (Update Env Var):** In Vercel Project Settings > Environment Variables, update `SEO_DEPLOY_SOFT_404` to `false` for Production.
+2. **Step 2 (Trigger Redeployment):** In Vercel Dashboard > Deployments, trigger a **Redeploy** of the current commit (or push a commit to trigger CI).
+3. **Step 3 (Verify Runtime Behavior):** Probe `https://talentxcel.in/api/seo-render?path=colleges/non-existent-test` to confirm it has returned to HTTP 200 OK (catch-all).
+
+---
+
+### 8.2 Diagnostic Header Security Decision (P0 Hardening)
+
+#### A. Security Vulnerability Remediation
+In earlier stages, the diagnostic header `X-SEO-Units` was conditionally returned when receiving the request header `x-seo-debug: internal`. As correctly identified by executive review, **request headers do not constitute authentication**; any unauthorized client or competitor could supply this header to inspect internal infrastructure toggles.
+
+#### B. Architectural Decision: Complete Diagnostic Header Elimination
+Following the executive directive's preferred standard, **diagnostic header emission has been completely eliminated from all HTTP responses**:
+1. Removed all references to `X-SEO-Units` from:
+   - `legacyGenericOkResponse()` in `api/seo-render.ts`
+   - `notFoundResponse()` in `api/seo-render.ts`
+   - `handler()` in `api/seo-render.ts`
+2. Eliminated the unauthenticated `req.headers.get('x-seo-debug') === 'internal'` inspection logic.
+3. Retained `getUnitsDiagnosticHeader()` strictly as an exported utility function for local automated unit tests, completely disconnected from the HTTP response pipeline.
+
+#### C. Exhaustive Test Verification
+Automated test suite `scratch/test-fail-closed-isolation.ts` was updated and executed with 6 distinct diagnostic security test cases:
+- ✅ **Test 5.1 (Ordinary Public Request):** `has(x-seo-units) === false` (PASS)
+- ✅ **Test 5.2 (Googlebot Request):** `User-Agent: Googlebot`, `has(x-seo-units) === false` (PASS)
+- ✅ **Test 5.3 (Request with `x-seo-debug: internal`):** `has(x-seo-units) === false` (PASS — Vulnerability completely closed)
+- ✅ **Test 5.4 (Malformed Diagnostic Headers):** `x-seo-debug: true,admin=1`, `has(x-seo-units) === false` (PASS)
+- ✅ **Test 5.5 (Alternate Query Parameter Paths):** `?debug=1&seo_debug=true`, `has(x-seo-units) === false` (PASS)
+- ✅ **Test 5.6 (404 Not Found Route):** `has(x-seo-units) === false` (PASS)
+
+---
+
+### 8.3 Production Build Provenance Evidence
+
+To maintain absolute fidelity, we distinguish **verified repository facts** from **unverified runtime assumptions**:
+
+| Item | Verified Fact vs. Assumption | Actual Evidence | Status |
+|---|---|---|---|
+| **Vercel Project & Team** | **VERIFIED FACT** | Configured in `vercel.json`, scoped in `docs/prelaunch/TASK_002E_CORS_VERIFICATION.md` as team `talentxcelpro`, project `career-pathways-ai-builder` | Locked & Confirmed |
+| **Production Apex Host** | **VERIFIED FACT** | `https://talentxcel.in` routes to Vercel via Cloudflare Anycast (Ray ID: `DEL`, `BOM`) | Active & Serving |
+| **Current Live Behavior** | **VERIFIED FACT** | Probed `https://talentxcel.in/api/seo-render?path=colleges/non-existent-college-test`: HTTP 200 OK without `noindex` | Unremediated baseline confirmed |
+| **Base Git Commit SHA** | **VERIFIED FACT** | Commit `5b272955e5b746d4819b9da80b7e7475691819d9` (Task 002h baseline) | Verified in git log |
+| **Clean Branch Diff** | **VERIFIED FACT** | `git diff 5b272955..HEAD --stat` modifies exclusively SEO files. Zero CareerVerse or App.tsx changes present. | Verified in git tree |
+| **Exact Production Deployment ID (`dpl_...`)** | **UNVERIFIED IN LOCAL SHELL** | Local terminal environment lacks authenticated Vercel token (`VERCEL_TOKEN` unset; `com.vercel.cli` contains telemetry only). HTTP header `x-vercel-id` is an Anycast request trace, not a deployment ID. | **BLOCKED: Requires Vercel Dashboard verification** |
+| **Rollback Deployment ID (`dpl_...`)** | **UNVERIFIED IN LOCAL SHELL** | Cannot be queried via CLI without active API credentials. | **BLOCKED: Requires Vercel Dashboard verification** |
+
+**Formal Gate Decision:** Per executive instructions ("*If the rollback target cannot be independently verified, mark the gate BLOCKED*"), automated release gate execution is marked **BLOCKED**. Production deployment must not proceed until an operator with Vercel Dashboard permissions confirms and records the exact `dpl_...` ID.
+
+---
+
+### 8.4 Executable Operational Monitoring Specification
+
+This specification turns high-level thresholds into an executable monitoring contract:
+
+```mermaid
+flowchart LR
+    Traffic["Incoming Production SEO Traffic\n(/colleges/*, /jobs/*, /salary/*)"]
+    Traffic --> Cloudflare["Cloudflare Anycast Logs\n(Edge HTTP Status, Latency)"]
+    Traffic --> VercelLogs["Vercel Edge Function Logs\n(5xx Errors, Execution Trace)"]
+    
+    Cloudflare --> Monitor["Monitoring Engine (5-Min Rolling Window, Min 100 Req)"]
+    VercelLogs --> Monitor
+    
+    Monitor --> Rule1{"Valid Entity 404 Rate > 0.00%?"}
+    Monitor --> Rule2{"Edge 5xx Rate > 0.05% for 10m?"}
+    Monitor --> Rule3{"P95 Latency > 350ms for 15m?"}
+    
+    Rule1 -->|"YES (1 Confirmed Fault)"| P0Action["P0 ALARM: IMMEDIATE ROLLBACK\nAuthority: SRE On-Call / Executive"]
+    Rule2 -->|"YES (Sustained 10m)"| P0Action
+    Rule3 -->|"YES (Sustained 15m)"| P1Action["P1 ALERT: Investigate Origin / DB\nPrepare Rollback"]
+    
+    Rule1 -->|"NO"| Nominal["NOMINAL OPERATION\n48-Hour Observation Window"]
+    Rule2 -->|"NO"| Nominal
+    Rule3 -->|"NO"| Nominal
+```
+
+#### Detailed Specification Matrix
+
+| Parameter | Specification Detail |
+|---|---|
+| **Measurement Sources** | 1. Cloudflare Logpush (HTTP response status, origin response time, edge cache status)<br>2. Vercel Edge Function Invocation logs (Runtime unhandled exceptions, execution duration) |
+| **Traffic Scope** | All HTTP requests matching `/api/seo-render*` or rewritten catalog paths (`/colleges/*`, `/jobs/*`, `/salary/*`, `/locations/*`). Split by User-Agent: Search Engine Bots (`Googlebot`, `bingbot`) vs. End-User Browsers. |
+| **Calculation Formulas** | **1. Edge 5xx Error Rate:** `Rate_5xx = (Sum of 5xx responses / Total SEO requests) * 100%`<br>**2. Valid Entity False-Negative Rate:** `Rate_FN = (Sum of 404s on Verified Entities / Total Verified Entity requests) * 100%`<br>**3. Invalid Slug 404 Conversion Rate:** `Rate_Conversion = (Sum of 404s on Unmatched Slugs / Total Unmatched Slug requests) * 100%`<br>**4. Edge SSR P95 Latency:** 95th percentile of `origin_response_duration_ms`. |
+| **Minimum Sample Volume** | Minimum **100 requests per 5-minute evaluation window** (prevents alerting on transient single-request anomalies). |
+| **Measurement Interval** | 5-minute rolling window, computed every 60 seconds. |
+| **Sustained Duration Rules** | - **Valid Entity False-Negative:** **Zero tolerance**. Exactly **1 confirmed false-negative** on a valid catalog entity triggers immediate P0 rollback.<br>- **Edge 5xx Error Rate > 0.05%:** Must be sustained across **2 consecutive 5-minute windows (10 minutes)** with $\ge 100$ requests.<br>- **Edge P95 Latency > 350ms:** Must be sustained across **3 consecutive windows (15 minutes)**. |
+| **Entity Classification** | - **Valid Catalog Entity:** Path matches entry in `api/_college-slugs.json` (10,250 entries) OR active vacancy in Supabase `jobs` table.<br>- **Invalid Entity:** Path does not exist in `_college-slugs.json`, does not exist in active `jobs`, and is not an approved hub route. |
+| **Alert Owner & Decision Authority** | - **Alert Owner:** SEO Infrastructure Lead & SRE On-Call.<br>- **Rollback Decision Authority:** Primary Executive / Engineering Lead.<br>- **Emergency Override:** If the primary executive is unreachable within 5 minutes of a P0 alert, SRE On-Call is authorized to execute instant rollback to the verified baseline deployment ID. |
+| **Operational State Disclosure** | **NOT AUTOMATED:** Webhook-based automated rollback is not deployed in this codebase. Rollback execution requires manual operator action via the Vercel Dashboard or CLI. |
+
+---
+
+### 8.5 Phase 1 Feature-Flag Isolation Results
+
+The production environment variable target configuration remains strictly:
+
+```ini
+SEO_DEPLOY_SOFT_404=true
+SEO_DEPLOY_SALARY_CANARY=false
+SEO_DEPLOY_CTR_OPTIMIZATION=false
+```
+
+#### Verification of Fail-Closed Behavior & Independence
+All 3 feature flags in `api/seo-render.ts` are implemented as dynamic fail-closed getters:
+1. **Explicit String Evaluation:** Only `.trim().toLowerCase() === 'true'` evaluates to `true`.
+2. **Fail-Closed Default:** If unset, empty, `undefined`, `"false"`, or invalid (`"1"`, `"yes"`), each flag strictly evaluates to `false`.
+3. **Zero Interdependency:**
+   - Unit 1 (`SOFT_404_PROTECTION`) controls only the 404 interceptor on line 330.
+   - Unit 2 (`SALARY_CANARY_CANONICAL`) controls only `resolveCanaryCanonical()` on line 59.
+   - Unit 3 (`CTR_METADATA_OPTIMIZATION`) controls only `resolveSeoMeta()` on line 70.
+4. **Automated Test Results:** Confirmed across 27/27 automated unit tests.
+
+---
+
+### 8.6 Automated Test & Build Results
+
+| Test Suite / Build Step | Tests Executed | Passed | Failed | Pass Rate | Execution Command |
+|---|---|---|---|---|---|
+| **Fail-Closed Flags & Isolation Suite** | 27 checks | 27 | 0 | **100%** | `npx tsx scratch/test-fail-closed-isolation.ts` |
+| **Stage E.1 Deployment Readiness Staging Suite** | 25 checks | 25 | 0 | **100%** | `npx tsx scratch/staging-certification-suite.ts` |
+| **Diagnostic Header Security Suite** | 6 security cases | 6 | 0 | **100%** | Tested in Part 5 of fail-closed suite |
+| **JobPosting Accuracy Schema Suite** | 2 schema checks | 2 | 0 | **100%** | Tested in Part 4 of fail-closed suite |
+| **Subdomain Canonical Matrix** | 10 subdomains | 10 | 0 | **100%** | Tested in Part 4 of staging suite |
+| **Production Vite Build** | Full application build | Pass | 0 | **100%** | `npm run build` |
+
+---
+
+### 8.7 Remaining Blockers & Unresolved Assumptions
+
+| Item | Nature | Current Status | Required Action Before Production Deployment |
+|---|---|---|---|
+| **Vercel Production Deployment ID (`dpl_...`)** | Provenance Blocker | Unverified via local CLI | Operator with Vercel access must log into Vercel Dashboard, navigate to `career-pathways-ai-builder`, and record the current production deployment ID. |
+| **Known-Good Rollback Deployment ID (`dpl_...`)** | Safety Blocker | Unverified via local CLI | Operator must verify in Vercel Dashboard that the baseline deployment (serving commit `5b272955`) is retained, healthy, and eligible for instant rollback. |
+| **Automated Monitoring Alert Hooks** | Operational Constraint | Manual observation only | Monitoring specification is defined, but automated alerting / PagerDuty webhooks must be manually configured in Cloudflare / Vercel. |
+
+---
+
+### 8.8 Final Recommendation
+
+### Status: **BLOCKED FOR AUTOMATED DEPLOYMENT; CONDITIONAL GO PENDING DASHBOARD VERIFICATION**
+
+**Rationale:**
+1. **Code & Architecture:** 100% hardened, 100% fail-closed, 100% isolated. Diagnostic headers completely eliminated. 52/52 automated tests passed. Zero CareerVerse or UI modifications exist in the branch.
+2. **Release Gate Condition:** In accordance with the executive mandate ("*If the rollback target cannot be independently verified, mark the gate BLOCKED*"), the release gate is formally marked **BLOCKED** until the operator verifies the exact Vercel deployment IDs in the Vercel Web Dashboard.
+3. **Execution Path Once Verified:** Once the executive records the verified `dpl_...` IDs, Phase 1 can be deployed safely under strict human authorization with:
+   - `SEO_DEPLOY_SOFT_404=true`
+   - `SEO_DEPLOY_SALARY_CANARY=false`
+   - `SEO_DEPLOY_CTR_OPTIMIZATION=false`
+   - Production freeze on DNS, database, and sitemaps.
+
+---
+
+### 8.9 Mandatory Stop Condition Enforcement
+
+```
+================================================================
+🛑 MANDATORY STOP CONDITION ENFORCED
+================================================================
+Stage F Phase 1 Final Executive Hardening & Verification is COMPLETE.
+Branch: feat/seo-remediation-stage-d
+Production remains STRICTLY FROZEN.
+Zero deployments have been executed.
+Zero production environment variables have been changed.
+Zero DNS or Cloudflare modifications have been made.
+Zero sitemaps have been submitted.
+
+AWAITING SEPARATE EXPLICIT HUMAN EXECUTIVE AUTHORIZATION.
+================================================================
+```
+
