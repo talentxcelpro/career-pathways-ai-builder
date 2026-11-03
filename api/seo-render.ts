@@ -288,25 +288,87 @@ function notFoundResponse(cleanPath: string): Response {
   });
 }
 
-async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
+
+function serviceUnavailableResponse(cleanPath: string, errorMessage?: string): Response {
+  const title = 'Service Temporarily Unavailable (503) | TalentXcel';
+  const description = 'Our upstream database service is experiencing transient latency or maintenance. Please retry shortly.';
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${escapeHtml(title)}</title>
+  <link rel="canonical" href="https://talentxcel.in/${escapeHtml(cleanPath)}" />
+</head>
+<body style="font-family: system-ui, sans-serif; background: #0b0f19; color: #f8fafc; padding: 2rem; text-align: center;">
+  <h1>Service Temporarily Unavailable</h1>
+  <p>${escapeHtml(description)}</p>
+</body>
+</html>`;
+
+  return new Response(html, {
+    status: 503,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Retry-After': '60',
+      'X-Render-Engine': 'TalentXcel-Edge-Error-Guard',
+    },
+  });
+}
+
+export type JobLookupResult =
+  | { status: 'found'; job: any }
+  | { status: 'not_found' }
+  | { status: 'error'; error: string; statusCode: number };
+
+export async function lookupJobInSupabase(slugOrId: string, timeoutMs: number = 4000): Promise<JobLookupResult> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
     const filter = isUuid ? `id=eq.${encodeURIComponent(slugOrId)}` : `seo_slug=eq.${encodeURIComponent(slugOrId)}`;
     const url = `${SUPABASE_REST_URL}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,expires_at,employment_type,salary_min,salary_max,salary_currency&${filter}&is_active=eq.true&limit=1`;
     const res = await fetch(url, {
+      signal: controller.signal,
       headers: {
         'apikey': SUPABASE_ANON_KEY,
         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
       },
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return data[0];
+    clearTimeout(timeoutId);
+
+    if (res.status === 401 || res.status === 403) {
+      return { status: 'error', error: 'Database authentication/authorization failure', statusCode: 503 };
     }
-    return null;
-  } catch {
-    return null;
+    if (res.status >= 500) {
+      return { status: 'error', error: `Database origin returned status ${res.status}`, statusCode: 503 };
+    }
+    if (!res.ok) {
+      return { status: 'error', error: `Database query returned HTTP ${res.status}`, statusCode: 503 };
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      return { status: 'error', error: 'Malformed database JSON response', statusCode: 503 };
+    }
+
+    if (!Array.isArray(data)) {
+      return { status: 'error', error: 'Unexpected database response format', statusCode: 503 };
+    }
+
+    if (data.length > 0) {
+      return { status: 'found', job: data[0] };
+    }
+    return { status: 'not_found' };
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    if (err?.name === 'AbortError' || err?.message?.includes('timeout') || err?.message?.includes('aborted')) {
+      return { status: 'error', error: 'Database query timed out', statusCode: 503 };
+    }
+    return { status: 'error', error: err?.message || 'Database connection error', statusCode: 503 };
   }
 }
 
@@ -325,6 +387,22 @@ export default async function handler(req: Request) {
   }
 
   const result = await generateDynamicSeoHtml(cleanPath);
+
+  if (result?.status === 301 && result.redirectUrl) {
+    return new Response(null, {
+      status: 301,
+      headers: {
+        'Location': result.redirectUrl,
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+        'X-Render-Engine': 'TalentXcel-Edge-Redirect',
+      },
+    });
+  }
+
+  if (result?.status === 503) {
+    return serviceUnavailableResponse(cleanPath, result.errorMessage);
+  }
+
   if (!result || result.status === 404) {
     if (DEPLOYMENT_UNITS.SOFT_404_PROTECTION) {
       return notFoundResponse(cleanPath);
@@ -350,9 +428,11 @@ function escapeHtml(str: string): string {
 }
 
 interface SeoRenderResult {
-  html: string;
-  status: 200 | 404;
-  robotsDirective: string;
+  html?: string;
+  status: 200 | 301 | 404 | 503;
+  robotsDirective?: string;
+  redirectUrl?: string;
+  errorMessage?: string;
 }
 
 async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResult | null> {
@@ -612,10 +692,14 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     }
     // 5F: Single job posting lookup
     else {
-      const job = await lookupJobInSupabase(secondary);
-      if (!job) {
-        return null; // Genuine 404 for non-existent job posting (Soft-404 eliminated!)
+      const lookupResult = await lookupJobInSupabase(secondary);
+      if (lookupResult.status === 'error') {
+        return { status: 503, errorMessage: lookupResult.error };
       }
+      if (lookupResult.status === 'not_found') {
+        return null; // Genuine 404 for verified non-existent job posting (Soft-404 eliminated!)
+      }
+      const job = lookupResult.job;
       const jobTitle = job.title || formatTitle(secondary);
       const company = job.company_name || 'TalentXcel Services';
       const loc = job.location || 'India';
@@ -675,8 +759,17 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   // 6. Compare Colleges (Soft-404 Validation)
   else if (prefix === 'compare' && secondary) {
     const compParts = secondary.split('-vs-');
-    if (compParts.length !== 2 || !COLLEGE_SLUGS_SET.has(compParts[0]) || !COLLEGE_SLUGS_SET.has(compParts[1])) {
+    if (compParts.length !== 2) return null;
+    const part0Lower = compParts[0].toLowerCase();
+    const part1Lower = compParts[1].toLowerCase();
+    if (!COLLEGE_SLUGS_SET.has(part0Lower) || !COLLEGE_SLUGS_SET.has(part1Lower)) {
       return null; // Both colleges must be genuine institutions
+    }
+    if (compParts[0] !== part0Lower || compParts[1] !== part1Lower) {
+      return {
+        status: 301,
+        redirectUrl: `https://talentxcel.in/compare/${part0Lower}-vs-${part1Lower}`,
+      };
     }
     const nameA = formatTitle(compParts[0]);
     const nameB = formatTitle(compParts[1]);
@@ -734,14 +827,26 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       h1 = `${roleName} Career Pathway & College Specializations`;
       bodyContent = `<section class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Specializations</h2></section>`;
     } else {
-      const slug = cleanPath.replace('colleges/', '');
-      if (!COLLEGE_SLUGS_SET.has(slug)) {
-        return null; // Genuine 404 for non-existent college (Soft 404 eliminated!)
+      const rawSlug = cleanPath.replace('colleges/', '');
+      const lowerSlug = rawSlug.toLowerCase();
+
+      // Case-insensitive dictionary verification
+      if (!COLLEGE_SLUGS_SET.has(lowerSlug)) {
+        return null; // Genuine 404 for verified non-existent college (Soft 404 eliminated!)
       }
-      const collegeName = formatTitle(slug.replace(/-campus.*/, ''));
+
+      // If requested slug has uppercase or mixed-case characters, 301 permanently redirect to lowercase canonical
+      if (rawSlug !== lowerSlug) {
+        return {
+          status: 301,
+          redirectUrl: `https://talentxcel.in/colleges/${lowerSlug}`,
+        };
+      }
+
+      const collegeName = formatTitle(lowerSlug.replace(/-campus.*/, ''));
       title = `${collegeName} Admissions, Placements, Fees & Cutoffs (2026) | TalentXcel`;
       description = `Browse verified admissions, fee, ranking, and placement information for ${collegeName} on TalentXcel.`;
-      canonical = `https://talentxcel.in/colleges/${slug}`;
+      canonical = `https://talentxcel.in/colleges/${lowerSlug}`;
       h1 = `${collegeName} Institutional Overview`;
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
