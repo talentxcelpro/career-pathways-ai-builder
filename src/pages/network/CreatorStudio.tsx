@@ -494,23 +494,23 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
                 <div className="space-y-2 text-xs">
                   <div className="flex justify-between py-1.5 border-b">
                     <span>Reach Points (0.25 pt / view):</span>
-                    <span className="font-bold font-mono">+{metrics?.ledger.reachPoints.toFixed(1)}</span>
+                    <span className="font-bold font-mono">+{(metrics?.ledger?.reachPoints ?? 0).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b">
                     <span>Engagement Points (0.25 pt / inter):</span>
-                    <span className="font-bold font-mono">+{metrics?.ledger.engagementPoints.toFixed(1)}</span>
+                    <span className="font-bold font-mono">+{(metrics?.ledger?.engagementPoints ?? 0).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b">
                     <span>Content Creation Points:</span>
-                    <span className="font-bold font-mono">+{metrics?.ledger.contentPoints.toFixed(1)}</span>
+                    <span className="font-bold font-mono">+{((metrics?.ledger?.articlePoints ?? 0) + (metrics?.ledger?.postPoints ?? 0)).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between py-1.5 border-b">
                     <span>Community Growth Points:</span>
-                    <span className="font-bold font-mono">+{metrics?.ledger.growthPoints.toFixed(1)}</span>
+                    <span className="font-bold font-mono">+{(metrics?.ledger?.growthPoints ?? 0).toFixed(1)}</span>
                   </div>
                   <div className="flex justify-between py-2 bg-slate-50 dark:bg-muted/40 px-2 rounded-lg font-bold">
                     <span>Total Eligible Points:</span>
-                    <span className="font-mono text-primary">{(metrics?.ledger.totalEligiblePoints ?? 0).toLocaleString()} pts</span>
+                    <span className="font-mono text-primary">{(metrics?.ledger?.totalEligiblePoints ?? 0).toLocaleString()} pts</span>
                   </div>
                 </div>
               </CardContent>
