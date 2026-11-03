@@ -3,7 +3,9 @@
 **Target Application:** TalentXcel.in exclusively  
 **Repository:** `talentxcelpro/career-pathways-ai-builder`  
 **Current Branch:** `main`  
-**HEAD Commit:** `dc446320edb8f7f5408543662820c522591dc2fb`  
+**Current Published HEAD:** `acb9edb0cbba88d31717cab1b5f00bd059b1ca4d`  
+**Original Merge Commit:** `5a31d1560e5e240c582a351b836f54e5bdb21453`  
+**Security Feature HEAD:** `dc446320edb8f7f5408543662820c522591dc2fb`  
 **Backup Anchor:** `backup/main-pre-task-002-819fc3b6` (`819fc3b6ee0073d29bbfc6bf6654f9668885dfd8`)  
 **Production Supabase Reference:** `dthlgsnakhoftinssokm` (`Talentxcel.in` — Unmutated, Isolated)  
 **Staging Supabase Reference:** `pvwwtquuexhyydwihjbi` (`TalentXcel Staging` — Verified)  
@@ -14,9 +16,10 @@
 ## 1. RELEASE STATE SUMMARY
 
 1. **Git Integration Complete:**
-   - Feature branch `security/task-002-hardening` has been promoted into `main` via a strict fast-forward merge (`--ff-only`).
-   - `main` now sits at commit `dc446320edb8f7f5408543662820c522591dc2fb`.
-   - Backup reference `backup/main-pre-task-002-819fc3b6` guarantees instant recovery to the exact pre-merge state if ever required.
+   - Feature branch `security/task-002-hardening` (`dc446320`) was promoted into `main` via a strict fast-forward merge (`--ff-only`) at commit `5a31d156`.
+   - The publication report was subsequently committed and pushed to GitHub at commit `acb9edb0`.
+   - `main` and `origin/main` now sit at published HEAD `acb9edb0cbba88d31717cab1b5f00bd059b1ca4d`.
+   - Backup reference `backup/main-pre-task-002-819fc3b6` guarantees instant recovery to the exact pre-merge state (`819fc3b6`) if ever required.
 2. **Quality Gates Certified:**
    - 100% pass rate across TypeScript compilation, CORS security vectors, distributed rate limiting, staging candidate storage upsert, and SEO CI invariants.
    - Production Vite build confirmed working with zero errors.
