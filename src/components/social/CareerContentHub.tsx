@@ -58,6 +58,7 @@ export function CareerContentHub() {
   const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [realProfileCount, setRealProfileCount] = useState<number>(591);
   const { toast } = useToast();
 
   // Form state for creating articles
@@ -1164,7 +1165,7 @@ export function CareerContentHub() {
             <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-primary" />
-                <span className="font-medium">{articles.length > 0 ? `${Math.floor(Math.random() * 10000) + 5000}+ Active Professionals` : "Growing Community"}</span>
+                <span className="font-medium">{`${realProfileCount}+ Verified Professionals`}</span>
               </div>
               <div className="flex items-center gap-2">
                 <FileText className="w-4 h-4 text-primary" />
