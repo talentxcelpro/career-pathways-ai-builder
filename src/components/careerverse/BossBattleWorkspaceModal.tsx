@@ -84,7 +84,7 @@ export function optimizedSearch(candidates, query) {
                   {battle.company_name}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Stage {currentStage} of 4: {battle.stages[currentStage - 1] || 'Completed'}</p>
+              <p className="text-xs text-slate-400">Stage {currentStage} of 4: {(typeof battle.stages[currentStage - 1] === 'string' ? battle.stages[currentStage - 1] : battle.stages[currentStage - 1]?.name || battle.stages[currentStage - 1]?.desc) || 'Completed'}</p>
             </div>
           </div>
 
@@ -95,13 +95,14 @@ export function optimizedSearch(candidates, query) {
 
         {/* 4 Pipeline Stages Header */}
         <div className="grid grid-cols-4 gap-2">
-          {battle.stages.map((stage, idx) => {
+          {battle.stages.map((rawStage, idx) => {
+            const stage = typeof rawStage === 'string' ? rawStage : rawStage?.name || rawStage?.desc || 'Stage';
             const num = idx + 1;
             const isDone = num < currentStage;
             const isCurrent = num === currentStage;
             return (
               <div
-                key={stage}
+                key={`${idx}-${stage}`}
                 className={`p-2.5 rounded-xl border text-center text-xs font-bold ${
                   isDone
                     ? 'bg-[#20D994]/15 border-[#20D994]/40 text-[#20D994]'

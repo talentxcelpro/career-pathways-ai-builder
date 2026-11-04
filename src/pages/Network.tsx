@@ -168,18 +168,17 @@ const Network: React.FC = () => {
         {/* SUB-NAVIGATION PILL TAB BAR (ALL 9 MODULES IN SAME UNIFIED THEME)            */}
         {/* ============================================================================ */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          
-          {/* MOBILE QUICK BAR: LEFT SIDEBAR DRAWER TOGGLE */}
-          <div className="flex md:hidden items-center justify-between gap-2 p-2 rounded-xl bg-white/90 dark:bg-card/90 backdrop-blur-md border border-slate-200/80 dark:border-border/60 shadow-xs mb-2">
+          {/* MOBILE ONLY: SIDEBAR NAVIGATION DRAWER TRIGGER */}
+          <div className="flex md:hidden items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-white/95 dark:bg-card/95 backdrop-blur-md border border-slate-200/80 dark:border-border/60 shadow-xs mb-3">
             <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
               <SheetTrigger asChild>
                 <button 
-                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 text-xs font-bold shadow-2xs hover:bg-blue-100 transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
                   aria-label="Open Network Sidebar"
                 >
-                  <Menu className="h-3.5 w-3.5" />
+                  <Menu className="h-4 w-4" />
                   <span>Network Sidebar</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-600 text-white font-black">9 Hubs</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/20 text-white font-black">9 Hubs</span>
                 </button>
               </SheetTrigger>
               <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
@@ -200,106 +199,13 @@ const Network: React.FC = () => {
               </SheetContent>
             </Sheet>
 
-            <span className="text-[11px] font-semibold text-muted-foreground truncate">
-              Active: <span className="text-foreground font-bold capitalize">{activeTab.replace('-', ' ')}</span>
-            </span>
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <span className="text-[10px] uppercase font-bold tracking-wider">Module:</span>
+              <span className="px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-bold capitalize text-xs">
+                {activeTab.replace('-', ' ')}
+              </span>
+            </div>
           </div>
-
-          <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
-            <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0 min-w-max">
-              
-              {/* 1. Feed */}
-              <TabsTrigger 
-                value="feed" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>Feed</span>
-              </TabsTrigger>
-
-              {/* 2. Smart Feed */}
-              <TabsTrigger 
-                value="smart-feed" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-purple-500 data-[state=active]:text-white" />
-                <span>Smart Feed</span>
-              </TabsTrigger>
-
-              {/* 3. Gamification (Opens Live Career RPG) */}
-              <TabsTrigger 
-                value="gamification" 
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate('/gamification');
-                }}
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <Trophy className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
-                <span>Gamification</span>
-              </TabsTrigger>
-
-              {/* 4. Refer & Earn */}
-              <TabsTrigger 
-                value="refer-and-earn" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <Gift className="w-3.5 h-3.5 text-pink-500 data-[state=active]:text-white" />
-                <span>Refer &amp; Earn</span>
-              </TabsTrigger>
-
-              {/* 5. Connections */}
-              <TabsTrigger 
-                value="connections" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <Users className="w-3.5 h-3.5 text-blue-500 data-[state=active]:text-white" />
-                <span>Connections</span>
-              </TabsTrigger>
-
-              {/* 6. Discover */}
-              <TabsTrigger 
-                value="discover" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <UserPlus className="w-3.5 h-3.5 text-emerald-500 data-[state=active]:text-white" />
-                <span>Discover</span>
-              </TabsTrigger>
-
-              {/* 7. Analytics */}
-              <TabsTrigger 
-                value="analytics" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <TrendingUp className="w-3.5 h-3.5 text-indigo-500 data-[state=active]:text-white" />
-                <span>Analytics</span>
-              </TabsTrigger>
-
-              {/* 8. AI Connect */}
-              <TabsTrigger 
-                value="ai-connect" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-cyan-500 data-[state=active]:text-white" />
-                <span>AI Connect</span>
-              </TabsTrigger>
-
-              {/* 9. Creator Studio */}
-              <TabsTrigger 
-                value="creator-studio" 
-                className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5 relative"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
-                <span>Creator Studio</span>
-                <span className="relative flex h-2 w-2 ml-0.5" title="New Creator Pool Active">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                </span>
-              </TabsTrigger>
-
-            </TabsList>
-          </div>
-
           {/* ============================================================================ */}
           {/* 1. TAB CONTENT: MAIN FEED                                                    */}
           {/* ============================================================================ */}

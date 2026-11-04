@@ -13,7 +13,10 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
   onOpenWorkspace
 }) => {
   const currentStage = battle.user_participation?.current_stage || 1;
-  const stages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+  const rawStages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+  const stages = Array.isArray(rawStages)
+    ? rawStages.map((s: any) => typeof s === 'string' ? s : s?.name || s?.desc || s?.title || 'Stage')
+    : ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-[#101E3B] border border-white/10 p-6 md:p-7 shadow-2xl backdrop-blur-xl">
@@ -135,7 +138,7 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
 
               return (
                 <div
-                  key={stageName}
+                  key={`${idx}-${stageName}`}
                   className={`flex flex-col items-center p-2.5 rounded-xl border text-center transition-all ${
                     isPast
                       ? 'bg-[#20D994]/15 border-[#20D994]/50 text-[#20D994]'
