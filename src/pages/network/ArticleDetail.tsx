@@ -87,7 +87,11 @@ const ArticleDetail = () => {
 
       if (!postData) {
         // Fallback to foundation news articles if it exists
-        const foundFallback = (FOUNDATION_NEWS_ARTICLES || []).find((a: any) => a.id === id);
+        const foundFallback = (FOUNDATION_NEWS_ARTICLES || []).find((a: any, idx: number) => 
+          a.id === id || 
+          a.slug === id || 
+          (id?.startsWith('txc-art-') && idx === (parseInt(id.replace('txc-art-', ''), 10) - 1))
+        );
         if (foundFallback) {
           return {
             id: foundFallback.id,

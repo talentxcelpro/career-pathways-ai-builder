@@ -166,6 +166,44 @@ export function useSlugProfile(slug?: string) {
 }
 
 export const CURATED_FALLBACK_PROFILES: Record<string, Partial<SlugProfile>> = {
+  talentxcelservices: {
+    id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+    full_name: 'TalentXcel Services',
+    title: 'Director Operations',
+    headline: 'Executive Editorial & Talent Advisory Desk • TalentXcel Services',
+    location: 'India & Global Remote',
+    email: 'talentxcelpro@gmail.com',
+    about: 'Official operations, executive talent advisory, and editorial desk for TalentXcel. Overseeing cross-industry leadership career intelligence, executive transitions, and global workforce solutions.',
+    profile_picture_url: '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png',
+    cover_image_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80',
+    skills: ['Executive Search', 'Career Transitions', 'Talent Operations', 'Workforce Intelligence', 'Leadership Development', 'Strategic Advisory'],
+    slug: 'talentxcelservices',
+    username: 'talentxcelservices',
+    company_name: 'TalentXcel Services',
+    is_public: true,
+    user_type: 'professional',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  talentxcel: {
+    id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+    full_name: 'TalentXcel Services',
+    title: 'Director Operations',
+    headline: 'Executive Editorial & Talent Advisory Desk • TalentXcel Services',
+    location: 'India & Global Remote',
+    email: 'talentxcelpro@gmail.com',
+    about: 'Official operations, executive talent advisory, and editorial desk for TalentXcel. Overseeing cross-industry leadership career intelligence, executive transitions, and global workforce solutions.',
+    profile_picture_url: '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png',
+    cover_image_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80',
+    skills: ['Executive Search', 'Career Transitions', 'Talent Operations', 'Workforce Intelligence', 'Leadership Development', 'Strategic Advisory'],
+    slug: 'talentxcel',
+    username: 'talentxcel',
+    company_name: 'TalentXcel Services',
+    is_public: true,
+    user_type: 'professional',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
   sarahchen: {
     id: 'txc-sarah-chen',
     full_name: 'Sarah Chen',
