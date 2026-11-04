@@ -370,9 +370,9 @@ const Network: React.FC = () => {
           {/* 6. TAB CONTENT: DISCOVER (CAREER HUB & ARTICLES - 100% MATCHING LIVE)       */}
           {/* ============================================================================ */}
           <TabsContent value="discover" className="mt-0">
-            <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Career Hub...</div>}>
+            <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Discovery Hub...</div>}>
               <div className="w-full">
-                <CareerContentHub />
+                <Discover isEmbedded={true} />
               </div>
             </React.Suspense>
           </TabsContent>

@@ -15,6 +15,7 @@ import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
+import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import talentxcelLogo from "@/assets/talentxcel-logo.png";
 
 interface Article {
@@ -582,20 +583,10 @@ export function CareerContentHub() {
         {/* Header (Compacted to remove excessive empty space) */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-3 mb-1">
-            <div className="relative group">
-              <img 
-                src="/talentxcel-official-logo.png" 
-                alt="TalentXcel Logo" 
-                className="w-10 h-10 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300 object-contain bg-slate-900 p-1.5"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            </div>
-            <div className="text-left">
-              <h1 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
-                TalentXcel
-              </h1>
-              <p className="text-sm font-semibold text-muted-foreground leading-none">Career Hub</p>
-            </div>
+            <TalentXcelLogo iconSize={38} textSize="text-2xl sm:text-3xl font-black" theme="auto" />
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200/60 dark:border-blue-800/60">
+              Career Hub
+            </span>
           </div>
           
           <div className="max-w-2xl mx-auto">
@@ -1162,20 +1153,7 @@ export function CareerContentHub() {
             <p className="text-muted-foreground">
               Share your expertise, learn from others, and grow your career with SI-powered insights.
             </p>
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="font-medium">{`${realProfileCount}+ Verified Professionals`}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
-                <span className="font-medium">{articles.length}+ Expert Articles</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="font-medium">AI-Powered Content</span>
-              </div>
-            </div>
+            
             <div className="text-xs text-muted-foreground mt-4">
               Powered by <span className="font-semibold text-primary">TalentXcel SI</span> • 
               Building the future of career development

@@ -31,6 +31,7 @@ import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { CareerContentHub } from '@/components/social/CareerContentHub';
+import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import { SEOHead } from '@/components/seo/SEOHead';
 
 interface ProfileRecord {
@@ -325,6 +326,18 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
         {/* 2. VIEW MODE: DISCOVER PEOPLE */}
         {activeSubTab === 'people' && (
           <div className="space-y-4">
+            {/* People Discovery Header */}
+            <div className="text-center space-y-2 py-3 bg-gradient-to-b from-blue-50/50 via-slate-50/50 to-transparent dark:from-blue-950/20 dark:via-transparent rounded-2xl border border-slate-200/60 dark:border-border/40 p-4">
+              <div className="flex items-center justify-center gap-3 mb-1">
+                <TalentXcelLogo iconSize={36} textSize="text-2xl sm:text-3xl font-black" theme="auto" />
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200/60 dark:border-blue-800/60">
+                  People Discovery
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-xl mx-auto">
+                Connect with verified professionals, industry leaders, and high-velocity talent across the global network.
+              </p>
+            </div>
             {/* Search and Filter Controls */}
             <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-2xl p-3 shadow-xs space-y-3">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
