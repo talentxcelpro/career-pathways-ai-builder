@@ -26,6 +26,8 @@ import {
   Gamepad2
 } from "lucide-react";
 import Posts from './network/Posts';
+const CareerVersePage = React.lazy(() => import('./CareerVersePage'));
+
 import { CareerContentHub } from "@/components/social/CareerContentHub";
 import { Discover } from './network/Discover';
 import { CreatorStudio } from './network/CreatorStudio';
@@ -162,7 +164,7 @@ const Network: React.FC = () => {
         {/* ============================================================================ */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           
-          <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
+          <div className="hidden md:block bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
             <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0 min-w-max">
               
               {/* 1. Feed */}
@@ -183,9 +185,13 @@ const Network: React.FC = () => {
                 <span>Smart Feed</span>
               </TabsTrigger>
 
-              {/* 3. Gamification */}
+              {/* 3. Gamification (Opens Live Career RPG) */}
               <TabsTrigger 
                 value="gamification" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/gamification');
+                }}
                 className="rounded-lg px-3 py-1.5 text-xs font-bold transition-all data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-xs text-slate-700 dark:text-slate-300 hover:text-foreground flex items-center gap-1.5"
               >
                 <Trophy className="w-3.5 h-3.5 text-amber-500 data-[state=active]:text-white" />
@@ -351,37 +357,14 @@ const Network: React.FC = () => {
           </TabsContent>
 
           {/* ============================================================================ */}
-          {/* 3. TAB CONTENT: GAMIFICATION                                                 */}
+          {/* 3. TAB CONTENT: GAMIFICATION (CAREERVERSE / CAREER RPG - 100% MATCHING LIVE) */}
           {/* ============================================================================ */}
           <TabsContent value="gamification" className="mt-0">
-            {renderUniformLayout(
-              <div className="space-y-4">
-                <div className="relative overflow-hidden rounded-2xl border border-cyan-500/30 bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 p-4 text-white shadow-lg">
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="space-y-1 text-center sm:text-left">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 text-[11px] font-bold tracking-wide uppercase">
-                        <Sparkles className="h-3 w-3" /> Career RPG World Map 2.5D
-                      </div>
-                      <h3 className="text-base sm:text-lg font-extrabold text-white">Your Career Journey as a Game</h3>
-                      <p className="text-xs text-slate-300 max-w-md">
-                        Learn, build skills, battle bosses, complete quests, and climb college &amp; global leaderboards.
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => navigate('/gamification')}
-                      className="shrink-0 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold text-xs px-4 py-2 rounded-xl shadow-md transition-all hover:scale-105"
-                    >
-                      <Gamepad2 className="h-4 w-4 mr-1.5" />
-                      Launch Career RPG &rarr;
-                    </Button>
-                  </div>
-                </div>
-
-                <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Gamification...</div>}>
-                  <GamificationDashboard />
-                </React.Suspense>
+            <React.Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white text-xs">Loading Career RPG...</div>}>
+              <div className="w-full">
+                <CareerVersePage />
               </div>
-            )}
+            </React.Suspense>
           </TabsContent>
 
           {/* ============================================================================ */}

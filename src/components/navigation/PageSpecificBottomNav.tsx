@@ -490,46 +490,56 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
         onClose={() => setShowModulesLauncher(false)} 
       />
 
-      <div className={cn(
-        "fixed bottom-0 left-0 right-0 z-[999] bg-gradient-to-t from-black via-black/90 to-transparent backdrop-blur-md",
-        "border-t border-white/10",
-        className
-      )}>
-        <div className="flex items-center justify-around py-3 px-4 max-w-md mx-auto">
+      {/* Apple-Style Sleek Mobile Bottom Tab Bar */}
+      <nav 
+        aria-label="Mobile Navigation"
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-[999]",
+          "bg-white/85 dark:bg-[#121214]/85 backdrop-blur-xl",
+          "border-t border-slate-200/80 dark:border-white/10",
+          "shadow-[0_-1px_4px_rgba(0,0,0,0.04)]",
+          "pb-[max(0.25rem,env(safe-area-inset-bottom))]",
+          className
+        )}
+      >
+        <div className="flex items-center justify-around px-2 max-w-md mx-auto h-[50px]">
           {navigationItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <Button
+              <button
                 key={index}
-                variant="ghost"
-                size="icon"
+                type="button"
                 onClick={item.action}
+                aria-label={item.label}
                 className={cn(
-                  "flex flex-col items-center gap-1 transition-all duration-200 min-h-[44px] touch-target",
-                  item.isPrimary 
-                    ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 rounded-xl h-14 w-14 shadow-lg transform hover:scale-105" 
-                    : item.isActive
-                      ? "text-white bg-white/20 rounded-xl h-12 w-12"
-                      : "text-white/70 hover:text-white hover:bg-white/10 rounded-xl h-12 w-12"
+                  "flex flex-col items-center justify-center flex-1 h-full py-0.5 transition-colors touch-manipulation select-none outline-none group",
+                  item.isActive
+                    ? "text-blue-600 dark:text-blue-400 font-semibold"
+                    : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
-                <Icon className={cn(
-                  item.isPrimary ? "h-6 w-6" : "h-5 w-5"
-                )} />
-                {!item.isPrimary && (
-                  <span className="text-xs font-medium">{item.label}</span>
+                {item.isPrimary ? (
+                  <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center shadow-xs group-active:scale-95 transition-transform -mt-1">
+                    <Icon className="h-4 w-4 stroke-[2.2]" />
+                  </div>
+                ) : (
+                  <>
+                    <Icon className={cn(
+                      "h-[20px] w-[20px] transition-transform group-active:scale-90",
+                      item.isActive ? "stroke-[2.2]" : "stroke-[1.75]"
+                    )} />
+                    <span className="text-[10px] tracking-tight leading-none mt-1">
+                      {item.label}
+                    </span>
+                  </>
                 )}
-              </Button>
+              </button>
             );
           })}
         </div>
-      </div>
+      </nav>
 
-      {/* Modules Launcher Modal */}
-      <ModulesLauncher 
-        isOpen={showModulesLauncher}
-        onClose={() => setShowModulesLauncher(false)}
-      />
+
     </>
   );
 };

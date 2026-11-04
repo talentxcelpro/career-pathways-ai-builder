@@ -20,7 +20,7 @@ export const MobileNavWrapper: React.FC<MobileNavWrapperProps> = ({
       {children}
       {/* Add bottom padding to prevent content from being hidden behind nav */}
       {isMobile && !disableBottomNav && (
-        <div className="h-20" /> // Spacer for bottom navigation
+        <div className="h-14" /> // Spacer for bottom navigation
       )}
       {!disableBottomNav && <PageSpecificBottomNav />}
     </>
