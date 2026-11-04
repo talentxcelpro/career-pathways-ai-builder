@@ -16,7 +16,9 @@ export interface CareerTreeSkill {
   prerequisite_id: string | null;
   xp_required: number;
   xp_reward: number;
-  order_index: number;
+  order_index?: number;
+  name?: string;
+  prerequisites?: string[];
   user_status?: 'locked' | 'unlocked' | 'mastered';
   user_progress?: number;
 }
@@ -40,7 +42,7 @@ export class CareerSkillTreeService {
       .from('career_tree_skills' as any)
       .select('*')
       .eq('path_id', pathId)
-      .order('order_index', { ascending: true });
+      .order('created_at', { ascending: true });
 
     if (error) {
       console.error('Error fetching tree skills:', error);
@@ -50,8 +52,9 @@ export class CareerSkillTreeService {
     if (!userId || userId === 'guest') {
       return (skills as any[]).map(s => ({
         ...s,
-        user_status: s.prerequisite_id === null ? 'unlocked' : 'locked',
-        user_progress: s.prerequisite_id === null ? 50 : 0
+        title: s.name || s.title,
+        user_status: (!s.prerequisites || s.prerequisites.length === 0) ? 'unlocked' : 'locked',
+        user_progress: (!s.prerequisites || s.prerequisites.length === 0) ? 50 : 0
       }));
     }
 

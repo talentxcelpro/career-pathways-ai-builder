@@ -45,6 +45,9 @@ import { SocialNotifications } from "@/components/social/SocialNotifications";
 import { useRealtimeSocialUpdates } from "@/hooks/useRealtimeSocialUpdates";
 import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
+import { NetworkSidebarNav } from "@/components/network/NetworkSidebarNav";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, Layers } from "lucide-react";
 
 const Network: React.FC = () => {
   const { user } = useAuth();
@@ -52,6 +55,7 @@ const Network: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'feed';
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   
   const handleTabChange = (value: string) => {
     setSearchParams(prev => {
@@ -106,6 +110,7 @@ const Network: React.FC = () => {
       {/* LEFT COLUMN: PROFILE CARD + QUICK METRICS (hidden on mobile, shown on md+) */}
       <div className="hidden md:block md:col-span-4 lg:col-span-3 space-y-3">
         <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
+        <NetworkSidebarNav activeTab={activeTab} onTabChange={handleTabChange} connectionCount={537} />
       </div>
 
       {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT (full-width on mobile, col-span-6 on lg) */}
@@ -164,7 +169,43 @@ const Network: React.FC = () => {
         {/* ============================================================================ */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           
-          <div className="hidden md:block bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
+          {/* MOBILE QUICK BAR: LEFT SIDEBAR DRAWER TOGGLE */}
+          <div className="flex md:hidden items-center justify-between gap-2 p-2 rounded-xl bg-white/90 dark:bg-card/90 backdrop-blur-md border border-slate-200/80 dark:border-border/60 shadow-xs mb-2">
+            <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
+              <SheetTrigger asChild>
+                <button 
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 text-xs font-bold shadow-2xs hover:bg-blue-100 transition-colors"
+                  aria-label="Open Network Sidebar"
+                >
+                  <Menu className="h-3.5 w-3.5" />
+                  <span>Network Sidebar</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-600 text-white font-black">9 Hubs</span>
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
+                <SheetHeader className="mb-2 text-left">
+                  <SheetTitle className="text-xs font-extrabold flex items-center gap-1.5 uppercase tracking-wider text-muted-foreground">
+                    <Layers className="h-3.5 w-3.5 text-blue-600" />
+                    Network Navigation
+                  </SheetTitle>
+                </SheetHeader>
+                <NetworkSidebarNav 
+                  activeTab={activeTab} 
+                  onTabChange={(tab) => {
+                    handleTabChange(tab);
+                    setMobileDrawerOpen(false);
+                  }} 
+                  connectionCount={537} 
+                />
+              </SheetContent>
+            </Sheet>
+
+            <span className="text-[11px] font-semibold text-muted-foreground truncate">
+              Active: <span className="text-foreground font-bold capitalize">{activeTab.replace('-', ' ')}</span>
+            </span>
+          </div>
+
+          <div className="bg-white/80 dark:bg-card backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-border/60 p-1 shadow-xs mb-2.5 overflow-x-auto no-scrollbar">
             <TabsList className="flex items-center gap-1 bg-transparent h-auto p-0 min-w-max">
               
               {/* 1. Feed */}
