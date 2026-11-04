@@ -472,8 +472,8 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
 
   return (
     <>
-      {/* Transparent More Button for Default Navigation and Network Page */}
-      {(isDefaultNav || isNetworkPage) && (
+      {/* Transparent More Button for Default Navigation only (Network has inline header launcher) */}
+      {(isDefaultNav && !isNetworkPage) && (
         <Button
           variant="ghost"
           size="icon"
@@ -495,14 +495,14 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
         aria-label="Mobile Navigation"
         className={cn(
           "fixed bottom-0 left-0 right-0 z-[999]",
-          "bg-white/85 dark:bg-[#121214]/85 backdrop-blur-xl",
+          "bg-white/95 dark:bg-[#121214]/95 backdrop-blur-xl",
           "border-t border-slate-200/80 dark:border-white/10",
           "shadow-[0_-1px_4px_rgba(0,0,0,0.04)]",
-          "pb-[max(0.25rem,env(safe-area-inset-bottom))]",
+          "pb-[max(0.15rem,env(safe-area-inset-bottom))]",
           className
         )}
       >
-        <div className="flex items-center justify-around px-2 max-w-md mx-auto h-[50px]">
+        <div className="flex items-center justify-around px-1 max-w-md mx-auto h-[44px]">
           {navigationItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -514,24 +514,27 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
                 className={cn(
                   "flex flex-col items-center justify-center flex-1 h-full py-0.5 transition-colors touch-manipulation select-none outline-none group",
                   item.isActive
-                    ? "text-blue-600 dark:text-blue-400 font-semibold"
+                    ? "text-blue-600 dark:text-blue-400 font-bold"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 {item.isPrimary ? (
-                  <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full h-8 w-8 flex items-center justify-center shadow-xs group-active:scale-95 transition-transform -mt-1">
-                    <Icon className="h-4 w-4 stroke-[2.2]" />
+                  <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full h-7 w-7 flex items-center justify-center shadow-xs group-active:scale-95 transition-transform -mt-0.5">
+                    <Icon className="h-3.5 w-3.5 stroke-[2.2]" />
                   </div>
                 ) : (
-                  <>
+                  <div className={cn(
+                    "flex flex-col items-center justify-center px-2 py-0.5 rounded-lg transition-all",
+                    item.isActive && "bg-blue-50/80 dark:bg-blue-950/40"
+                  )}>
                     <Icon className={cn(
-                      "h-[20px] w-[20px] transition-transform group-active:scale-90",
+                      "h-[17px] w-[17px] transition-transform group-active:scale-90",
                       item.isActive ? "stroke-[2.2]" : "stroke-[1.75]"
                     )} />
-                    <span className="text-[10px] tracking-tight leading-none mt-1">
+                    <span className="text-[9px] tracking-tight leading-none mt-0.5 font-medium">
                       {item.label}
                     </span>
-                  </>
+                  </div>
                 )}
               </button>
             );

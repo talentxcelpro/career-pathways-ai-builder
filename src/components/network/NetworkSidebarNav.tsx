@@ -75,7 +75,7 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
       icon: Compass,
       iconColor: 'text-emerald-500',
       description: 'Career Hub & Articles',
-      badge: '8+ Articles'
+      badge: '45 Articles'
     },
     {
       id: 'analytics',

@@ -47,7 +47,10 @@ import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 import { NetworkSidebarNav } from "@/components/network/NetworkSidebarNav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Layers } from "lucide-react";
+import { Menu, Layers, LayoutGrid } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const Network: React.FC = () => {
   const { user } = useAuth();
@@ -66,7 +69,7 @@ const Network: React.FC = () => {
   };
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending'>('all');
+  const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending' | 'following'>('all');
   const queryClient = useQueryClient();
   
   const handleRefreshFeed = () => {
@@ -168,60 +171,115 @@ const Network: React.FC = () => {
         {/* SUB-NAVIGATION PILL TAB BAR (ALL 9 MODULES IN SAME UNIFIED THEME)            */}
         {/* ============================================================================ */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          {/* MOBILE ONLY: SIDEBAR NAVIGATION DRAWER TRIGGER */}
-          <div className="flex md:hidden items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-white/95 dark:bg-card/95 backdrop-blur-md border border-slate-200/80 dark:border-border/60 shadow-xs mb-3">
-            <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
-              <SheetTrigger asChild>
+          {/* ============================================================================ */}
+          {/* MOBILE ONLY: TOP APP BAR + HEADER SECTION (Exact match to Image 3)           */}
+          {/* ============================================================================ */}
+          <div className="md:hidden space-y-2 mb-2.5">
+            {/* Top Navigation Bar: Hamburger ☰ | TalentXcel Brand | 🔍 Search | 🔔 Bell | Avatar */}
+            <div className="flex items-center justify-between px-3 py-2 -mx-3 -mt-2.5 bg-white/95 dark:bg-card/95 backdrop-blur-md border-b border-slate-200/80 dark:border-border/60 sticky top-0 z-40">
+              <div className="flex items-center gap-2">
                 <button 
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-xs transition-all active:scale-95"
-                  aria-label="Open Network Sidebar"
+                  type="button"
+                  onClick={() => setMobileDrawerOpen(true)}
+                  className="p-1 -ml-1 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-muted rounded-lg active:scale-95 transition-transform"
+                  aria-label="Open Network Navigation"
                 >
-                  <Menu className="h-4 w-4" />
-                  <span>Network Sidebar</span>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/20 text-white font-black">9 Hubs</span>
+                  <Menu className="h-5 w-5" />
                 </button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
-                <SheetHeader className="mb-2 text-left">
-                  <SheetTitle className="text-xs font-extrabold flex items-center gap-1.5 uppercase tracking-wider text-muted-foreground">
-                    <Layers className="h-3.5 w-3.5 text-blue-600" />
-                    Network Navigation
-                  </SheetTitle>
-                </SheetHeader>
-                <NetworkSidebarNav 
-                  activeTab={activeTab} 
-                  onTabChange={(tab) => {
-                    handleTabChange(tab);
-                    setMobileDrawerOpen(false);
-                  }} 
-                  connectionCount={537} 
-                />
-              </SheetContent>
-            </Sheet>
+                <div className="flex items-center gap-1.5">
+                  <TalentXcelLogo iconSize={22} textSize="text-base font-extrabold" theme="light" />
+                  <span className="text-slate-400 font-normal text-xs tracking-tight">| Network</span>
+                </div>
+              </div>
 
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="text-[10px] uppercase font-bold tracking-wider">Module:</span>
-              <span className="px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 font-bold capitalize text-xs">
-                {activeTab.replace('-', ' ')}
-              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const el = document.getElementById('mobile-network-search-input');
+                    el?.focus();
+                  }}
+                  className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted rounded-full transition-colors"
+                  aria-label="Search network"
+                >
+                  <Search className="h-4 w-4" />
+                </button>
+                <div className="relative text-slate-600 dark:text-slate-300">
+                  <NotificationBell />
+                </div>
+                <Avatar 
+                  className="h-7 w-7 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                  onClick={() => navigate('/profile/edit')}
+                >
+                  <AvatarImage src={user?.user_metadata?.avatar_url} />
+                  <AvatarFallback className="bg-slate-800 text-white font-extrabold text-[10px]">
+                    {user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+            </div>
+
+            {/* Page Title Row: "Professional Network" + Subtitle + MODULES [⊞] Button */}
+            <div className="flex items-center justify-between pt-0.5 px-0.5">
+              <div>
+                <h1 className="text-base font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                  Professional <span className="text-blue-600 dark:text-blue-500">Network</span>
+                </h1>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-none mt-0.5">
+                  Connect • Share • Learn • Grow
+                </p>
+              </div>
+
+              {/* Modules Drawer Trigger Button: MODULES [⊞] */}
+              <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
+                <SheetTrigger asChild>
+                  <button 
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/80 font-bold text-xs shadow-2xs transition-all active:scale-95"
+                    aria-label="Open Network Modules"
+                  >
+                    <span className="tracking-wide">MODULES</span>
+                    <LayoutGrid className="h-3.5 w-3.5" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
+                  <SheetHeader className="mb-2 text-left">
+                    <SheetTitle className="text-xs font-extrabold flex items-center justify-between uppercase tracking-wider text-slate-800 dark:text-slate-100">
+                      <div className="flex items-center gap-1.5">
+                        <Layers className="h-3.5 w-3.5 text-blue-600" />
+                        <span>Network Navigation</span>
+                      </div>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <NetworkSidebarNav 
+                    activeTab={activeTab} 
+                    onTabChange={(tab) => {
+                      handleTabChange(tab);
+                      setMobileDrawerOpen(false);
+                    }} 
+                    connectionCount={537} 
+                  />
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
+
           {/* ============================================================================ */}
           {/* 1. TAB CONTENT: MAIN FEED                                                    */}
           {/* ============================================================================ */}
           <TabsContent value="feed" className="mt-0">
             {renderUniformLayout(
               <>
-                {/* Global Search Bar */}
-                <div className="relative bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-1 shadow-xs flex items-center gap-2">
-                  <Search className="h-3.5 w-3.5 text-muted-foreground ml-2 shrink-0" />
+                {/* Global Search Bar (Pill shape rounded-full matching Image 3) */}
+                <div className="relative bg-white dark:bg-card border border-slate-200/90 dark:border-border/60 rounded-full px-3 py-1.5 shadow-2xs flex items-center gap-2">
+                  <Search className="h-4 w-4 text-muted-foreground ml-0.5 shrink-0" />
                   <Input
+                    id="mobile-network-search-input"
                     placeholder="Search posts, people, companies, jobs, hashtags..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border-0 bg-transparent text-xs font-semibold placeholder:text-muted-foreground focus-visible:ring-0 h-6.5"
+                    className="border-0 bg-transparent text-xs font-medium placeholder:text-muted-foreground focus-visible:ring-0 h-6 p-0"
                   />
-                  <Button variant="ghost" size="sm" className="rounded-lg h-6.5 w-6.5 p-0 text-muted-foreground hover:text-foreground shrink-0">
+                  <Button variant="ghost" size="sm" className="rounded-full h-6 w-6 p-0 text-muted-foreground hover:text-foreground shrink-0">
                     <SlidersHorizontal className="h-3 w-3" />
                   </Button>
                 </div>
@@ -229,20 +287,26 @@ const Network: React.FC = () => {
                 {/* Enhanced Create Post Card */}
                 <EnhancedCreatePost />
 
-                {/* Feed Controls Bar */}
+                {/* Feed Controls Bar: All Posts | Trending | Following | 🔄 */}
                 <div className="flex items-center justify-between pt-0.5">
                   <div className="flex items-center gap-1.5">
                     <button 
                       onClick={() => setPostFilter('all')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
                     >
                       All Posts
                     </button>
                     <button 
                       onClick={() => setPostFilter('trending')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'trending' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'trending' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
                     >
                       Trending
+                    </button>
+                    <button 
+                      onClick={() => setPostFilter('following')}
+                      className={`px-3 py-1 rounded-lg text-xs font-bold transition-all shadow-xs ${postFilter === 'following' ? 'bg-blue-600 text-white' : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'}`}
+                    >
+                      Following
                     </button>
                   </div>
 
@@ -265,7 +329,7 @@ const Network: React.FC = () => {
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
                   </div>
                 }>
-                  <Posts feedType={postFilter === 'latest' ? 'all' : postFilter} searchTerm={searchTerm} />
+                  <Posts feedType={postFilter === 'following' ? 'connections' : (postFilter === 'latest' ? 'all' : postFilter)} searchTerm={searchTerm} />
                 </React.Suspense>
               </>
             )}

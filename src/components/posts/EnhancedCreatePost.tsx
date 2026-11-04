@@ -524,6 +524,15 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
               <Video className="h-3.5 w-3.5 text-purple-500" />
               <span className="text-[11px] font-semibold">Video</span>
             </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/network?tab=discover&subtab=articles')}
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1.5 rounded-lg"
+            >
+              <FileText className="h-3.5 w-3.5 text-amber-500" />
+              <span className="text-[11px] font-semibold">Article</span>
+            </Button>
           </div>
 
           <Button
