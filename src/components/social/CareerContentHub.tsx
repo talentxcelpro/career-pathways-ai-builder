@@ -77,7 +77,7 @@ export function CareerContentHub() {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const getFallbackArticles = (): Article[] => {
-    return (FOUNDATION_NEWS_ARTICLES || []).slice(0, 8).map((a: any) => ({
+    return (FOUNDATION_NEWS_ARTICLES || []).map((a: any) => ({
       id: a.id,
       title: a.title,
       slug: a.slug || a.id,
@@ -85,9 +85,9 @@ export function CareerContentHub() {
       tags: Array.isArray(a.keyTakeaways) ? a.keyTakeaways.slice(0, 3) : ["Career", "AI", "Leadership"],
       summary: a.summary || "",
       content: a.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n') || a.summary || "",
-      author_name: a.author?.name || "TalentXcel Research",
-      read_time: `${a.readingTimeMinutes || 5} min read`,
-      views: 1250,
+      author_name: a.author?.name || "TalentXcelServices",
+      read_time: a.readTime || `${a.readingTimeMinutes || 6} min read`,
+      views: 0,
       is_featured: !!a.isFeatured,
       featured_image_url: a.imageUrl || undefined,
       created_at: a.publishedAt || new Date().toISOString()

@@ -34,18 +34,18 @@ const getFoundationArticles = () => {
     reading_time: parseInt(a.readTime) || 5,
     word_count: 850,
     created_at: a.publishedAt || new Date().toISOString(),
-    author_id: 'talentxcel-research',
+    author_id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
     status: 'published',
-    likes_count: 42,
-    comments_count: 12,
-    shares_count: 8,
-    views_count: 1250,
+    likes_count: 0,
+    comments_count: 0,
+    shares_count: 0,
+    views_count: 0,
     profiles: {
-      id: 'talentxcel-research',
-      full_name: a.author?.name || 'Dr. Sarah Al-Mansoori',
-      profile_picture_url: a.author?.avatar,
-      title: a.author?.role || 'Chief of Labor Economics Research',
-      current_company: 'TalentXcel Research'
+      id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+      full_name: a.author?.name || 'TalentXcelServices',
+      profile_picture_url: a.author?.avatar || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png',
+      title: a.author?.role || 'Executive Editorial & Talent Advisory Desk',
+      current_company: 'TalentXcel Services'
     }
   }));
 };

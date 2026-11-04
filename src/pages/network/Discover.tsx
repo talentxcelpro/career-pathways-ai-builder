@@ -323,7 +323,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                   activeSubTab === 'articles' ? 'bg-white/20 text-white' : ''
                 }`}
               >
-                20 Articles
+                24 Articles
               </Badge>
             </button>
           </div>

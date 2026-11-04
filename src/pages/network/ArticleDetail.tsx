@@ -100,6 +100,10 @@ const ArticleDetail = () => {
             created_at: foundFallback.publishedAt || new Date().toISOString(),
             author_id: 'talentxcel-research',
             status: 'published',
+            likes_count: 0,
+            comments_count: 0,
+            shares_count: 0,
+            views_count: 0,
             profiles: {
               id: 'talentxcel-research',
               full_name: foundFallback.author?.name || 'TalentXcel Research Team',
@@ -364,7 +368,7 @@ const ArticleDetail = () => {
                 </div>
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{article.likes_count || 0} views</span>
+                  <span>{article.views_count || 0} views</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
