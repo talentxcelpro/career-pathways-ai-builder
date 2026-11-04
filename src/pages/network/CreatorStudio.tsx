@@ -36,7 +36,8 @@ import {
   FileText,
   UserPlus,
   Compass,
-  Info
+  Info,
+  Zap
 } from 'lucide-react';
 
 interface MetricTargetProgressProps {
