@@ -11,7 +11,21 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     watch: {
-      ignored: ["**/dist/**", "**/.git/**"],
+      ignored: [
+        '**/.git/**',
+        '**/dist/**',
+        '**/dist-external/**',
+        '**/reports/**',
+        '**/docs/**',
+        '**/backlink-engine/**',
+        '**/android/**',
+        '**/ios/**',
+        '**/chrome-extension/**',
+        '**/apps/**',
+        '**/scratch/**',
+        '**/scripts/**',
+        '**/node_modules/**',
+      ],
     },
   },
   plugins: [
