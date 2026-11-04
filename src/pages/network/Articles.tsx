@@ -30,7 +30,7 @@ const getFoundationArticles = () => {
     tagline: a.summary || '',
     content: a.content || a.summary || '',
     featured_image_url: a.imageUrl || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&auto=format&fit=crop',
-    article_category: a.category || 'Career Intelligence',
+    article_category: a.articleCategory || (a.category ? a.category.toLowerCase().replace(/\s+/g, '_') : 'career_advice'),
     reading_time: parseInt(a.readTime) || 5,
     word_count: 850,
     created_at: a.publishedAt || new Date().toISOString(),
@@ -162,10 +162,10 @@ const Articles = () => {
       // Filter foundation articles based on category and search query
       let filteredFoundation = foundationList;
       if (selectedCategory !== 'all') {
-        const catClean = selectedCategory.toLowerCase().replace(/_/g, ' ');
+        const catClean = selectedCategory.toLowerCase().replace(/[\s_-]+/g, '');
         filteredFoundation = filteredFoundation.filter((a: any) => {
-          const aCat = (a.article_category || '').toLowerCase();
-          return aCat.includes(catClean) || catClean.includes(aCat);
+          const aCat = (a.article_category || '').toLowerCase().replace(/[\s_-]+/g, '');
+          return aCat === catClean || aCat.includes(catClean) || catClean.includes(aCat);
         });
       }
 

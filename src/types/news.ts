@@ -42,6 +42,8 @@ export interface NewsArticle {
   summary: string;
   content: string;
   category: Exclude<NewsCategory, 'All'>;
+  articleCategory?: string;
+  hubCategory?: string;
   archetype?: NewsArchetype;
   publishedAt: string;
   updatedAt?: string;

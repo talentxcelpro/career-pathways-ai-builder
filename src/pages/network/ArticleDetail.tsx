@@ -1,3 +1,4 @@
+import ReactMarkdown from 'react-markdown';
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -92,23 +93,25 @@ const ArticleDetail = () => {
             id: foundFallback.id,
             headline: foundFallback.title,
             tagline: foundFallback.summary || '',
-            content: foundFallback.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n') || foundFallback.summary || '',
+            content: foundFallback.content || (foundFallback.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n')) || foundFallback.summary || '',
             featured_image_url: foundFallback.imageUrl,
-            article_category: foundFallback.category || 'career_advice',
-            reading_time: foundFallback.readingTimeMinutes || 5,
-            word_count: 500,
+            article_category: foundFallback.articleCategory || (foundFallback.category ? foundFallback.category.toLowerCase().replace(/\s+/g, '_') : 'career_advice'),
+            reading_time: foundFallback.readingTimeMinutes || parseInt(foundFallback.readTime) || 5,
+            word_count: 850,
             created_at: foundFallback.publishedAt || new Date().toISOString(),
-            author_id: 'talentxcel-research',
+            author_id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
             status: 'published',
             likes_count: 0,
             comments_count: 0,
             shares_count: 0,
             views_count: 0,
             profiles: {
-              id: 'talentxcel-research',
-              full_name: foundFallback.author?.name || 'TalentXcel Research Team',
-              profile_picture_url: foundFallback.author?.avatarUrl,
-              title: foundFallback.author?.role || 'Career Research Fellow'
+              id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+              slug: 'talentxcelservices',
+              full_name: foundFallback.author?.name || 'TalentXcelServices',
+              profile_picture_url: foundFallback.author?.avatar || foundFallback.author?.avatarUrl || '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png',
+              title: foundFallback.author?.role || 'Executive Editorial & Talent Advisory Desk',
+              current_company: 'TalentXcel Services'
             }
           };
         }
@@ -379,7 +382,7 @@ const ArticleDetail = () => {
 
             {/* Author Info */}
             <div className="flex items-start gap-4 p-4 bg-muted/30 rounded-lg mb-8">
-              <Link to={`/network/people/${article.author_id}`}>
+              <Link to={(article.author_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062' || article.author_id === 'talentxcel-research' || article.profiles?.full_name?.toLowerCase().includes('talentxcel')) ? '/profile/talentxcelservices' : (article.profiles?.slug ? `/profile/${article.profiles.slug}` : `/network/people/${article.author_id}`)}>
                 <Avatar className="h-12 w-12 ring-2 ring-background">
                   <AvatarImage src={article.profiles?.profile_picture_url} />
                   <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-semibold">
@@ -389,7 +392,7 @@ const ArticleDetail = () => {
               </Link>
               <div className="flex-1">
                 <Link 
-                  to={`/network/people/${article.author_id}`}
+                  to={(article.author_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062' || article.author_id === 'talentxcel-research' || article.profiles?.full_name?.toLowerCase().includes('talentxcel')) ? '/profile/talentxcelservices' : (article.profiles?.slug ? `/profile/${article.profiles.slug}` : `/network/people/${article.author_id}`)}
                   className="font-semibold text-lg hover:text-primary transition-colors"
                 >
                   {formatDisplayName(article.profiles)}
@@ -444,14 +447,37 @@ const ArticleDetail = () => {
             <Separator className="my-8" />
 
             {/* Article Content */}
-            <div className="prose prose-lg max-w-none">
-              {article.content.split('\n').map((paragraph, index) => (
-                paragraph.trim() && (
-                  <p key={index} className="mb-4 leading-relaxed text-gray-700">
-                    {paragraph}
-                  </p>
-                )
-              ))}
+            <div className="prose prose-slate dark:prose-invert max-w-none space-y-4 text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200">
+              <ReactMarkdown
+                components={{
+                  h2: ({ node, ...props }) => (
+                    <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-8 mb-4 border-b border-slate-200 dark:border-border/60 pb-2" {...props} />
+                  ),
+                  h3: ({ node, ...props }) => (
+                    <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-6 mb-3" {...props} />
+                  ),
+                  p: ({ node, ...props }) => (
+                    <p className="leading-relaxed mb-4 text-slate-700 dark:text-slate-300 font-normal" {...props} />
+                  ),
+                  ul: ({ node, ...props }) => (
+                    <ul className="list-disc pl-6 space-y-2 mb-4 text-slate-700 dark:text-slate-300" {...props} />
+                  ),
+                  ol: ({ node, ...props }) => (
+                    <ol className="list-decimal pl-6 space-y-2 mb-4 text-slate-700 dark:text-slate-300" {...props} />
+                  ),
+                  li: ({ node, ...props }) => (
+                    <li className="leading-relaxed" {...props} />
+                  ),
+                  blockquote: ({ node, ...props }) => (
+                    <blockquote className="border-l-4 border-blue-600 pl-4 py-1.5 italic my-4 bg-blue-50/50 dark:bg-blue-950/20 rounded-r-lg text-slate-800 dark:text-slate-200 font-medium" {...props} />
+                  ),
+                  strong: ({ node, ...props }) => (
+                    <strong className="font-bold text-slate-900 dark:text-white" {...props} />
+                  )
+                }}
+              >
+                {article.content}
+              </ReactMarkdown>
             </div>
 
             <Separator className="my-8" />

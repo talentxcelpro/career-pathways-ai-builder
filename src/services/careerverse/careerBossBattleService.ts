@@ -1,3 +1,8 @@
+function normalizeStages(stages: any): string[] {
+  if (!Array.isArray(stages)) return ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+  return stages.map((s: any) => typeof s === 'string' ? s : (s?.name || s?.desc || s?.title || 'Stage'));
+}
+
 import { supabase } from '@/integrations/supabase/client';
 import { CareerPlayerService } from './careerPlayerService';
 
@@ -38,7 +43,7 @@ export class CareerBossBattleService {
     if (!userId || userId === 'guest') {
       return (battles as any[]).map(b => ({
         ...b,
-        stages: Array.isArray(b.stages) ? b.stages : ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'],
+        stages: normalizeStages(b.stages),
         user_participation: {
           current_stage: 1,
           status: 'active',
@@ -62,7 +67,7 @@ export class CareerBossBattleService {
       const p = partMap.get(b.id);
       return {
         ...b,
-        stages: Array.isArray(b.stages) ? b.stages : ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'],
+        stages: normalizeStages(b.stages),
         user_participation: p ? {
           current_stage: p.current_stage,
           status: p.status,
