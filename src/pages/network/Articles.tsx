@@ -21,6 +21,34 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ArticleCard } from '@/components/posts/ArticleCard';
 import { ArticleCreateForm } from '@/components/posts/ArticleCreateForm';
 import { useArticleSubscriptions } from '@/hooks/useArticleSubscriptions';
+import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
+
+const getFoundationArticles = () => {
+  return (FOUNDATION_NEWS_ARTICLES || []).map((a: any) => ({
+    id: a.id,
+    headline: a.title,
+    tagline: a.summary || '',
+    content: a.content || a.summary || '',
+    featured_image_url: a.imageUrl || 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&auto=format&fit=crop',
+    article_category: a.category || 'Career Intelligence',
+    reading_time: parseInt(a.readTime) || 5,
+    word_count: 850,
+    created_at: a.publishedAt || new Date().toISOString(),
+    author_id: 'talentxcel-research',
+    status: 'published',
+    likes_count: 42,
+    comments_count: 12,
+    shares_count: 8,
+    views_count: 1250,
+    profiles: {
+      id: 'talentxcel-research',
+      full_name: a.author?.name || 'Dr. Sarah Al-Mansoori',
+      profile_picture_url: a.author?.avatar,
+      title: a.author?.role || 'Chief of Labor Economics Research',
+      current_company: 'TalentXcel Research'
+    }
+  }));
+};
 
 const Articles = () => {
   const { user } = useAuth();
@@ -62,75 +90,100 @@ const Articles = () => {
   const { data: articles, isLoading } = useQuery({
     queryKey: ['articles', activeTab, selectedCategory, searchQuery],
     queryFn: async () => {
+      const foundationList = getFoundationArticles();
+
+      if (activeTab === 'my-articles') {
+        if (!user) return [];
+        let query = supabase
+          .from('posts')
+          .select('*')
+          .in('post_type', ['article', 'career_article'])
+          .or(`author_id.eq.${user.id},user_id.eq.${user.id}`)
+          .order('created_at', { ascending: false });
+
+        if (searchQuery.trim()) {
+          query = query.or(`headline.ilike.%${searchQuery}%,tagline.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+        }
+
+        const { data: postsData } = await query;
+        if (!postsData || postsData.length === 0) return [];
+
+        const authorIds = [...new Set(postsData.map(post => post.author_id))];
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, title, current_company')
+          .in('id', authorIds);
+        const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+
+        return postsData.map(post => ({
+          ...post,
+          profiles: profilesMap.get(post.author_id) || null
+        }));
+      }
+
+      // Tab 'all' or 'following' or categories
       let query = supabase
         .from('posts')
         .select('*')
         .in('post_type', ['article', 'career_article'])
         .order('created_at', { ascending: false });
 
-      // Filter by following if needed
-      if (activeTab === 'following' && subscriptions?.length) {
-        const followedAuthorIds = subscriptions.map(sub => sub.author_id);
-        query = query.in('author_id', followedAuthorIds).eq('status', 'published');
-      } else if (activeTab === 'my-articles' && user) {
-        // Show both published and saved drafts for the current user
-        query = query.or(`author_id.eq.${user.id},user_id.eq.${user.id}`);
+      if (user) {
+        query = query.or(`status.eq.published,author_id.eq.${user.id},user_id.eq.${user.id}`);
       } else {
-        if (user) {
-          query = query.or(`status.eq.published,author_id.eq.${user.id},user_id.eq.${user.id}`);
-        } else {
-          query = query.eq('status', 'published');
-        }
+        query = query.eq('status', 'published');
       }
 
-      // Filter by category
       if (selectedCategory !== 'all') {
         query = query.eq('article_category', selectedCategory);
       }
 
-      // Search filter
       if (searchQuery.trim()) {
         query = query.or(`headline.ilike.%${searchQuery}%,tagline.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
       }
 
-      const { data: postsData, error } = await query.limit(20);
-      if (error) throw error;
+      const { data: postsData } = await query.limit(20);
+      let combined: any[] = [];
 
-      if (!postsData || postsData.length === 0) return [];
+      if (postsData && postsData.length > 0) {
+        const authorIds = [...new Set(postsData.map(post => post.author_id))];
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, title, current_company')
+          .in('id', authorIds);
+        const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
 
-      // Get unique author IDs
-      const authorIds = [...new Set(postsData.map(post => post.author_id))];
+        combined = postsData.map(post => ({
+          ...post,
+          profiles: profilesMap.get(post.author_id) || null
+        }));
+      }
 
-      // Get profiles for all authors
-      const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
-        .select(`
-          id,
-          full_name,
-          profile_picture_url,
-          title,
-          current_company
-        `)
-        .in('id', authorIds);
+      // Filter foundation articles based on category and search query
+      let filteredFoundation = foundationList;
+      if (selectedCategory !== 'all') {
+        const catClean = selectedCategory.toLowerCase().replace(/_/g, ' ');
+        filteredFoundation = filteredFoundation.filter((a: any) => {
+          const aCat = (a.article_category || '').toLowerCase();
+          return aCat.includes(catClean) || catClean.includes(aCat);
+        });
+      }
 
-      if (profilesError) console.error('Profile fetch error:', profilesError);
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        filteredFoundation = filteredFoundation.filter((a: any) =>
+          a.headline.toLowerCase().includes(q) || a.tagline.toLowerCase().includes(q)
+        );
+      }
 
-      // Create a map of profiles by ID
-      const profilesMap = new Map(profilesData?.map(profile => [profile.id, profile]) || []);
-
-      // Combine posts with their profiles
-      return postsData.map(post => ({
-        ...post,
-        profiles: profilesMap.get(post.author_id) || null
-      }));
+      return [...combined, ...filteredFoundation];
     }
   });
 
-  // Get trending articles
   const { data: trendingArticles } = useQuery({
     queryKey: ['trendingArticles'],
     queryFn: async () => {
-      const { data: postsData, error } = await supabase
+      const { data: postsData } = await supabase
         .from('posts')
         .select('*')
         .eq('post_type', 'article')
@@ -138,8 +191,9 @@ const Articles = () => {
         .order('likes_count', { ascending: false })
         .limit(5);
 
-      if (error) throw error;
-      if (!postsData || postsData.length === 0) return [];
+      if (!postsData || postsData.length === 0) {
+        return getFoundationArticles().slice(0, 5);
+      }
 
       // Get unique author IDs
       const authorIds = [...new Set(postsData.map(post => post.author_id))];

@@ -270,58 +270,15 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
     return (
       <div className="space-y-4">
         {/* Compact Embedded Header */}
-        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-4 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-4 shadow-xs flex items-center justify-between">
           <div>
             <h2 className="text-base font-black tracking-tight text-foreground flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-blue-600" />
-              Creator Studio &amp; Reward Integrity
+              Creator Studio & Reward Integrity
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Target configuration: <strong>{CURRENT_CREATOR_TARGETS_CONFIG.version}</strong> • Period: <strong>{reportingPeriodName}</strong>
-            </p>
           </div>
-          <Badge variant={isPaidSubscriber ? "default" : "outline"} className="px-2.5 py-0.5 font-bold text-xs shrink-0">
-            {isPaidSubscriber ? (
-              <span className="flex items-center gap-1.5">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                Eligible ({tierDisplayName})
-              </span>
-            ) : (
-              <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-                <Lock className="h-3 w-3" />
-                Free Tier
-              </span>
-            )}
-          </Badge>
         </div>
-
-        {/* 2. SUBSCRIPTION ELIGIBILITY STATUS CARD */}
-        {!isPaidSubscriber && (
-          <Card className="border-amber-200 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-800/60">
-            <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-              <div className="flex items-start gap-2.5">
-                <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 shrink-0">
-                  <AlertCircle className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-xs text-amber-950 dark:text-amber-200">
-                    Free Tier Notice: Creator Reward Pool Payouts Require Active Subscription
-                  </h3>
-                  <p className="text-[11px] text-amber-800 dark:text-amber-300/90 mt-0.5">
-                    Payout distributions from the 30% net platform reward pool are unlocked exclusively for verified active subscribers (Starter ₹199, Pro ₹499, Premium ₹999).
-                  </p>
-                </div>
-              </div>
-              <Button 
-                onClick={() => navigate('/pro/subscription')} 
-                size="sm"
-                className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold text-xs rounded-xl shadow-xs shrink-0"
-              >
-                Upgrade to Career Pro
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+              
 
         {/* 3. AT-A-GLANCE METRIC CARDS (2x2 Grid) */}
         <div className="grid grid-cols-2 gap-2.5">
@@ -607,8 +564,7 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
                 </span>
               ) : (
                 <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-                  <Lock className="h-3.5 w-3.5" />
-                  Paid Subscription Required for Payouts
+                  <Sparkles className="h-3.5 w-3.5" /> Creator Pool
                 </span>
               )}
             </Badge>
@@ -617,32 +573,7 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
 
         {/* ============================================================================ */}
         {/* 2. SUBSCRIPTION ELIGIBILITY STATUS CARD */}
-        {/* ============================================================================ */}
-        {!isPaidSubscriber ? (
-          <Card className="border-amber-200 bg-amber-50/60 dark:bg-amber-950/20 dark:border-amber-800/60">
-            <CardContent className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2.5 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 shrink-0">
-                  <AlertCircle className="h-5 w-5" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-amber-950 dark:text-amber-200">
-                    Free Tier Notice: Creator Reward Pool Payouts Require Active Subscription
-                  </h3>
-                  <p className="text-xs text-amber-800 dark:text-amber-300/90 mt-0.5 max-w-2xl leading-relaxed">
-                    You can view performance targets and build your audience freely. Payout distributions from the 30% net platform reward pool are unlocked exclusively for verified active subscribers under our standard plans: <strong>Career Starter ₹199/mo</strong>, <strong>Career Pro ₹499/mo</strong>, or <strong>Career Premium ₹999/mo</strong>.
-                  </p>
-                </div>
-              </div>
-              <Button 
-                onClick={() => navigate('/pro/subscription')} 
-                className="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shrink-0 cursor-pointer"
-              >
-                View Career Plans &rarr;
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
+        {isPaidSubscriber && (
           <Card className="border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-xs">
             <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-3">
