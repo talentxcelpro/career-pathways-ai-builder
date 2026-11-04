@@ -156,13 +156,12 @@ export function CareerContentHub() {
       }
 
       const dbArticles = postsData.map(p => mapPostToArticle(p, profilesMap));
-      if (dbArticles.length < 4) {
-        const existingIds = new Set(dbArticles.map(a => a.id));
-        const fallbacks = getFallbackArticles().filter(a => !existingIds.has(a.id));
-        setArticles([...dbArticles, ...fallbacks]);
-      } else {
-        setArticles(dbArticles);
-      }
+      const existingIds = new Set(dbArticles.map(a => a.id));
+      const existingTitles = new Set(dbArticles.map(a => a.title.toLowerCase().trim()));
+      const fallbacks = getFallbackArticles().filter(a => 
+        !existingIds.has(a.id) && !existingTitles.has(a.title.toLowerCase().trim())
+      );
+      setArticles([...dbArticles, ...fallbacks]);
     } catch (error) {
       console.error('Error fetching articles:', error);
       setArticles(getFallbackArticles());
@@ -564,7 +563,17 @@ export function CareerContentHub() {
     if (article.status === 'draft') {
       return currentUserId && article.author_id === currentUserId;
     }
-    const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
+    let matchesCategory = selectedCategory === "All";
+    if (!matchesCategory) {
+      const normSelected = selectedCategory.toLowerCase().replace(/[\s_&\-]+/g, '');
+      const normArticleCat = (article.category || '').toLowerCase().replace(/[\s_&\-]+/g, '');
+      matchesCategory = 
+        normArticleCat === normSelected ||
+        normArticleCat.includes(normSelected) ||
+        normSelected.includes(normArticleCat) ||
+        (normSelected === 'interviewtips' && (normArticleCat.includes('interview') || (article.tags || []).some(t => t.toLowerCase().includes('interview')))) ||
+        (normSelected === 'resumehelp' && (normArticleCat.includes('resume') || normArticleCat.includes('cv') || (article.tags || []).some(t => t.toLowerCase().includes('resume'))));
+    }
     return matchesCategory;
   });
 
@@ -601,7 +610,7 @@ export function CareerContentHub() {
             <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/20 text-xs">
               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
               <FileText className="w-3.5 h-3.5 text-primary" />
-              <span className="font-semibold">{articles.length}+ Articles</span>
+              <span className="font-semibold">{articles.length} Published Articles</span>
             </div>
             <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-secondary/20 text-xs">
               <Award className="w-3.5 h-3.5 text-secondary" />
