@@ -104,6 +104,8 @@ const ArticleDetail = () => {
             article_category: foundFallback.articleCategory || (foundFallback.category ? foundFallback.category.toLowerCase().replace(/\s+/g, '_') : 'career_advice'),
             reading_time: foundFallback.readingTimeMinutes || parseInt(foundFallback.readTime) || 5,
             word_count: 850,
+            tags: foundFallback.tags || [],
+            key_takeaways: foundFallback.keyTakeaways || [],
             created_at: foundFallback.publishedAt || new Date().toISOString(),
             author_id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
             status: 'published',
@@ -302,8 +304,50 @@ const ArticleDetail = () => {
     );
   }
 
+  const schemaStructuredData = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.headline,
+    "description": article.tagline,
+    "image": [article.featured_image_url || "https://talentxcel.in/hero-character-full.webp"],
+    "datePublished": article.created_at,
+    "dateModified": article.created_at,
+    "author": [{
+      "@type": "Organization",
+      "name": "TalentXcel Services",
+      "url": "https://talentxcel.in/profile/talentxcelservices"
+    }],
+    "publisher": {
+      "@type": "Organization",
+      "name": "TalentXcel",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://talentxcel.in/assets/talentxcel-brand-logo.png"
+      }
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://talentxcel.in/network/articles/${article.slug || article.id}`
+    },
+    "keywords": (article.tags || []).join(', ') || "Career Intelligence, Executive Leadership",
+    "articleSection": getCategoryLabel(article.article_category)
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100/80">
+      <SEOHead
+        title={`${article.headline} · TalentXcel`}
+        description={article.tagline || article.headline}
+        image={article.featured_image_url || '/hero-character-full.webp'}
+        url={`/network/articles/${article.slug || article.id}`}
+        type="article"
+        author="TalentXcel Services"
+        publishedTime={article.created_at}
+        modifiedTime={article.created_at}
+        canonical={`https://talentxcel.in/network/articles/${article.slug || article.id}`}
+        keywords={article.tags || ['Career', 'Executive Leadership', 'Interview Tips', 'Resume Help']}
+        structuredData={schemaStructuredData}
+      />
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <div className="mb-6">
@@ -451,6 +495,26 @@ const ArticleDetail = () => {
             </div>
 
             <Separator className="my-8" />
+
+            {/* AEO / GEO Key Takeaways Box */}
+            {article.key_takeaways && article.key_takeaways.length > 0 && (
+              <div className="mb-8 p-5 rounded-2xl bg-gradient-to-br from-blue-50/80 to-indigo-50/50 dark:from-blue-950/30 dark:to-indigo-950/20 border border-blue-200/80 dark:border-blue-800/60 shadow-xs">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-blue-900 dark:text-blue-200">
+                    Executive Summary &amp; Key Takeaways
+                  </h3>
+                </div>
+                <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-300">
+                  {article.key_takeaways.map((takeaway: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                      <span>{takeaway}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {/* Article Content */}
             <div className="prose prose-slate dark:prose-invert max-w-none space-y-4 text-base sm:text-lg leading-relaxed text-slate-800 dark:text-slate-200">
