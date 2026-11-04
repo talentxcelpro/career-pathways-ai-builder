@@ -490,19 +490,19 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
         onClose={() => setShowModulesLauncher(false)} 
       />
 
-      {/* Apple-Style Sleek Mobile Bottom Tab Bar */}
+      {/* Apple-Style Sleek Mobile Bottom Tab Bar (Ultra-Compact) */}
       <nav 
         aria-label="Mobile Navigation"
         className={cn(
           "fixed bottom-0 left-0 right-0 z-[999]",
           "bg-white/95 dark:bg-[#121214]/95 backdrop-blur-xl",
           "border-t border-slate-200/80 dark:border-white/10",
-          "shadow-[0_-1px_4px_rgba(0,0,0,0.04)]",
-          "pb-[max(0.15rem,env(safe-area-inset-bottom))]",
+          "shadow-[0_-1px_3px_rgba(0,0,0,0.03)]",
+          "pb-[env(safe-area-inset-bottom)]",
           className
         )}
       >
-        <div className="flex items-center justify-around px-1 max-w-md mx-auto h-[44px]">
+        <div className="flex items-center justify-around px-1 max-w-md mx-auto h-[38px]">
           {navigationItems.map((item, index) => {
             const Icon = item.icon;
             return (
@@ -512,26 +512,26 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
                 onClick={item.action}
                 aria-label={item.label}
                 className={cn(
-                  "flex flex-col items-center justify-center flex-1 h-full py-0.5 transition-colors touch-manipulation select-none outline-none group",
+                  "flex flex-col items-center justify-center flex-1 h-full transition-colors touch-manipulation select-none outline-none group",
                   item.isActive
                     ? "text-blue-600 dark:text-blue-400 font-bold"
                     : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
                 {item.isPrimary ? (
-                  <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full h-7 w-7 flex items-center justify-center shadow-xs group-active:scale-95 transition-transform -mt-0.5">
-                    <Icon className="h-3.5 w-3.5 stroke-[2.2]" />
+                  <div className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-xs group-active:scale-95 transition-transform">
+                    <Icon className="h-3 w-3 stroke-[2.2]" />
                   </div>
                 ) : (
                   <div className={cn(
-                    "flex flex-col items-center justify-center px-2 py-0.5 rounded-lg transition-all",
-                    item.isActive && "bg-blue-50/80 dark:bg-blue-950/40"
+                    "flex flex-col items-center justify-center px-1.5 py-0.5 rounded-md transition-all",
+                    item.isActive && "bg-blue-50/90 dark:bg-blue-950/50"
                   )}>
                     <Icon className={cn(
-                      "h-[17px] w-[17px] transition-transform group-active:scale-90",
+                      "h-[15px] w-[15px] transition-transform group-active:scale-90",
                       item.isActive ? "stroke-[2.2]" : "stroke-[1.75]"
                     )} />
-                    <span className="text-[9px] tracking-tight leading-none mt-0.5 font-medium">
+                    <span className="text-[8px] tracking-tight leading-none mt-0.5 font-medium">
                       {item.label}
                     </span>
                   </div>

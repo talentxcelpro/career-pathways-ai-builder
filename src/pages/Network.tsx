@@ -155,28 +155,28 @@ const Network: React.FC = () => {
 
   return (
     <MobileNavWrapper>
-      <div className="min-h-screen bg-slate-50/50 dark:bg-background/95 pb-20">
+      <div className="min-h-screen bg-slate-50/50 dark:bg-background/95 pb-16">
       {seoHelmet}
       
       {/* One Tap Sign In Status for guests */}
       {!user && (
-        <div className="max-w-7xl mx-auto px-4 pt-4">
+        <div className="max-w-7xl mx-auto px-4 pt-2">
           <GoogleOneTapStatus />
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 space-y-2.5">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-1.5 sm:py-3 space-y-2">
 
         {/* ============================================================================ */}
         {/* SUB-NAVIGATION PILL TAB BAR (ALL 9 MODULES IN SAME UNIFIED THEME)            */}
         {/* ============================================================================ */}
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           {/* ============================================================================ */}
-          {/* MOBILE ONLY: TOP APP BAR + HEADER SECTION (Exact match to Image 3)           */}
+          {/* MOBILE ONLY: COMPACT TOP APP BAR WITH INLINE MODULES LAUNCHER                */}
           {/* ============================================================================ */}
-          <div className="md:hidden space-y-2 mb-2.5">
-            {/* Top Navigation Bar: Hamburger ☰ | TalentXcel Brand | 🔍 Search | 🔔 Bell | Avatar */}
-            <div className="flex items-center justify-between px-3 py-2 -mx-3 -mt-2.5 bg-white/95 dark:bg-card/95 backdrop-blur-md border-b border-slate-200/80 dark:border-border/60 sticky top-0 z-40">
+          <div className="md:hidden mb-2">
+            {/* Top Navigation Bar: Hamburger ☰ | TalentXcel Brand | MODULES [⊞] | 🔔 | Avatar */}
+            <div className="flex items-center justify-between px-3 py-1.5 -mx-2.5 -mt-1.5 bg-white/95 dark:bg-card/95 backdrop-blur-md border-b border-slate-200/80 dark:border-border/60 sticky top-0 z-40">
               <div className="flex items-center gap-2">
                 <button 
                   type="button"
@@ -187,23 +187,42 @@ const Network: React.FC = () => {
                   <Menu className="h-5 w-5" />
                 </button>
                 <div className="flex items-center gap-1.5">
-                  <TalentXcelLogo iconSize={22} textSize="text-base font-extrabold" theme="light" />
-                  <span className="text-slate-400 font-normal text-xs tracking-tight">| Network</span>
+                  <TalentXcelLogo iconSize={20} textSize="text-sm font-extrabold" theme="light" />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    const el = document.getElementById('mobile-network-search-input');
-                    el?.focus();
-                  }}
-                  className="p-1.5 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted rounded-full transition-colors"
-                  aria-label="Search network"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
+              <div className="flex items-center gap-1.5">
+                {/* Modules Drawer Trigger Button: MODULES [⊞] */}
+                <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
+                  <SheetTrigger asChild>
+                    <button 
+                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/80 font-bold text-[11px] shadow-2xs transition-all active:scale-95"
+                      aria-label="Open Network Modules"
+                    >
+                      <span>MODULES</span>
+                      <LayoutGrid className="h-3 w-3" />
+                    </button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
+                    <SheetHeader className="mb-2 text-left">
+                      <SheetTitle className="text-xs font-extrabold flex items-center justify-between uppercase tracking-wider text-slate-800 dark:text-slate-100">
+                        <div className="flex items-center gap-1.5">
+                          <Layers className="h-3.5 w-3.5 text-blue-600" />
+                          <span>Network Navigation</span>
+                        </div>
+                      </SheetTitle>
+                    </SheetHeader>
+                    <NetworkSidebarNav 
+                      activeTab={activeTab} 
+                      onTabChange={(tab) => {
+                        handleTabChange(tab);
+                        setMobileDrawerOpen(false);
+                      }} 
+                      connectionCount={537} 
+                    />
+                  </SheetContent>
+                </Sheet>
+
                 <div className="relative text-slate-600 dark:text-slate-300">
                   <NotificationBell />
                 </div>
@@ -217,49 +236,6 @@ const Network: React.FC = () => {
                   </AvatarFallback>
                 </Avatar>
               </div>
-            </div>
-
-            {/* Page Title Row: "Professional Network" + Subtitle + MODULES [⊞] Button */}
-            <div className="flex items-center justify-between pt-0.5 px-0.5">
-              <div>
-                <h1 className="text-base font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-                  Professional <span className="text-blue-600 dark:text-blue-500">Network</span>
-                </h1>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium leading-none mt-0.5">
-                  Connect • Share • Learn • Grow
-                </p>
-              </div>
-
-              {/* Modules Drawer Trigger Button: MODULES [⊞] */}
-              <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
-                <SheetTrigger asChild>
-                  <button 
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/80 font-bold text-xs shadow-2xs transition-all active:scale-95"
-                    aria-label="Open Network Modules"
-                  >
-                    <span className="tracking-wide">MODULES</span>
-                    <LayoutGrid className="h-3.5 w-3.5" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
-                  <SheetHeader className="mb-2 text-left">
-                    <SheetTitle className="text-xs font-extrabold flex items-center justify-between uppercase tracking-wider text-slate-800 dark:text-slate-100">
-                      <div className="flex items-center gap-1.5">
-                        <Layers className="h-3.5 w-3.5 text-blue-600" />
-                        <span>Network Navigation</span>
-                      </div>
-                    </SheetTitle>
-                  </SheetHeader>
-                  <NetworkSidebarNav 
-                    activeTab={activeTab} 
-                    onTabChange={(tab) => {
-                      handleTabChange(tab);
-                      setMobileDrawerOpen(false);
-                    }} 
-                    connectionCount={537} 
-                  />
-                </SheetContent>
-              </Sheet>
             </div>
           </div>
 
