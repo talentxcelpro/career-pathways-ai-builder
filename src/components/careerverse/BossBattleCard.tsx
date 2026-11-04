@@ -13,7 +13,7 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
   onOpenWorkspace
 }) => {
   const currentStage = battle.user_participation?.current_stage || 1;
-  const rawStages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+  const stages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-[#101E3B] border border-white/10 p-6 md:p-7 shadow-2xl backdrop-blur-xl">
@@ -45,7 +45,7 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
         <div className="md:col-span-4 flex justify-center">
           <div className="relative w-44 h-44 sm:w-48 sm:h-48 rounded-2xl bg-gradient-to-tr from-[#7047F5] via-[#278DFF] to-[#36D9F5] p-1 shadow-2xl shadow-[#7047F5]/40 group">
             <div className="w-full h-full rounded-[14px] bg-[#071329] overflow-hidden flex items-center justify-center relative">
-              {/* Animated Cyber Dragon Visual */}
+              {/* Animated Cyber Dragon Visual (SVG Art matching reference screenshot) */}
               <svg
                 viewBox="0 0 200 200"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
@@ -128,16 +128,14 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
 
           {/* 4 Pipeline Stages */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-            {rawStages.map((stageItem: any, idx: number) => {
+            {stages.map((stageName, idx) => {
               const stageNum = idx + 1;
               const isPast = stageNum < currentStage;
               const isCurrent = stageNum === currentStage;
-              const stageName = typeof stageItem === 'string' ? stageItem : (stageItem?.name || `Stage ${stageNum}`);
-              const stageKey = typeof stageItem === 'string' ? `${stageItem}_${idx}` : (stageItem?.id ? `stage_${stageItem.id}` : `stage_${idx}`);
 
               return (
                 <div
-                  key={stageKey}
+                  key={stageName}
                   className={`flex flex-col items-center p-2.5 rounded-xl border text-center transition-all ${
                     isPast
                       ? 'bg-[#20D994]/15 border-[#20D994]/50 text-[#20D994]'
