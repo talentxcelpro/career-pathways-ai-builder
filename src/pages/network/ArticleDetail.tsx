@@ -1,3 +1,5 @@
+import { SEOHead } from '@/components/seo/SEOHead';
+import { Sparkles } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
