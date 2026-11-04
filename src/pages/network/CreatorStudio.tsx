@@ -270,13 +270,22 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
     return (
       <div className="space-y-4">
         {/* Compact Embedded Header */}
-        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-4 shadow-xs flex items-center justify-between">
+        <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl p-3.5 sm:p-4 shadow-xs flex items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-black tracking-tight text-foreground flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-blue-600" />
               Creator Studio & Reward Integrity
             </h2>
           </div>
+
+          <Button
+            onClick={() => navigate('/pro/subscription')}
+            size="sm"
+            className="rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-xs flex items-center gap-1.5 h-8 shrink-0 cursor-pointer"
+          >
+            <Zap className="h-3.5 w-3.5 text-amber-300" />
+            <span>Upgrade to Pro</span>
+          </Button>
         </div>
               
 
@@ -354,14 +363,28 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
 
           <TabsContent value="targets" className="mt-3 space-y-3">
             <Card className="border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-xs">
-              <CardHeader className="p-4 pb-2">
-                <CardTitle className="text-sm font-bold flex items-center gap-2">
-                  <Target className="h-4 w-4 text-primary" />
-                  Monthly Targets ({reportingPeriodName})
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Target profile: <strong>{CURRENT_CREATOR_TARGETS_CONFIG.version}</strong> • Tier: <strong>{currentTier.toUpperCase()}</strong>
-                </CardDescription>
+              <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between gap-2">
+                <div>
+                  <CardTitle className="text-sm font-bold flex items-center gap-2">
+                    <Target className="h-4 w-4 text-primary" />
+                    Monthly Targets ({reportingPeriodName})
+                  </CardTitle>
+                  <CardDescription className="text-xs mt-0.5">
+                    Tier: <strong className="text-foreground">{currentTier.toUpperCase()}</strong>
+                  </CardDescription>
+                </div>
+
+                {!isPaidSubscriber && (
+                  <Button
+                    onClick={() => navigate('/pro/subscription')}
+                    variant="outline"
+                    size="sm"
+                    className="h-7 text-xs font-bold rounded-lg border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 shrink-0 cursor-pointer"
+                  >
+                    <Zap className="h-3 w-3 mr-1 text-amber-500" />
+                    Upgrade Tier &rarr;
+                  </Button>
+                )}
               </CardHeader>
               <CardContent className="p-4 pt-2 space-y-3">
                 <MetricTargetProgress
@@ -568,6 +591,17 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
                 </span>
               )}
             </Badge>
+
+            {!isPaidSubscriber && (
+              <Button
+                onClick={() => navigate('/pro/subscription')}
+                size="sm"
+                className="rounded-xl text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-xs flex items-center gap-1.5 h-8 cursor-pointer"
+              >
+                <Zap className="h-3.5 w-3.5 text-amber-300" />
+                <span>Upgrade to Pro</span>
+              </Button>
+            )}
           </div>
         </div>
 
@@ -693,12 +727,20 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
                       Monthly Performance Targets ({reportingPeriodName})
                     </CardTitle>
                     <CardDescription className="text-xs">
-                      Versioned target profile: <strong>{CURRENT_CREATOR_TARGETS_CONFIG.version}</strong> • Tier: <strong>{currentTier.toUpperCase()}</strong>
+                      Tier: <strong className="text-foreground">{currentTier.toUpperCase()}</strong>
                     </CardDescription>
                   </div>
-                  <Badge variant="outline" className="text-[10px] text-muted-foreground">
-                    Config Version: {CURRENT_CREATOR_TARGETS_CONFIG.version}
-                  </Badge>
+                  {!isPaidSubscriber && (
+                    <Button
+                      onClick={() => navigate('/pro/subscription')}
+                      variant="outline"
+                      size="sm"
+                      className="h-7 text-xs font-bold rounded-lg border-blue-200 text-blue-600 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 cursor-pointer"
+                    >
+                      <Zap className="h-3 w-3 mr-1 text-amber-500" />
+                      Upgrade Tier &rarr;
+                    </Button>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
