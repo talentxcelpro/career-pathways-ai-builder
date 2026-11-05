@@ -76,7 +76,7 @@ export const DailyQuestsCard: React.FC<DailyQuestsProps> = ({
                       : 'bg-[#071329] border-white/5 hover:border-[#36D9F5]/40 text-white hover:bg-[#071329]/90'
                   }`}
                 >
-                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1 pr-2">
                     {isCompleted ? (
                       <CheckCircle2 className="w-4 h-4 text-[#20D994] flex-shrink-0" />
                     ) : (

@@ -329,9 +329,9 @@ export const ProSubscription: React.FC = () => {
             <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full text-sm text-emerald-800">
               <Crown className="w-4 h-4 text-emerald-600" />
               <span>Current Active Plan: <strong className="capitalize">{currentTier === 'basic' ? 'Starter' : currentTier}</strong></span>
-              {quota && (
+              {quota?.ats_check && (
                 <span className="text-xs text-emerald-700">
-                  (ATS Checks Used: {quota.ats_check.used}{quota.ats_check.limit > 0 ? `/${quota.ats_check.limit}` : ' (Unlimited)'})
+                  (ATS Checks Used: {Number(quota.ats_check.used || 0)}{Number(quota.ats_check.limit || 0) > 0 ? `/${quota.ats_check.limit}` : ' (Unlimited)'})
                 </span>
               )}
             </div>
@@ -481,3 +481,4 @@ export const ProSubscription: React.FC = () => {
     </div>
   );
 };
+export default ProSubscription;

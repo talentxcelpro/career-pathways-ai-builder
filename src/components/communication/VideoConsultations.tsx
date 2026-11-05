@@ -117,7 +117,7 @@ const VideoConsultations = () => {
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                Next available: {format(expert.nextAvailable, 'MMM dd, yyyy')}
+                Next available: {safeFormatDate(expert.nextAvailable, 'MMM dd, yyyy', 'Available soon')}
               </div>
               <Button 
                 className="w-full"
@@ -259,7 +259,7 @@ const VideoConsultations = () => {
                     <div>
                       <h4 className="font-medium text-foreground">{consultation.title}</h4>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(consultation.scheduled_at), 'PPp')}
+                        {safeFormatDate(consultation.scheduled_at, 'PPp', 'Scheduled time')}
                       </p>
                     </div>
                   </div>

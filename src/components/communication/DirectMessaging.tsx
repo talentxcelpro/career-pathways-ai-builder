@@ -10,6 +10,24 @@ import { useCommunication } from "@/hooks/useCommunication";
 import { useAuth } from "@/contexts/AuthContext";
 import { format } from "date-fns";
 
+
+function safeFormatDate(dateVal: any, pattern: string, fallback: string = ''): string {
+  if (!dateVal) return fallback;
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return fallback;
+    return format(d, pattern);
+  } catch {
+    return fallback;
+  }
+}
+
+function getLatestMessage(conv: any): any {
+  if (!conv?.messages) return null;
+  if (Array.isArray(conv.messages)) return conv.messages[0] || null;
+  return conv.messages;
+}
+
 const DirectMessaging = () => {
   const { user } = useAuth();
   const { conversations, messages, sendMessage, isLoading } = useCommunication();
@@ -103,7 +121,7 @@ const DirectMessaging = () => {
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground truncate">
-                      {conversation.messages?.content || 'No messages yet'}
+                      {getLatestMessage(conversation)?.content || 'No messages yet'}
                     </p>
                   </div>
                   <Badge variant="secondary" className="ml-2">
@@ -162,7 +180,7 @@ const DirectMessaging = () => {
                       >
                         <p className="text-sm">{message.content}</p>
                         <p className={`text-xs mt-1 opacity-70`}>
-                          {format(new Date(message.created_at), 'HH:mm')}
+                          {safeFormatDate(message.created_at, 'HH:mm')}
                         </p>
                       </div>
                     </div>

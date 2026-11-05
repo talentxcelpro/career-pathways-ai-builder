@@ -532,7 +532,7 @@ export const CareerVersePage: React.FC = () => {
           />
 
           {/* 3-Column Core Widgets Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
             {/* Player Character HUD (Authentic Evidence, No Truncation, 5-Axis Attributes) */}
             <PlayerCharacterHUD
               profile={unifiedProfile}

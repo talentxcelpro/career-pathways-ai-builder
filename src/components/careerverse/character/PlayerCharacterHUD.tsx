@@ -139,7 +139,7 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
           </div>
 
           {/* Full headline with 2-line clamp to avoid awkward single-line truncation */}
-          <p className="text-xs sm:text-sm font-semibold text-[#36D9F5] line-clamp-2 leading-snug mt-1">
+          <p className="text-xs sm:text-sm font-semibold text-[#36D9F5] line-clamp-2 leading-snug mt-1 break-words">
             {profile.headline || 'Career Explorer & Platform Contributor'}
           </p>
           <p className="text-xs text-slate-300 font-medium truncate mt-0.5">
@@ -150,16 +150,16 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
 
       {/* Real XP Progression Bar */}
       <div className="flex flex-col gap-1.5 z-10">
-        <div className="flex items-center justify-between text-xs sm:text-sm">
+        <div className="flex items-center justify-between gap-2 text-xs sm:text-sm">
           <div className="flex items-center gap-1.5">
-            <span className="text-slate-200 font-semibold">Level Progression</span>
+            <span className="text-slate-200 font-semibold whitespace-nowrap">Level Progression</span>
             {profile.isGuest && (
               <span className="text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-medium">
                 Preview
               </span>
             )}
           </div>
-          <span className="font-bold text-white font-mono text-xs sm:text-sm">
+          <span className="font-bold text-white font-mono text-xs sm:text-sm whitespace-nowrap">
             {currentXP.toLocaleString()} / {levelCeilXP.toLocaleString()} XP
           </span>
         </div>
