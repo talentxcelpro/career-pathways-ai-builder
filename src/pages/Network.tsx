@@ -10,7 +10,7 @@ import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnectAI";
 import { GamificationDashboard } from "@/components/gamification/GamificationDashboard";
-import { RealTimeReferralDashboard } from "@/components/referral/RealTimeReferralDashboard";
+import { ViralGrowthEngineDashboard } from "@/components/referral/ViralGrowthEngineDashboard";
 import { 
   Users, 
   Sparkles, 
@@ -360,7 +360,7 @@ const Network: React.FC = () => {
           <TabsContent value="refer-and-earn" className="mt-0">
             {renderUniformLayout(
               <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Refer &amp; Earn...</div>}>
-                <RealTimeReferralDashboard />
+                <ViralGrowthEngineDashboard />
               </React.Suspense>
             )}
           </TabsContent>
