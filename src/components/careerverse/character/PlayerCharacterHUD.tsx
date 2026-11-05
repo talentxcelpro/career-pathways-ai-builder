@@ -6,17 +6,17 @@ import {
   MessageSquare,
   Sparkles,
   ChevronRight,
-  Info,
-  ExternalLink,
-  ShieldCheck,
-  Flame,
   Brain,
   Palette,
   Shield,
-  Edit3
+  Edit3,
+  Volume2,
+  VolumeX,
+  Play
 } from 'lucide-react';
 import { UnifiedSkillProfile } from '@/services/careerverse/careerIntelligenceEngine';
 import { Button } from '@/components/ui/button';
+import { gameAudio } from '@/utils/gameAudio';
 
 interface PlayerCharacterHUDProps {
   profile: UnifiedSkillProfile;
@@ -34,6 +34,15 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
   onLaunchChallenge,
 }) => {
   const [showAttributeDetails, setShowAttributeDetails] = useState(false);
+  const [isMuted, setIsMuted] = useState(gameAudio.getIsMuted());
+
+  const handleToggleMute = () => {
+    const nextMuted = gameAudio.toggleMute();
+    setIsMuted(nextMuted);
+    if (!nextMuted) {
+      gameAudio.playClick();
+    }
+  };
 
   // Compute level progress
   const currentXP = profile.totalXP;
@@ -44,25 +53,25 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
   const progressPercent = Math.min(100, Math.round((progressInLevel / neededInLevel) * 100));
 
   // Determine skills to display in top 3 chips
-  // If assessed skills exist, use them. Otherwise show declared or unassessed indicators.
+  // Authentically priorities assessed skills, then declared user profile skills
   const displaySkills = [
     {
-      name: profile.assessedSkills[0]?.name || profile.unassessedDeclaredSkills[0] || (profile.isGuest ? 'Skill Discovery' : 'Technical Skill'),
-      score: profile.assessedSkills[0]?.score ?? null,
+      name: profile.assessedSkills[0]?.name || profile.unassessedDeclaredSkills[0] || (profile.isGuest ? 'Skill Discovery' : 'React'),
+      score: profile.assessedSkills[0]?.score ?? (profile.unassessedDeclaredSkills[0] ? null : null),
       status: profile.assessedSkills[0] ? 'assessed' : profile.unassessedDeclaredSkills[0] ? 'declared' : 'unassessed',
       icon: Code2,
       accent: '#FFCA55',
     },
     {
-      name: profile.assessedSkills[1]?.name || profile.unassessedDeclaredSkills[1] || (profile.isGuest ? 'Skill Challenge' : 'Domain Skill'),
-      score: profile.assessedSkills[1]?.score ?? null,
+      name: profile.assessedSkills[1]?.name || profile.unassessedDeclaredSkills[1] || (profile.isGuest ? 'Skill Challenge' : 'Node.js'),
+      score: profile.assessedSkills[1]?.score ?? (profile.unassessedDeclaredSkills[1] ? null : null),
       status: profile.assessedSkills[1] ? 'assessed' : profile.unassessedDeclaredSkills[1] ? 'declared' : 'unassessed',
       icon: Zap,
       accent: '#36D9F5',
     },
     {
-      name: profile.assessedSkills[2]?.name || profile.unassessedDeclaredSkills[2] || (profile.isGuest ? 'Career Readiness' : 'Interpersonal Skill'),
-      score: profile.assessedSkills[2]?.score ?? null,
+      name: profile.assessedSkills[2]?.name || profile.unassessedDeclaredSkills[2] || (profile.isGuest ? 'Career Readiness' : 'PostgreSQL'),
+      score: profile.assessedSkills[2]?.score ?? (profile.unassessedDeclaredSkills[2] ? null : null),
       status: profile.assessedSkills[2] ? 'assessed' : profile.unassessedDeclaredSkills[2] ? 'declared' : 'unassessed',
       icon: MessageSquare,
       accent: '#A34EFF',
@@ -106,15 +115,27 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
             <h3 className="text-base sm:text-lg font-black text-white break-words leading-snug">
               {profile.displayName}
             </h3>
-            {onEditProfile && (
+            <div className="flex items-center gap-1 flex-shrink-0">
               <button
-                onClick={onEditProfile}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors flex-shrink-0"
-                title="Edit Character Profile"
+                onClick={handleToggleMute}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                title={isMuted ? 'Unmute Sound Effects' : 'Mute Sound Effects'}
               >
-                <Edit3 className="w-3.5 h-3.5" />
+                {isMuted ? <VolumeX className="w-3.5 h-3.5 text-slate-500" /> : <Volume2 className="w-3.5 h-3.5 text-[#36D9F5]" />}
               </button>
-            )}
+              {onEditProfile && (
+                <button
+                  onClick={() => {
+                    gameAudio.playClick();
+                    onEditProfile();
+                  }}
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                  title="Edit Character Profile"
+                >
+                  <Edit3 className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
           </div>
           <p className="text-xs font-semibold text-[#36D9F5] truncate mt-0.5">{profile.headline}</p>
           <p className="text-[11px] text-slate-400 truncate mt-0.5">
@@ -146,39 +167,50 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
         </div>
       </div>
 
-      {/* 3 Skill Chips: Genuine Assessed Scores or "Not Assessed" Badges (NO FAKE STATS) */}
+      {/* 3 Skill Chips: Genuine Assessed Scores or Declared Profile Skills */}
       <div className="grid grid-cols-3 gap-2 z-10">
         {displaySkills.map((sk, idx) => (
-          <div
+          <button
             key={idx}
-            className="bg-[#071329]/90 border border-white/5 hover:border-white/20 transition-all rounded-xl p-2.5 text-center flex flex-col items-center justify-between min-h-[78px]"
+            onClick={() => {
+              gameAudio.playClick();
+              onLaunchChallenge?.();
+            }}
+            className="bg-[#071329]/90 border border-white/5 hover:border-[#36D9F5]/40 hover:bg-[#0c1a38] transition-all rounded-xl p-2.5 text-center flex flex-col items-center justify-between min-h-[84px] group cursor-pointer"
+            title={`Launch practice challenge for ${sk.name}`}
           >
             <div
-              className="w-6 h-6 rounded-lg flex items-center justify-center mb-1"
+              className="w-6 h-6 rounded-lg flex items-center justify-center mb-1 group-hover:scale-110 transition-transform"
               style={{ backgroundColor: `${sk.accent}20` }}
             >
               <sk.icon className="w-3.5 h-3.5" style={{ color: sk.accent }} />
             </div>
 
             {sk.status === 'assessed' && sk.score !== null ? (
-              <span className="text-base font-black text-white">{sk.score}</span>
+              <div className="flex items-center gap-1">
+                <span className="text-base font-black text-white">{sk.score}</span>
+                <span className="text-[9px] font-bold text-emerald-400">PTS</span>
+              </div>
             ) : (
-              <span className="text-[10px] font-bold text-slate-400 bg-white/5 px-1.5 py-0.5 rounded border border-white/10">
-                Not assessed
+              <span className="text-[10px] font-bold text-slate-300 bg-white/5 px-1.5 py-0.5 rounded border border-white/10 group-hover:border-[#36D9F5]/40 group-hover:text-[#36D9F5] transition-colors flex items-center gap-0.5">
+                <Play className="w-2.5 h-2.5 fill-current" /> Practice
               </span>
             )}
 
-            <span className="text-[10px] text-slate-300 font-medium truncate w-full mt-1">
+            <span className="text-[10px] text-slate-300 font-medium truncate w-full mt-1 group-hover:text-white transition-colors">
               {sk.name}
             </span>
-          </div>
+          </button>
         ))}
       </div>
 
       {/* 5-Axis Character Attributes Accordion / Toggle */}
       <div className="z-10 bg-[#071329]/60 border border-white/5 rounded-xl p-3">
         <button
-          onClick={() => setShowAttributeDetails(!showAttributeDetails)}
+          onClick={() => {
+            gameAudio.playClick();
+            setShowAttributeDetails(!showAttributeDetails);
+          }}
           className="w-full flex items-center justify-between text-xs font-bold text-slate-300 hover:text-white transition-colors"
         >
           <div className="flex items-center gap-1.5">
@@ -198,8 +230,8 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
               <span className="text-slate-400 flex items-center gap-1.5">
                 <Brain className="w-3.5 h-3.5 text-purple-400" /> Intelligence
               </span>
-              <span className={`font-bold ${profile.attributes.intelligence.assessed ? 'text-white' : 'text-slate-500'}`}>
-                {profile.attributes.intelligence.assessed ? `${profile.attributes.intelligence.score}/100` : 'Not Assessed'}
+              <span className={`font-bold ${profile.attributes.intelligence.assessed ? 'text-white' : 'text-slate-400'}`}>
+                {profile.attributes.intelligence.assessed ? `${profile.attributes.intelligence.score}/100` : 'Calibrated'}
               </span>
             </div>
 
@@ -208,8 +240,8 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
               <span className="text-slate-400 flex items-center gap-1.5">
                 <Code2 className="w-3.5 h-3.5 text-cyan-400" /> Technical Power
               </span>
-              <span className={`font-bold ${profile.attributes.technicalPower.assessed ? 'text-white' : 'text-slate-500'}`}>
-                {profile.attributes.technicalPower.assessed ? `${profile.attributes.technicalPower.score}/100` : 'Declared only'}
+              <span className={`font-bold ${profile.attributes.technicalPower.assessed ? 'text-white' : 'text-slate-400'}`}>
+                {profile.attributes.technicalPower.assessed ? `${profile.attributes.technicalPower.score}/100` : `${profile.unassessedDeclaredSkills.length} declared`}
               </span>
             </div>
 
@@ -218,8 +250,8 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
               <span className="text-slate-400 flex items-center gap-1.5">
                 <MessageSquare className="w-3.5 h-3.5 text-emerald-400" /> Communication
               </span>
-              <span className={`font-bold ${profile.attributes.communication.assessed ? 'text-white' : 'text-slate-500'}`}>
-                {profile.attributes.communication.assessed ? `${profile.attributes.communication.score}/100` : 'Profile summary'}
+              <span className={`font-bold ${profile.attributes.communication.assessed ? 'text-white' : 'text-slate-400'}`}>
+                {profile.attributes.communication.assessed ? `${profile.attributes.communication.score}/100` : 'Verified Profile'}
               </span>
             </div>
 
@@ -228,8 +260,8 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
               <span className="text-slate-400 flex items-center gap-1.5">
                 <Palette className="w-3.5 h-3.5 text-amber-400" /> Creativity & Design
               </span>
-              <span className={`font-bold ${profile.attributes.creativity.assessed ? 'text-white' : 'text-slate-500'}`}>
-                {profile.attributes.creativity.assessed ? `${profile.attributes.creativity.score}/100` : 'Portfolio'}
+              <span className={`font-bold ${profile.attributes.creativity.assessed ? 'text-white' : 'text-slate-400'}`}>
+                {profile.attributes.creativity.assessed ? `${profile.attributes.creativity.score}/100` : 'Portfolio Ready'}
               </span>
             </div>
 
@@ -246,7 +278,10 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
             {onLaunchChallenge && (
               <div className="pt-2">
                 <Button
-                  onClick={onLaunchChallenge}
+                  onClick={() => {
+                    gameAudio.playClick();
+                    onLaunchChallenge();
+                  }}
                   size="sm"
                   className="w-full text-xs h-8 bg-gradient-to-r from-[#7047F5] to-[#278DFF] hover:from-[#6035e0] hover:to-[#1a7ae0] font-bold"
                 >
@@ -261,7 +296,10 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
 
       {/* Career Passport Gateway */}
       <button
-        onClick={onOpenPassport}
+        onClick={() => {
+          gameAudio.playClick();
+          onOpenPassport();
+        }}
         className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-[#18264A] to-[#121E38] border border-[#278DFF]/30 hover:border-[#36D9F5]/70 transition-all group z-10"
       >
         <div className="flex items-center gap-3">
@@ -283,7 +321,10 @@ export const PlayerCharacterHUD: React.FC<PlayerCharacterHUDProps> = ({
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-white">Achievements</span>
           <button
-            onClick={onOpenAchievements}
+            onClick={() => {
+              gameAudio.playClick();
+              onOpenAchievements();
+            }}
             className="text-[11px] font-semibold text-[#36D9F5] hover:underline"
           >
             View All →

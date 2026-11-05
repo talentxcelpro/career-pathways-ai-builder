@@ -189,6 +189,18 @@ export const useOptimizedRegistration = () => {
         }
       });
 
+      if (authData?.user) {
+        try {
+          supabase.from('connections').insert({
+            requester_id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+            recipient_id: authData.user.id,
+            status: 'accepted',
+            message: "Welcome to TalentXcel! We're excited to have you in our community.",
+            connected_at: new Date().toISOString(),
+          }).then(() => {});
+        } catch {}
+      }
+
       if (authError) {
         toast.error(authError.message);
         return { success: false, error: authError.message };

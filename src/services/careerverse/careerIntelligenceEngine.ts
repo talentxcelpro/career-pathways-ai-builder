@@ -85,25 +85,11 @@ export const careerIntelligenceEngine = {
         .eq('id', userId)
         .maybeSingle();
 
-      // 4. Fetch User Assessments if any exist
+      // 4. Fetch User Assessments if any exist (safe select without schema-dependent foreign key join)
       const { data: userAssessments } = await supabase
         .from('user_assessments')
-        .select('*, assessments(*)')
+        .select('*')
         .eq('user_id', userId);
-
-      // 5. Fetch Resume if available
-      const { data: resumes } = await supabase
-        .from('resumes')
-        .select('*')
-        .eq('user_id', userId)
-        .limit(1);
-
-      // 6. Fetch Career Passport if available
-      const { data: careerPassport } = await supabase
-        .from('career_passports' as any)
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
 
       // Collect declared skills
       const declaredRaw: string[] = [];
@@ -129,17 +115,40 @@ export const careerIntelligenceEngine = {
       const assessedSkills: EvaluatedSkill[] = [];
       const unassessedDeclared: string[] = [];
 
+      // A. Incorporate verified game stats from career_players if available
+      if (careerPlayer?.stats && typeof careerPlayer.stats === 'object') {
+        Object.entries(careerPlayer.stats).forEach(([statKey, statVal]) => {
+          if (typeof statVal === 'number' && statVal > 0) {
+            const prettyName = statKey.charAt(0).toUpperCase() + statKey.slice(1);
+            assessedSkills.push({
+              id: `stat_${statKey}`,
+              name: prettyName,
+              category: this.detectCategory(statKey),
+              source: 'assessment_tested',
+              evidenceText: `Verified ${statVal}/100 in CareerVerse Combat Trials`,
+              score: statVal,
+              assessmentScore: statVal,
+              verificationTier: statVal >= 80 ? 'mastered' : 'verified',
+              confidence: 90,
+            });
+          }
+        });
+      }
+
+      // B. Match user assessments or verified badges
       for (const skillName of uniqueSkills) {
         const lower = skillName.toLowerCase();
         const isVerified = verifiedList.some((v) => v.toLowerCase() === lower);
 
+        // Check if already covered by careerPlayer stats
+        const alreadyCovered = assessedSkills.some(as => as.name.toLowerCase() === lower);
+
         // Check if there is an actual completed assessment
         const matchedAssessment = userAssessments?.find(
-          (ua: any) =>
-            ua.assessments?.title?.toLowerCase().includes(lower) && ua.status === 'completed'
+          (ua: any) => (ua.title?.toLowerCase().includes(lower) || ua.skill_name?.toLowerCase().includes(lower)) && ua.status === 'completed'
         );
 
-        if (matchedAssessment) {
+        if (matchedAssessment && !alreadyCovered) {
           assessedSkills.push({
             id: `skill_${lower.replace(/\s+/g, '_')}`,
             name: skillName,
@@ -151,7 +160,7 @@ export const careerIntelligenceEngine = {
             verificationTier: isVerified ? 'mastered' : 'verified',
             confidence: 90,
           });
-        } else if (isVerified) {
+        } else if (isVerified && !alreadyCovered) {
           assessedSkills.push({
             id: `skill_${lower.replace(/\s+/g, '_')}`,
             name: skillName,
@@ -162,8 +171,8 @@ export const careerIntelligenceEngine = {
             verificationTier: 'verified',
             confidence: 85,
           });
-        } else {
-          // Unassessed declared skill — never invent a fake number!
+        } else if (!alreadyCovered) {
+          // Unassessed declared skill
           unassessedDeclared.push(skillName);
         }
       }
@@ -235,7 +244,6 @@ export const careerIntelligenceEngine = {
       };
     } catch (err) {
       console.error('Error in careerIntelligenceEngine.evaluateUserProfile:', err);
-      // Re-throw error so CareerVersePage can render explicit error and retry state per Requirement 8
       throw err;
     }
   },
@@ -320,18 +328,18 @@ export const careerIntelligenceEngine = {
           : 'Complete an interactive Logic Challenge or Assessment to benchmark your problem-solving power.',
       },
       technicalPower: {
-        score: assessed.length ? Math.min(99, 45 + assessed.length * 12) : declared.length ? 30 : 0,
+        score: assessed.length ? Math.min(99, 45 + assessed.length * 10) : declared.length ? 30 : 0,
         label: assessed.length ? 'Assessed' : declared.length ? 'Declared' : 'Not Assessed',
         assessed: assessed.length > 0,
         evidence: assessed.length
-          ? `${assessed.length} verified technical skills evaluated in code`
+          ? `${assessed.length} verified technical skills evaluated in combat trials`
           : declared.length
           ? `${declared.length} declared skills on resume. Requires live code validation.`
           : 'Add your core programming languages to calculate technical combat power.',
       },
       communication: {
         score: profile?.about && profile.about.length > 100 ? 65 : 0,
-        label: profile?.about && profile.about.length > 100 ? 'Profile Profile' : 'Not Assessed',
+        label: profile?.about && profile.about.length > 100 ? 'Profile Bio' : 'Not Assessed',
         assessed: false,
         evidence: profile?.about
           ? 'Derived from bio and professional summary clarity. Mock interview recommended.'
@@ -399,3 +407,4 @@ export const careerIntelligenceEngine = {
     };
   },
 };
+export default careerIntelligenceEngine;

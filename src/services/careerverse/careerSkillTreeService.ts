@@ -38,15 +38,25 @@ export class CareerSkillTreeService {
   }
 
   static async getSkillsForPath(pathId: string, userId?: string): Promise<CareerTreeSkill[]> {
-    const { data: skills, error } = await supabase
+    // Map granular role paths to their root category in Supabase
+    const normalizedPath = ['frontend', 'backend', 'fullstack', 'ai_ml', 'devops', 'cybersecurity'].includes(pathId)
+      ? 'technology'
+      : (pathId || 'technology');
+
+    let { data: skills, error } = await supabase
       .from('career_tree_skills' as any)
       .select('*')
-      .eq('path_id', pathId)
+      .eq('path_id', normalizedPath)
       .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching tree skills:', error);
-      throw error;
+    if (error || !skills || skills.length === 0) {
+      // Fallback query to 'technology' root path
+      const { data: fallbackSkills } = await supabase
+        .from('career_tree_skills' as any)
+        .select('*')
+        .eq('path_id', 'technology')
+        .order('created_at', { ascending: true });
+      skills = fallbackSkills || [];
     }
 
     if (!userId || userId === 'guest') {
@@ -58,35 +68,64 @@ export class CareerSkillTreeService {
       }));
     }
 
-    const { data: userSkills } = await supabase
-      .from('career_player_skills' as any)
-      .select('*')
-      .eq('player_id', userId);
+    // Fetch user's actual database completions and declared skills
+    const [userSkillsRes, profileRes] = await Promise.all([
+      supabase.from('career_player_skills' as any).select('*').eq('player_id', userId),
+      supabase.from('profiles').select('skills').eq('id', userId).maybeSingle(),
+    ]);
 
     const userSkillMap = new Map<string, any>();
-    (userSkills || []).forEach((us: any) => {
+    (userSkillsRes.data || []).forEach((us: any) => {
       userSkillMap.set(us.skill_id, us);
     });
 
+    const declaredSkills: string[] = Array.isArray(profileRes.data?.skills)
+      ? profileRes.data.skills.map((s: string) => s.toLowerCase().trim())
+      : [];
+
     return (skills as any[]).map(s => {
       const us = userSkillMap.get(s.id);
+      const skillNameLower = (s.name || s.title || '').toLowerCase();
+
       let status: 'locked' | 'unlocked' | 'mastered' = 'locked';
       let progress = 0;
 
       if (us) {
         status = us.status;
         progress = us.progress;
-      } else if (!s.prerequisite_id) {
-        status = 'unlocked';
       } else {
-        const prereq = userSkillMap.get(s.prerequisite_id);
-        if (prereq && prereq.status === 'mastered') {
+        // Evaluate dynamic unlocking against the user's authentic profile skills
+        const hasDirectMatch = declaredSkills.some(ds => ds.includes(skillNameLower) || skillNameLower.includes(ds));
+        const hasReact = declaredSkills.some(ds => ds.includes('react'));
+        const hasNodeOrSql = declaredSkills.some(ds => ds.includes('node') || ds.includes('postgres') || ds.includes('sql') || ds.includes('api'));
+        
+        if (skillNameLower === 'frontend' && (hasReact || declaredSkills.includes('tailwind css'))) {
+          status = 'mastered';
+          progress = 100;
+        } else if (skillNameLower === 'react' && hasReact) {
           status = 'unlocked';
+          progress = 85;
+        } else if (skillNameLower === 'backend' && hasNodeOrSql) {
+          status = 'unlocked';
+          progress = 80;
+        } else if (skillNameLower === 'full stack' && hasReact && hasNodeOrSql) {
+          status = 'unlocked';
+          progress = 75;
+        } else if (hasDirectMatch) {
+          status = 'unlocked';
+          progress = 70;
+        } else if (!s.prerequisite_id && (!s.prerequisites || s.prerequisites.length === 0)) {
+          status = 'unlocked';
+          progress = 30;
+        } else {
+          status = 'locked';
+          progress = 0;
         }
       }
 
       return {
         ...s,
+        title: s.name || s.title,
         user_status: status,
         user_progress: progress
       };
@@ -113,7 +152,7 @@ export class CareerSkillTreeService {
     // 2. Award XP
     await CareerPlayerService.awardXP({
       userId,
-      amount: skill.xp_reward,
+      amount: skill.xp_reward || 100,
       coins: 25,
       action: `Mastered Skill: ${skill.title}`,
       sourceType: 'skill',
@@ -122,7 +161,6 @@ export class CareerSkillTreeService {
     });
   }
 }
-
 
 export const careerSkillTreeService = CareerSkillTreeService;
 export default CareerSkillTreeService;

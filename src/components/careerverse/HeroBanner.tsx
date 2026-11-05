@@ -1,6 +1,7 @@
 import React from 'react';
-import { BookOpen, Code2, Trophy, Briefcase, Sparkles, Map, Compass } from 'lucide-react';
+import { BookOpen, Code2, Trophy, Briefcase, Sparkles, Compass } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { gameAudio } from '@/utils/gameAudio';
 
 interface HeroBannerProps {
   onOpenWorldMap?: () => void;
@@ -66,8 +67,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
           {onOpenWorldMap && (
             <button
-              onClick={onOpenWorldMap}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#278DFF]/20 hover:bg-[#278DFF]/30 border border-[#278DFF]/40 text-xs font-semibold text-[#36D9F5] transition-all"
+              onClick={() => {
+                gameAudio.playClick();
+                onOpenWorldMap();
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#278DFF]/20 hover:bg-[#278DFF]/30 border border-[#278DFF]/40 text-xs font-semibold text-[#36D9F5] transition-all cursor-pointer"
             >
               <Compass className="w-3.5 h-3.5" />
               <span>World Map (2.5D)</span>
@@ -90,6 +94,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
           <Link
             to="/learning"
+            onClick={() => gameAudio.playClick()}
             className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#36D9F5]/60 transition-all group backdrop-blur-md"
           >
             <div className="w-9 h-9 rounded-xl bg-[#7047F5]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
@@ -99,8 +104,11 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
           </Link>
 
           <button
-            onClick={onOpenQuickQuest}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#278DFF]/60 transition-all group backdrop-blur-md text-left"
+            onClick={() => {
+              gameAudio.playClick();
+              onOpenQuickQuest?.();
+            }}
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#278DFF]/60 transition-all group backdrop-blur-md text-left cursor-pointer"
           >
             <div className="w-9 h-9 rounded-xl bg-[#278DFF]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
               <Code2 className="w-4 h-4 text-[#278DFF]" />
@@ -110,7 +118,8 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
           <a
             href="#leaderboard-section"
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#FFCA55]/60 transition-all group backdrop-blur-md"
+            onClick={() => gameAudio.playClick()}
+            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#FFCA55]/60 transition-all group backdrop-blur-md cursor-pointer"
           >
             <div className="w-9 h-9 rounded-xl bg-[#FFCA55]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
               <Trophy className="w-4 h-4 text-[#FFCA55]" />
@@ -120,6 +129,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
           <Link
             to="/jobs"
+            onClick={() => gameAudio.playClick()}
             className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#20D994]/60 transition-all group backdrop-blur-md"
           >
             <div className="w-9 h-9 rounded-xl bg-[#20D994]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">

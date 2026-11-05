@@ -55,6 +55,8 @@ import { AchievementsModal } from '@/components/careerverse/AchievementsModal';
 import { AICareerCompanionModal } from '@/components/careerverse/AICareerCompanionModal';
 import { Loader2, Sparkles, LogIn, UserPlus, X, MapPin, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import confetti from 'canvas-confetti';
+import { gameAudio } from '@/utils/gameAudio';
 
 export const CareerVersePage: React.FC = () => {
   const { user: contextUser, loading: contextAuthLoading } = useOptimizedAuth();
@@ -514,6 +516,12 @@ export const CareerVersePage: React.FC = () => {
           userId={player.id}
           onClose={() => setActiveCodeQuest(null)}
           onSuccess={async (xp) => {
+            gameAudio.playLevelUp();
+            confetti({
+              particleCount: 120,
+              spread: 80,
+              origin: { y: 0.6 },
+            });
             await loadPlayerData();
             setActiveCodeQuest(null);
           }}
@@ -526,6 +534,12 @@ export const CareerVersePage: React.FC = () => {
           userId={player.id}
           onClose={() => setActiveLogicQuest(null)}
           onSuccess={async (xp) => {
+            gameAudio.playLevelUp();
+            confetti({
+              particleCount: 120,
+              spread: 80,
+              origin: { y: 0.6 },
+            });
             await loadPlayerData();
             setActiveLogicQuest(null);
           }}
@@ -538,6 +552,12 @@ export const CareerVersePage: React.FC = () => {
           userId={player.id}
           onClose={() => setIsBossArenaOpen(false)}
           onVictory={async () => {
+            gameAudio.playLevelUp();
+            confetti({
+              particleCount: 180,
+              spread: 100,
+              origin: { y: 0.5 },
+            });
             await loadPlayerData();
             setIsBossArenaOpen(false);
           }}
@@ -583,6 +603,12 @@ export const CareerVersePage: React.FC = () => {
         userId={player.id}
         onClose={() => setActiveQuest(null)}
         onQuestClaimed={async () => {
+          gameAudio.playXpGain();
+          confetti({
+            particleCount: 80,
+            spread: 60,
+            origin: { y: 0.7 },
+          });
           await loadPlayerData();
           const updatedQuests = await CareerQuestService.getQuests(player.id);
           setQuests(updatedQuests);
