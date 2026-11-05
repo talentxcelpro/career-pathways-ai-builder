@@ -18,32 +18,61 @@ export const useEmailTriggers = () => {
     priority = 'medium'
   }: TriggerEmailParams) => {
     try {
-      // Get the email trigger settings
-      const { data: triggerSettings, error: settingsError } = await supabase
-        .from('email_automation_settings')
-        .select('*')
-        .eq('trigger_type', triggerType)
-        .eq('is_enabled', true)
-        .single();
+      // 1. Check if trigger is explicitly disabled in admin automation settings
+      try {
+        const { data: triggerSettings } = await supabase
+          .from('email_automation_settings')
+          .select('is_enabled')
+          .eq('trigger_type', triggerType)
+          .maybeSingle();
 
-      if (settingsError || !triggerSettings) {
-        console.log(`Email trigger ${triggerType} is not enabled or not found`);
-        return { success: false, error: 'Trigger not enabled' };
+        if (triggerSettings && triggerSettings.is_enabled === false) {
+          console.log(`Email trigger ${triggerType} is explicitly disabled by admin`);
+          return { success: false, error: 'Trigger disabled by admin' };
+        }
+      } catch (_) {
+        // Non-blocking: proceed with automated trigger if settings table is momentarily unreachable
       }
 
-      // Queue the email
+      // 2. Immediate direct dispatch via /api/email/send if no delay is requested
+      if (delayMinutes === 0) {
+        try {
+          const res = await fetch('/api/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: recipientEmail,
+              recipientName: templateData?.name || templateData?.recipient_name || recipientEmail.split('@')[0],
+              template: triggerType,
+              priority: priority === 'high' ? 1 : (priority === 'low' ? 3 : 2),
+              immediate: priority === 'high',
+              variables: templateData
+            })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            console.log(`Email ${triggerType} dispatched directly via API:`, data);
+            return { success: true, dispatched: true, result: data };
+          }
+        } catch (fetchErr) {
+          console.warn('Direct send failed, falling back to resilient queue:', fetchErr);
+        }
+      }
+
+      // 3. Queue the email for reliable background worker processing via Vercel cron
       const { data: queueData, error: queueError } = await supabase
         .from('email_automation_queue')
         .insert({
           recipient_email: recipientEmail,
+          recipient_name: templateData?.name || templateData?.recipient_name || recipientEmail.split('@')[0],
           template_data: templateData,
           trigger_type: triggerType,
           status: 'pending',
           scheduled_at: new Date(Date.now() + (delayMinutes * 60 * 1000)).toISOString()
         })
         .select('id')
-        .single();
-
+        .maybeSingle();
       if (queueError) {
         console.error('Error queuing email:', queueError);
         return { success: false, error: queueError.message };
