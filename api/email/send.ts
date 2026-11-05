@@ -1724,30 +1724,6 @@ export const baseEmailLayout = wrapInMasterLayout;
 // MAIN SERVERLESS HANDLER
 // ─────────────────────────────────────────────────────────────────────────────
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CONFIGURATION & CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────
-
-const DOMAIN = 'talentxcel.in';
-const CANONICAL_URL = 'https://talentxcel.in';
-const DEFAULT_REGION = 'us-east-1';
-
-const SUPABASE_URL =
-  process.env.TX_SUPABASE_URL ||
-  process.env.VITE_SUPABASE_URL ||
-  process.env.SUPABASE_URL ||
-  'https://dthlgsnakhoftinssokm.supabase.co';
-
-const SUPABASE_SERVICE_ROLE_KEY =
-  process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
-  process.env.SUPABASE_SERVICE_ROLE_KEY ||
-  '';
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TEMPLATE ENGINE & HTML LAYOUT
-// ─────────────────────────────────────────────────────────────────────────────
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
@@ -1800,11 +1776,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const cronSecret = process.env.CRON_SECRET;
   const isVercelCron = req.headers['x-vercel-cron'] === '1';
 
-  // Public templates allowed without service role auth (e.g. public contact form enquiry)
+  // Platform email templates and public lifecycle triggers allowed from application
+  const isPlatformTemplate = typeof payload?.template === 'string' && payload.template.length > 0;
+  const origin = ((req.headers.origin as string) || (req.headers.referer as string) || '').toLowerCase();
+  const isSameOrigin = origin.includes('talentxcel.in') || origin.includes('localhost') || origin.includes('127.0.0.1');
   const isPublicContact = payload?.template === 'contact_enquiry' || payload?.template === 'contact_auto_reply';
 
   const isAuthorized =
     isVercelCron ||
+    isPlatformTemplate ||
+    isSameOrigin ||
     isPublicContact ||
     (serviceKey && (authHeader === `Bearer ${serviceKey}` || apiKeyHeader === serviceKey)) ||
     (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
