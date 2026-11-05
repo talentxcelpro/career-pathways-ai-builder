@@ -13,7 +13,6 @@ scratch/
 *.log
 
 # Heavy raw datasets and audit scripts
-src/data/indianInstitutionsCatalog.json
 scripts/security-audit/
 scripts/storage-audit/
 claude-seo/
