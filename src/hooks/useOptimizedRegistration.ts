@@ -221,22 +221,49 @@ export const useOptimizedRegistration = () => {
       }
       setProgress(90);
 
-      // Step 5: Queue welcome email
+      // Step 5: Dispatch Welcome Email (Immediate send with resilient queue fallback)
       try {
-        await supabase
-          .from('email_automation_queue')
-          .insert({
-            trigger_type: 'welcome',
-            recipient_email: data.email,
-            recipient_name: data.fullName,
-            template_data: {
-              first_name: data.fullName.split(' ')[0],
-              name: data.fullName
-            },
-            scheduled_at: new Date().toISOString()
+        let sentDirectly = false;
+        try {
+          const directRes = await fetch('/api/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: data.email,
+              recipientName: data.fullName,
+              template: 'welcome',
+              priority: 1,
+              immediate: true,
+              variables: {
+                first_name: data.fullName.split(' ')[0],
+                name: data.fullName,
+                email: data.email
+              }
+            })
           });
+          if (directRes.ok) {
+            sentDirectly = true;
+          }
+        } catch (_) {}
+
+        if (!sentDirectly) {
+          await supabase
+            .from('email_automation_queue')
+            .insert({
+              trigger_type: 'welcome',
+              recipient_email: data.email,
+              recipient_name: data.fullName,
+              template_data: {
+                first_name: data.fullName.split(' ')[0],
+                name: data.fullName,
+                email: data.email
+              },
+              status: 'pending',
+              scheduled_at: new Date().toISOString()
+            });
+        }
       } catch (emailError) {
-        console.error('Failed to queue welcome email:', emailError);
+        console.error('Failed to trigger welcome email:', emailError);
         // Don't fail registration for email errors
       }
       setProgress(100);
