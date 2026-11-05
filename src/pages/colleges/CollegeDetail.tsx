@@ -7,6 +7,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
+import { SocialShare } from '@/components/social/SocialShare';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 import { useProfile } from '@/hooks/useProfile';
@@ -152,11 +154,13 @@ export default function CollegeDetail() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
-      <Helmet>
-        <title>{instName} — Fees, Cutoffs, Admissions & Placements | TalentXcel</title>
-        <meta name="description" content={`Comprehensive verified dossier for ${instName} (${instCity}, ${instState}): courses, fee structures, cutoff scores, placements, and career pathways.`} />
-        <link rel="canonical" href={canonicalUrl} />
-      </Helmet>
+      <SocialMetaHead
+        title={`${instName} — Fees, Cutoffs, Admissions & Placements | TalentXcel`}
+        description={`Comprehensive verified dossier for ${instName} (${instCity}, ${instState}): courses, fee structures, cutoff scores, placements, and career pathways.`}
+        canonicalUrl={canonicalUrl}
+        category="colleges"
+        ogType="article"
+      />
       {/* ───────────────────────────────────────────────────────────────────────── */}
       {/* 1. SUB-HEADER PILL NAVIGATION BAR                                         */}
       {/* ───────────────────────────────────────────────────────────────────────── */}
@@ -327,11 +331,23 @@ export default function CollegeDetail() {
                   </span>
                 </div>
 
-                {nirf && (
-                  <span className="bg-amber-400/20 text-amber-300 border border-amber-300/30 text-xs font-bold font-mono px-3 py-1 rounded-full">
-                    NIRF #{nirf}
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  {nirf && (
+                    <span className="bg-amber-400/20 text-amber-300 border border-amber-300/30 text-xs font-bold font-mono px-3 py-1 rounded-full">
+                      NIRF #{nirf}
+                    </span>
+                  )}
+                  <SocialShare
+                    contentType="general"
+                    contentId={id}
+                    title={`${instName} — Placements & Cutoffs | TalentXcel`}
+                    description={`Explore placement statistics, fees, and cutoffs for ${instName} on TalentXcel.`}
+                    url={canonicalUrl}
+                    size="sm"
+                    buttonText="Share"
+                    className="border-white/20 bg-white/10 hover:bg-white/20 text-white"
+                  />
+                </div>
               </div>
 
               <div>

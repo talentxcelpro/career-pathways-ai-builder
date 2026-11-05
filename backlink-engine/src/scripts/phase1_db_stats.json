@@ -1,0 +1,21 @@
+{
+  "backupPath": "C:\\Users\\Arshid.Wani\\talentxcel-local\\backlink-engine\\data\\backlink_engine_backup_1793713345160.db",
+  "integrity": [
+    {
+      "integrity_check": "ok"
+    }
+  ],
+  "tableStats": {
+    "acquisition_targets": 100,
+    "b2b_directory_profiles": 13,
+    "backlinks": 130,
+    "batch2_prospects": 30,
+    "campaign_outreach": 105,
+    "cohort_50_opportunities": 50,
+    "domains": 11653,
+    "engine_metrics": 9,
+    "sqlite_sequence": 6,
+    "verification_logs": 310
+  },
+  "timestamp": 1793713345160
+}

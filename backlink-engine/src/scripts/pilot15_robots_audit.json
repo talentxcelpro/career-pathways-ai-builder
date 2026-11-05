@@ -1,0 +1,152 @@
+[
+  {
+    "rank": 1,
+    "num": 13,
+    "name": "AI SaaS Radar",
+    "domain": "aisaasradar.com",
+    "submitUrl": "https://aisaasradar.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "# =================================================== # AI SaaS Radar - Web & AI Crawler Configuration # ============================================="
+  },
+  {
+    "rank": 2,
+    "num": 92,
+    "name": "ToolDock",
+    "domain": "zalize.com",
+    "submitUrl": "https://tools.zalize.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "User-agent: * Allow: / Sitemap: https://zalize.com/sitemap.xml "
+  },
+  {
+    "rank": 3,
+    "num": 17,
+    "name": "AI Tool Index",
+    "domain": "aitoolindex.io",
+    "submitUrl": "https://aitoolindex.io/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": true,
+    "robotsSnippet": "# AIToolIndex robots.txt # https://aitoolindex.io User-agent: * Allow: / Disallow: /404 Disallow: /api/ Disallow: /go/ # Sitemap Sitemap: https://ai"
+  },
+  {
+    "rank": 4,
+    "num": 94,
+    "name": "ToolVerity",
+    "domain": "toolverity.com",
+    "submitUrl": "https://toolverity.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "User-Agent: * Allow: / Allow: /api/og Disallow: /admin Disallow: /api/ Disallow: /go/ Host: https://toolverity.com/ Sitemap: https://toolverity.com/s"
+  },
+  {
+    "rank": 5,
+    "num": 90,
+    "name": "ThatsMyAI",
+    "domain": "thatsmy.ai",
+    "submitUrl": "https://thatsmy.ai/submit-tool",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "# As a condition of accessing this website, you agree to abide by the following # content signals: # (a) If a Content-Signal = yes, you may collect "
+  },
+  {
+    "rank": 6,
+    "num": 48,
+    "name": "Deekoya AI",
+    "domain": "deekoyaai.in",
+    "submitUrl": "https://deekoyaai.in/submit-tool",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "User-Agent: * Allow: / Disallow: /admin Disallow: /admin/ Disallow: /api/ User-Agent: GPTBot Allow: / Disallow: /admin Disallow: /admin/ Disallow: /a"
+  },
+  {
+    "rank": 7,
+    "num": 24,
+    "name": "AI ToolsXplorer",
+    "domain": "aitoolsxplorer.in",
+    "submitUrl": "https://www.aitoolsxplorer.in/submit-tool",
+    "robotsStatus": 307,
+    "isDisallowedAll": false,
+    "robotsSnippet": "Redirecting... "
+  },
+  {
+    "rank": 8,
+    "num": 3,
+    "name": "AI Bookmarks",
+    "domain": "aibookmarks.net",
+    "submitUrl": "https://aibookmarks.net/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "# AI Bookmarks - https://aibookmarks.net # Directory and news content may be crawled and cited by AI assistants. User-agent: GPTBot User-agent: OAI-S"
+  },
+  {
+    "rank": 9,
+    "num": 16,
+    "name": "AI Tool Finder",
+    "domain": "aitoolfinder.org",
+    "submitUrl": "https://aitoolfinder.org/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": true,
+    "robotsSnippet": "# Robots.txt for aitoolfinder.org # Updated: 2026-07-31 - keep internal backlink evidence out of crawl User-agent: * Allow: / # Keep non-publi"
+  },
+  {
+    "rank": 10,
+    "num": 7,
+    "name": "AI Gear Base",
+    "domain": "aigearbase.com",
+    "submitUrl": "https://aigearbase.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "# ============================================ # AI Gear Base - AI Tools Directory # https://aigearbase.com # Last Updated: 2026-02-24 # ============="
+  },
+  {
+    "rank": 11,
+    "num": 87,
+    "name": "Stackdrop",
+    "domain": "getstackdrop.com",
+    "submitUrl": "https://getstackdrop.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "User-agent: * Allow: / Sitemap: https://getstackdrop.com/sitemap.xml "
+  },
+  {
+    "rank": 12,
+    "num": 77,
+    "name": "NeedAITool",
+    "domain": "needaitool.com",
+    "submitUrl": "https://www.needaitool.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": true,
+    "robotsSnippet": "# As a condition of accessing this website, you agree to abide by the following # content signals: # (a) If a Content-Signal = yes, you may collect "
+  },
+  {
+    "rank": 13,
+    "num": 80,
+    "name": "Next Week AI",
+    "domain": "nextweekai.com",
+    "submitUrl": "https://nextweekai.com/submit/",
+    "robotsStatus": 200,
+    "isDisallowedAll": false,
+    "robotsSnippet": "# As a condition of accessing this website, you agree to abide by the following # content signals: # (a) If a Content-Signal = yes, you may collect "
+  },
+  {
+    "rank": 14,
+    "num": 43,
+    "name": "Catch AI Info",
+    "domain": "catchaiinfo.com",
+    "submitUrl": "https://catchaiinfo.com/submit-a-tool/",
+    "robotsStatus": 200,
+    "isDisallowedAll": true,
+    "robotsSnippet": "# As a condition of accessing this website, you agree to abide by the following # content signals: # (a) If a Content-Signal = yes, you may collect "
+  },
+  {
+    "rank": 15,
+    "num": 9,
+    "name": "AI Kendra",
+    "domain": "aikendra.com",
+    "submitUrl": "https://aikendra.com/submit",
+    "robotsStatus": 200,
+    "isDisallowedAll": true,
+    "robotsSnippet": "# As a condition of accessing this website, you agree to abide by the following # content signals: # (a) If a Content-Signal = yes, you may collect "
+  }
+]

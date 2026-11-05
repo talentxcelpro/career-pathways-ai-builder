@@ -50,12 +50,7 @@ const WalletSection: React.FC = () => {
     queryFn: async (): Promise<CredentialDetail[]> => {
       const uid = user!.id;
       const [course, skill, edu, exp] = await Promise.all([
-        supabase
-          .from("course_certificates")
-          .select(
-            "id, certificate_number, issued_at, certificate_data, courses(title, instructor_name, duration_hours)",
-          )
-          .eq("user_id", uid),
+        Promise.resolve({ data: [] }),
         supabase.from("skill_certifications").select("*").eq("user_id", uid),
         supabase.from("education").select("*").eq("user_id", uid),
         supabase.from("work_experience").select("*").eq("user_id", uid),

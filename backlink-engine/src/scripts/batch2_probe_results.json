@@ -1,0 +1,594 @@
+[
+  {
+    "id": "TXC_B2_001",
+    "name": "Ignlab Launch",
+    "domain": "ignlab.net",
+    "subUrl": "https://launch.ignlab.net/",
+    "probe": {
+      "finalUrl": "https://launch.ignlab.net/",
+      "status": 200,
+      "latency": 1053,
+      "title": "Ignlab Launch — Discover & Submit SaaS Tools (No Sign-Up)",
+      "forms": 1,
+      "bodySnippet": " Ignlab Launch — Discover & Submit SaaS Tools (No Sign-Up) %F0%9F%9A%80 \"> window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-N3DB4XPVZC'); {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https://launch.ignlab.",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 52002,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_002",
+    "name": "Maybe Labs",
+    "domain": "maybelabs.ai",
+    "subUrl": "https://maybelabs.ai/launch",
+    "probe": {
+      "finalUrl": "https://maybelabs.ai/launch",
+      "status": 200,
+      "latency": 1242,
+      "title": "Launch your startup · Free product directory | Maybe Labs",
+      "forms": 1,
+      "bodySnippet": " Launch your startup · Free product directory | Maybe Labs {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://maybelabs.ai/#organization\",\"name\":\"Maybe Labs\",\"alternateName\":[\"Maybe Labs AI\",\"MaybeLabs\",\"maybelabs.ai\"],\"url\":\"https://maybelabs.ai\",\"logo\":{\"@type\":\"Imag",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 42820,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_003",
+    "name": "CodeHype",
+    "domain": "codehype.in",
+    "subUrl": "https://www.codehype.in/submit-saas",
+    "probe": {
+      "finalUrl": "https://www.codehype.in/submit-saas",
+      "status": 200,
+      "latency": 576,
+      "title": "Submit Your SaaS Product to CodeHype | SaaS Directory",
+      "forms": 0,
+      "bodySnippet": " Submit Your SaaS Product to CodeHype | SaaS Directory Home Launches Directories Blog Pricing Search products… ⌘K Login Launch your startup {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://www.codehype.ai#organization\",\"name\":\"CodeHype\",\"url\":\"https://www.codehype.ai",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 58100,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_004",
+    "name": "Upfynd",
+    "domain": "upfynd.com",
+    "subUrl": "https://upfynd.com/submit",
+    "probe": {
+      "finalUrl": "https://upfynd.com/submit",
+      "status": 200,
+      "latency": 218,
+      "title": "Submit a product - Upfynd",
+      "forms": 0,
+      "bodySnippet": " Submit a product - Upfynd Launching something? List it on Upfynd for free. Submit your product UPfynd Best products Categories Tags Blog Company Search products… ⌘K Submit Sign in Top trending categories AI AI Assistants AI Image &amp; Video AI Agents AI Audio &amp; Voice LLMs &amp; AI Infrastructu",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50937,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_005",
+    "name": "SupaHunt",
+    "domain": "supahunt.com",
+    "subUrl": "https://www.supahunt.com/submit",
+    "probe": {
+      "finalUrl": "https://www.supahunt.com/submit",
+      "status": 503,
+      "latency": 465,
+      "title": "503: SERVICE_UNAVAILABLE",
+      "forms": 0,
+      "bodySnippet": " 503: SERVICE_UNAVAILABLE html{font-size:62.5%;box-sizing:border-box;height:-webkit-fill-available}*,::after,::before{box-sizing:inherit}body{font-family:sf pro text,sf pro icons,helvetica neue,helvetica,arial,sans-serif;font-size:1.6rem;line-height:1.65;word-break:break-word;font-kerning:auto;font-",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 4308,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_006",
+    "name": "The Tool Directory",
+    "domain": "thetooldirectory.com",
+    "subUrl": "https://thetooldirectory.com/submit-a-tool/",
+    "probe": {
+      "finalUrl": "https://thetooldirectory.com/submit-a-tool/",
+      "status": 200,
+      "latency": 359,
+      "title": "Submit a Tool - The Tool Directory",
+      "forms": 1,
+      "bodySnippet": " window.JetpackScriptData = {\"site\":{\"icon\":\"https://i0.wp.com/thetooldirectory.com/wp-content/uploads/2025/06/the-tool-directory.png?w=64\\u0026ssl=1\",\"title\":\"The Tool Directory\",\"host\":\"unknown\",\"is_wpcom_platform\":false}}; img:is([sizes=\"auto\" i], [sizes^=\"auto,\" i]) { contain-intrinsic-size: 300",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 34001,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_007",
+    "name": "Linkrena",
+    "domain": "linkrena.com",
+    "subUrl": "https://linkrena.com/",
+    "probe": {
+      "finalUrl": "https://linkrena.com/",
+      "status": 200,
+      "latency": 1468,
+      "title": "Get your AI tool discovered - Linkrena",
+      "forms": 1,
+      "bodySnippet": " Get your AI tool discovered - Linkrena (function(){try{var s=localStorage.getItem('theme');var r=document.documentElement;if(s==='dark'||s==='light'){r.setAttribute('data-theme',s);r.style.colorScheme=s;}}catch(e){}})(); {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"http",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50999,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_008",
+    "name": "Makeroo",
+    "domain": "makeroo.app",
+    "subUrl": "https://makeroo.app/submit",
+    "probe": {
+      "finalUrl": "https://makeroo.app/submit",
+      "status": 200,
+      "latency": 633,
+      "title": "List your product — Makeroo",
+      "forms": 1,
+      "bodySnippet": " List your product — Makeroo (function(){var s=null;try{s=localStorage.getItem(\"makeroo-theme\")}catch(e){}var d=s===\"dark\"||(s!==\"light\"&&matchMedia(\"(prefers-color-scheme: dark)\").matches);document.documentElement.classList.toggle(\"dark\",d)})() Skip to content Makeroo Browse Submit Newsletter List ",
+      "hasCloudflare": false,
+      "hasCaptcha": true,
+      "hasTurnstile": true,
+      "hasPaidOnly": false,
+      "contentLength": 50358,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_009",
+    "name": "10015 Product Finder",
+    "domain": "10015.io",
+    "subUrl": "https://10015.io/product-finder/submit",
+    "probe": {
+      "finalUrl": "https://10015.io/product-finder/submit",
+      "status": 200,
+      "latency": 1086,
+      "title": "Submit Your Product — Free Startup &amp; SaaS Directory Listing | 10015 Tools",
+      "forms": 0,
+      "bodySnippet": " Submit Your Product — Free Startup &amp; SaaS Directory Listing | 10015 Tools {\"@context\":\"https://schema.org\",\"@type\":\"WebSite\",\"name\":\"10015 Tools\",\"url\":\"https://10015.io\"} {\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"10015 Tools\",\"url\":\"https://10015.io\",\"logo\":\"https://10015",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50122,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_010",
+    "name": "Hype Star",
+    "domain": "hypestar.org",
+    "subUrl": "https://hypestar.org/submit",
+    "probe": {
+      "finalUrl": "https://hypestar.org/submit",
+      "status": 200,
+      "latency": 1079,
+      "title": "List your project free — Hype Star",
+      "forms": 1,
+      "bodySnippet": " List your project free — Hype Star (() => { const root = document.documentElement; const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)'); let theme = 'neon'; let motion = 'running'; try { const savedTheme = localStorage.getItem('hypestar.arcade.theme'); const savedMotion = loc",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 45460,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_011",
+    "name": "AppsGit",
+    "domain": "appsgit.com",
+    "subUrl": "https://appsgit.com/submit",
+    "probe": {
+      "finalUrl": "https://appsgit.com/submit",
+      "status": 200,
+      "latency": 423,
+      "title": "Submit an Open-Source App · appsgit",
+      "forms": 2,
+      "bodySnippet": " Submit an Open-Source App · appsgit (function(){try{var d=document.documentElement;var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)){d.classList.add('dark')}if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50967,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_012",
+    "name": "FindOpenSource.dev",
+    "domain": "findopensource.dev",
+    "subUrl": "https://findopensource.dev/submit",
+    "probe": {
+      "finalUrl": "https://findopensource.dev/submit",
+      "status": 200,
+      "latency": 972,
+      "title": "Submit an open source project — FindOpenSource.dev",
+      "forms": 1,
+      "bodySnippet": " Submit an open source project — FindOpenSource.dev ((a,b,c,d,e,f,g,h)=>{let i=document.documentElement,j=[\"light\",\"dark\"];function k(b){var c;(Array.isArray(a)?a:[a]).forEach(a=>{let c=\"class\"===a,d=c&&f?e.map(a=>f[a]||a):e;c?(i.classList.remove(...d),i.classList.add(f&&f[b]?f[b]:b)):i.setAttribute",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 64118,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_013",
+    "name": "LibHunt",
+    "domain": "libhunt.com",
+    "subUrl": "https://www.libhunt.com/",
+    "probe": {
+      "finalUrl": "https://www.libhunt.com/",
+      "status": 403,
+      "latency": 31,
+      "title": "Just a moment...",
+      "forms": 0,
+      "bodySnippet": " Just a moment... *{box-sizing:border-box;margin:0;padding:0}html{line-height:1.15;-webkit-text-size-adjust:100%;color:#313131;font-family:system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\"",
+      "hasCloudflare": true,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 5633,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_014",
+    "name": "TeaserTrack",
+    "domain": "teasertrack.cc",
+    "subUrl": "https://teasertrack.cc/submit",
+    "probe": {
+      "finalUrl": "https://teasertrack.cc/submit",
+      "status": 200,
+      "latency": 2843,
+      "title": "Submit your developer tool for free | TeaserTrack",
+      "forms": 1,
+      "bodySnippet": " Submit your developer tool for free | TeaserTrack {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"Organization\",\"@id\":\"https://teasertrack.cc#organization\",\"name\":\"TeaserTrack\",\"url\":\"https://teasertrack.cc\",\"description\":\"Pricing, limits and honest comparisons for AI and developer tools, upda",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 53563,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_015",
+    "name": "JevList",
+    "domain": "jevlist.ai",
+    "subUrl": "https://jevlist.ai/submit",
+    "probe": {
+      "finalUrl": "https://jevlist.ai/submit",
+      "status": 200,
+      "latency": 1312,
+      "title": "Submit a Jev App or Developer Project · JevList",
+      "forms": 0,
+      "bodySnippet": " window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'denied', functionality_storage: 'denied', personalization_storage: 'denied', securit",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50293,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_016",
+    "name": "Ventmark",
+    "domain": "useventmark.com",
+    "subUrl": "https://useventmark.com/",
+    "probe": {
+      "finalUrl": "https://useventmark.com/",
+      "status": 200,
+      "latency": 2995,
+      "title": "Ventmark: Free startup directory for founders",
+      "forms": 1,
+      "bodySnippet": " Ventmark: Free startup directory for founders Skip to content ((a,b,c,d,e,f,g,h)=>{let i=document.documentElement,j=[\"light\",\"dark\"];function k(b){var c;(Array.isArray(a)?a:[a]).forEach(a=>{let c=\"class\"===a,d=c&&f?e.map(a=>f[a]||a):e;c?(i.classList.remove(...d),i.classList.add(f&&f[b]?f[b]:b)):i.s",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 53560,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_017",
+    "name": "Central India Tech",
+    "domain": "centralindiatech.com",
+    "subUrl": "https://centralindiatech.com/submit",
+    "probe": {
+      "finalUrl": "https://centralindiatech.com/submit",
+      "status": 200,
+      "latency": 1240,
+      "title": "Submit to Central India Tech | Central India Tech",
+      "forms": 0,
+      "bodySnippet": " Submit to Central India Tech | Central India Tech Central India Tech Nagpur Startups Jobs Walk-Ins Events Founders Hiring Search Nagpur ... Search ⌘ K Add Startup Sign In Add to Central India Tech Help build the most complete directory of Central India&#x27;s startup and technology ecosystem across",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 58312,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_018",
+    "name": "LaunchPad India",
+    "domain": "launchpadindia.in",
+    "subUrl": "https://launchpadindia.in/",
+    "probe": {
+      "finalUrl": "https://launchpadindia.in/",
+      "status": 200,
+      "latency": 493,
+      "title": "Launchpad India",
+      "forms": 0,
+      "bodySnippet": " Launchpad India * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; scroll-behavior: smooth; } body { background: #ffffff; color: #222; overflow-x: hidden; } nav { position: fixed; width: 100%; top: 0; left: 0; padding: 18px 8%; display: flex; justify-content: spa",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 7451,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_019",
+    "name": "Index by Dodo Payments",
+    "domain": "dodopayments.com",
+    "subUrl": "https://index.dodopayments.com/",
+    "probe": {
+      "finalUrl": "https://index.dodopayments.com/",
+      "status": 429,
+      "latency": 321,
+      "title": "Vercel Security Checkpoint",
+      "forms": 0,
+      "bodySnippet": " Vercel Security Checkpoint .spinner[data-astro-cid-ijmsm3te]{flex-direction:column;justify-content:center;align-items:center;display:flex}.spinner-circle[data-astro-cid-ijmsm3te]{transform-origin:50%;animation:1s step-start infinite spinner-circle-animate}rect[data-astro-cid-ijmsm3te]{fill:var(--ds",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 36997,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_020",
+    "name": "Bootstrap Directory",
+    "domain": "bootstrapdirectory.com",
+    "subUrl": "https://bootstrapdirectory.com/submit",
+    "probe": {
+      "finalUrl": "https://bootstrapdirectory.com/submit",
+      "status": 200,
+      "latency": 1635,
+      "title": "Submit or Claim a Listing | Bootstrap Directory",
+      "forms": 1,
+      "bodySnippet": " Submit or Claim a Listing | Bootstrap Directory [{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"@id\":\"https://bootstrapdirectory.com/#organization\",\"name\":\"Bootstrap Directory\",\"url\":\"https://bootstrapdirectory.com\",\"logo\":\"https://bootstrapdirectory.com/icon.svg\",\"description\":\"A curated",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50887,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_021",
+    "name": "Altern",
+    "domain": "altern.to",
+    "subUrl": "https://altern.to/",
+    "probe": {
+      "finalUrl": "https://altern.to/",
+      "status": 0,
+      "error": "getaddrinfo ENOTFOUND altern.to",
+      "latency": 34
+    }
+  },
+  {
+    "id": "TXC_B2_022",
+    "name": "SaaSpa.ge",
+    "domain": "saaspa.ge",
+    "subUrl": "https://saaspa.ge/",
+    "probe": {
+      "finalUrl": "https://www.saaspa.ge/",
+      "status": 200,
+      "latency": 1030,
+      "title": "Saaspa.ge - Launch Your Product This Week",
+      "forms": 0,
+      "bodySnippet": " Saaspa.ge - Launch Your Product This Week [{\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"Saaspa.ge\",\"alternateName\":\"listdir\",\"url\":\"https://www.saaspa.ge\",\"logo\":\"https://www.saaspa.ge/logo-saaspa.ge-250-250.png\",\"description\":\"A Product-Hunt-style launch directory where makers l",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 58135,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_023",
+    "name": "PeerPush",
+    "domain": "peerpush.net",
+    "subUrl": "https://peerpush.net/",
+    "probe": {
+      "finalUrl": "https://peerpush.com/",
+      "status": 200,
+      "latency": 1454,
+      "title": "PeerPush - Get Found by People and AI",
+      "forms": 1,
+      "bodySnippet": " PeerPush - Get Found by People and AI {\"@context\":\"https://schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https://peerpush.com/#website\",\"name\":\"PeerPush\",\"alternateName\":\"peerpush.com\",\"url\":\"https://peerpush.com\",\"description\":\"PeerPush is the product discovery platform for people and AI. Struct",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50499,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_024",
+    "name": "HUNT0",
+    "domain": "hunt0.com",
+    "subUrl": "https://hunt0.com/",
+    "probe": {
+      "finalUrl": "https://hunt0.com/",
+      "status": 200,
+      "latency": 674,
+      "title": "HUNT0 — Ship Early. Hunt Early.",
+      "forms": 0,
+      "bodySnippet": " HUNT0 — Ship Early. Hunt Early. ((e,t,r,n,o,i,a,s)=>{let l=document.documentElement,u=[\"light\",\"dark\"];function c(t){var r;(Array.isArray(e)?e:[e]).forEach(e=>{let r=\"class\"===e,n=r&&i?o.map(e=>i[e]||e):o;r?(l.classList.remove(...n),l.classList.add(t)):l.setAttribute(e,t)}),r=t,s&&u.includes(r)&&(l",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50709,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_025",
+    "name": "BetaPage",
+    "domain": "betapage.co",
+    "subUrl": "https://betapage.co/",
+    "probe": {
+      "finalUrl": "https://pitchwall.co/",
+      "status": 200,
+      "latency": 2862,
+      "title": "PitchWall - Discover New AI Products Every Day",
+      "forms": 0,
+      "bodySnippet": " PitchWall - Discover New AI Products Every Day (function() { try { if (localStorage.getItem(\"banner-261103\") === 'true') { document.documentElement.style.setProperty('--banner-261103-display', 'none'); } } catch (e) {} })(); @layer theme { :root, :host { --ui-color-primary-50: var(--color-indigo-50",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 51172,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_026",
+    "name": "Open Startup List",
+    "domain": "openstartuplist.com",
+    "subUrl": "https://openstartuplist.com/",
+    "probe": {
+      "finalUrl": "https://openstartuplist.com/",
+      "status": 200,
+      "latency": 872,
+      "title": "Open Startup List",
+      "forms": 1,
+      "bodySnippet": " Open Startup List Open Startup List was acquired by Igor Svietlikov --> Blog Open Startups A curated directory of startups that share their metrics publicly — not every startup. Don’t fill this out if you're human: Subscribe What is an Open Startup? A company that shares its metrics publicly - metr",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 58290,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_027",
+    "name": "AppaList",
+    "domain": "appalist.com",
+    "subUrl": "https://appalist.com/",
+    "probe": {
+      "finalUrl": "https://appalist.com/",
+      "status": 200,
+      "latency": 1151,
+      "title": "AI Apps for Everyday Work, Marketing, and Productivity - Appa List (2026)",
+      "forms": 2,
+      "bodySnippet": " AI Apps for Everyday Work, Marketing, and Productivity - Appa List (2026) :root { --color-blue-50: #ecfdf5; --color-blue-100: #d1fae5; --color-blue-200: #d1fae5; --color-blue-300: #34d399; --color-blue-600: #059669; --color-blue-700: #047857; --color-blue-800: #065f46; --color-emerald-50: #ecfdf5; ",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50074,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_028",
+    "name": "BuildHop",
+    "domain": "buildhop.com",
+    "subUrl": "https://buildhop.com/",
+    "probe": {
+      "finalUrl": "https://buildhop.com/",
+      "status": 200,
+      "latency": 519,
+      "title": "Construction Materials Procurement in Saudi Arabia &amp; Qatar | BuildHop",
+      "forms": 0,
+      "bodySnippet": " Construction Materials Procurement in Saudi Arabia &amp; Qatar | BuildHop document.documentElement.classList.add(\"js\"); .seo-fallback { max-width: 1100px; margin: 3rem auto; padding: 2rem; font: 16px/1.7 system-ui, sans-serif; } .seo-fallback a { color: #453200; } .seo-fallback nav a { margin-right",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50477,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_029",
+    "name": "LaunchDirectories",
+    "domain": "launchdirectories.com",
+    "subUrl": "https://launchdirectories.com/",
+    "probe": {
+      "finalUrl": "https://launchdirectories.com/",
+      "status": 200,
+      "latency": 1341,
+      "title": "100+ Best Startup Directories to Launch | LaunchDirectories",
+      "forms": 0,
+      "bodySnippet": " 100+ Best Startup Directories to Launch | LaunchDirectories {\"@context\":\"https://schema.org\",\"@type\":\"Organization\",\"name\":\"LaunchDirectories\",\"alternateName\":\"Launch Directories\",\"description\":\"Curated directory of startup directories, launch platforms, and high-authority sites for building backli",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 50942,
+      "error": null
+    }
+  },
+  {
+    "id": "TXC_B2_030",
+    "name": "Ramen.Tools",
+    "domain": "ramen.tools",
+    "subUrl": "https://ramen.tools/",
+    "probe": {
+      "finalUrl": "https://ramen.tools/",
+      "status": 200,
+      "latency": 1223,
+      "title": "ramen.tools - See what tools 6000+ makers are using",
+      "forms": 0,
+      "bodySnippet": " ramen.tools - See what tools 6000+ makers are using const prefixio=''; Ramen.Tools &nbsp;&mdash;&nbsp; All the Tools built and used by 6,000+ Makers. Explore Leaderboard Play Sign in Explore Leaderboard Search Help header{z-index:2;} h1{font-size:52px;font-weight:400;font-style:italic;/*max-width:5",
+      "hasCloudflare": false,
+      "hasCaptcha": false,
+      "hasTurnstile": false,
+      "hasPaidOnly": false,
+      "contentLength": 48317,
+      "error": null
+    }
+  }
+]

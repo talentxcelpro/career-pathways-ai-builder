@@ -18,7 +18,17 @@ export const DEFAULT_TITLE = 'TalentXcel | Global Professional Talent Network, J
 export const DEFAULT_DESCRIPTION =
   'TalentXcel brings together professional profiles, job listings, career resources, resume tools, and hiring services.';
 
-export const DEFAULT_OG_IMAGE = `${PRODUCTION_ORIGIN}/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png`;
+export const DEFAULT_OG_IMAGE = `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-default.png`;
+
+export const OG_IMAGES = {
+  default: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-default.png`,
+  jobs: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-jobs.png`,
+  passport: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-passport.png`,
+  salaries: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-salaries.png`,
+  colleges: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-colleges.png`,
+  resume: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-resume.png`,
+  article: `${PRODUCTION_ORIGIN}/assets/og/talentxcel-og-article.png`,
+} as const;
 
 /** Path prefixes that must never be indexed (private, auth, admin, app-internal). */
 export const NOINDEX_PREFIXES = [

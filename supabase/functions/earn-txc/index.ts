@@ -184,7 +184,32 @@ Deno.serve(async (req) => {
       balance = newBalance;
     }
 
-    // Create transaction record
+    // Call atomic stored procedure with row-locking and idempotency
+    const { data: rpcResult, error: rpcError } = await supabaseClient.rpc('txc_award_reward', {
+      p_user_id: user.id,
+      p_action: action,
+      p_amount: reward.amount,
+      p_description: reward.description,
+      p_cooldown_minutes: reward.cooldownMinutes,
+      p_reference_id: metadata?.reference_id || null,
+      p_idempotency_key: metadata?.idempotency_key || null
+    });
+
+    if (!rpcError && rpcResult?.success) {
+      return new Response(
+        JSON.stringify(rpcResult),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    if (!rpcError && rpcResult?.error === 'Cooldown active') {
+      return new Response(
+        JSON.stringify(rpcResult),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 429 }
+      );
+    }
+
+    // Fallback: Atomic Balance Upsert
     const { error: txError } = await supabaseClient
       .from('txc_transactions')
       .insert({
@@ -204,7 +229,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Update balance
     const newBalance = (balance.txc_balance || 0) + reward.amount;
     const newTotalEarned = (balance.total_earned || 0) + reward.amount;
 

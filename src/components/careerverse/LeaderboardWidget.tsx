@@ -63,7 +63,14 @@ export const LeaderboardWidget: React.FC<LeaderboardProps> = ({
 
       {/* Ranked Players List */}
       <div className="flex flex-col gap-1.5">
-        {players.slice(0, 5).map((player) => {
+        {players.length === 0 ? (
+          <div className="py-6 px-4 text-center rounded-xl bg-[#071329] border border-white/5 flex flex-col items-center gap-2">
+            <span className="text-xl">🚀</span>
+            <p className="text-xs font-bold text-white">Season 1 Starting Soon</p>
+            <p className="text-[11px] text-slate-400">Complete quests & activities to be the first on the leaderboard!</p>
+          </div>
+        ) : (
+          players.slice(0, 5).map((player) => {
           const isCurrentUser = player.is_current_user;
           return (
             <div
@@ -111,7 +118,7 @@ export const LeaderboardWidget: React.FC<LeaderboardProps> = ({
               </span>
             </div>
           );
-        })}
+        }))}
       </div>
 
       {/* View Full Link */}

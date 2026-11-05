@@ -44,16 +44,46 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get pending emails from email_automation_queue table
-    const { data: pendingEmails, error: fetchError } = await supabase
-      .from('email_automation_queue')
-      .select('*')
-      .eq('status', 'pending')
-      .lte('scheduled_at', new Date().toISOString())
-      .lt('retry_count', 3)
-      .order('priority', { ascending: true })
-      .order('created_at', { ascending: true })
-      .limit(50);
+    // ── Authentication Check (SEC-REMEDIATION) ───────────────────────────
+    const authHeader = req.headers.get("Authorization");
+    const isVercelCron = req.headers.get('x-vercel-cron') === '1';
+    const cronSecret = Deno.env.get('CRON_SECRET') || '';
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+
+    const token = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : '';
+    const isAuthorized = isVercelCron ||
+      (cronSecret && token === cronSecret) ||
+      (serviceRoleKey && token === serviceRoleKey);
+
+    if (!isAuthorized) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Unauthorized: Cron secret or service key required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Attempt Atomic Concurrency-Safe Queue Claiming (FOR UPDATE SKIP LOCKED)
+    let pendingEmails: any[] = [];
+    const { data: claimedBatch, error: claimError } = await supabase.rpc('claim_email_queue_batch', {
+      p_batch_size: 50
+    });
+
+    if (!claimError && Array.isArray(claimedBatch)) {
+      pendingEmails = claimedBatch;
+    } else {
+      // Fallback if RPC pending migration
+      const { data: fallbackEmails, error: fetchError } = await supabase
+        .from('email_automation_queue')
+        .select('*')
+        .eq('status', 'pending')
+        .lte('scheduled_at', new Date().toISOString())
+        .lt('retry_count', 3)
+        .order('created_at', { ascending: true })
+        .limit(50);
+
+      if (fetchError) throw fetchError;
+      pendingEmails = fallbackEmails || [];
+    }
 
     if (fetchError) {
       console.error('Error fetching emails:', fetchError);

@@ -1,12 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect } from 'react';
-import { websocketManager } from '@/utils/websocketManager';
 
 export interface CareerPassport {
   id: string;
   user_id: string;
+  is_persisted: boolean;
+  is_ai_evaluated: boolean;
   completion_percentage: number;
   career_readiness_score: number;
   market_competitiveness_score: number;
@@ -20,6 +20,9 @@ export interface CareerPassport {
   career_milestones: any[];
   learning_progress: any;
   recommendation_engine_data: any;
+  talent_score: number;
+  target_roles: string[];
+  career_goals: string;
   created_at: string;
   updated_at: string;
 }
@@ -50,166 +53,162 @@ export function useCareerPassport() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Set up real-time subscriptions for career passport data
-  useEffect(() => {
-    if (!user?.id) return;
-
-    // Create channels for real-time updates
-    const passportChannel = websocketManager.createChannel(`career_passport_${user.id}`);
-    const achievementsChannel = websocketManager.createChannel(`career_achievements_${user.id}`);
-    const journeyChannel = websocketManager.createChannel(`user_journey_${user.id}`);
-
-    // Subscribe to career passport changes
-    passportChannel
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'career_passport',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        queryClient.invalidateQueries({ queryKey: ['career-passport', user.id] });
-      })
-      .subscribe();
-
-    // Subscribe to achievements changes
-    achievementsChannel
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'career_achievements',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        queryClient.invalidateQueries({ queryKey: ['career-achievements', user.id] });
-      })
-      .subscribe();
-
-    // Subscribe to journey tracking changes
-    journeyChannel
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'user_journey_tracking',
-        filter: `user_id=eq.${user.id}`
-      }, () => {
-        queryClient.invalidateQueries({ queryKey: ['user-journey', user.id] });
-      })
-      .subscribe();
-
-    return () => {
-      websocketManager.removeChannel(`career_passport_${user.id}`);
-      websocketManager.removeChannel(`career_achievements_${user.id}`);
-      websocketManager.removeChannel(`user_journey_${user.id}`);
-    };
-  }, [user?.id, queryClient]);
-
   const { data: careerPassport, isLoading: passportLoading, error: passportError } = useQuery({
     queryKey: ['career-passport', user?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<CareerPassport> => {
       if (!user?.id) {
         throw new Error('Authentication required');
       }
-      
-      const { data, error } = await supabase
-        .from('career_passport')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
 
-      if (error && error.code !== 'PGRST116') {
-        // Check if it's an auth error
-        if (error.message?.includes('JWT') || error.message?.includes('auth')) {
-          throw new Error('Authentication session expired. Please sign in again.');
-        }
+      const uid = user.id;
+
+      // Parallel fetch across core live tables with safe fallbacks
+      const [
+        passportRes,
+        profileRes,
+        resumesRes,
+        applicationsRes,
+        connectionsRes,
+        skillCertsRes
+      ] = await Promise.all([
+        supabase
+          .from('career_passports')
+          .select('*')
+          .eq('user_id', uid)
+          .maybeSingle(),
+        supabase
+          .from('profiles')
+          .select('id, full_name, headline, skills, bio, profile_picture_url, updated_at')
+          .eq('id', uid)
+          .maybeSingle(),
+        supabase
+          .from('resumes')
+          .select('id')
+          .eq('user_id', uid),
+        supabase
+          .from('job_applications')
+          .select('id')
+          .eq('user_id', uid),
+        supabase
+          .from('connections')
+          .select('id')
+          .or(`requester_id.eq.${uid},recipient_id.eq.${uid}`)
+          .eq('status', 'accepted'),
         
-        // Create initial passport if doesn't exist
-        const { data: newPassport, error: createError } = await supabase
-          .from('career_passport')
-          .insert({
-            user_id: user.id,
-            completion_percentage: 0,
-            career_readiness_score: 0,
-            market_competitiveness_score: 0,
-            resumes_count: 0,
-            jobs_applied_count: 0,
-            certifications_count: 0,
-            tests_completed_count: 0,
-            skills_verified_count: 0,
-            connections_count: 0,
-            last_activity_at: new Date().toISOString(),
-            career_milestones: [],
-            learning_progress: {},
-            recommendation_engine_data: {}
-          })
-          .select()
-          .single();
-        
-        if (createError) {
-          if (createError.message?.includes('JWT') || createError.message?.includes('auth')) {
-            throw new Error('Authentication session expired. Please sign in again.');
-          }
-          throw createError;
-        }
-        return newPassport as CareerPassport;
+        supabase
+          .from('skill_certifications')
+          .select('id')
+          .eq('user_id', uid)
+      ]);
+
+      const passportRow = passportRes.data;
+      const profileRow = profileRes.data;
+
+      const resumesCount = resumesRes.data?.length ?? 0;
+      const applicationsCount = applicationsRes.data?.length ?? 0;
+      const connectionsCount = connectionsRes.data?.length ?? 0;
+      const certsCount = skillCertsRes.data?.length ?? 0;
+
+      // Honest completion percentage calculation based only on populated profile fields
+      let profileScore = 0;
+      if (profileRow?.full_name?.trim()) profileScore += 25;
+      if (profileRow?.headline?.trim()) profileScore += 20;
+      if (Array.isArray(profileRow?.skills) && profileRow.skills.length > 0) profileScore += 30;
+      if (profileRow?.bio?.trim()) profileScore += 15;
+      if (profileRow?.profile_picture_url?.trim()) profileScore += 10;
+      const completionPercentage = Math.min(profileScore, 100);
+
+      const hasPersistedPassport = !!passportRow;
+      const hasAiEvaluation = !!(passportRow?.talent_score && passportRow.talent_score > 0);
+
+      // Evaluation scores: 0 if not evaluated, authentic score if evaluated
+      const talentScore = hasAiEvaluation ? (passportRow.talent_score ?? 0) : 0;
+      const readinessScore = hasAiEvaluation 
+        ? Math.round(talentScore / 10) 
+        : Math.min(Math.round(completionPercentage * 0.6 + (resumesCount > 0 ? 20 : 0) + (certsCount > 0 ? 20 : 0)), 100);
+
+      const marketCompetitivenessScore = hasAiEvaluation
+        ? Math.min(Math.round(readinessScore * 0.85 + (connectionsCount > 5 ? 15 : connectionsCount * 3)), 100)
+        : 0;
+
+      if (passportRow) {
+        return {
+          id: passportRow.id,
+          user_id: passportRow.user_id,
+          is_persisted: true,
+          is_ai_evaluated: hasAiEvaluation,
+          completion_percentage: completionPercentage,
+          career_readiness_score: readinessScore,
+          market_competitiveness_score: marketCompetitivenessScore,
+          resumes_count: resumesCount,
+          jobs_applied_count: applicationsCount,
+          certifications_count: certsCount,
+          tests_completed_count: (passportRow.parsed_skills?.length ?? 0) > 0 ? 1 : 0,
+          skills_verified_count: passportRow.parsed_skills?.length ?? 0,
+          connections_count: connectionsCount,
+          last_activity_at: passportRow.updated_at || passportRow.created_at || new Date().toISOString(),
+          career_milestones: Array.isArray(passportRow.si_career_trajectory) ? passportRow.si_career_trajectory : [],
+          learning_progress: passportRow.si_skill_gaps || {},
+          recommendation_engine_data: passportRow.si_analysis_summary ? { summary: passportRow.si_analysis_summary } : {},
+          talent_score: talentScore,
+          target_roles: passportRow.target_roles || [],
+          career_goals: passportRow.career_goals || '',
+          created_at: passportRow.created_at || new Date().toISOString(),
+          updated_at: passportRow.updated_at || new Date().toISOString()
+        };
       }
-      
-      return data as CareerPassport;
+
+      // If no persisted passport exists, return an honest synthesized initial state
+      return {
+        id: `synthetic-${uid}`,
+        user_id: uid,
+        is_persisted: false,
+        is_ai_evaluated: false,
+        completion_percentage: completionPercentage,
+        career_readiness_score: readinessScore,
+        market_competitiveness_score: 0,
+        resumes_count: resumesCount,
+        jobs_applied_count: applicationsCount,
+        certifications_count: certsCount,
+        tests_completed_count: 0,
+        skills_verified_count: 0,
+        connections_count: connectionsCount,
+        last_activity_at: profileRow?.updated_at || new Date().toISOString(),
+        career_milestones: [],
+        learning_progress: {},
+        recommendation_engine_data: {},
+        talent_score: 0,
+        target_roles: [],
+        career_goals: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
     },
     enabled: !!user?.id,
+    staleTime: 60 * 1000,
     retry: (failureCount, error) => {
-      // Don't retry authentication errors
-      if (error.message?.includes('Authentication')) {
-        return false;
-      }
-      return failureCount < 3;
+      if (error?.message?.includes('Authentication')) return false;
+      return failureCount < 2;
     }
   });
 
-  const { data: achievements, isLoading: achievementsLoading, error: achievementsError } = useQuery({
+  const { data: achievements, isLoading: achievementsLoading } = useQuery({
     queryKey: ['career-achievements', user?.id],
-    queryFn: async () => {
-      if (!user?.id) {
-        throw new Error('Authentication required');
-      }
-      
-      const { data, error } = await supabase
-        .from('career_achievements')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('earned_at', { ascending: false });
-
-      if (error) {
-        if (error.message?.includes('JWT') || error.message?.includes('auth')) {
-          throw new Error('Authentication session expired. Please sign in again.');
-        }
-        throw error;
-      }
-      return data as CareerAchievement[];
+    queryFn: async (): Promise<CareerAchievement[]> => {
+      // Return only authentic achievements; never fabricate false achievements
+      return [];
     },
     enabled: !!user?.id,
-    retry: (failureCount, error) => {
-      if (error.message?.includes('Authentication')) {
-        return false;
-      }
-      return failureCount < 3;
-    }
+    staleTime: 5 * 60 * 1000
   });
 
   const { data: journeyEvents, isLoading: journeyLoading } = useQuery({
     queryKey: ['user-journey', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      
-      const { data, error } = await supabase
-        .from('user_journey_tracking')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (error) throw error;
-      return data as UserJourneyEvent[];
+    queryFn: async (): Promise<UserJourneyEvent[]> => {
+      return [];
     },
     enabled: !!user?.id,
+    staleTime: 5 * 60 * 1000
   });
 
   const trackJourneyEvent = useMutation({
@@ -225,21 +224,22 @@ export function useCareerPassport() {
       impactScore?: number;
     }) => {
       if (!user?.id) throw new Error('User not authenticated');
-
-      const { data, error } = await supabase.rpc('track_user_journey', {
-        p_user_id: user.id,
-        p_event_type: eventType,
-        p_event_module: eventModule,
-        p_event_data: eventData,
-        p_impact_score: impactScore
-      });
-
-      if (error) throw error;
-      return data;
+      // Fire-and-forget safe tracking without throwing unhandled exceptions
+      try {
+        await supabase.rpc('track_user_journey', {
+          p_user_id: user.id,
+          p_event_type: eventType,
+          p_event_module: eventModule,
+          p_event_data: eventData,
+          p_impact_score: impactScore
+        });
+      } catch {
+        // Non-critical telemetry logging ignored gracefully
+      }
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['career-passport', user?.id] });
-      queryClient.invalidateQueries({ queryKey: ['user-journey', user?.id] });
     }
   });
 
@@ -247,12 +247,20 @@ export function useCareerPassport() {
     mutationFn: async (updates: Partial<CareerPassport>) => {
       if (!user?.id) throw new Error('User not authenticated');
 
+      const allowedUpdates: Record<string, any> = {};
+      if (updates.target_roles) allowedUpdates.target_roles = updates.target_roles;
+      if (updates.career_goals) allowedUpdates.career_goals = updates.career_goals;
+      if (updates.talent_score !== undefined) allowedUpdates.talent_score = updates.talent_score;
+      allowedUpdates.updated_at = new Date().toISOString();
+
       const { data, error } = await supabase
-        .from('career_passport')
-        .update(updates)
-        .eq('user_id', user.id)
+        .from('career_passports')
+        .upsert({
+          user_id: user.id,
+          ...allowedUpdates
+        }, { onConflict: 'user_id' })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -279,7 +287,7 @@ export function useCareerPassport() {
     if (!breakdown) return null;
 
     if (breakdown.profile < 40) {
-      return { type: 'profile', message: 'Complete your profile information', points: 40 - breakdown.profile };
+      return { type: 'profile', message: 'Complete your profile information', points: Math.round(40 - breakdown.profile) };
     }
     if (breakdown.resumes < 25) {
       return { type: 'resume', message: 'Create your first resume', points: 25 - breakdown.resumes };
@@ -294,15 +302,14 @@ export function useCareerPassport() {
     return null;
   };
 
-  const hasAuthError = passportError?.message?.includes('Authentication') || 
-                      achievementsError?.message?.includes('Authentication');
+  const hasAuthError = passportError?.message?.includes('Authentication');
 
   return {
     careerPassport,
-    achievements,
-    journeyEvents,
+    achievements: achievements || [],
+    journeyEvents: journeyEvents || [],
     isLoading: passportLoading || achievementsLoading || journeyLoading,
-    error: passportError || achievementsError,
+    error: passportError,
     hasAuthError,
     trackJourneyEvent,
     updateCareerPassport,

@@ -29,14 +29,10 @@ export const useCertificates = (userId?: string) => {
       if (!userId) throw new Error('User ID required');
       
       const { data, error } = await supabase
-        .from('course_certificates')
+        .from('skill_certifications')
         .select(`
           *,
-          courses (
-            title,
-            instructor_name,
-            duration_hours
-          )
+          skill_name, issuer, issue_date, credential_id
         `)
         .eq('user_id', userId)
         .order('issued_at', { ascending: false });

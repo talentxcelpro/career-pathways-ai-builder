@@ -7,6 +7,14 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
+// Canonical immutable pricing catalog for subscriptions
+const CANONICAL_PLANS: Record<string, { tier: string; planName: string; pricePaise: number }> = {
+  starter: { tier: "Starter", planName: "Career Starter", pricePaise: 19900 },
+  pro: { tier: "Pro", planName: "Career Pro", pricePaise: 49900 },
+  premium: { tier: "Premium", planName: "Career Premium", pricePaise: 99900 },
+  oneoff: { tier: "OneOff", planName: "Resume Download", pricePaise: 4900 },
+};
+
 // Constant-time string equality check to prevent timing attacks
 function timingSafeEqualStr(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
@@ -430,9 +438,56 @@ serve(async (req) => {
       }
     }
 
-    // Successful Verification: Activate Subscription Atomically
-    const targetTier = body.tier || "Pro";
-    const targetPlan = body.planName || `Career ${targetTier}`;
+    // Successful Verification: Authoritatively resolve tier and plan from server catalog & Razorpay order
+    // NEVER trust unvalidated client input for subscription tier or price
+    const { data: pendingRecord } = await supabaseClient
+      .from("subscribers")
+      .select("subscription_plan, subscription_tier, amount, status")
+      .eq("user_id", authenticatedUser.id)
+      .maybeSingle();
+
+    let targetTier = pendingRecord?.subscription_tier || "Pro";
+    let targetPlan = pendingRecord?.subscription_plan || `Career ${targetTier}`;
+    let expectedPaise = pendingRecord?.amount || CANONICAL_PLANS.pro.pricePaise;
+
+    const rzpKeyId = Deno.env.get("RAZORPAY_KEY_ID");
+    if (rzpKeyId && razorpayKeySecret && !razorpay_order_id.startsWith("demo_")) {
+      try {
+        const basicAuth = btoa(`${rzpKeyId}:${razorpayKeySecret}`);
+        const rzpRes = await fetch(`https://api.razorpay.com/v1/orders/${razorpay_order_id}`, {
+          headers: { "Authorization": `Basic ${basicAuth}` }
+        });
+        if (rzpRes.ok) {
+          const rzpOrder = await rzpRes.json();
+          // Verify order ownership
+          if (rzpOrder.notes?.user_id && rzpOrder.notes.user_id !== authenticatedUser.id) {
+            console.error(`SECURITY ALERT: Order ${razorpay_order_id} assigned to ${rzpOrder.notes.user_id}, but claimed by ${authenticatedUser.id}`);
+            return new Response(
+              JSON.stringify({ success: false, error: "Payment order is assigned to another user account." }),
+              { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+          // Resolve tier from order notes
+          const orderTier = (rzpOrder.notes?.tier || "").toLowerCase();
+          if (CANONICAL_PLANS[orderTier]) {
+            targetTier = CANONICAL_PLANS[orderTier].tier;
+            targetPlan = CANONICAL_PLANS[orderTier].planName;
+            expectedPaise = CANONICAL_PLANS[orderTier].pricePaise;
+          }
+          // Verify paid amount matches canonical plan price (blocks ₹1 price tampering)
+          if (rzpOrder.amount < expectedPaise) {
+            console.error(`SECURITY ALERT: Paid order amount (${rzpOrder.amount}) does not match required tier price (${expectedPaise})`);
+            return new Response(
+              JSON.stringify({ success: false, error: "Payment amount does not meet required plan price." }),
+              { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+            );
+          }
+        }
+      } catch (orderFetchErr) {
+        console.warn("Could not query Razorpay order directly, using verified pending database order:", orderFetchErr);
+      }
+    }
+
     const subscriptionStart = new Date();
     const subscriptionEnd = new Date();
     subscriptionEnd.setMonth(subscriptionEnd.getMonth() + 1);
@@ -445,6 +500,7 @@ serve(async (req) => {
         subscribed: true,
         subscription_plan: targetPlan,
         subscription_tier: targetTier,
+        amount: expectedPaise,
         subscription_start: subscriptionStart.toISOString(),
         subscription_end: subscriptionEnd.toISOString(),
         next_billing_date: subscriptionEnd.toISOString(),

@@ -56,7 +56,7 @@ export function useOptimizedCareerData() {
         loginTransactionsResponse
       ] = await Promise.all([
         supabase
-          .from('career_passport')
+          .from('career_passports')
           .select('*')
           .eq('user_id', user.id)
           .maybeSingle(),
@@ -78,10 +78,7 @@ export function useOptimizedCareerData() {
           .from('posts')
           .select('id')
           .eq('user_id', user.id),
-        supabase
-          .from('career_achievements')
-          .select('*')
-          .eq('user_id', user.id),
+        Promise.resolve({ data: [] }),
         supabase
           .from('user_txc_balances')
           .select('total_earned')
@@ -195,28 +192,7 @@ export function useOptimizedCareerData() {
     refetchOnWindowFocus: false,
   });
 
-  // Set up real-time subscription for career passport updates
-  useEffect(() => {
-    if (!user?.id) return;
-
-    const passportChannel = websocketManager.createChannel(`optimized_career_${user.id}`);
-    
-    passportChannel
-      .on('postgres_changes', {
-        event: '*',
-        schema: 'public',
-        table: 'career_passport',
-        filter: `user_id=eq.${user.id}`
-      }, (payload) => {
-        console.log('Career passport updated:', payload);
-        // The query will automatically refresh due to real-time invalidation
-      })
-      .subscribe();
-
-    return () => {
-      websocketManager.removeChannel(`optimized_career_${user.id}`);
-    };
-  }, [user?.id]);
+  // Note: career_passports Realtime channel omitted (polled via React Query invalidation)
 
   // Memoize processed data to prevent unnecessary re-renders
   const processedData = useMemo(() => {

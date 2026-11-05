@@ -13,16 +13,53 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    // ── Authentication Check (SEC-REMEDIATION) ───────────────────────────
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Unauthorized: Bearer token required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const isServiceCall = serviceRoleKey && token === serviceRoleKey;
+
+    if (!isServiceCall) {
+      const { data: authData, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !authData?.user) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Unauthorized: Invalid or expired token" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const { data: roleRecord } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', authData.user.id)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      const isAdmin = roleRecord && (roleRecord.role === 'admin' || roleRecord.role === 'super_admin');
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Forbidden: Administrative privilege required" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     const { campaign_id } = await req.json();
     
     if (!campaign_id) {
       throw new Error("campaign_id is required");
     }
-    
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
 
     // Get campaign with template
     const { data: campaign, error: campaignError } = await supabase

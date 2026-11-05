@@ -1284,115 +1284,124 @@
   ],
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/jobs",
       "has": [
         {
           "type": "host",
-          "value": "www.talentxcel.in"
+          "value": "jobs.talentxcel.in"
         }
       ],
-      "destination": "https://talentxcel.in/:path*",
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/salary",
       "has": [
         {
           "type": "host",
-          "value": "employer.talentxcel.in"
+          "value": "salary.talentxcel.in"
         }
       ],
-      "destination": "https://employers.talentxcel.in/:path*",
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/resources",
-      "destination": "/news",
+      "source": "/careers",
+      "has": [
+        {
+          "type": "host",
+          "value": "careers.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/company/salesforce/jobs/data-engineer",
-      "destination": "https://talentxcel.in/career-insights",
+      "source": "/resume",
+      "has": [
+        {
+          "type": "host",
+          "value": "resume.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/company/salesforce/jobs/data-engineer/",
-      "destination": "https://talentxcel.in/career-insights",
+      "source": "/learning",
+      "has": [
+        {
+          "type": "host",
+          "value": "learning.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/ai-career-operating-system",
-      "destination": "https://talentxcel.in/career-insights",
+      "source": "/colleges",
+      "has": [
+        {
+          "type": "host",
+          "value": "colleges.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/career-operating-system",
-      "destination": "https://talentxcel.in/career-insights",
+      "source": "/employer",
+      "has": [
+        {
+          "type": "host",
+          "value": "employers.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/job/:path*",
-      "destination": "https://talentxcel.in/jobs/:path*",
+      "source": "/employers",
+      "has": [
+        {
+          "type": "host",
+          "value": "employers.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/jobs/undefined",
-      "destination": "https://talentxcel.in/jobs",
+      "source": "/government-jobs",
+      "has": [
+        {
+          "type": "host",
+          "value": "government.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/jobs/null",
-      "destination": "https://talentxcel.in/jobs",
+      "source": "/government",
+      "has": [
+        {
+          "type": "host",
+          "value": "government.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/salaries/:path*",
-      "destination": "https://talentxcel.in/salary",
-      "permanent": true
-    },
-    {
-      "source": "/colleges/:slug/(admissions|campus|courses|cutoffs|fees|placements|rankings|reviews|scholarships)",
-      "destination": "https://talentxcel.in/colleges/:slug",
-      "permanent": true
-    },
-    {
-      "source": "/jobs/company/:path*",
-      "destination": "https://talentxcel.in/jobs",
-      "permanent": true
-    },
-    {
-      "source": "/college/:path*",
-      "destination": "https://talentxcel.in/colleges",
-      "permanent": true
-    },
-    {
-      "source": "/universities/:path*",
-      "destination": "https://talentxcel.in/colleges",
-      "permanent": true
-    },
-    {
-      "source": "/category/:path*",
-      "destination": "https://talentxcel.in/learning",
-      "permanent": true
-    },
-    {
-      "source": "/course/:path*",
-      "destination": "https://talentxcel.in/learning",
-      "permanent": true
-    },
-    {
-      "source": "/sitemap_index.xml",
-      "destination": "https://talentxcel.in/sitemap.xml",
-      "permanent": true
-    },
-    {
-      "source": "/sitemap-1.xml",
-      "destination": "https://talentxcel.in/sitemap.xml",
-      "permanent": true
-    },
-    {
-      "source": "/sitemap-2.xml",
-      "destination": "https://talentxcel.in/sitemap.xml",
+      "source": "/passport",
+      "has": [
+        {
+          "type": "host",
+          "value": "passport.talentxcel.in"
+        }
+      ],
+      "destination": "/",
       "permanent": true
     }
   ],

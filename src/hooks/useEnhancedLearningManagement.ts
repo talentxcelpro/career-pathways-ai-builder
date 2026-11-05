@@ -98,7 +98,7 @@ export const useEnhancedLearningManagement = () => {
         supabase.from('course_enrollments').select('*', { count: 'exact', head: true }),
         supabase.from('course_lessons').select('*', { count: 'exact', head: true }),
         supabase.from('skill_assessments').select('*', { count: 'exact', head: true }),
-        supabase.from('course_certificates').select('*', { count: 'exact', head: true }),
+        supabase.from('skill_certifications').select('*', { count: 'exact', head: true }),
         supabase.from('courses').select('category').not('category', 'is', null),
         supabase.from('course_enrollments')
           .select('*, courses(title), profiles(full_name)')

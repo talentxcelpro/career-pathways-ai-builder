@@ -35,6 +35,7 @@ import { InfrastructureScaleGate } from '@/lib/growth/InfrastructureScaleGate';
 import { GlobalIntentRouter } from '@/lib/growth/GlobalIntentRouter';
 import { GlobalDistributionOrchestrator, AcquisitionLoopExecution } from '@/lib/growth/GlobalDistributionOrchestrator';
 import { ProductionFunnelTrace } from '@/lib/growth/types';
+import { DailyGrowthDashboard } from '@/components/admin/DailyGrowthDashboard';
 
 export default function GrowthControlPlane() {
   const [timeHorizon, setTimeHorizon] = useState<'TODAY' | '7D' | '14D' | '30D'>('TODAY');
@@ -113,6 +114,9 @@ export default function GrowthControlPlane() {
             </a>
           </div>
         </div>
+
+        {/* ── LIVE DAILY GROWTH OS DASHBOARD (PHASE 14) ─────────────────────────── */}
+        <DailyGrowthDashboard />
 
         {/* ── INVARIANT GOVERNANCE NOTICE ─────────────────────────────────────────── */}
         <div className="p-3.5 rounded-xl bg-blue-950/40 border border-blue-800/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono">

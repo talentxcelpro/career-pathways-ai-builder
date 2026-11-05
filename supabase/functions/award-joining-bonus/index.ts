@@ -21,7 +21,59 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Find users who haven't received joining bonus yet
+    // ── Authentication Check (SEC-REMEDIATION) ───────────────────────────
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Unauthorized: Bearer token required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const cronSecret = Deno.env.get('CRON_SECRET') || '';
+
+    const isAuthorizedService = (serviceRoleKey && token === serviceRoleKey) || (cronSecret && token === cronSecret);
+    if (!isAuthorizedService) {
+      // Validate user token and verify admin privilege
+      const { data: authData, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !authData?.user) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Unauthorized: Invalid or expired token" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      const { data: roleRecord } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', authData.user.id)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      const isAdmin = roleRecord && (roleRecord.role === 'admin' || roleRecord.role === 'super_admin');
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Forbidden: Administrative privilege required" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Try executing atomic database stored procedure first
+    const { data: rpcResult, error: rpcError } = await supabase.rpc('txc_award_joining_bonus', {
+      p_batch_size: 100,
+      p_bonus_amount: JOINING_BONUS_AMOUNT
+    });
+
+    if (!rpcError && rpcResult?.success) {
+      return new Response(JSON.stringify(rpcResult), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200
+      });
+    }
+
+    // Bounded Cursor Fallback (max 100 users per invocation to prevent OOM)
     const { data: eligibleUsers, error: fetchError } = await supabase
       .from('profiles')
       .select('id, email, full_name')
@@ -29,7 +81,8 @@ const handler = async (req: Request): Promise<Response> => {
         SELECT DISTINCT user_id 
         FROM txc_transactions 
         WHERE activity_type = 'joining_bonus'
-      )`);
+      )`)
+      .limit(100);
 
     if (fetchError) {
       console.error('Error fetching eligible users:', fetchError);
@@ -76,13 +129,22 @@ const handler = async (req: Request): Promise<Response> => {
           continue;
         }
 
-        // Update or create balance
+        // Update or create balance using canonical schema columns (txc_balance, total_earned)
+        const { data: currentBal } = await supabase
+          .from('user_txc_balances')
+          .select('txc_balance, total_earned')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+        const currentTxc = currentBal?.txc_balance || 0;
+        const currentEarned = currentBal?.total_earned || 0;
+
         const { error: balanceError } = await supabase
           .from('user_txc_balances')
           .upsert({
             user_id: user.id,
-            available_balance: JOINING_BONUS_AMOUNT,
-            lifetime_earned: JOINING_BONUS_AMOUNT,
+            txc_balance: currentTxc + JOINING_BONUS_AMOUNT,
+            total_earned: currentEarned + JOINING_BONUS_AMOUNT,
             updated_at: new Date().toISOString()
           }, {
             onConflict: 'user_id'

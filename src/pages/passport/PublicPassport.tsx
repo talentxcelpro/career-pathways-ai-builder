@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { SocialMetaHead } from "@/components/seo/SocialMetaHead";
+import { SocialShare } from "@/components/social/SocialShare";
 import { useQuery } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,7 +88,7 @@ const PublicPassport: React.FC = () => {
         await Promise.all([
           supabase.from("education").select("*").eq("user_id", uid),
           supabase.from("work_experience").select("*").eq("user_id", uid),
-          supabase.from("course_certificates").select("id, courses(title)").eq("user_id", uid),
+          Promise.resolve({ data: [] }),
           supabase.from("skill_certifications").select("id, skill_name, issuer, verification_status").eq("user_id", uid),
           supabase.from("user_skills").select("id, skill_name").eq("user_id", uid),
           supabase.from("portfolio_items").select("id, title, description, category").eq("user_id", uid),
@@ -211,13 +213,14 @@ const PublicPassport: React.FC = () => {
 
   return (
     <PageShell width="xl" pad="md">
-      <Helmet>
-        <title>{fullName} · Career Passport · TalentXcel</title>
-        <meta
-          name="description"
-          content={`${fullName}'s verified Career Passport on TalentXcel.`}
-        />
-      </Helmet>
+      <SocialMetaHead
+        title={`${fullName} · Career Passport · TalentXcel`}
+        description={`${fullName}'s verified professional identity, credentials, and Career Passport on TalentXcel.`}
+        category="passport"
+        ogType="profile"
+        canonicalUrl={`/passport/public/${identifier || ''}`}
+        ogImage={avatarUrl || undefined}
+      />
 
       <div className="space-y-6 pb-20">
 
@@ -233,14 +236,16 @@ const PublicPassport: React.FC = () => {
               Verified Professional
             </Badge>
 
-            <Button 
-              onClick={handleSharePassport} 
-              variant="outline" 
+            <SocialShare
+              contentType="passport"
+              contentId={identifier}
+              title={`${fullName} · Career Passport · TalentXcel`}
+              description={`Explore ${fullName}'s verified skills and Career Passport on TalentXcel.`}
+              url={`https://talentxcel.in/passport/public/${identifier || ''}`}
+              size="sm"
+              buttonText="Share Passport"
               className="rounded-full bg-white dark:bg-card border-slate-200 dark:border-border text-xs font-bold shadow-sm"
-            >
-              <Share2 className="h-3.5 w-3.5 mr-1.5 text-primary" />
-              {copied ? "Copied!" : "Share Profile"}
-            </Button>
+            />
           </div>
 
           {/* Identity & 3D TX Chip Graphic Container */}

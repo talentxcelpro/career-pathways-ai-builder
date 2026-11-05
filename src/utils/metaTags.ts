@@ -40,6 +40,13 @@ export const updateMetaTags = (config: MetaTagsConfig) => {
   
   if (config.image) {
     updateOrCreateMetaTag('property', 'og:image', config.image);
+    updateOrCreateMetaTag('property', 'og:image:secure_url', config.image);
+    updateOrCreateMetaTag('property', 'og:image:type', 'image/png');
+    updateOrCreateMetaTag('property', 'og:image:width', '1200');
+    updateOrCreateMetaTag('property', 'og:image:height', '630');
+    updateOrCreateMetaTag('property', 'og:site_name', 'TalentXcel');
+    updateOrCreateMetaTag('name', 'twitter:card', 'summary_large_image');
+    updateOrCreateMetaTag('name', 'twitter:site', '@talentxcel');
   }
   
   if (config.type) {

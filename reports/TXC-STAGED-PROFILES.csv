@@ -1,0 +1,4 @@
+"Profile_ID","Platform_Name","Registrable_Root_Domain","Opportunity_Category","Staging_Database_Table","Profile_Tier","Listing_Cost","Staged_Listing_URL","Outbound_Network_Status","Pipeline_Stage"
+"TXC_STG_001","SaaSHub","saashub.com","Free Software Discovery Directory","b2b_directory_profiles (ID 31)","Free Organic Profile Queue","₹0.00","https://saashub.com/submit","ZERO_NETWORK_SUBMISSION (Local Staging Only)","STAGED_NOT_SUBMITTED"
+"TXC_STG_002","Launching Next","launchingnext.com","Free Product Launch Directory","b2b_directory_profiles (ID 32)","Free Standard Queue","₹0.00","https://launchingnext.com/submit","ZERO_NETWORK_SUBMISSION (Local Staging Only)","STAGED_NOT_SUBMITTED"
+"TXC_STG_003","PitchWall","pitchwall.co","Free Product Directory","b2b_directory_profiles (ID 33)","Free Product Tier","₹0.00","https://pitchwall.co/submit","ZERO_NETWORK_SUBMISSION (Local Staging Only)","STAGED_NOT_SUBMITTED"

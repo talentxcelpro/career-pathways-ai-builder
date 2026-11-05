@@ -133,20 +133,19 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           if (window.location.pathname !== '/') {
             navigate('/', { replace: true });
           }
-        } else if (event === 'SIGNED_IN' && session?.user) {
-          // Guarantee real-time profile existence and auto-connection with main account
+        } else if (session?.user) {
+          // Guarantee real-time profile existence on ANY authenticated event
           ensureUserProfileAndAdminConnection(session.user).catch(() => {});
-          // Attribute any stored referral code
-          attributeStoredReferral().catch(() => {});
-          const currentPath = window.location.pathname;
-          
-          // Only redirect if on auth pages
-          if (currentPath.startsWith('/auth')) {
-            const redirectPath = resolvePostAuthDestination({
-              searchParams: new URLSearchParams(window.location.search),
-              userMetadata: session.user.user_metadata,
-            });
-            navigate(redirectPath, { replace: true });
+          if (event === 'SIGNED_IN') {
+            attributeStoredReferral().catch(() => {});
+            const currentPath = window.location.pathname;
+            if (currentPath.startsWith('/auth')) {
+              const redirectPath = resolvePostAuthDestination({
+                searchParams: new URLSearchParams(window.location.search),
+                userMetadata: session.user.user_metadata,
+              });
+              navigate(redirectPath, { replace: true });
+            }
           }
         }
         

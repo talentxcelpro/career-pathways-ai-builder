@@ -565,6 +565,65 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
           </div>
         );
 
+      case 'JOBS':
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-slate-900/60 border-slate-800 text-slate-100 hover:border-blue-500/40 transition-colors">
+              <CardHeader className="pb-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center mb-2 border border-blue-500/20">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-lg font-bold text-white">Verified Tech Jobs</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-slate-300 space-y-2">
+                <p>Explore thousands of verified engineering, product, data, and design roles across top global and Indian companies.</p>
+                <div className="pt-2">
+                  <Link to="/jobs" className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1">
+                    <span>Search verified jobs</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900/60 border-slate-800 text-slate-100 hover:border-blue-500/40 transition-colors">
+              <CardHeader className="pb-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center mb-2 border border-blue-500/20">
+                  <Building2 className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-lg font-bold text-white">Top Tech Hubs</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-slate-300 space-y-2">
+                <p>Direct opportunities in Bangalore, Hyderabad, Pune, Delhi-NCR, Mumbai, and global remote roles.</p>
+                <div className="pt-2">
+                  <Link to="/bangalore" className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1">
+                    <span>Explore tech locations</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-900/60 border-slate-800 text-slate-100 hover:border-blue-500/40 transition-colors">
+              <CardHeader className="pb-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600/10 text-blue-400 flex items-center justify-center mb-2 border border-blue-500/20">
+                  <Zap className="w-5 h-5" />
+                </div>
+                <CardTitle className="text-lg font-bold text-white">Direct Recruiter Access</CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-slate-300 space-y-2">
+                <p>Apply with your verified Career Passport to fast-track hiring and skip traditional screening queues.</p>
+                <div className="pt-2">
+                  <a href="https://passport.talentxcel.in" className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1">
+                    <span>View Career Passport</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -677,6 +736,24 @@ export const SubdomainLandingPage: React.FC<SubdomainLandingPageProps> = ({ univ
             </p>
             {renderFeaturesForUniverse()}
           </div>
+
+          {/* Subdomain-Specific FAQs (Matching pre-rendered HTML) */}
+          {identity.faqs && identity.faqs.length > 0 && (
+            <div className="pt-8 border-t border-slate-800/80">
+              <div className="flex items-center gap-2 mb-2">
+                <Badge variant="outline" className="text-xs border-blue-500/30 text-sky-400">Knowledge Base</Badge>
+                <h2 className="text-xl sm:text-2xl font-bold text-white">Frequently Asked Questions</h2>
+              </div>
+              <div className="mt-4 grid gap-3">
+                {identity.faqs.map((faq, idx) => (
+                  <div key={idx} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1.5">
+                    <h3 className="text-sm sm:text-base font-bold text-white">{faq.question}</h3>
+                    <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Sibling Domain Cross-Links Section */}
           <div className="pt-8 border-t border-slate-800/80">

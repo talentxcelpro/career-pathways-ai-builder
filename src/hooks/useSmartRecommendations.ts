@@ -107,10 +107,7 @@ export const useSmartRecommendations = () => {
     try {
       // Get user's career data to generate insights
       const { data: careerData } = await supabase
-        .from('career_passport')
-        .select('*')
-        .eq('user_id', user?.id)
-        .single();
+        .from('career_passports').select('*').eq('user_id', user?.id).maybeSingle();
 
       const dynamicInsights: NetworkingInsight[] = [
         {
@@ -148,10 +145,7 @@ export const useSmartRecommendations = () => {
   const calculateNetworkingScore = async () => {
     try {
       const { data: careerData } = await supabase
-        .from('career_passport')
-        .select('connections_count, career_readiness_score')
-        .eq('user_id', user?.id)
-        .single();
+        .from('career_passports').select('parsed_skills').eq('user_id', user?.id).maybeSingle();
 
       if (careerData) {
         // Calculate score based on connections and activity

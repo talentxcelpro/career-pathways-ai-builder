@@ -1,0 +1,102 @@
+[
+  {
+    "num": 13,
+    "name": "AI SaaS Radar",
+    "domain": "aisaasradar.com",
+    "targetHost": "aisaasradar.com",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 0,
+    "sampleLink": null,
+    "hasDirectLinks": false,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 92,
+    "name": "ToolDock",
+    "domain": "zalize.com",
+    "targetHost": "tools.zalize.com",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 0,
+    "sampleLink": null,
+    "hasDirectLinks": false,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 90,
+    "name": "ThatsMyAI",
+    "domain": "thatsmy.ai",
+    "targetHost": "thatsmy.ai",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 0,
+    "sampleLink": null,
+    "hasDirectLinks": false,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 48,
+    "name": "Deekoya AI",
+    "domain": "deekoyaai.in",
+    "targetHost": "deekoyaai.in",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 41,
+    "sampleLink": {
+      "tag": "<a href=\"https://www.meta.com/ai-glasses/\" target=\"_blank\" rel=\"noopener\" class=\"card flex items-center gap-3 !p-3\">",
+      "href": "https://www.meta.com/ai-glasses/",
+      "rel": "noopener"
+    },
+    "hasDirectLinks": true,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 24,
+    "name": "AI ToolsXplorer",
+    "domain": "aitoolsxplorer.in",
+    "targetHost": "aitoolsxplorer.in",
+    "httpStatus": 307,
+    "sampleExternalLinksCount": 0,
+    "sampleLink": null,
+    "hasDirectLinks": false,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 3,
+    "name": "AI Bookmarks",
+    "domain": "aibookmarks.net",
+    "targetHost": "aibookmarks.net",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 0,
+    "sampleLink": null,
+    "hasDirectLinks": false,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 87,
+    "name": "Stackdrop",
+    "domain": "getstackdrop.com",
+    "targetHost": "getstackdrop.com",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 3,
+    "sampleLink": {
+      "tag": "<a href=\"https://x.com/karpathy/status/1886192184808149383\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-primary hover:underline\">",
+      "href": "https://x.com/karpathy/status/1886192184808149383",
+      "rel": "noopener noreferrer"
+    },
+    "hasDirectLinks": true,
+    "hasRedirectLinks": false
+  },
+  {
+    "num": 7,
+    "name": "AI Gear Base",
+    "domain": "aigearbase.com",
+    "targetHost": "aigearbase.com",
+    "httpStatus": 200,
+    "sampleExternalLinksCount": 1,
+    "sampleLink": {
+      "tag": "<a href=\"https://github.com/aigearbase\" rel=\"me nofollow noopener noreferrer\" target=\"_blank\" aria-label=\"AI Gear Base on GitHub\">",
+      "href": "https://github.com/aigearbase",
+      "rel": "me nofollow noopener noreferrer"
+    },
+    "hasDirectLinks": true,
+    "hasRedirectLinks": false
+  }
+]

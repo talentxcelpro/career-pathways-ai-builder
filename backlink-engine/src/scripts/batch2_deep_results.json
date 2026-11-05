@@ -1,0 +1,919 @@
+[
+  {
+    "id": "TXC_B2_001",
+    "name": "Ignlab Launch",
+    "domain": "ignlab.net",
+    "finalUrl": "https://launch.ignlab.net/",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "email",
+            "type": "email"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " Ignlab Launch — Discover & Submit SaaS Tools (No Sign-Up) %F0%9F%9A%80 \"> Ignlab Launch ☰ Submit a tool 🏆 Leaderboard Collections Guides Sign in 🌙 🚀 No sign-up · Free forever Discover great SaaS tools A free, no-account directory. Browse what's live, or submit your own — no sign-up required. 🔥 Tools of the day ‹ › Adsterra Monetize your website traffic with a global ad network for publishers. Advertising network Sponsored Cliqroom Watch together without the &quot;3, 2, 1, play&quot; countdo",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_002",
+    "name": "Maybe Labs",
+    "domain": "maybelabs.ai",
+    "finalUrl": "https://maybelabs.ai/launch",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "/launch",
+        "method": "get",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " Launch your startup · Free product directory | Maybe Labs Maybe Labs How it works Templates About Resources Launch Blog Launch Maybe Labs Launch Your next launch starts here. Launch your startup on Maybe Labs with a free, reviewed product listing. Share what you’re building, link to your website, and discover tools from other founders. Submit your product ↗ Made for your first audience. Free to submit, with no account required. A public product page and a link to your website. Reviewed before p",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": false,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_003",
+    "name": "CodeHype",
+    "domain": "codehype.in",
+    "finalUrl": "https://www.codehype.in/submit-saas",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Submit Your SaaS Product to CodeHype | SaaS Directory Home Launches Directories Blog Pricing Search products… ⌘K Login Launch your startup Home Submit SaaS SaaS directory submission Submit Your SaaS Product Looking for a place to submit a SaaS product? CodeHype accepts AI SaaS, developer tools, and APIs through a reviewed listing flow. Paste your URL, complete the details, and send it for review — organic submissions are free. Submit your SaaS Browse the SaaS directory Organic launch Free revie",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_004",
+    "name": "Upfynd",
+    "domain": "upfynd.com",
+    "finalUrl": "https://upfynd.com/submit",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Submit a product - Upfynd Launching something? List it on Upfynd for free. Submit your product UPfynd Best products Categories Tags Blog Company Search products… ⌘K Submit Sign in Top trending categories AI AI Assistants AI Image &amp; Video AI Agents AI Audio &amp; Voice LLMs &amp; AI Infrastructure Productivity Task &amp; Project Management Automation &amp; No-Code Remote &amp; Collaboration Notes &amp; Knowledge Calendar &amp; Scheduling Developer Tools Developer Tooling Databases &amp; Infr",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_005",
+    "name": "SupaHunt",
+    "domain": "supahunt.com",
+    "status": 503,
+    "error": null
+  },
+  {
+    "id": "TXC_B2_006",
+    "name": "The Tool Directory",
+    "domain": "thetooldirectory.com",
+    "finalUrl": "https://thetooldirectory.com/submit-a-tool/",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "post",
+        "inputs": [
+          {
+            "name": "ttd_submit_nonce",
+            "type": "hidden"
+          },
+          {
+            "name": "_wp_http_referer",
+            "type": "hidden"
+          },
+          {
+            "name": "ttd_submit_tool",
+            "type": "hidden"
+          },
+          {
+            "name": "tool_name",
+            "type": "text"
+          },
+          {
+            "name": "tool_url",
+            "type": "url"
+          },
+          {
+            "name": "tool_tagline",
+            "type": "text"
+          },
+          {
+            "name": "submitter_email",
+            "type": "email"
+          },
+          {
+            "name": "tool_platforms",
+            "type": "text"
+          },
+          {
+            "name": "tool_audiences",
+            "type": "text"
+          },
+          {
+            "name": "tool_use_cases",
+            "type": "text"
+          },
+          {
+            "name": "tool_alternatives",
+            "type": "text"
+          },
+          {
+            "name": "tool_logo",
+            "type": "url"
+          },
+          {
+            "name": "growth_challenge",
+            "type": "radio"
+          },
+          {
+            "name": "growth_challenge",
+            "type": "radio"
+          },
+          {
+            "name": "growth_challenge",
+            "type": "radio"
+          },
+          {
+            "name": "feature_interest",
+            "type": "checkbox"
+          }
+        ],
+        "textareas": [
+          "tool_screenshots",
+          "tool_description"
+        ]
+      }
+    ],
+    "cleanTextSnippet": " Submit a Tool - The Tool Directory T The Tool Directory Discover Categories Guides Community List for Free Free growth review Feature a tool Sign in Submit a tool ☰ Discover Categories Guides Community List for Free Free growth review — The Tofu Group ↗ Feature a tool Sign in Submit a tool 🔥 Trending ★ Top Rated Updates Deals Builders Hall of Fame Discovery Signals TOFU The Tofu Group Submitting a tool? If growth is the harder part, get a second pair of eyes. Free growth review ↗ Submit a Tool",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_007",
+    "name": "Linkrena",
+    "domain": "linkrena.com",
+    "finalUrl": "https://linkrena.com/",
+    "status": 200,
+    "formsCount": 2,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      },
+      {
+        "action": "javascript:throw new Error(&#x27;React form unexpectedly submitted.&#x27;)",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "email",
+            "type": "email"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " Get your AI tool discovered - Linkrena Skip to content Linkrena Tools Categories Launches Arena New Search Submit 36 tools launching this week Get your tool in front of people looking for it. Submit your SaaS or AI tool free. It gets a permanent listing, enters this week’s launch round, and stays accurate because we keep re-checking it. Your tool’s website Submit for free No account needed to submit. No card, ever. tools listed 2,531 clicks sent to makers 14,917 added this week 385 A permanent ",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_008",
+    "name": "Makeroo",
+    "domain": "makeroo.app",
+    "finalUrl": "https://makeroo.app/submit",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "url",
+            "type": "url"
+          },
+          {
+            "name": "name",
+            "type": "text"
+          },
+          {
+            "name": "tagline",
+            "type": "text"
+          },
+          {
+            "name": "logoUrl",
+            "type": "url"
+          },
+          {
+            "name": "tags",
+            "type": "text"
+          },
+          {
+            "name": "repoUrl",
+            "type": "url"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "platforms",
+            "type": "checkbox"
+          },
+          {
+            "name": "makerEmail",
+            "type": "email"
+          },
+          {
+            "name": "",
+            "type": "checkbox"
+          }
+        ],
+        "textareas": [
+          "description"
+        ]
+      }
+    ],
+    "cleanTextSnippet": " List your product — Makeroo Skip to content Makeroo Browse Submit Newsletter List your product Free to list. An AI check reads your site and verifies the listing. Doubtful ones go to a person. You can watch the result live after you submit. Product URL Fill from site We can read your site and fill in the rest. You review everything before submitting. Product name Tagline One line, 5 to 100 characters. Description What it is and who it is for, 20 to 2000 characters. Logo URL (optional) Category ",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_009",
+    "name": "10015 Product Finder",
+    "domain": "10015.io",
+    "finalUrl": "https://10015.io/product-finder/submit",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Submit Your Product — Free Startup &amp; SaaS Directory Listing | 10015 Tools Skip to content Submit Get Featured Extensions Add to Chrome Add to Firefox Menu Sign in Sign in Go back to Product Finder Submit your product 1. Please enter the webpage of your product * URL of your product * Submit URL Submit URL *Your site data will be fetched and used to fill out the submission form. Please review the fields. Why list on 10015.io? Reach makers, developers, and founders who already use 10015.io&#x",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_010",
+    "name": "Hype Star",
+    "domain": "hypestar.org",
+    "finalUrl": "https://hypestar.org/submit",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "",
+            "type": "url"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " List your project free — Hype Star Skip to content Open discovery Open to people and agents: search free, submit a project for permanent basic inclusion. Add to an agent → Hype Star Discover Spotlight Categories For agents Newsletter Badges API How it works List a project — free Discover Spotlight Categories For agents Newsletter Badges API How it works List a project — free ✦ Welcome to the Hype Star galaxy Set the mood Neon Dusk Mint Live Open listing List what you&#x27;re building. Free, wit",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": false,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_011",
+    "name": "AppsGit",
+    "domain": "appsgit.com",
+    "finalUrl": "https://appsgit.com/submit",
+    "status": 200,
+    "formsCount": 2,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "repoUrl",
+            "type": "url"
+          },
+          {
+            "name": "email",
+            "type": "email"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          }
+        ],
+        "textareas": [
+          "note"
+        ]
+      },
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "email",
+            "type": "email"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " Submit an Open-Source App · appsgit Skip to content appsgit Apps Categories Alternatives Collections Mobile apps Open-source Android and iOS apps Desktop apps Open-source software for Windows, Mac and Linux MCP servers Connect AI assistants to tools Agent skills SKILL.md add-ons for coding agents Templates &amp; UI kits Website templates, dashboards, boilerplates Trending MCP servers Gaining stars fastest Trending skills Gaining stars fastest Trending templates Gaining stars fastest Self-hosted",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_012",
+    "name": "FindOpenSource.dev",
+    "domain": "findopensource.dev",
+    "finalUrl": "https://findopensource.dev/submit",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "javascript:throw new Error(&#x27;React form unexpectedly submitted.&#x27;)",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "website",
+            "type": "text"
+          },
+          {
+            "name": "repo",
+            "type": "text"
+          },
+          {
+            "name": "relation",
+            "type": "radio"
+          },
+          {
+            "name": "relation",
+            "type": "radio"
+          },
+          {
+            "name": "relation",
+            "type": "radio"
+          },
+          {
+            "name": "github",
+            "type": "text"
+          },
+          {
+            "name": "email",
+            "type": "email"
+          }
+        ],
+        "textareas": [
+          "why"
+        ]
+      }
+    ],
+    "cleanTextSnippet": " Submit an open source project — FindOpenSource.dev Find OpenSource .dev Explore Categories Alternatives Trending Contribute Submit Search projects… Ctrl K Submit Submit Built something worth sharing? Suggest a project for the directory. Every submission is reviewed by hand, and listing is free. What we look for Public on GitHub with an open source license Commits in the last six months Useful to other developers, not a personal config or tutorial What happens next We check the repository, its a",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": false
+  },
+  {
+    "id": "TXC_B2_013",
+    "name": "LibHunt",
+    "domain": "libhunt.com",
+    "status": 403,
+    "error": null
+  },
+  {
+    "id": "TXC_B2_014",
+    "name": "TeaserTrack",
+    "domain": "teasertrack.cc",
+    "finalUrl": "https://teasertrack.cc/submit",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "$ACTION_REF_1",
+            "type": "hidden"
+          },
+          {
+            "name": "$ACTION_1:0",
+            "type": "hidden"
+          },
+          {
+            "name": "$ACTION_1:1",
+            "type": "hidden"
+          },
+          {
+            "name": "$ACTION_KEY",
+            "type": "hidden"
+          },
+          {
+            "name": "email",
+            "type": "email"
+          },
+          {
+            "name": "source",
+            "type": "hidden"
+          },
+          {
+            "name": "company",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " Submit your developer tool for free | TeaserTrack Skip to content teaser track / Explore Launches Categories GitHub Blog Submit Submit Home / Submit a tool Free listing Submit your developer tool Put your tool in front of developers who go looking for what is new. Listing is free, every submission is reviewed by a person, and nothing goes live without a real link behind it. Sign in to submit What we accept Tools developers build with Developer tools CLIs, editors, test runners, deploy platforms",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_015",
+    "name": "JevList",
+    "domain": "jevlist.ai",
+    "finalUrl": "https://jevlist.ai/submit",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "https://jevlist.ai/submit",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "_token",
+            "type": "hidden"
+          },
+          {
+            "name": "website",
+            "type": "text"
+          },
+          {
+            "name": "name",
+            "type": "text"
+          },
+          {
+            "name": "url",
+            "type": "url"
+          },
+          {
+            "name": "disclosure",
+            "type": "text"
+          },
+          {
+            "name": "submitter_name",
+            "type": "text"
+          },
+          {
+            "name": "submitter_email",
+            "type": "email"
+          }
+        ],
+        "textareas": [
+          "jev_value",
+          "app_access",
+          "project_details",
+          "review"
+        ]
+      }
+    ],
+    "cleanTextSnippet": " Submit a Jev App or Developer Project · JevList Skip to content Jev List Directory Resources Knowledge About Submit Directory Resources Knowledge About Submit a project Contribute Submit a project Apps, developer tools, integrations and starter kits are welcome, open or closed source, free or paid. Jev has to power a concrete feature or decision, and self-submissions need an affiliation note. Inclusion is reviewed by a human and is never paid for. Fields are required unless marked optional. You",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_016",
+    "name": "Ventmark",
+    "domain": "useventmark.com",
+    "finalUrl": "https://useventmark.com/",
+    "status": 200,
+    "formsCount": 2,
+    "forms": [
+      {
+        "action": "/startup",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "search"
+          }
+        ],
+        "textareas": []
+      },
+      {
+        "action": "/startup",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "search"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " Ventmark: Free startup directory for founders Skip to content Ventmark Startups Toggle theme (D) Sign in List your startup Discover startups. Meet their founders. The India-first directory of startups. Free to list, and every number says where it came from. Search startups List your startup free Loading startups… Explore by category All startups Artificial Intelligence SaaS Developer Tools Fintech Marketing E-commerce Productivity Mobile Apps Design Tools Analytics Education Health &amp; Fitnes",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_017",
+    "name": "Central India Tech",
+    "domain": "centralindiatech.com",
+    "finalUrl": "https://centralindiatech.com/submit",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Submit to Central India Tech | Central India Tech Central India Tech Nagpur Startups Jobs Walk-Ins Events Founders Hiring Search Nagpur ... Search ⌘ K Add Startup Sign In Add to Central India Tech Help build the most complete directory of Central India&#x27;s startup and technology ecosystem across Nagpur, Indore, and emerging hubs. All basic submissions are free. Free Add a Startup Get your company listed across Nagpur, Indore, and Central India. Free listing includes company profile, sector, ",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": false
+  },
+  {
+    "id": "TXC_B2_018",
+    "name": "LaunchPad India",
+    "domain": "launchpadindia.in",
+    "finalUrl": "https://launchpadindia.in/",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Launchpad India Launchpad India Services About Contact We Magnify Your Presence Launchpad India provides IT solutions, app & website development, branding, social media consultancy and legal consultancy services for startups, brands and enterprises across India. Get Started 📞 9997056567 Our Core Services Everything your business needs under one powerful platform. Website & App Development Professional digital solutions including responsive websites, mobile applications, software systems and bu",
+    "mentionsFree": false,
+    "mentionsBadge": false,
+    "mentionsOAuth": false,
+    "mentionsPricing": false
+  },
+  {
+    "id": "TXC_B2_019",
+    "name": "Index by Dodo Payments",
+    "domain": "dodopayments.com",
+    "status": 429,
+    "error": null
+  },
+  {
+    "id": "TXC_B2_020",
+    "name": "Bootstrap Directory",
+    "domain": "bootstrapdirectory.com",
+    "finalUrl": "https://bootstrapdirectory.com/submit",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "request-type",
+            "type": "radio"
+          },
+          {
+            "name": "request-type",
+            "type": "radio"
+          },
+          {
+            "name": "request-type",
+            "type": "radio"
+          },
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "email"
+          },
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "text"
+          },
+          {
+            "name": "",
+            "type": "url"
+          }
+        ],
+        "textareas": [
+          ""
+        ]
+      }
+    ],
+    "cleanTextSnippet": " Submit or Claim a Listing | Bootstrap Directory Skip to main content Bootstrap Directory Startup Funding Training Funding Contracts Funders Startups ◐ Auto ◐ Auto Home / Submit or claim a listing For funders &amp; program operators Submit or claim a listing Run a grant, competition, accelerator, loan, or training program that founders should know about? Suggest it, claim your organization&#x27;s existing listing, or tell us what needs fixing. 1 Send the details Use the form below. It opens an e",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_021",
+    "name": "Altern",
+    "domain": "altern.to",
+    "status": 0,
+    "error": "getaddrinfo ENOTFOUND altern.to"
+  },
+  {
+    "id": "TXC_B2_022",
+    "name": "SaaSpa.ge",
+    "domain": "saaspa.ge",
+    "finalUrl": "https://www.saaspa.ge/",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Saaspa.ge - Launch Your Product This Week Week of … Board locks in – See the board → ✕ This week Pricing Community Resources Blog loading Sign In Submit Submit Product Sign In This week Board locks in – d – h – m Pricing Posts Users Leaderboard Stats Directories Free Launch Directories Indie Launch Directories Dofollow Directories Guides Reddit Marketing Product Launch Checklist Blog Pin your launch to the top Boosts from $9 · Max membership Home Index New launch week — opens Nov 2 Put your pro",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_023",
+    "name": "PeerPush",
+    "domain": "peerpush.net",
+    "finalUrl": "https://peerpush.com/",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " PeerPush - Get Found by People and AI PeerPush Browse Integrate Advertise Signals Login Sign up Advertise Sign in Join 57,000+ builders Get Found by People and AI Paste your URL once. Builders upvote it, and AI assistants can read and recommend it when someone asks for a tool like yours. Search Add your product How it works Read 15.9M times by 31 AI systems including ChatGPT, Claude Claude, Perplexity Perplexity, Google Gemini Gemini , last 30 days 1,341,051 monthly visits across 158 countries ",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_024",
+    "name": "HUNT0",
+    "domain": "hunt0.com",
+    "finalUrl": "https://hunt0.com/",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " HUNT0 — Ship Early. Hunt Early. HUNT0 Home Explore Submit Blog Launch Toggle mode HUNT0 HUNT0 Ship Early. Hunt Early. GitHub GitHub Twitter X (Twitter) Contact Discover Explore Products Submit Product Blog Company About Contact Sitemap Legal Cookie Policy Privacy Policy Terms of Service © 2026 HUNT0 All Rights Reserved. Weekly Leaderboard Ship early. Hunt early. Community-ranked weekly launches, with every week shaped by the makers and voters who show up. Products Launching This Week Community-",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_025",
+    "name": "BetaPage",
+    "domain": "betapage.co",
+    "finalUrl": "https://pitchwall.co/",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " PitchWall - Discover New AI Products Every Day Sponsored Guest Post Watch: Protect your paid backlinks Automatically. Track, monitor, and enforce backlinks you pay for or exchange. Products Submit Product Videos Blog Advertise Discover New AI Products &amp; Tools Every Day Stay ahead with the latest AI innovations curated just for you. Submit Your Product Subscribe to Newsletter Sponsors Brand Audit in One Click Naise helps marketing teams find content gaps, competitor signals, and the next fix",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_026",
+    "name": "Open Startup List",
+    "domain": "openstartuplist.com",
+    "finalUrl": "https://openstartuplist.com/",
+    "status": 200,
+    "formsCount": 2,
+    "forms": [
+      {
+        "action": "",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "form-name",
+            "type": "hidden"
+          },
+          {
+            "name": "bot-field",
+            "type": "text"
+          },
+          {
+            "name": "email",
+            "type": "email"
+          }
+        ],
+        "textareas": []
+      },
+      {
+        "action": "",
+        "method": "POST",
+        "inputs": [
+          {
+            "name": "form-name",
+            "type": "hidden"
+          },
+          {
+            "name": "bot-field",
+            "type": "text"
+          },
+          {
+            "name": "name",
+            "type": "text"
+          },
+          {
+            "name": "email",
+            "type": "email"
+          },
+          {
+            "name": "metrics_url",
+            "type": "url"
+          }
+        ],
+        "textareas": [
+          "message"
+        ]
+      }
+    ],
+    "cleanTextSnippet": " Open Startup List Open Startup List was acquired by Igor Svietlikov --> Blog Open Startups A curated directory of startups that share their metrics publicly — not every startup. Don’t fill this out if you're human: Subscribe What is an Open Startup? A company that shares its metrics publicly - metrics like visitor analytics, marketing experiments - even revenue. Why should I care? We focus on companies that publish real numbers — revenue, traffic, experiments. Transparency you can learn from. H",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_027",
+    "name": "AppaList",
+    "domain": "appalist.com",
+    "finalUrl": "https://appalist.com/",
+    "status": 200,
+    "formsCount": 2,
+    "forms": [
+      {
+        "action": "/search",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      },
+      {
+        "action": "/search",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "q",
+            "type": "text"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " AI Apps for Everyday Work, Marketing, and Productivity - Appa List (2026) AD We Submit Your SaaS to 140+ Directories Effortlessly Latest Explore Submit Search Login Sign Up Search Latest Explore Submit a Tool Login Sign Up Browse by Category All AI Assistants APIs Analytics &amp; Data Audio &amp; Music Automation Blockchain &amp; Crypto Blogging &amp; Publishing Boilerplates &amp; Templates Business &amp; Finance Business Intelligence Career &amp; Jobs Chatbots Chrome Extensions Communities Con",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_028",
+    "name": "BuildHop",
+    "domain": "buildhop.com",
+    "finalUrl": "https://buildhop.com/",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " Construction Materials Procurement in Saudi Arabia &amp; Qatar | BuildHop Solutions BuildHop Go Fast ordering for quick jobs BuildHop Enterprise Full procurement for large contractors Market Pulse Live pricing and category insights For Suppliers Suppliers Overview Why suppliers grow with BuildHop Digital Delivery Notes Ditch paper. Save cost, time and admin pain Sell into KSA &amp; Qatar Logistics, MoR, warehousing &amp; sales Verified Directory Free verified vendor profile + KYC About Us Mini ",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": false,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_029",
+    "name": "LaunchDirectories",
+    "domain": "launchdirectories.com",
+    "finalUrl": "https://launchdirectories.com/",
+    "status": 200,
+    "formsCount": 1,
+    "forms": [
+      {
+        "action": "",
+        "method": "GET",
+        "inputs": [
+          {
+            "name": "",
+            "type": "email"
+          },
+          {
+            "name": "",
+            "type": "checkbox"
+          }
+        ],
+        "textareas": []
+      }
+    ],
+    "cleanTextSnippet": " 100+ Best Startup Directories to Launch | LaunchDirectories LaunchDirectories Find where to launch Directories Guides Free Tools Blog Bookmarks Submission Service 🎉 Launch Directories Browse 100+ startup directories , launch platforms, and high-authority sites to boost your visibility and build quality backlinks. Auto submit CoveragePush Get featured on Yahoo Finance, Business Insider, AP News and 500+ publications. Boost your domain rating, social proof and AI visibility. Get Featured → spons",
+    "mentionsFree": true,
+    "mentionsBadge": true,
+    "mentionsOAuth": true,
+    "mentionsPricing": true
+  },
+  {
+    "id": "TXC_B2_030",
+    "name": "Ramen.Tools",
+    "domain": "ramen.tools",
+    "finalUrl": "https://ramen.tools/",
+    "status": 200,
+    "formsCount": 0,
+    "forms": [],
+    "cleanTextSnippet": " ramen.tools - See what tools 6000+ makers are using Ramen.Tools &nbsp;&mdash;&nbsp; All the Tools built and used by 6,000+ Makers. Explore Leaderboard Play Sign in Explore Leaderboard Search Help --> See what tools other indie makers are cooking with! Janu Lingeswaran @JanuBuilds Enguerran Dector @enguerran TDMx app @TDMxme Sam @ FrogDR @samuelpigny Primo Cigoj @primo Guillaume Htu @GuillaumeHtu Vladislav Dyachenko @wowinter13 raymel 👋 @pseudokid l4rs @buildItN0w Przemek Kępka @schamack Stan B",
+    "mentionsFree": true,
+    "mentionsBadge": false,
+    "mentionsOAuth": true,
+    "mentionsPricing": false
+  }
+]
