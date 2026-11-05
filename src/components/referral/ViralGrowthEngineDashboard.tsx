@@ -28,13 +28,9 @@ import {
   Mail,
   QrCode,
   ExternalLink,
-  ChevronRight,
   Star,
   ArrowRight,
-  UserCheck,
-  MousePointerClick,
   UserPlus,
-  ShieldCheck,
   Sparkles,
   BarChart3,
   Medal,
@@ -105,12 +101,12 @@ const SHARE_PLATFORMS = [
 ];
 
 // ─── Funnel stages ───────────────────────────────────────────────────────────
+// Stages derived strictly from real rows in the referrals table (pending/completed).
+// Full click event tracking and deep auth joins will be enabled with referral_share_events in Phase 3.
 const FUNNEL_STAGES = [
-  { id: 'clicked', label: 'Link Opened', icon: MousePointerClick, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/40' },
-  { id: 'registered', label: 'Registered', icon: UserPlus, color: 'text-indigo-500', bg: 'bg-indigo-50 dark:bg-indigo-950/40' },
-  { id: 'verified', label: 'Email Verified', icon: ShieldCheck, color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-950/40' },
-  { id: 'activated', label: 'Profile Active', icon: UserCheck, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/40' },
-  { id: 'rewarded', label: 'Reward Qualified', icon: Gift, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/40' },
+  { id: 'invited', label: 'Invited Contacts', icon: UserPlus, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-950/40' },
+  { id: 'pending', label: 'Registration Pending', icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-950/40' },
+  { id: 'rewarded', label: 'Reward Qualified', icon: Gift, color: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-950/40' },
 ];
 
 // ─── Growth Missions ─────────────────────────────────────────────────────────
@@ -355,22 +351,21 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
   }, [referralLink, shareMessage, handleCopy]);
 
   // Build metrics
-  const totalClicks = stats.totalReferrals;
+  const totalInvited = referrals.length;
   const successful = stats.successfulReferrals;
   const pending = stats.pendingReferrals;
   const conversionRate = stats.conversionRate;
   const totalRewards = stats.totalRewards;
 
   // Build achievements
-  const achievements = buildAchievements(successful, stats.currentStreak, conversionRate, totalClicks);
+  const achievements = buildAchievements(successful, stats.currentStreak, conversionRate, totalInvited);
 
-  // Build funnel data from real referrals
+  // Build funnel data strictly from real rows in referrals table
+  const totalRewarded = referrals.filter(r => r.status === 'completed' && r.reward_amount > 0).length;
   const funnelData = {
-    clicked: totalClicks + successful,
-    registered: successful + pending,
-    verified: successful,
-    activated: successful,
-    rewarded: referrals.filter(r => r.status === 'completed' && r.reward_amount > 0).length,
+    invited: totalInvited,
+    pending: pending,
+    rewarded: totalRewarded,
   };
 
   // Mission progress from real referral data
@@ -415,7 +410,7 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-black text-foreground tracking-tight">
-            Growth Engine <span className="text-blue-600">⚡</span>
+            Refer &amp; Earn <span className="text-blue-600">🎁</span>
           </h2>
           <p className="text-xs text-muted-foreground font-medium">
             Turn your network into TalentXcel's next million users
@@ -455,32 +450,32 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
           {/* 6 Metric cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
             <MetricCard
-              label="People Reached"
-              value={fmt(funnelData.clicked)}
-              icon={MousePointerClick}
-              sub="Link views estimated"
+              label="Total Invited"
+              value={fmt(totalInvited)}
+              icon={UserPlus}
+              sub="Direct referrals"
               accent="text-blue-600"
             />
             <MetricCard
               label="Joined"
               value={fmt(successful)}
-              icon={UserPlus}
+              icon={CheckCircle}
               sub="Members activated"
               accent="text-emerald-600"
-            />
-            <MetricCard
-              label="Conversion"
-              value={`${conversionRate.toFixed(1)}%`}
-              icon={TrendingUp}
-              sub="Click-to-join rate"
-              accent="text-indigo-600"
             />
             <MetricCard
               label="Pending"
               value={fmt(pending)}
               icon={Clock}
-              sub="Awaiting activation"
+              sub="Awaiting completion"
               accent="text-amber-600"
+            />
+            <MetricCard
+              label="Conversion"
+              value={totalInvited > 0 ? `${Math.round((successful / totalInvited) * 100)}%` : '—'}
+              icon={TrendingUp}
+              sub="Invite-to-join rate"
+              accent="text-indigo-600"
             />
             <MetricCard
               label="TXC Rewards"
@@ -490,8 +485,8 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
               accent="text-yellow-600"
             />
             <MetricCard
-              label="Your Rank"
-              value={successful >= 25 ? '#Ambassador' : successful >= 10 ? '#Builder' : '#Starter'}
+              label="Your Tier"
+              value={successful >= 25 ? 'Ambassador' : successful >= 10 ? 'Builder' : 'Starter'}
               icon={Medal}
               sub="Current tier"
               accent="text-purple-600"
@@ -529,14 +524,14 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
             <CardHeader className="pb-2 p-4">
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <BarChart3 className="h-4 w-4 text-blue-600" />
-                Referral Journey Funnel
+                Your Referral Progress
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <div className="space-y-2">
                 {FUNNEL_STAGES.map((stage, i) => {
                   const count = funnelData[stage.id as keyof typeof funnelData] || 0;
-                  const maxCount = funnelData.clicked || 1;
+                  const maxCount = funnelData.invited || 1;
                   const pct = Math.min(100, Math.round((count / maxCount) * 100));
                   return (
                     <div key={stage.id} className="flex items-center gap-2.5">
@@ -563,29 +558,8 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
                 })}
               </div>
               <p className="text-[10px] text-muted-foreground mt-3 italic">
-                Funnel stages derived from real referral events in your account.
+                All stages are derived from real records in your referral history. Link click analytics will arrive with Phase 3.
               </p>
-            </CardContent>
-          </Card>
-
-          {/* K-factor Insight */}
-          <Card className="border border-blue-200/60 bg-gradient-to-br from-blue-50/80 to-indigo-50/40 dark:from-blue-950/30 dark:to-indigo-950/20 dark:border-blue-800/40 shadow-xs rounded-xl">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-lg bg-blue-600 shrink-0">
-                  <Zap className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-blue-900 dark:text-blue-100">Your Viral Coefficient</p>
-                  <p className="text-xs text-blue-700 dark:text-blue-300 mt-0.5">
-                    K = {totalClicks > 0 ? (successful / Math.max(1, totalClicks - successful) * 5).toFixed(2) : '—'}&nbsp;
-                    {successful >= 5 ? '✅ You are driving organic growth!' : 'Keep sharing — a K-factor above 1.0 means viral growth.'}
-                  </p>
-                  <p className="text-[10px] text-blue-600/70 dark:text-blue-400/70 mt-1">
-                    K = (Invitations per active user) × (Invitation → Activation conversion)
-                  </p>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </TabsContent>
@@ -897,7 +871,7 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
               </CardContent>
             </Card>
             <p className="text-[10px] text-muted-foreground text-center mt-2">
-              Leaderboard shows anonymised public community activity. Private data is never shared.
+              Community leaders shown with masked names only. Real-time rankings launch with Phase 3. Private data is never shared.
             </p>
           </div>
         </TabsContent>

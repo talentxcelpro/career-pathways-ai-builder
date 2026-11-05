@@ -69,6 +69,13 @@ const growthCommandItems = [
     badge: 'NEW'
   },
   {
+    title: 'Referral Growth Engine',
+    url: '/admin/growth-engine',
+    icon: Gift,
+    description: 'K-factor, viral loops & rewards',
+    badge: 'VIRAL'
+  },
+  {
     title: 'Autonomous Growth OS',
     url: '/admin/autonomous-os',
     icon: Rocket,
