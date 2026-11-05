@@ -116,7 +116,7 @@ const DirectMessaging = () => {
                       </p>
                       {conversation.messages && (
                         <span className="text-xs text-muted-foreground">
-                          {format(new Date(conversation.messages.created_at), 'MMM dd')}
+                          {safeFormatDate((conversation.messages)?.created_at || conversation.updated_at, 'MMM dd')}
                         </span>
                       )}
                     </div>

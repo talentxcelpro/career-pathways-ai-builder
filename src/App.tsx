@@ -158,6 +158,7 @@ const ProofRedirect                   = lazy(() => import('./pages/passport/comp
 const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
 const RealTimeChat                    = lazy(() => import('@/components/realtime/RealTimeChat').then(m => ({ default: m.RealTimeChat })));
+const NetworkMainPage                 = lazy(() => import('./pages/Network'));
 const CommunitiesPage                 = lazy(() => import('./pages/network/Communities'));
 const MessagesPage                    = lazy(() => import('./pages/network/Messages'));
 const NotificationsPage               = lazy(() => import('./pages/NotificationsPage'));
@@ -583,6 +584,7 @@ const App = () => {
                                       <Route path="/resume-builder" element={<UnifiedResumeBuilder />} />
                                       <Route path="/resume-templates" element={<ResumeTemplates />} />
                                       <Route path="/ats-checker" element={<ATSChecker />} />
+                <Route path="/resume-scanner" element={<Navigate to="/resume/ats-check" replace />} />
                                     </>
                                   )}
 
@@ -646,6 +648,11 @@ const App = () => {
                 <Route path="/directory/jobs-by-city" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading City Job Directory...</div>}><JobsCityDirectory /></Suspense>} />
 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                <Route path="/network" element={<Suspense fallback={<PageFallbackSkeleton />}><NetworkMainPage /></Suspense>} />
+                <Route path="/pricing" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                <Route path="/subscription" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                <Route path="/plans" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                <Route path="/pro/subscription" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
                 <Route path="/recruiters" element={
                   <Suspense fallback={
                     <div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>
@@ -1182,7 +1189,9 @@ const App = () => {
                                  <Route path="/world" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
                                  <Route path="/world/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
 
-                                <Route path="/:username" element={<UniversalProfileRouteHandler />} />
+                                {/* Legacy /resume-scanner redirect before username catch-all */}
+                                 <Route path="/resume-scanner" element={<Navigate to="/resume/ats-check" replace />} />
+                                 <Route path="/:username" element={<UniversalProfileRouteHandler />} />
 
                                 {/* Catchall 404 route - must be last */}
                                 <Route path="*" element={<NotFound />} />

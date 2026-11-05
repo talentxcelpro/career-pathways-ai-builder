@@ -275,6 +275,7 @@ export const ProSubscription: React.FC = () => {
   };
 
   const isCurrentPlan = (tier: string) => {
+    if (!tier || typeof tier !== 'string' || typeof currentTier !== 'string') return false;
     const normalized = tier.toLowerCase();
     if (normalized === 'starter' && currentTier === 'basic') return true;
     if (normalized === 'pro' && currentTier === 'pro') return true;
@@ -325,13 +326,14 @@ export const ProSubscription: React.FC = () => {
           </p>
 
           {/* Current Status banner if subscribed */}
-          {currentTier !== 'free' && (
+          {typeof currentTier === 'string' && currentTier !== 'free' && (
             <div className="mt-6 inline-flex items-center gap-3 px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-full text-sm text-emerald-800">
               <Crown className="w-4 h-4 text-emerald-600" />
-              <span>Current Active Plan: <strong className="capitalize">{currentTier === 'basic' ? 'Starter' : currentTier}</strong></span>
-              {quota?.ats_check && (
+              <span>Current Active Plan: <strong className="capitalize">{currentTier === 'basic' ? 'Starter' : String(currentTier)}</strong></span>
+              {quota && typeof quota === 'object' && quota.ats_check && (
                 <span className="text-xs text-emerald-700">
-                  (ATS Checks Used: {Number(quota.ats_check.used || 0)}{Number(quota.ats_check.limit || 0) > 0 ? `/${quota.ats_check.limit}` : ' (Unlimited)'})
+                  (ATS Checks Used: {typeof quota.ats_check.used === 'number' ? quota.ats_check.used : 0}
+                  {typeof quota.ats_check.limit === 'number' && quota.ats_check.limit > 0 ? `/${quota.ats_check.limit}` : ' (Unlimited)'})
                 </span>
               )}
             </div>

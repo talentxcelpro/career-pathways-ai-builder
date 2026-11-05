@@ -406,9 +406,6 @@ const Network: React.FC = () => {
 
                 <div className="space-y-3 pt-2">
                   <React.Suspense fallback={null}>
-                    <SubscriptionsManager />
-                  </React.Suspense>
-                  <React.Suspense fallback={null}>
                     <SocialNotifications />
                   </React.Suspense>
                 </div>

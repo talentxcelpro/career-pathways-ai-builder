@@ -101,6 +101,7 @@ export function useSlugProfile(slug?: string) {
         conditions.push(`username.ilike.${prefix}_${hex}`);
         conditions.push(`username.ilike.${prefix}${hex}`);
         conditions.push(`email.ilike.${prefix}@%`);
+        
       }
 
       let { data, error } = await supabase
@@ -117,12 +118,24 @@ export function useSlugProfile(slug?: string) {
           const { data: fbData } = await supabase
             .from('profiles')
             .select('*')
-            .or(`email.ilike.${firstWord}%,full_name.ilike.%${firstWord}%,username.ilike.${firstWord}%`)
+            .or(`email.ilike.${firstWord}%,full_name.ilike.%${firstWord}%,username.ilike.%${firstWord}%`)
             .limit(1)
             .maybeSingle();
           if (fbData) {
             data = fbData;
           }
+        }
+      }
+
+      if (!data && cleanSlug.length >= 4) {
+        const { data: fbData2 } = await supabase
+          .from('profiles')
+          .select('*')
+          .or(`username.ilike.%${cleanSlug}%,slug.ilike.%${cleanSlug}%,email.ilike.%${cleanSlug}%`)
+          .limit(1)
+          .maybeSingle();
+        if (fbData2) {
+          data = fbData2;
         }
       }
 
