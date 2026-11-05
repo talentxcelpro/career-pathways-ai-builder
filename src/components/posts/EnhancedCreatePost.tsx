@@ -139,9 +139,9 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     for (let i = 0; i < Math.min(files.length, maxFiles); i++) {
       const file = files[i];
 
-      const maxSizeBytes = type === 'image' ? 10 * 1024 * 1024 : 50 * 1024 * 1024;
+      const maxSizeBytes = type === 'image' ? 15 * 1024 * 1024 : 100 * 1024 * 1024;
       if (file.size > maxSizeBytes) {
-        toast.error(`${file.name} is too large. Max size: ${type === 'image' ? '10MB' : '50MB'}`);
+        toast.error(`${file.name} is too large. Max size: ${type === 'image' ? '15MB' : '100MB'}`);
         continue;
       }
 
@@ -314,57 +314,73 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
   };
 
-  // Helper to convert file to persistent Base64 Data URL as reliable fallback
-  const readFileAsDataUrl = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
-    });
-  };
-
-  // Upload pending media to Supabase Storage with graceful Base64 fallback
+  // Upload pending media to dedicated post-media Supabase Storage bucket
   const uploadAllMedia = async (): Promise<string[]> => {
     if (mediaItems.length === 0) return [];
     setIsUploading(true);
 
     const uploadedUrls: string[] = [];
-    const userId = user?.id || 'guest';
+    const userId = user?.id || 'anonymous';
 
     for (let i = 0; i < mediaItems.length; i++) {
       const item = mediaItems[i];
-      if (item.uploadedUrl && !item.uploadedUrl.startsWith('blob:')) {
+      if (item.uploadedUrl && !item.uploadedUrl.startsWith('blob:') && !item.uploadedUrl.startsWith('data:')) {
         uploadedUrls.push(item.uploadedUrl);
         continue;
       }
 
-      try {
-        const fileExt = item.file.name.split('.').pop() || 'jpg';
-        const fileName = `${userId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const targetBucket = 'avatars';
+      const fileExt = item.file.name.split('.').pop()?.toLowerCase() || (item.type === 'video' ? 'mp4' : 'jpg');
+      const fileName = `${userId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
 
-        const { data, error } = await supabase.storage
+      // Choose bucket based on post privacy:
+      // Public posts -> post-media (public CDN cached)
+      // Connections-only / Private posts -> post-media-private (strict RLS protected)
+      const isPublic = privacy === 'public';
+      let targetBucket = isPublic ? 'post-media' : 'post-media-private';
+      let uploadResult = await supabase.storage
+        .from(targetBucket)
+        .upload(fileName, item.file, {
+          cacheControl: '3600',
+          upsert: true,
+          contentType: item.file.type
+        });
+
+      if (uploadResult.error && isPublic) {
+        targetBucket = 'avatars';
+        uploadResult = await supabase.storage
           .from(targetBucket)
           .upload(fileName, item.file, {
             cacheControl: '3600',
             upsert: true,
             contentType: item.file.type
           });
-
-        if (error || !data?.path) {
-          console.warn('Storage bucket upload issue, utilizing base64 data stream fallback:', error);
-          const dataUrl = await readFileAsDataUrl(item.file);
-          uploadedUrls.push(dataUrl);
-        } else {
-          const { data: urlData } = supabase.storage.from(targetBucket).getPublicUrl(data.path);
-          uploadedUrls.push(urlData.publicUrl);
-        }
-      } catch (err) {
-        console.warn('Storage upload catch block, utilizing base64 fallback:', err);
-        const dataUrl = await readFileAsDataUrl(item.file);
-        uploadedUrls.push(dataUrl);
       }
+
+      if (uploadResult.error || !uploadResult.data?.path) {
+        setIsUploading(false);
+        const errMsg = uploadResult.error?.message || 'Media upload failed';
+        toast.error(`Failed to upload ${item.file.name}: ${errMsg}`);
+        throw new Error(`Media upload rejected: ${errMsg}`);
+      }
+
+      let resolvedUrl = '';
+      if (targetBucket === 'post-media-private') {
+        const { data: signData } = await supabase.storage
+          .from(targetBucket)
+          .createSignedUrl(uploadResult.data.path, 3600 * 24 * 7); // 7-day initial signed token
+        resolvedUrl = signData?.signedUrl || `https://dthlgsnakhoftinssokm.supabase.co/storage/v1/object/authenticated/post-media-private/${uploadResult.data.path}`;
+      } else {
+        const { data: urlData } = supabase.storage.from(targetBucket).getPublicUrl(uploadResult.data.path);
+        resolvedUrl = urlData?.publicUrl || '';
+      }
+
+      if (!resolvedUrl) {
+        setIsUploading(false);
+        toast.error(`Failed to retrieve media URL for ${item.file.name}`);
+        throw new Error('Media URL resolution failed');
+      }
+
+      uploadedUrls.push(resolvedUrl);
     }
 
     setIsUploading(false);
@@ -507,6 +523,15 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
             >
               <Video className="h-3.5 w-3.5 text-purple-500" />
               <span className="text-[11px] font-semibold">Video</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/network?tab=discover&subtab=articles')}
+              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground gap-1.5 rounded-lg"
+            >
+              <FileText className="h-3.5 w-3.5 text-amber-500" />
+              <span className="text-[11px] font-semibold">Article</span>
             </Button>
           </div>
 

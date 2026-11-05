@@ -1,17 +1,16 @@
 project_id = "dthlgsnakhoftinssokm"
 
 [functions.enhance-section]
-verify_jwt = false
+verify_jwt = true
 
 [functions.comprehensive-ats-analyzer]
-verify_jwt = false
+verify_jwt = true
 
 [functions.smart-suggestions]
-verify_jwt = false
+verify_jwt = true
 
 [functions.job-specific-optimizer]
-verify_jwt = false
-# OPTIMIZED v3.0.0: Essential functions only - 2025-09-30
+verify_jwt = true
 
 [api]
 enabled = true
@@ -38,7 +37,7 @@ verify_jwt = false
 [functions.auth-service-root]
 verify_jwt = false
 
-# Email System (Amazon SES Integration)
+# Email System (Internal & Service Guarded)
 [functions.send-email-notification]
 verify_jwt = false
 
@@ -51,62 +50,62 @@ verify_jwt = false
 [functions.send-campaign]
 verify_jwt = false
 
-# AI Services (Core only)
+# AI Services (User-Authenticated)
 [functions.ai-chat]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ai-resume-parser]
-verify_jwt = false
+verify_jwt = true
 
 [functions.enhance-resume]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ats-analyzer]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-cover-letter]
-verify_jwt = false
+verify_jwt = true
 
 [functions.generate-interview-prep]
-verify_jwt = false
+verify_jwt = true
 
 [functions.ai-service-matching]
 verify_jwt = true
 
-# Job Management (Essential)
+# Job Management (User-Authenticated)
 [functions.bulk-job-upload-v2]
-verify_jwt = false
+verify_jwt = true
 
-# CV Processing (Essential)
+# CV Processing (User-Authenticated)
 [functions.cv-parser]
-verify_jwt = false
+verify_jwt = true
 
 [functions.cv-search]
-verify_jwt = false
+verify_jwt = true
 
-# Payments (Essential)
+# Payments (Secure Gateway)
 [functions.razorpay-create-order]
-verify_jwt = false
+verify_jwt = true
 
 [functions.razorpay-verify-payment]
-verify_jwt = false
+verify_jwt = false # Dual-mode: handles Razorpay webhooks (HMAC) + client verification in code
 
 [functions.razorpay-webhook]
-verify_jwt = false
+verify_jwt = false # Webhook endpoint verified by HMAC-SHA256 signature
 
-# Notifications (Essential)
+# Notifications (User-Authenticated)
 [functions.send-push-notification]
-verify_jwt = false
+verify_jwt = true
 
-# TXC System (Core)
+# TXC System (User-Authenticated)
 [functions.earn-txc]
-verify_jwt = false
+verify_jwt = true
 
 # Essential Utilities
 [functions.image-proxy]
 verify_jwt = false
 
-# System Maintenance (Essential)
+# System Maintenance (Admin / Cron Secret in Code)
 [functions.database-cleanup]
 verify_jwt = false
 
@@ -124,7 +123,7 @@ verify_jwt = false
 [functions.populate-courses]
 verify_jwt = false
 
-# TXC Bonuses
+# TXC Bonuses (Service Role Guarded)
 [functions.award-joining-bonus]
 verify_jwt = false
 
@@ -134,7 +133,8 @@ verify_jwt = false
 # SEO & Sitemaps
 [functions.generate-sitemap]
 verify_jwt = false
-# AI Company OS
+
+# AI Company OS (User-Authenticated)
 [functions.ai-cto-plan]
 verify_jwt = true
 
@@ -169,4 +169,14 @@ verify_jwt = true
 verify_jwt = false
 
 [functions.passport-ai-coach]
+verify_jwt = true
+
+# Referral Growth Engine Edge Functions
+[functions.track-referral-event]
+verify_jwt = false
+
+[functions.attribute-referral]
+verify_jwt = true
+
+[functions.claim-referral-mission]
 verify_jwt = true

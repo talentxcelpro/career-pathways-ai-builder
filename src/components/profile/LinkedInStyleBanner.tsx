@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -9,7 +9,7 @@ import { useFileUpload } from '@/hooks/useFileUpload';
 import { toast } from 'sonner';
 import { useProfileUpdate } from '@/hooks/useProfileUpdate';
 import { useAuth } from '@/contexts/AuthContext';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface LinkedInStyleBannerProps {
@@ -24,14 +24,15 @@ interface LinkedInStyleBannerProps {
 export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   profile: propProfile,
   isOwnProfile = true,
-  stats = { connections: 250, profileViews: 120 }
+  stats
 }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   const [uploading, setUploading] = useState<'banner' | 'avatar' | null>(null);
 
   // Fetch real live profile from Supabase profiles table
-  const { data: dbProfile } = useQuery({
+  const { data: dbProfile, refetch: refetchProfile } = useQuery({
     queryKey: ['live-user-profile-card', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -44,6 +45,32 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     },
     enabled: !!user?.id
   });
+
+  // Real-time subscription to profile updates
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const channel = supabase
+      .channel(`profile-card-realtime-${user.id}-${Date.now()}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['live-user-profile-card', user.id] });
+          refetchProfile();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient, refetchProfile]);
 
   const liveProfile = dbProfile || propProfile || user?.user_metadata || {};
   
@@ -74,10 +101,10 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     }
   };
 
-  const fullName = liveProfile?.full_name || liveProfile?.name || user?.email?.split('@')[0] || "TalentXcelServices";
-  const title = liveProfile?.title || liveProfile?.headline || "Transforming Businesses and Lives";
-  const company = liveProfile?.company || liveProfile?.current_company || liveProfile?.organization || "TalentXcel Services";
-  const location = liveProfile?.location || "India";
+  const fullName = liveProfile?.full_name?.trim() || liveProfile?.name?.trim() || (user?.email ? user.email.split('@')[0] : "Professional Member");
+  const title = liveProfile?.title?.trim() || liveProfile?.headline?.trim() || "Professional Member";
+  const company = liveProfile?.company?.trim() || liveProfile?.current_company?.trim() || liveProfile?.organization?.trim() || "TalentXcel Network";
+  const location = liveProfile?.location?.trim() || "India";
   const avatarUrl = liveProfile?.profile_picture_url || liveProfile?.profile_photo_url || liveProfile?.avatar_url;
   const coverUrl = liveProfile?.cover_image_url;
 

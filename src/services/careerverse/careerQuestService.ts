@@ -53,7 +53,7 @@ export class CareerQuestService {
     const { data: progressList, error: progressError } = await supabase
       .from('career_player_quests' as any)
       .select('*')
-      .eq('user_id', userId);
+      .eq('player_id', userId);
 
     if (progressError) {
       console.warn('Error fetching player quest progress:', progressError);
@@ -69,10 +69,10 @@ export class CareerQuestService {
       return {
         ...q,
         user_progress: p ? {
-          status: p.status || 'available',
-          progress: p.progress || 0,
-          completed_at: p.completed_at || null,
-          claimed_at: null
+          status: p.status,
+          progress: p.progress,
+          completed_at: p.completed_at,
+          claimed_at: p.claimed_at
         } : {
           status: 'available',
           progress: 0,
@@ -90,11 +90,11 @@ export class CareerQuestService {
     const { error } = await supabase
       .from('career_player_quests' as any)
       .upsert({
-        user_id: userId,
+        player_id: userId,
         quest_id: questId,
         status: 'in_progress',
         progress: 25
-      }, { onConflict: 'user_id,quest_id' });
+      }, { onConflict: 'player_id,quest_id' });
 
     if (error) {
       console.error('Error starting quest:', error);
@@ -128,12 +128,13 @@ export class CareerQuestService {
     const { error } = await supabase
       .from('career_player_quests' as any)
       .upsert({
-        user_id: userId,
+        player_id: userId,
         quest_id: quest.id,
         status: 'claimed',
         progress: 100,
-        completed_at: new Date().toISOString()
-      }, { onConflict: 'user_id,quest_id' });
+        completed_at: new Date().toISOString(),
+        claimed_at: new Date().toISOString()
+      }, { onConflict: 'player_id,quest_id' });
 
     if (error) {
       console.error('Error updating player quest claim status:', error);
@@ -142,6 +143,7 @@ export class CareerQuestService {
     return awardResult;
   }
 }
+
 
 export const careerQuestService = CareerQuestService;
 export default CareerQuestService;

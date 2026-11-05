@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Gamepad2, Trophy, Flame } from "lucide-react";
+import { Gamepad2, Trophy } from "lucide-react";
 import { NavItem } from "../types/nav-item";
 
 const CareerVersePage = lazy(() => import('../pages/CareerVersePage'));

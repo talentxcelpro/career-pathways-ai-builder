@@ -201,11 +201,11 @@ const SlugProfile = () => {
       return;
     }
     if (isOwnProfile) {
-      navigate('/communication');
+      navigate('/messages');
       return;
     }
     toast.success(`Opening conversation with ${profile?.full_name || 'user'}...`);
-    navigate(`/communication`);
+    navigate(`/messages`);
   };
 
   const handleWorkWithMe = async () => {

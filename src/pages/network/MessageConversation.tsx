@@ -10,13 +10,15 @@ import MessagesList from "@/components/network/MessagesList";
 import MessageInput from "@/components/network/MessageInput";
 import ConversationNotFound from "@/components/network/ConversationNotFound";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useAuth } from "@/contexts/AuthContext";
 
 const MessageConversation = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const { user } = useAuth();
+  const currentUserId = user?.id || null;
   const [isOnline, setIsOnline] = useState(true);
   const [isMinimized, setIsMinimized] = useState(false);
   const queryClient = useQueryClient();

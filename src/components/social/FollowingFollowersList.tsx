@@ -47,6 +47,32 @@ export function FollowingFollowersList() {
 
   useEffect(() => {
     loadUserData();
+
+    const channel = supabase
+      .channel('connections-realtime-sync-' + Date.now())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
+        loadUserData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_follows' }, () => {
+        loadUserData();
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, async (payload) => {
+        const newProfile = payload.new as any;
+        const ADMIN_ID = '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062';
+        if (newProfile?.id && newProfile.id !== ADMIN_ID) {
+          try {
+            await supabase.rpc('create_admin_connections', { target_user_id: newProfile.id });
+          } catch (e) {
+            console.warn('Realtime auto-connect handled:', e);
+          }
+        }
+        loadUserData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadUserData = async () => {
@@ -77,12 +103,19 @@ export function FollowingFollowersList() {
             c.requester_id === user.id ? c.recipient_id : c.requester_id
           ).filter(Boolean);
 
-          const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, full_name, profile_picture_url, title, location, current_company')
-            .in('id', otherUserIds);
+          // Safe chunked profile fetch in batches of 100
+          const chunkSize = 100;
+          const allProfiles = [];
+          for (let i = 0; i < otherUserIds.length; i += chunkSize) {
+            const chunk = otherUserIds.slice(i, i + chunkSize);
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, full_name, profile_picture_url, title, location, current_company')
+              .in('id', chunk);
+            if (profilesData) allProfiles.push(...profilesData);
+          }
 
-          const profileMap = new Map((profilesData || []).map(p => [p.id, p]));
+          const profileMap = new Map(allProfiles.map(p => [p.id, p]));
 
           const mappedConnections: ConnectionItem[] = connectionsData.map(c => {
             const otherId = c.requester_id === user.id ? c.recipient_id : c.requester_id;
@@ -107,54 +140,49 @@ export function FollowingFollowersList() {
       }
 
       // 2. Get following list
-      const { data: followingData, error: followingError } = await supabase
+      const { data: rawFollowing } = await supabase
         .from('user_follows')
-        .select(`
-          id,
-          follower_id,
-          following_id,
-          created_at,
-          following:following_id!inner (
-            id,
-            full_name,
-            profile_picture_url,
-            title,
-            location
-          )
-        `)
+        .select('id, follower_id, following_id, created_at')
         .eq('follower_id', user.id);
 
-      if (followingError) throw followingError;
-
       // 3. Get followers list
-      const { data: followersData, error: followersError } = await supabase
+      const { data: rawFollowers } = await supabase
         .from('user_follows')
-        .select(`
-          id,
-          follower_id,
-          following_id,
-          created_at,
-          follower:follower_id!inner (
-            id,
-            full_name,
-            profile_picture_url,
-            title,
-            location
-          )
-        `)
+        .select('id, follower_id, following_id, created_at')
         .eq('following_id', user.id);
 
-      if (followersError) throw followersError;
+      const targetUserIds = Array.from(new Set([
+        ...(rawFollowing || []).map(f => f.following_id),
+        ...(rawFollowers || []).map(f => f.follower_id)
+      ].filter(Boolean)));
 
-      setFollowing(followingData?.map(f => ({
-        ...f,
-        user: Array.isArray(f.following) ? f.following[0] : f.following
-      })) || []);
+      let profilesMap = new Map<string, any>();
+      if (targetUserIds.length > 0) {
+        const { data: profilesList } = await supabase
+          .from('profiles')
+          .select('id, full_name, profile_picture_url, title, location')
+          .in('id', targetUserIds);
+        
+        (profilesList || []).forEach(p => profilesMap.set(p.id, p));
+      }
 
-      setFollowers(followersData?.map(f => ({
+      setFollowing((rawFollowing || []).map(f => ({
         ...f,
-        user: Array.isArray(f.follower) ? f.follower[0] : f.follower
-      })) || []);
+        user: profilesMap.get(f.following_id) || {
+          id: f.following_id,
+          full_name: 'Professional Member',
+          title: 'Member'
+        }
+      })));
+
+      setFollowers((rawFollowers || []).map(f => ({
+        ...f,
+        user: profilesMap.get(f.follower_id) || {
+          id: f.follower_id,
+          full_name: 'Professional Member',
+          title: 'Member'
+        }
+      })));
 
     } catch (error) {
       console.error('Error loading follow data:', error);

@@ -1,0 +1,43 @@
+root_domain,platform,batch,status,verified_links,fee,classification
+rentry.co,Rentry Markdown Host,Baseline (Frozen),LIVE_VERIFIED,240,₹0_FREE,SELF_PUBLISHED_CITATION
+hrstack.tech,HRStack,Batch 1,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,DIRECTORY_LISTING
+softwaresuggest.com,SoftwareSuggest,Batch 1,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,DIRECTORY_LISTING
+techpluto.com,TechPluto,Batch 1,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,EDITORIAL_MEDIA
+saashub.com,SaaSHub,Batch 1,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,DIRECTORY_LISTING
+launchingnext.com,Launching Next,Batch 1,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,DIRECTORY_LISTING
+pitchwall.co,PitchWall,Batch 1,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,DIRECTORY_LISTING
+iitm.ac.in,IIT Madras CDC,Institutional,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,ACADEMIC_RESOURCE
+iitd.ac.in,IIT Delhi OCS,Institutional,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,ACADEMIC_RESOURCE
+iitb.ac.in,IIT Bombay Placement,Institutional,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,ACADEMIC_RESOURCE
+iitk.ac.in,IIT Kanpur SPO,Institutional,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,ACADEMIC_RESOURCE
+bits-pilani.ac.in,BITS Pilani Placement,Institutional,SUBMITTED_PENDING_REVIEW,0,₹0_FREE,ACADEMIC_RESOURCE
+ignlab.net,Ignlab Launch,Batch 2,READY_FOR_APPROVAL,0,₹0,Product & SaaS Directory
+maybelabs.ai,Maybe Labs,Batch 2,READY_FOR_APPROVAL,0,₹0,Product & SaaS Directory
+codehype.in,CodeHype,Batch 2,AUTH_REQUIRED,0,₹0,Product & SaaS Directory
+upfynd.com,Upfynd,Batch 2,AUTH_REQUIRED,0,₹0,Product & SaaS Directory
+supahunt.com,SupaHunt,Batch 2,BLOCKED,0,₹0,Product & SaaS Directory
+thetooldirectory.com,The Tool Directory,Batch 2,READY_FOR_APPROVAL,0,₹0,Product & SaaS Directory
+linkrena.com,Linkrena,Batch 2,READY_FOR_APPROVAL,0,₹0,Product & SaaS Directory
+makeroo.app,Makeroo,Batch 2,READY_FOR_APPROVAL,0,₹0,Product & SaaS Directory
+10015.io,10015 Product Finder,Batch 2,AUTH_REQUIRED,0,₹0,Product & SaaS Directory
+hypestar.org,Hype Star,Batch 2,BLOCKED,0,₹0,Product & SaaS Directory
+appsgit.com,AppsGit,Batch 2,ELIGIBLE,0,₹0,Open-Source & Developer Ecosystem
+findopensource.dev,FindOpenSource.dev,Batch 2,ELIGIBLE,0,₹0,Open-Source & Developer Ecosystem
+libhunt.com,LibHunt,Batch 2,BLOCKED,0,₹0,Open-Source & Developer Ecosystem
+teasertrack.cc,TeaserTrack,Batch 2,READY_FOR_APPROVAL,0,₹0,Open-Source & Developer Ecosystem
+jevlist.ai,JevList,Batch 2,READY_FOR_APPROVAL,0,₹0,Open-Source & Developer Ecosystem
+useventmark.com,Ventmark,Batch 2,READY_FOR_APPROVAL,0,₹0,India-First Startup Discovery
+centralindiatech.com,Central India Tech,Batch 2,REJECTED,0,₹0,India-First Startup Discovery
+launchpadindia.in,LaunchPad India,Batch 2,AUTH_REQUIRED,0,₹0,India-First Startup Discovery
+dodopayments.com,Index by Dodo Payments,Batch 2,BLOCKED,0,₹0,Product & SaaS Directory
+bootstrapdirectory.com,Bootstrap Directory,Batch 2,READY_FOR_APPROVAL,0,₹0,Startup Discovery
+altern.to,Altern,Batch 2,REJECTED,0,₹0,Software & Alternative Directory
+saaspa.ge,SaaSpa.ge,Batch 2,AUTH_REQUIRED,0,₹0,SaaS Launch Directory
+peerpush.net,PeerPush,Batch 2,READY_FOR_APPROVAL,0,₹0,Community Launch Discovery
+hunt0.com,HUNT0,Batch 2,AUTH_REQUIRED,0,₹0,Product Launch Directory
+betapage.co,BetaPage,Batch 2,REJECTED,0,₹0,Startup & Product Discovery
+openstartuplist.com,Open Startup List,Batch 2,READY_FOR_APPROVAL,0,₹0,Startup Discovery
+appalist.com,AppaList,Batch 2,READY_FOR_APPROVAL,0,₹0,App & Software Directory
+buildhop.com,BuildHop,Batch 2,REJECTED,0,₹0,Product Launch Discovery
+launchdirectories.com,LaunchDirectories,Batch 2,REJECTED,0,₹0,Directory & Startup List
+ramen.tools,Ramen.Tools,Batch 2,AUTH_REQUIRED,0,₹0,Product & Tool Discovery

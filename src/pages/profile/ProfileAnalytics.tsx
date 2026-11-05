@@ -97,9 +97,9 @@ const ProfileAnalytics = () => {
         resumeDownloads = count || 0;
       }
 
-      // Search appearances calculation
+      // Search appearances calculation (strictly real counted views, no multipliers)
       const searchViewsCount = profileViews?.filter(v => v.view_type === 'search').length || 0;
-      const searchAppearances = searchViewsCount > 0 ? searchViewsCount : Math.round((profileViews?.length || 0) * 1.5);
+      const searchAppearances = searchViewsCount;
 
       // Get total profile views count from profile
       const { data: profile } = await supabase

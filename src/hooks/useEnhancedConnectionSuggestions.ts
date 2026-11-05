@@ -46,41 +46,7 @@ export const useEnhancedConnectionSuggestions = () => {
   });
 
   // Fallback demo suggestions if DB returns empty
-  const fallbackSuggestions: EnhancedConnectionSuggestion[] = [
-    {
-      id: 'demo-1',
-      full_name: 'Priya Sharma',
-      title: 'HR Manager at TechCorp',
-      company: 'TechCorp',
-      location: 'India',
-      profile_picture_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200',
-      matchScore: 94,
-      matchReasons: ['Shared Industry', 'High Networking Activity'],
-      suggestionType: 'industry_match'
-    },
-    {
-      id: 'demo-2',
-      full_name: 'Rajit Laghate',
-      title: 'VP Sales APAC',
-      company: 'TalentXcel Services',
-      location: 'India',
-      profile_picture_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200',
-      matchScore: 91,
-      matchReasons: ['Similar Role', 'Location Match'],
-      suggestionType: 'title_match'
-    },
-    {
-      id: 'demo-3',
-      full_name: 'Vikram Mehta',
-      title: 'Principal Cloud Architect',
-      company: 'CloudScale Inc',
-      location: 'Singapore',
-      profile_picture_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200',
-      matchScore: 88,
-      matchReasons: ['Technology & Leadership'],
-      suggestionType: 'skill_match'
-    }
-  ];
+  const fallbackSuggestions: EnhancedConnectionSuggestion[] = [];
 
   // Generate enhanced connection suggestions
   const { data: suggestions = fallbackSuggestions, isLoading, error } = useQuery({

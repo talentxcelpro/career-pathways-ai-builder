@@ -18,6 +18,7 @@ import { SkillsSection } from '@/components/profile/edit/SkillsSection';
 import { ResumeUploadSection } from '@/components/profile/edit/ResumeUploadSection';
 import { BasicInformationSection } from '@/components/profile/edit/BasicInformationSection';
 import { ProfessionalDetailsSection } from '@/components/profile/edit/ProfessionalDetailsSection';
+import { EducationCertificationsSection, EducationItem, CertificationItem } from '@/components/profile/edit/EducationCertificationsSection';
 import { useAuth } from '@/contexts/AuthContext';
 import { SessionStatusIndicator } from '@/components/auth/SessionStatusIndicator';
 

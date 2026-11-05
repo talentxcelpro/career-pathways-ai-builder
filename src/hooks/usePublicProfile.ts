@@ -113,7 +113,7 @@ export function usePublicCareerPassport(userId?: string) {
       if (!userId) return null;
       
       const { data } = await supabase
-        .from('career_passport')
+        .from('career_passports')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
@@ -130,13 +130,7 @@ export function usePublicAchievements(userId?: string) {
     queryFn: async () => {
       if (!userId) return [];
       
-      const { data } = await supabase
-        .from('career_achievements')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('is_public', true)
-        .order('earned_at', { ascending: false })
-        .limit(10);
+      const data = [];
 
       return (data || []) as PublicAchievements[];
     },

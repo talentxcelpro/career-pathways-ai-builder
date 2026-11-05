@@ -380,6 +380,13 @@ export default function Colleges() {
               <span className="flex items-center gap-2">✨ AI Career Pathway</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
             </Link>
+            <Link
+              to="/batch"
+              className="p-2 rounded-xl hover:bg-slate-50 flex items-center justify-between text-xs font-bold text-slate-700 hover:text-indigo-600 transition-colors"
+            >
+              <span className="flex items-center gap-2">🏢 TPO Placement Portal</span>
+              <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+            </Link>
           </Card>
         </div>
 
@@ -690,7 +697,29 @@ export default function Colleges() {
             </div>
           </Card>
 
-          {/* Need ₹0 Education? */}
+                    {/* College Placement & TPO Gateway Widget */}
+          <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-gradient-to-br from-indigo-900 via-slate-900 to-slate-950 text-white shadow-sm p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-indigo-400" /> For TPOs &amp; Placement Cells
+              </span>
+              <span className="bg-indigo-500/20 text-indigo-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-400/30">
+                Institutional
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Equip graduating student cohorts with free verified ATS resume audits and cryptographic Career Passports for campus hiring.
+            </p>
+            <Button
+              size="sm"
+              onClick={() => navigate('/batch')}
+              className="w-full rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold h-9 shadow-sm cursor-pointer"
+            >
+              Launch Placement Cohort <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Button>
+          </Card>
+
+{/* Need ₹0 Education? */}
           <Card className="rounded-3xl border-slate-200/80 dark:border-border bg-white dark:bg-card shadow-sm p-5 space-y-3">
             <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5 pb-2 border-b border-slate-100">
               <DollarSign className="w-3.5 h-3.5 text-emerald-600" /> ₹0 Tuition Pathways

@@ -6,6 +6,14 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getCorsHeaders } from "../_shared/cors.ts";
 
+// Canonical immutable pricing catalog enforced strictly by server
+const CANONICAL_PLANS: Record<string, { tier: string; planName: string; priceRupees: number; pricePaise: number }> = {
+  starter: { tier: "Starter", planName: "Career Starter", priceRupees: 199, pricePaise: 19900 },
+  pro: { tier: "Pro", planName: "Career Pro", priceRupees: 499, pricePaise: 49900 },
+  premium: { tier: "Premium", planName: "Career Premium", priceRupees: 999, pricePaise: 99900 },
+  oneoff: { tier: "OneOff", planName: "Resume Download", priceRupees: 49, pricePaise: 4900 },
+};
+
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req);
 
@@ -17,38 +25,53 @@ serve(async (req) => {
     const body = await req.json();
     
     // Input validation and sanitization
-    const amount = parseFloat(body.amount);
     const currency = (body.currency || "INR").toUpperCase();
     const planId = body.planId ? String(body.planId).slice(0, 100) : null;
     const serviceId = body.serviceId ? String(body.serviceId).slice(0, 100) : "career_accelerator";
     const packageType = body.packageType ? String(body.packageType).slice(0, 50) : null;
     
-    // Validate required fields (amount in Rupees, max ₹100,000)
-    if (!amount || amount <= 0 || amount > 100000) {
-      throw new Error("Invalid amount. Must be between 1 and 100,000");
-    }
-    
     if (!["INR", "USD", "EUR"].includes(currency)) {
       throw new Error("Invalid currency");
     }
 
-    // Determine resolved plan and tier
+    // Determine resolved plan, tier, and authoritative server price
+    const rawIdentifier = (body.tier || planId || packageType || "").toLowerCase();
+    const isClaim1Bid = packageType === 'Claim1Bid' || rawIdentifier.includes('claim1');
+    const isResumeDownload = packageType === 'ResumeDownload' || rawIdentifier.includes('resume') || rawIdentifier.includes('oneoff');
+
     let tier = "Pro";
     let planName = "Career Pro";
-    const rawIdentifier = (body.tier || planId || packageType || "").toLowerCase();
-    
-    if (rawIdentifier.includes("premium") || rawIdentifier.includes("elite") || rawIdentifier.includes("999")) {
-      tier = "Premium";
-      planName = "Career Premium";
-    } else if (rawIdentifier.includes("starter") || rawIdentifier.includes("basic") || rawIdentifier.includes("199")) {
-      tier = "Starter";
-      planName = "Career Starter";
-    } else if (rawIdentifier.includes("resume") || rawIdentifier.includes("oneoff")) {
-      tier = "OneOff";
-      planName = "Resume Download";
+    let amountInPaise: number;
+
+    if (isClaim1Bid) {
+      // For Claim #1 bids, the amount is user-specified but must satisfy bounds
+      const rawAmount = parseFloat(body.amount);
+      if (!rawAmount || isNaN(rawAmount) || rawAmount < 50 || rawAmount > 100000) {
+        throw new Error("Invalid bid amount. Must be between ₹50 and ₹100,000");
+      }
+      tier = "Bid";
+      planName = "Claim #1 Bid";
+      amountInPaise = Math.round(rawAmount * 100);
+    } else if (isResumeDownload) {
+      // Resume download is fixed at canonical server price (₹49)
+      tier = CANONICAL_PLANS.oneoff.tier;
+      planName = CANONICAL_PLANS.oneoff.planName;
+      amountInPaise = CANONICAL_PLANS.oneoff.pricePaise;
     } else {
-      tier = "Pro";
-      planName = "Career Pro";
+      // Subscriptions strictly enforce canonical server prices (never trust client body.amount)
+      if (rawIdentifier.includes("premium") || rawIdentifier.includes("elite") || rawIdentifier.includes("999")) {
+        tier = CANONICAL_PLANS.premium.tier;
+        planName = CANONICAL_PLANS.premium.planName;
+        amountInPaise = CANONICAL_PLANS.premium.pricePaise;
+      } else if (rawIdentifier.includes("starter") || rawIdentifier.includes("basic") || rawIdentifier.includes("199")) {
+        tier = CANONICAL_PLANS.starter.tier;
+        planName = CANONICAL_PLANS.starter.planName;
+        amountInPaise = CANONICAL_PLANS.starter.pricePaise;
+      } else {
+        tier = CANONICAL_PLANS.pro.tier;
+        planName = CANONICAL_PLANS.pro.planName;
+        amountInPaise = CANONICAL_PLANS.pro.pricePaise;
+      }
     }
 
     // Initialize Supabase client
@@ -111,7 +134,7 @@ serve(async (req) => {
           subscribed: false,
           subscription_plan: planName,
           subscription_tier: tier,
-          amount: Math.round(amount * 100),
+          amount: amountInPaise,
           currency: currency,
           status: 'pending',
           updated_at: new Date().toISOString(),
@@ -124,7 +147,6 @@ serve(async (req) => {
     }
 
     // Create Razorpay order with verified provider credentials
-    const amountInPaise = Math.round(amount * 100);
     const orderData = {
       amount: amountInPaise,
       currency: currency,
@@ -134,7 +156,8 @@ serve(async (req) => {
         package_type: packageType || tier,
         tier: tier,
         plan_name: planName,
-        user_id: user.id
+        user_id: user.id,
+        expected_amount: String(amountInPaise),
       }
     };
 

@@ -64,9 +64,59 @@ export const OnboardingFlow: React.FC = () => {
     careerInterests: []
   });
 
+  // 1. STATE 2: PROFILE PROVISIONED (Idempotent initial profile provisioning on mount)
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth?mode=signup');
+      return;
+    }
+
+    if (user?.id) {
+      const initName = user.user_metadata?.full_name || 
+                       user.user_metadata?.name || 
+                       (user.email ? user.email.split('@')[0] : '');
+
+      const emailBase = (user.email ? user.email.split('@')[0] : 'user')
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '_');
+      const fallbackUsername = `${emailBase}_${user.id.slice(0, 6)}`;
+
+      // Fetch existing profile to populate form (resume onboarding) and preserve valid fields
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data: existingProfile }) => {
+          if (existingProfile) {
+            setOnboardingData(prev => ({
+              ...prev,
+              fullName: existingProfile.full_name || prev.fullName || initName,
+              location: existingProfile.location || prev.location,
+              phone: existingProfile.phone || prev.phone,
+              currentRole: existingProfile.title || prev.currentRole,
+              resumeUrl: existingProfile.resume_url || prev.resumeUrl,
+              skills: existingProfile.skills?.length ? existingProfile.skills : prev.skills,
+              jobLocations: existingProfile.preferred_locations?.length ? existingProfile.preferred_locations : prev.jobLocations,
+              goals: existingProfile.career_goals?.length ? existingProfile.career_goals : prev.goals
+            }));
+          } else {
+            // Provision empty operational profile without overwriting
+            supabase.from('profiles').upsert({
+              id: user.id,
+              username: fallbackUsername,
+              full_name: initName || 'TalentXcel Member',
+              email: user.email || null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              profile_completed: false,
+              onboarding_completed: false,
+              verification_status: 'unverified'
+            }, { onConflict: 'id', ignoreDuplicates: true }).catch(err => {
+              console.warn('Initial profile provisioning notice:', err);
+            });
+          }
+        });
     }
   }, [user, loading, navigate]);
 
@@ -74,11 +124,134 @@ export const OnboardingFlow: React.FC = () => {
     setOnboardingData(prev => ({ ...prev, ...updates }));
   };
 
+  // 2. PROGRESSIVE STEP PERSISTENCE: Never overwrite valid fields with blanks or nulls
+  const persistProgressiveStep = async (step: number) => {
+    if (!user?.id) return;
+    try {
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const payload: Record<string, any> = {
+        id: user.id,
+        updated_at: new Date().toISOString()
+      };
+
+      if (step === 1) {
+        if (onboardingData.fullName?.trim()) payload.full_name = onboardingData.fullName.trim();
+        else if (existing?.full_name) payload.full_name = existing.full_name;
+
+        if (onboardingData.location?.trim()) payload.location = onboardingData.location.trim();
+        else if (existing?.location) payload.location = existing.location;
+
+        if (onboardingData.phone?.trim()) payload.phone = onboardingData.phone.trim();
+        else if (existing?.phone) payload.phone = existing.phone;
+      } else if (step === 2) {
+        if (onboardingData.currentRole?.trim()) {
+          payload.title = onboardingData.currentRole.trim();
+          payload.headline = onboardingData.currentRole.trim();
+        } else {
+          if (existing?.title) payload.title = existing.title;
+          if (existing?.headline) payload.headline = existing.headline;
+        }
+
+        if (onboardingData.experience?.trim() || onboardingData.industry?.trim()) {
+          payload.about = `${onboardingData.experience || ''} ${onboardingData.industry ? `in ${onboardingData.industry}` : ''}`.trim();
+        } else if (existing?.about) {
+          payload.about = existing.about;
+        }
+      } else if (step === 3) {
+        if (onboardingData.goals?.length) payload.career_goals = onboardingData.goals;
+        else if (existing?.career_goals?.length) payload.career_goals = existing.career_goals;
+      } else if (step === 4) {
+        if (onboardingData.resumeUrl?.trim()) payload.resume_url = onboardingData.resumeUrl.trim();
+        else if (existing?.resume_url) payload.resume_url = existing.resume_url;
+      } else if (step === 5) {
+        if (onboardingData.skills?.length) payload.skills = onboardingData.skills;
+        else if (existing?.skills?.length) payload.skills = existing.skills;
+
+        if (onboardingData.jobLocations?.length) payload.preferred_locations = onboardingData.jobLocations;
+        else if (existing?.preferred_locations?.length) payload.preferred_locations = existing.preferred_locations;
+      }
+
+      await supabase.from('profiles').upsert(payload, { onConflict: 'id' });
+    } catch (err) {
+      console.warn('Progressive step persistence warning:', err);
+    }
+  };
+
   const handleNext = async () => {
+    await persistProgressiveStep(currentStep);
     if (currentStep < TOTAL_STEPS) {
       setCurrentStep(prev => prev + 1);
     } else {
       await completeOnboarding();
+    }
+  };
+
+  // 3. SKIP & FINISH LATER: Preserves profile_provisioned state; strictly does NOT set onboarding_completed or profile_activated!
+  const handleSkipToDestination = async () => {
+    if (!user) return;
+    setIsSubmitting(true);
+    try {
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const emailBase = (user.email ? user.email.split('@')[0] : 'user')
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '_');
+      const fallbackUsername = `${emailBase}_${user.id.slice(0, 6)}`;
+
+      const payload: Record<string, any> = {
+        id: user.id,
+        email: user.email || existing?.email || null,
+        full_name: onboardingData.fullName?.trim() || existing?.full_name || user.user_metadata?.full_name || 'TalentXcel Member',
+        username: existing?.username || fallbackUsername,
+        title: onboardingData.currentRole?.trim() || existing?.title || 'Professional',
+        headline: onboardingData.currentRole?.trim() || existing?.headline || 'Professional',
+        // STRICT INVARIANT: Skip must NOT mark onboarding_completed or profile_completed
+        onboarding_completed: false,
+        profile_completed: false,
+        preferences: {
+          ...(existing?.preferences || {}),
+          onboarding_deferred: true,
+          deferred_at: new Date().toISOString()
+        },
+        updated_at: new Date().toISOString()
+      };
+
+      if (onboardingData.location?.trim()) payload.location = onboardingData.location.trim();
+      else if (existing?.location) payload.location = existing.location;
+
+      if (onboardingData.phone?.trim()) payload.phone = onboardingData.phone.trim();
+      else if (existing?.phone) payload.phone = existing.phone;
+
+      if (existing?.about) payload.about = existing.about;
+
+      await supabase.from('profiles').upsert(payload, { onConflict: 'id' });
+
+      toast.info('Onboarding deferred. You can complete your profile anytime from your settings.');
+
+      const redirectMap: Record<string, string> = {
+        'resume': '/resume/builder',
+        'jobs': '/jobs',
+        'interview': '/resume/interview-prep',
+        'insights': '/resume/career-intelligence',
+        'employer': '/resume/company-tools',
+        'ats_scanner': '/resume/ats-check'
+      };
+
+      navigate(redirectMap[flow] || '/career-dashboard');
+    } catch (err) {
+      console.warn('Skip onboarding error:', err);
+      navigate('/career-dashboard');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -88,56 +261,83 @@ export const OnboardingFlow: React.FC = () => {
     }
   };
 
+  // 4. STATE 3: ONBOARDING COMPLETED (User explicitly finishes wizard)
   const completeOnboarding = async () => {
     if (!user) return;
 
     setIsSubmitting(true);
     try {
-      // Update profile with onboarding data
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      const emailBase = (user.email ? user.email.split('@')[0] : 'user')
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '_');
+      const fallbackUsername = `${emailBase}_${user.id.slice(0, 6)}`;
+
+      const payload: Record<string, any> = {
+        id: user.id,
+        email: user.email || existing?.email || null,
+        full_name: onboardingData.fullName?.trim() || existing?.full_name || user.user_metadata?.full_name || 'TalentXcel Member',
+        username: existing?.username || fallbackUsername,
+        title: onboardingData.currentRole?.trim() || existing?.title || 'Professional',
+        headline: onboardingData.currentRole?.trim() || existing?.headline || 'Professional',
+        about: (onboardingData.experience?.trim() || onboardingData.industry?.trim())
+          ? `${onboardingData.experience || ''} experience in ${onboardingData.industry || 'Tech'}`.trim()
+          : (existing?.about || 'Professional'),
+        profile_completed: true,
+        onboarding_completed: true,
+        updated_at: new Date().toISOString()
+      };
+
+      if (onboardingData.location?.trim()) payload.location = onboardingData.location.trim();
+      else if (existing?.location) payload.location = existing.location;
+
+      if (onboardingData.phone?.trim()) payload.phone = onboardingData.phone.trim();
+      else if (existing?.phone) payload.phone = existing.phone;
+
+      if (onboardingData.resumeUrl?.trim()) payload.resume_url = onboardingData.resumeUrl.trim();
+      else if (existing?.resume_url) payload.resume_url = existing.resume_url;
+
+      if (onboardingData.skills?.length) payload.skills = onboardingData.skills;
+      else if (existing?.skills?.length) payload.skills = existing.skills;
+
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({
-          full_name: onboardingData.fullName,
-          location: onboardingData.location,
-          phone: onboardingData.phone,
-          title: onboardingData.currentRole,
-          about: `${onboardingData.experience} experience in ${onboardingData.industry}`,
-          headline: onboardingData.currentRole,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id);
+        .upsert(payload, { onConflict: 'id' });
 
       if (profileError) throw profileError;
 
-      // Create career passport entry
-      const { error: passportError } = await supabase
-        .from('career_passport')
-        .upsert({
-          user_id: user.id,
-          career_goals: onboardingData.goals,
-          skills: onboardingData.skills,
-          industries_of_interest: [onboardingData.industry],
-          job_preferences: {
-            locations: onboardingData.jobLocations,
-            interests: onboardingData.careerInterests
-          },
-          onboarding_completed: true,
-          updated_at: new Date().toISOString()
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (passportError) throw passportError;
+      // Create or update career passport entry safely
+      try {
+        await supabase
+          .from("career_passports")
+          .upsert({
+            user_id: user.id,
+            career_goals: onboardingData.goals?.length ? onboardingData.goals : (existing?.career_goals || []),
+            parsed_skills: onboardingData.skills?.length ? onboardingData.skills : (existing?.skills || []),
+            industry_preferences: [onboardingData.industry].filter(Boolean),
+            preferred_locations: onboardingData.jobLocations?.length ? onboardingData.jobLocations : [],
+            updated_at: new Date().toISOString()
+          }, {
+            onConflict: "user_id"
+          });
+      } catch (passportErr) {
+        console.warn("Career passport initialization deferred:", passportErr);
+      }
 
       toast.success('Onboarding completed successfully!');
       
-      // Redirect based on flow
       const redirectMap: Record<string, string> = {
         'resume': '/resume/builder',
         'jobs': '/jobs',
         'interview': '/resume/interview-prep',
         'insights': '/resume/career-intelligence',
-        'employer': '/resume/company-tools'
+        'employer': '/resume/company-tools',
+        'ats_scanner': '/resume/ats-check'
       };
       
       navigate(redirectMap[flow] || '/career-dashboard');
@@ -223,7 +423,7 @@ export const OnboardingFlow: React.FC = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8 pt-6 border-t">
+            <div className="flex items-center justify-between mt-8 pt-6 border-t gap-3">
               <Button
                 variant="outline"
                 onClick={handleBack}
@@ -231,13 +431,27 @@ export const OnboardingFlow: React.FC = () => {
               >
                 Back
               </Button>
-              
-              <Button
-                onClick={handleNext}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : currentStep === TOTAL_STEPS ? 'Get Started' : 'Continue'}
-              </Button>
+
+              <div className="flex items-center gap-2">
+                {currentStep > 1 && currentStep < TOTAL_STEPS && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSkipToDestination}
+                    disabled={isSubmitting}
+                    className="text-xs text-muted-foreground hover:text-foreground"
+                  >
+                    Skip & Finish Later
+                  </Button>
+                )}
+                
+                <Button
+                  onClick={handleNext}
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'Saving...' : currentStep === TOTAL_STEPS ? 'Get Started' : 'Continue'}
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>

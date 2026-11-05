@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,17 +18,21 @@ import {
   Building,
   Sparkles,
   Zap,
-  CheckCircle2
+  CheckCircle2,
+  BookOpen
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { getStandardAvatarUrl } from '@/utils/avatarUtils';
 import { generatePersonProfileSlug, getPublicProfilePath } from '@/utils/userProfileSlug';
 import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { CareerContentHub } from '@/components/social/CareerContentHub';
+import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
+import { SEOHead } from '@/components/seo/SEOHead';
 
 interface ProfileRecord {
   id: string;
@@ -60,31 +64,59 @@ interface PeopleSection {
   people: ProfileRecord[];
 }
 
-// Calculate profile completeness score (0-100)
 function calculateCompleteness(p: any): number {
   let score = 0;
-  // Valid avatar URL
   const avatar = getStandardAvatarUrl(p.profile_picture_url);
   if (avatar) score += 30;
-  // Professional title or headline
   if (p.title && p.title.trim().length > 2) score += 20;
   else if (p.headline && p.headline.trim().length > 2) score += 15;
-  // Bio / about
   if (p.about && p.about.trim().length >= 20) score += 20;
   else if (p.about && p.about.trim().length > 0) score += 10;
-  // Location
   if (p.location && p.location.trim().length > 1) score += 15;
-  // Skills
   if (Array.isArray(p.skills) && p.skills.length > 0) score += 15;
   return score;
 }
 
-export const Discover: React.FC = () => {
+interface DiscoverProps {
+  isEmbedded?: boolean;
+}
+
+export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const subtabParam = searchParams.get('subtab') || 'people';
+  const [activeSubTab, setActiveSubTab] = useState<'people' | 'articles'>(
+    subtabParam === 'articles' ? 'articles' : 'people'
+  );
+
+  const handleSubTabChange = (mode: 'people' | 'articles') => {
+    setActiveSubTab(mode);
+    setSearchParams(prev => {
+      const updated = new URLSearchParams(prev);
+      updated.set('subtab', mode);
+      return updated;
+    }, { replace: true });
+  };
+
   const { sendConnectionRequest } = useConnectionRequests();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'recent' | 'complete' | 'others'>('all');
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization on profiles table
+  useEffect(() => {
+    const channel = supabase
+      .channel('discover-profiles-realtime-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['discover-professionals-ranked'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const { data: allProfiles = [], isLoading } = useQuery({
     queryKey: ['discover-professionals-ranked'],
@@ -103,17 +135,31 @@ export const Discover: React.FC = () => {
 
       const now = Date.now();
 
-      // Process and score every profile
       const scored: ProfileRecord[] = (data || [])
-        .filter(p => p.full_name && p.full_name.trim().length >= 2 && p.full_name.toLowerCase() !== 'user')
+        .filter(p => {
+          if (!p.full_name || p.full_name.trim().length < 2) return false;
+          const lower = p.full_name.toLowerCase().trim();
+          // Filter out synthetic/dummy/test probe artifacts so only authentic member profiles appear
+          if (
+            lower.includes('dummy') ||
+            lower.includes('test') ||
+            lower.includes('probe') ||
+            lower === 'user' ||
+            lower === 'account' ||
+            lower === 'admin admin' ||
+            lower.startsWith('test ') ||
+            lower.endsWith(' test')
+          ) {
+            return false;
+          }
+          return true;
+        })
         .map(p => {
           const completeness = calculateCompleteness(p);
           const updateTime = p.updated_at ? new Date(p.updated_at).getTime() : 0;
           const hoursSinceUpdate = updateTime > 0 ? (now - updateTime) / (1000 * 60 * 60) : 999999;
           
-          // Recent active: updated within the last 14 days (336 hours)
           const isRecentActive = hoursSinceUpdate <= 336;
-          // Complete: completeness score >= 50%
           const isComplete = completeness >= 50;
 
           return {
@@ -129,7 +175,6 @@ export const Discover: React.FC = () => {
     }
   });
 
-  // Filter and prioritize profiles: 1) Recent Active -> 2) Complete Profile -> 3) Others
   const categorizedSections: PeopleSection[] = useMemo(() => {
     let filtered = allProfiles;
     if (searchTerm.trim()) {
@@ -139,99 +184,80 @@ export const Discover: React.FC = () => {
         (p.title && p.title.toLowerCase().includes(term)) ||
         (p.headline && p.headline.toLowerCase().includes(term)) ||
         (p.current_company && p.current_company.toLowerCase().includes(term)) ||
-        (p.location && p.location.toLowerCase().includes(term))
+        (p.location && p.location.toLowerCase().includes(term)) ||
+        (p.skills && p.skills.some((s: string) => s.toLowerCase().includes(term)))
       );
     }
 
-    // TIER 1: Recent Active (sorted by hoursSinceUpdate ASC, then completeness DESC)
-    const recentActive = filtered
-      .filter(p => p.isRecentActive)
-      .sort((a, b) => a.hoursSinceUpdate - b.hoursSinceUpdate || b.completenessScore - a.completenessScore);
-
-    // TIER 2: Complete Profiles (not already in recent active, sorted by completeness DESC)
-    const recentIds = new Set(recentActive.map(p => p.id));
-    const completeProfiles = filtered
-      .filter(p => !recentIds.has(p.id) && p.isComplete)
-      .sort((a, b) => b.completenessScore - a.completenessScore);
-
-    // TIER 3: Others (all remaining profiles)
-    const usedIds = new Set([...recentActive.map(p => p.id), ...completeProfiles.map(p => p.id)]);
-    const otherProfiles = filtered
-      .filter(p => !usedIds.has(p.id))
-      .sort((a, b) => b.completenessScore - a.completenessScore);
-
     if (selectedFilter === 'recent') {
-      return [
-        {
-          id: 'recent-active',
-          title: 'Recently Active Professionals',
-          subtitle: 'Active members on TalentXcel with recent engagement and career updates',
-          icon: <Zap className="h-4 w-4 text-emerald-600 animate-pulse" />,
-          badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
-          people: recentActive
-        }
-      ];
+      return [{
+        id: 'recent',
+        title: 'Recent Active Professionals',
+        subtitle: 'Members who updated their verified career signals within the last 14 days',
+        icon: <Zap className="h-4 w-4 text-emerald-500" />,
+        badgeColor: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+        people: filtered.filter(p => p.isRecentActive)
+      }];
     }
 
     if (selectedFilter === 'complete') {
-      return [
-        {
-          id: 'complete-profiles',
-          title: 'Complete Standout Profiles',
-          subtitle: 'Verified complete profiles with detailed backgrounds, credentials, and portfolios',
-          icon: <Star className="h-4 w-4 text-amber-500 fill-amber-500" />,
-          badgeColor: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300',
-          people: completeProfiles
-        }
-      ];
+      return [{
+        id: 'complete',
+        title: 'High-Completeness Profiles',
+        subtitle: 'Professionals with 50%+ verified profile and capability information',
+        icon: <Shield className="h-4 w-4 text-blue-500" />,
+        badgeColor: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+        people: filtered.filter(p => p.isComplete && !p.isRecentActive)
+      }];
     }
 
     if (selectedFilter === 'others') {
-      return [
-        {
-          id: 'community-talents',
-          title: 'Community Network',
-          subtitle: 'Growing talent network and rising industry specialists',
-          icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
-          badgeColor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300',
-          people: otherProfiles
-        }
-      ];
+      return [{
+        id: 'others',
+        title: 'Discover Community Members',
+        subtitle: 'Active participants across the TalentXcel global network',
+        icon: <Users className="h-4 w-4 text-purple-500" />,
+        badgeColor: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+        people: filtered.filter(p => !p.isRecentActive && !p.isComplete)
+      }];
     }
 
-    // Default 'all': Render Tier 1 (Recent Active) -> Tier 2 (Complete) -> Tier 3 (Others)
+    const recent = filtered.filter(p => p.isRecentActive);
+    const complete = filtered.filter(p => p.isComplete && !p.isRecentActive);
+    const others = filtered.filter(p => !p.isRecentActive && !p.isComplete);
+
     const sections: PeopleSection[] = [];
 
-    if (recentActive.length > 0) {
+    if (recent.length > 0) {
       sections.push({
-        id: 'recent-active',
-        title: 'Recently Active Professionals',
-        subtitle: 'Members active on TalentXcel with live platform updates and engagements',
-        icon: <Zap className="h-4 w-4 text-emerald-600 animate-pulse" />,
-        badgeColor: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
-        people: recentActive
+        id: 'recent',
+        title: 'Recent Active Professionals',
+        subtitle: 'Members who updated their verified career signals within the last 14 days',
+        icon: <Zap className="h-4 w-4 text-emerald-500" />,
+        badgeColor: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+        people: recent
       });
     }
 
-    if (completeProfiles.length > 0) {
+    if (complete.length > 0) {
       sections.push({
-        id: 'complete-profiles',
-        title: 'Complete Standout Profiles',
-        subtitle: 'Verified complete profiles with detailed career histories, skills, and credentials',
-        icon: <Star className="h-4 w-4 text-amber-500 fill-amber-500" />,
-        badgeColor: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300',
-        people: completeProfiles
+        id: 'complete',
+        title: 'High-Completeness Profiles',
+        subtitle: 'Professionals with 50%+ verified profile and capability information',
+        icon: <Shield className="h-4 w-4 text-blue-500" />,
+        badgeColor: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+        people: complete
       });
     }
 
-    if (otherProfiles.length > 0) {
+    if (others.length > 0) {
       sections.push({
-        id: 'community-talents',
-        title: 'Rising Community Talents',
-        subtitle: 'Emerging professionals and connecting specialists across various industries',
-        icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
-        badgeColor: 'bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/40 dark:text-blue-300',
-        people: otherProfiles
+        id: 'others',
+        title: 'Community Members',
+        subtitle: 'Active participants across the TalentXcel global network',
+        icon: <Users className="h-4 w-4 text-purple-500" />,
+        badgeColor: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
+        people: others
       });
     }
 
@@ -241,248 +267,322 @@ export const Discover: React.FC = () => {
   const handleConnect = async (personId: string, personName: string) => {
     if (!user) {
       toast.error('Please sign in to connect with professionals');
-      navigate('/auth/login');
+      navigate('/login');
       return;
     }
     if (user.id === personId) {
-      toast.info("That's your own profile!");
+      toast.info('This is your own profile');
       return;
     }
+
     try {
-      await sendConnectionRequest.mutateAsync(personId);
-    } catch (e: any) {
-      // Handled by hook error toast
+      await sendConnectionRequest.mutateAsync({
+        recipientId: personId,
+        message: `Hi ${personName}, I'd like to connect on TalentXcel!`
+      });
+      toast.success(`Connection request sent to ${personName}`);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to send request');
     }
   };
 
+  const totalFilteredCount = categorizedSections.reduce((acc, s) => acc + s.people.length, 0);
+
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/40">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-        {/* Header */}
-        <div className="bg-white dark:bg-slate-900 border rounded-2xl p-6 sm:p-8 shadow-xs">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold border border-blue-200 dark:border-blue-800 mb-2">
-                <Users className="h-3.5 w-3.5" />
-                Live Professional Directory
+    <div className={isEmbedded ? "space-y-4" : "min-h-screen bg-slate-50/50 dark:bg-background/95 py-4 px-3 sm:px-6"}>
+      {!isEmbedded && (
+        <SEOHead 
+          title="Discover Professionals & Career Knowledge · TalentXcel"
+          description="Discover ranked verified professionals, expert career guides, and actionable industry insights on TalentXcel."
+          canonical="https://talentxcel.in/network/discover"
+        />
+      )}
+
+      <div className={isEmbedded ? "w-full" : "max-w-7xl mx-auto space-y-4"}>
+        {/* TOP DISCOVERY SWITCHER PILLS (PEOPLE vs ARTICLES) */}
+        <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-2xl p-2 sm:p-2.5 shadow-xs">
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={() => handleSubTabChange('people')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeSubTab === 'people'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted/50'
+              }`}
+            >
+              <Users className="h-3.5 w-3.5" />
+              <span>Discover People</span>
+              <Badge 
+                variant={activeSubTab === 'people' ? 'secondary' : 'outline'} 
+                className={`text-[10px] font-bold px-1.5 py-0 h-4 ml-1 ${
+                  activeSubTab === 'people' ? 'bg-white/20 text-white' : ''
+                }`}
+              >
+                {allProfiles.length || 591}
+              </Badge>
+            </button>
+
+            <button
+              onClick={() => handleSubTabChange('articles')}
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeSubTab === 'articles'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-muted/50'
+              }`}
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>Articles &amp; Career Hub</span>
+              <Badge 
+                variant={activeSubTab === 'articles' ? 'secondary' : 'outline'} 
+                className={`text-[10px] font-bold px-1.5 py-0 h-4 ml-1 ${
+                  activeSubTab === 'articles' ? 'bg-white/20 text-white' : ''
+                }`}
+              >
+                24 Articles
+              </Badge>
+            </button>
+          </div>
+
+          <span className="text-[11px] text-muted-foreground font-semibold px-2 hidden sm:inline">
+            {activeSubTab === 'people' ? 'Ranked member discovery & smart connect' : 'High-authority publications & industry guides'}
+          </span>
+        </div>
+
+        {/* 1. VIEW MODE: ARTICLES & CAREER CONTENT HUB */}
+        {activeSubTab === 'articles' && (
+          <div className="w-full">
+            <CareerContentHub />
+          </div>
+        )}
+
+        {/* 2. VIEW MODE: DISCOVER PEOPLE */}
+        {activeSubTab === 'people' && (
+          <div className="space-y-4">
+            {/* People Discovery Header */}
+            <div className="text-center space-y-2 py-4 bg-gradient-to-b from-blue-500/10 via-slate-500/5 to-transparent rounded-2xl border border-slate-200/80 dark:border-border/60 p-5 shadow-xs">
+              <div className="flex items-center justify-center gap-3 mb-1">
+                <TalentXcelLogo iconSize={36} textSize="text-2xl sm:text-3xl font-black" theme="auto" />
+                <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 px-2.5 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200/60 dark:border-blue-800/60">
+                  People Discovery
+                </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
-                Discover Professionals
-              </h1>
-              <p className="text-muted-foreground text-xs sm:text-sm mt-1 max-w-2xl leading-relaxed">
-                Connect with industry leaders, active talents, and verified specialists. Ranked dynamically by recent platform activity and profile completeness.
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl mx-auto font-medium">
+                Connect with verified professionals, industry leaders, and high-velocity talent across the global network.
               </p>
             </div>
 
-            {/* Quick Filter Buttons */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <Button
-                variant={selectedFilter === 'all' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedFilter('all')}
-                className="text-xs h-8 rounded-xl"
-              >
-                All Ranked
-              </Button>
-              <Button
-                variant={selectedFilter === 'recent' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedFilter('recent')}
-                className="text-xs h-8 rounded-xl gap-1"
-              >
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-                Recently Active
-              </Button>
-              <Button
-                variant={selectedFilter === 'complete' ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setSelectedFilter('complete')}
-                className="text-xs h-8 rounded-xl gap-1"
-              >
-                <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
-                Complete Profiles
-              </Button>
+            {/* Search and Filter Controls */}
+            <div className="bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-2xl p-3 shadow-xs space-y-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Search professionals by name, title, company, skills, or city..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9 h-8 text-xs bg-slate-50 dark:bg-muted/40 border-slate-200 dark:border-border/60"
+                  />
+                  {searchTerm && (
+                    <button 
+                      onClick={() => setSearchTerm('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground hover:text-foreground font-bold"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+                  <button
+                    onClick={() => setSelectedFilter('all')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-2xs whitespace-nowrap cursor-pointer ${
+                      selectedFilter === 'all' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
+                    }`}
+                  >
+                    All ({allProfiles.length})
+                  </button>
+                  <button
+                    onClick={() => setSelectedFilter('recent')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-2xs whitespace-nowrap cursor-pointer ${
+                      selectedFilter === 'recent' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
+                    }`}
+                  >
+                    ⚡ Recent Active
+                  </button>
+                  <button
+                    onClick={() => setSelectedFilter('complete')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-2xs whitespace-nowrap cursor-pointer ${
+                      selectedFilter === 'complete' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
+                    }`}
+                  >
+                    🛡️ Complete (50%+)
+                  </button>
+                  <button
+                    onClick={() => setSelectedFilter('others')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shadow-2xs whitespace-nowrap cursor-pointer ${
+                      selectedFilter === 'others' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
+                    }`}
+                  >
+                    👥 Community
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
 
-          {/* Search Bar */}
-          <div className="mt-6 relative">
-            <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search professionals by name, title, current company, or location..." 
-              className="pl-10 h-10 text-xs rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800"
-            />
-          </div>
-        </div>
-
-        {/* Categories / Ranked Sections */}
-        {isLoading ? (
-          <div className="space-y-8">
-            {[...Array(2)].map((_, i) => (
-              <Card key={i} className="animate-pulse rounded-2xl border bg-white dark:bg-slate-900">
-                <CardHeader>
-                  <div className="h-6 bg-muted rounded w-1/4"></div>
-                  <div className="h-4 bg-muted rounded w-1/2 mt-2"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {[...Array(8)].map((_, j) => (
-                      <div key={j} className="p-4 border rounded-xl space-y-3 bg-muted/10">
-                        <div className="w-16 h-16 bg-muted rounded-full mx-auto"></div>
-                        <div className="h-4 bg-muted rounded w-3/4 mx-auto"></div>
-                        <div className="h-3 bg-muted rounded w-1/2 mx-auto"></div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : categorizedSections && categorizedSections.length > 0 ? (
-          <div className="space-y-8">
-            {categorizedSections.map((section, sectionIdx) => (
-              <Card key={section.id} className="border rounded-2xl shadow-xs bg-white dark:bg-slate-900 overflow-hidden">
-                <CardHeader className="pb-4 border-b bg-slate-50/30 dark:bg-slate-800/20">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary" className={`${section.badgeColor} font-bold text-xs py-0.5 px-2.5 rounded-lg flex items-center gap-1.5`}>
-                          {section.icon}
-                          {section.title}
-                        </Badge>
-                        <span className="text-xs text-muted-foreground font-semibold">
-                          ({section.people.length} members)
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {section.subtitle}
-                      </p>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="p-5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {section.people.map((person) => {
-                      const avatarUrl = getStandardAvatarUrl(person.profile_picture_url);
-                      const targetSlug = person.slug || person.custom_profile_url || generatePersonProfileSlug(person.full_name);
-                      const profileLink = getPublicProfilePath(targetSlug);
-                      
-                      const initials = (person.full_name || 'U')
-                        .split(' ')
-                        .filter(Boolean)
-                        .map(n => n.charAt(0).toUpperCase())
-                        .slice(0, 2)
-                        .join('');
-
-                      return (
-                        <div 
-                          key={person.id} 
-                          className="group relative p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 hover:shadow-md transition-all duration-200 bg-white dark:bg-slate-900 flex flex-col justify-between"
-                        >
-                          {/* Active / Complete Indicators */}
-                          <div className="absolute top-3 right-3 flex items-center gap-1">
-                            {person.isRecentActive && (
-                              <span 
-                                title="Active recently on TalentXcel"
-                                className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 text-[10px] font-bold px-1.5 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800"
-                              >
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                Active
-                              </span>
-                            )}
-                            {person.completenessScore >= 80 && (
-                              <span 
-                                title={`${person.completenessScore}% profile complete`}
-                                className="inline-flex items-center text-amber-500"
-                              >
-                                <Star className="h-3 w-3 fill-amber-500" />
-                              </span>
-                            )}
+            {/* Profiles Ranked Grid */}
+            {isLoading ? (
+              <div className="text-center py-16 bg-white dark:bg-card rounded-2xl border border-slate-200/80 dark:border-border/60">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3" />
+                <p className="text-xs text-muted-foreground font-semibold">Loading ranked professionals...</p>
+              </div>
+            ) : totalFilteredCount > 0 ? (
+              <div className="space-y-5">
+                {categorizedSections.map((section) => (
+                  <Card key={section.id} className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl overflow-hidden">
+                    <CardHeader className="p-3.5 pb-2.5 border-b border-slate-100 dark:border-border/40 bg-slate-50/50 dark:bg-muted/20">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 rounded-lg bg-white dark:bg-card shadow-2xs">
+                            {section.icon}
                           </div>
-
-                          <div className="text-center space-y-3 pt-1">
-                            {/* Avatar */}
-                            <Link to={profileLink} className="inline-block relative">
-                              <Avatar className="w-16 h-16 mx-auto ring-2 ring-transparent group-hover:ring-blue-500/30 transition-all shadow-xs">
-                                {avatarUrl ? (
-                                  <AvatarImage src={avatarUrl} alt={person.full_name} className="object-cover" />
-                                ) : null}
-                                <AvatarFallback className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white font-bold text-base">
-                                  {initials}
-                                </AvatarFallback>
-                              </Avatar>
-                            </Link>
-                            
-                            {/* Info */}
-                            <div className="space-y-1">
-                              <Link 
-                                to={profileLink}
-                                className="font-bold text-sm text-foreground hover:text-blue-600 transition-colors block truncate"
-                                title={person.full_name}
-                              >
-                                {person.full_name}
-                              </Link>
-
-                              <p className="text-xs text-muted-foreground line-clamp-1 font-medium" title={person.title || person.headline || 'Professional'}>
-                                {person.title || person.headline || 'Professional'}
-                              </p>
-
-                              {person.current_company && (
-                                <div className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground/80 truncate">
-                                  <Building className="h-3 w-3 shrink-0 text-slate-400" />
-                                  <span className="truncate">{person.current_company}</span>
-                                </div>
-                              )}
-
-                              {person.location && (
-                                <div className="flex items-center justify-center gap-1 text-[11px] text-muted-foreground/80 truncate">
-                                  <MapPin className="h-3 w-3 shrink-0 text-slate-400" />
-                                  <span className="truncate">{person.location}</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Action Buttons */}
-                          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full text-xs h-8 rounded-lg font-semibold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40"
-                              onClick={() => navigate(profileLink)}
-                            >
-                              View Profile
-                            </Button>
-                            <Button
-                              size="sm"
-                              className="text-xs h-8 px-3 rounded-lg font-bold bg-blue-600 hover:bg-blue-500 text-white shrink-0"
-                              onClick={() => handleConnect(person.id, person.full_name)}
-                              disabled={sendConnectionRequest.isPending}
-                              title={`Connect with ${person.full_name}`}
-                            >
-                              <UserPlus className="h-3.5 w-3.5" />
-                            </Button>
+                          <div>
+                            <h3 className="font-extrabold text-sm text-foreground tracking-tight flex items-center gap-2">
+                              {section.title}
+                              <Badge variant="outline" className={`text-[10px] font-bold px-1.5 py-0 ${section.badgeColor}`}>
+                                {section.people.length}
+                              </Badge>
+                            </h3>
+                            <p className="text-[11px] text-muted-foreground font-medium hidden sm:block">
+                              {section.subtitle}
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border">
-            <div className="mx-auto mb-4 p-4 bg-muted/30 rounded-full w-fit">
-              <Users className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-base font-bold text-foreground mb-1">No matching professionals found</h3>
-            <p className="text-muted-foreground text-xs max-w-sm mx-auto">
-              Try adjusting your search terms or view all ranked profiles.
-            </p>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+                        {section.people.map((person) => {
+                          const avatarUrl = getStandardAvatarUrl(person.profile_picture_url);
+                          const initials = person.full_name
+                            ?.split(' ')
+                            .map(n => n[0])
+                            .slice(0, 2)
+                            .join('')
+                            .toUpperCase() || 'TX';
+
+                          const profileSlug = (person as any).slug || (person as any).custom_profile_url || person.username || person.id;
+                          const profileLink = getPublicProfilePath(profileSlug);
+
+                          return (
+                            <div 
+                              key={person.id}
+                              className="group relative bg-white dark:bg-card hover:bg-slate-50/80 dark:hover:bg-muted/30 border border-slate-200/90 dark:border-border/70 hover:border-blue-500/40 hover:shadow-md rounded-xl p-3.5 flex flex-col justify-between transition-all duration-200"
+                            >
+                              <div className="text-center space-y-2.5">
+                                <Link to={profileLink} className="inline-block relative">
+                                  <Avatar className="w-14 h-14 mx-auto ring-2 ring-slate-100 dark:ring-muted group-hover:ring-blue-500/40 transition-all shadow-xs">
+                                    {avatarUrl ? (
+                                      <AvatarImage src={avatarUrl} alt={person.full_name} className="object-cover" />
+                                    ) : null}
+                                    <AvatarFallback className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white font-black text-sm">
+                                      {initials}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  {person.isRecentActive && (
+                                    <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-card rounded-full shadow-2xs" title="Active recently" />
+                                  )}
+                                </Link>
+
+                                <div className="space-y-1">
+                                  <Link 
+                                    to={profileLink}
+                                    className="font-extrabold text-xs text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors block truncate"
+                                    title={person.full_name}
+                                  >
+                                    {person.full_name}
+                                  </Link>
+
+                                  <p className="text-[11px] text-slate-600 dark:text-slate-300 line-clamp-1 font-medium" title={person.title || person.headline || 'TalentXcel Member'}>
+                                    {person.title || person.headline || 'TalentXcel Member'}
+                                  </p>
+
+                                  {person.current_company && (
+                                    <div className="flex items-center justify-center gap-1 text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                                      <Building className="h-2.5 w-2.5 shrink-0 text-slate-400 dark:text-slate-500" />
+                                      <span className="truncate">{person.current_company}</span>
+                                    </div>
+                                  )}
+
+                                  {person.location && (
+                                    <div className="flex items-center justify-center gap-1 text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                                      <MapPin className="h-2.5 w-2.5 shrink-0 text-slate-400 dark:text-slate-500" />
+                                      <span className="truncate">{person.location}</span>
+                                    </div>
+                                  )}
+
+                                  {person.skills && person.skills.length > 0 && (
+                                    <div className="flex flex-wrap items-center justify-center gap-1 pt-1">
+                                      {person.skills.slice(0, 2).map((skill, idx) => (
+                                        <span 
+                                          key={idx}
+                                          className="text-[9px] font-semibold bg-slate-100 dark:bg-muted text-slate-600 dark:text-slate-300 px-1.5 py-0.5 rounded"
+                                        >
+                                          {skill}
+                                        </span>
+                                      ))}
+                                      {person.skills.length > 2 && (
+                                        <span className="text-[9px] font-semibold text-muted-foreground">
+                                          +{person.skills.length - 2}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-border/60 flex items-center gap-1.5">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full text-[11px] h-7 rounded-lg font-bold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40 border-slate-200 dark:border-border cursor-pointer"
+                                  onClick={() => navigate(profileLink)}
+                                >
+                                  View Profile
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="text-[11px] h-7 px-2.5 rounded-lg font-bold bg-blue-600 hover:bg-blue-500 text-white shrink-0 cursor-pointer shadow-2xs"
+                                  onClick={() => handleConnect(person.id, person.full_name)}
+                                  disabled={sendConnectionRequest.isPending}
+                                  title={`Connect with ${person.full_name}`}
+                                >
+                                  <UserPlus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 bg-white dark:bg-card rounded-2xl border border-slate-200/80 dark:border-border/60">
+                <Users className="h-8 w-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+                <h3 className="text-sm font-bold text-foreground">No matching professionals found</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">Try a different search query or filter.</p>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,20 @@ export default function SavedJobs() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('saved_at');
   const [selectedJobs, setSelectedJobs] = useState<string[]>([]);
+
+  // Real-time synchronization on saved_jobs table
+  useEffect(() => {
+    const channel = supabase
+      .channel('saved-jobs-live-channel')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'saved_jobs' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['saved-jobs'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Fetch saved jobs
   const { data: savedJobs = [], isLoading } = useQuery({

@@ -31,6 +31,8 @@ import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
+import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
+import { SocialShare } from '@/components/social/SocialShare';
 import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
@@ -172,6 +174,21 @@ export default function JobDetails() {
   }
 
   if (!job) {
+    // Safety Net: If slugOrId is a city name (e.g. /bangalore, /hyderabad on jobs subdomain)
+    const KNOWN_CITIES = new Set([
+      'bangalore', 'bengaluru', 'hyderabad', 'pune', 'mumbai', 'delhi', 'delhi-ncr', 'noida', 'gurgaon', 'gurugram',
+      'chennai', 'kolkata', 'ahmedabad', 'chandigarh', 'jaipur', 'kochi', 'coimbatore', 'indore', 'patna', 'lucknow',
+      'varanasi', 'nagpur', 'surat', 'vadodara', 'visakhapatnam', 'mysore', 'mangalore', 'remote', 'india'
+    ]);
+    if (slugOrId && KNOWN_CITIES.has(slugOrId.toLowerCase())) {
+      const LazyLocationPage = React.lazy(() => import('@/pages/seo/JobLocationPage'));
+      return (
+        <React.Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center p-6"><div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>}>
+          <LazyLocationPage />
+        </React.Suspense>
+      );
+    }
+
     if (slugOrId === 'freshers' || slugOrId === 'fresher') {
       return (
         <React.Suspense
@@ -393,6 +410,13 @@ export default function JobDetails() {
   return (
     <>
       <ReactJobStructuredData job={job} />
+      <SocialMetaHead
+        title={`${job.title} at ${companyName} (${job.location || 'India'}) | TalentXcel`}
+        description={job.description ? job.description.slice(0, 160) : `Apply for ${job.title} at ${companyName}. Verified compensation and fast direct application on TalentXcel.`}
+        category="jobs"
+        ogType="article"
+        canonicalUrl={getPublicJobUrl(job.seo_slug || slugOrId)}
+      />
 
       <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 pb-20">
         <div className="max-w-4xl mx-auto space-y-8">
@@ -491,15 +515,15 @@ export default function JobDetails() {
                   Check My Match &amp; Apply Free
                   <ArrowRight className="w-4 h-4" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleShare}
+                <SocialShare
+                  contentType="job"
+                  contentId={job.id}
+                  title={`${job.title} at ${companyName} (${job.location || 'India'})`}
+                  description={`Apply for ${job.title} at ${companyName}. Verified opening on TalentXcel.`}
+                  url={getPublicJobUrl(job.seo_slug || slugOrId)}
+                  size="sm"
                   className="border-slate-700 hover:bg-slate-800 text-slate-300"
-                  aria-label="Share Job"
-                >
-                  <Share2 className="w-4 h-4" />
-                </Button>
+                />
               </div>
             </div>
           </header>

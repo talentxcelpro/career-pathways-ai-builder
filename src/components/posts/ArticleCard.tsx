@@ -181,7 +181,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
       <CardContent className="p-6">
         {/* Author Info */}
         <div className="flex items-center gap-3 mb-4">
-          <Link to={`/network/people/${article.author_id}`}>
+          <Link to={(article.author_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062' || article.author_id === 'talentxcel-research' || article.profiles?.full_name?.toLowerCase().includes('talentxcel')) ? '/profile/talentxcelservices' : (article.profiles?.slug ? `/profile/${article.profiles.slug}` : `/network/people/${article.author_id}`)}>
             <Avatar className="h-10 w-10 ring-2 ring-background hover:ring-primary/20 transition-all">
               <AvatarImage src={article.profiles?.profile_picture_url} />
               <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white font-semibold">
@@ -191,7 +191,7 @@ export const ArticleCard: React.FC<ArticleCardProps> = ({
           </Link>
           <div className="flex-1">
             <Link 
-              to={`/network/people/${article.author_id}`}
+              to={(article.author_id === '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062' || article.author_id === 'talentxcel-research' || article.profiles?.full_name?.toLowerCase().includes('talentxcel')) ? '/profile/talentxcelservices' : (article.profiles?.slug ? `/profile/${article.profiles.slug}` : `/network/people/${article.author_id}`)}
               className="font-semibold hover:text-primary transition-colors"
             >
               {formatDisplayName(article.profiles)}

@@ -23,7 +23,7 @@ const RecruiterView: React.FC = () => {
           supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
           supabase.from("education").select("*").eq("user_id", uid),
           supabase.from("work_experience").select("*").eq("user_id", uid),
-          supabase.from("course_certificates").select("id, courses(title)").eq("user_id", uid),
+          Promise.resolve({ data: [] }),
           supabase.from("skill_certifications").select("id, skill_name, issuer").eq("user_id", uid),
           supabase.from("user_skills").select("id, skill_name").eq("user_id", uid),
           supabase.from("portfolio_items").select("id").eq("user_id", uid),

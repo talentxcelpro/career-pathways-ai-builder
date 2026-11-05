@@ -49,12 +49,12 @@ export class CareerBadgeAndRewardsService {
 
     const { data: unlocked } = await supabase
       .from('career_player_badges' as any)
-      .select('badge_id, earned_at')
-      .eq('user_id', userId);
+      .select('badge_id, unlocked_at')
+      .eq('player_id', userId);
 
     const unlockedMap = new Map<string, string>();
     (unlocked || []).forEach((u: any) => {
-      unlockedMap.set(u.badge_id, u.earned_at);
+      unlockedMap.set(u.badge_id, u.unlocked_at);
     });
 
     return (badges as any[]).map(b => ({
@@ -69,20 +69,13 @@ export class CareerBadgeAndRewardsService {
       .from('career_rewards' as any)
       .select('*')
       .gt('stock', 0)
-      .order('cost_coins', { ascending: true });
+      .order('coin_cost', { ascending: true });
 
     if (error) {
       console.error('Error fetching rewards:', error);
       throw error;
     }
-    return (data as any[] || []).map(r => ({
-      id: r.id,
-      title: r.title,
-      description: r.description,
-      category: r.category,
-      coin_cost: r.cost_coins || r.coin_cost || 0,
-      stock: r.stock
-    }));
+    return data as CareerReward[];
   }
 
   static async redeemReward(userId: string, reward: CareerReward, currentCoins: number): Promise<void> {
@@ -94,9 +87,9 @@ export class CareerBadgeAndRewardsService {
     const { error: redError } = await supabase
       .from('career_reward_redemptions' as any)
       .insert({
-        user_id: userId,
+        player_id: userId,
         reward_id: reward.id,
-        status: 'claimed'
+        coins_spent: reward.coin_cost
       });
 
     if (redError) {
@@ -136,7 +129,7 @@ export class CareerBadgeAndRewardsService {
     const { data: registrations } = await supabase
       .from('career_event_registrations' as any)
       .select('event_id')
-      .eq('user_id', userId);
+      .eq('player_id', userId);
 
     const regSet = new Set((registrations || []).map((r: any) => r.event_id));
 
@@ -150,7 +143,7 @@ export class CareerBadgeAndRewardsService {
     const { error } = await supabase
       .from('career_event_registrations' as any)
       .insert({
-        user_id: userId,
+        player_id: userId,
         event_id: eventId
       });
 
@@ -160,6 +153,7 @@ export class CareerBadgeAndRewardsService {
     }
   }
 }
+
 
 export const careerBadgeAndRewardsService = CareerBadgeAndRewardsService;
 export default CareerBadgeAndRewardsService;

@@ -79,22 +79,23 @@ export const GamificationDashboard: React.FC = () => {
     return () => clearInterval(balanceInterval);
   }, [user, refreshBalance]);
 
-  // Reduced auto-earning for more realistic experience
+  // Realtime subscription on user scores and points
   useEffect(() => {
-    const interval = setInterval(async () => {
-      if (user && Math.random() > 0.95) { // 5% chance every 5 minutes
-        const actions = ['post_liked', 'comment_made'];
-        const randomAction = actions[Math.floor(Math.random() * actions.length)];
-        const earned = await txcIntegration.earnTXC(randomAction);
-        if (earned) {
-          setRecentEarning(Date.now());
-          setTimeout(() => setRecentEarning(null), 3000);
-        }
-      }
-    }, 300000); // Check every 5 minutes
+    if (!user?.id) return;
+    const channel = supabase
+      .channel('gamification-realtime-' + user.id)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_scores', filter: 'user_id=eq.' + user.id }, () => {
+        refreshBalance();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_points', filter: 'user_id=eq.' + user.id }, () => {
+        refreshBalance();
+      })
+      .subscribe();
 
-    return () => clearInterval(interval);
-  }, [user, txcIntegration]);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, refreshBalance]);
 
   // Enhanced stats with real-time TXC balance and real data only
   const stats = {

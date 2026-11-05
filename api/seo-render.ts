@@ -1,3 +1,27 @@
+
+export function resolveOgImageForRoute(cleanPath: string): string {
+  const lower = (cleanPath || '').toLowerCase();
+  if (lower.startsWith('jobs') || lower.startsWith('job/')) {
+    return 'https://talentxcel.in/assets/og/talentxcel-og-jobs.png';
+  }
+  if (lower.startsWith('colleges') || lower.startsWith('college/')) {
+    return 'https://talentxcel.in/assets/og/talentxcel-og-colleges.png';
+  }
+  if (lower.startsWith('salary') || lower.startsWith('salaries')) {
+    return 'https://talentxcel.in/assets/og/talentxcel-og-salaries.png';
+  }
+  if (lower.startsWith('passport') || lower.startsWith('candidate') || lower.startsWith('profile')) {
+    return 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+  }
+  if (lower.startsWith('resume') || lower.startsWith('ats') || lower.startsWith('tools')) {
+    return 'https://talentxcel.in/assets/og/talentxcel-og-resume.png';
+  }
+  if (lower.startsWith('article') || lower.startsWith('blog') || lower.startsWith('resources') || lower.startsWith('content')) {
+    return 'https://talentxcel.in/assets/og/talentxcel-og-article.png';
+  }
+  return 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
+}
+
 // api/seo-render.ts
 // Vercel Serverless Edge SEO HTML Hydrator
 // Serves 100% complete, pre-rendered semantic HTML documents with zero JS required to both Googlebot and human browsers
@@ -114,7 +138,8 @@ function legacyGenericOkResponse(cleanPath: string, isDebug: boolean = false): R
   const title = `${formatTitle(cleanPath)} | TalentXcel`;
   const description = `Explore professional opportunities and resources for ${cleanPath} on TalentXcel.`;
   const canonical = `https://talentxcel.in/${cleanPath}`;
-  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><link rel="canonical" href="${escapeHtml(canonical)}"></head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p></main></body></html>`;
+  const ogImage = resolveOgImageForRoute(cleanPath);
+  const html = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>${escapeHtml(title)}</title><meta name="description" content="${escapeHtml(description)}"><link rel="canonical" href="${escapeHtml(canonical)}"><meta property="og:site_name" content="TalentXcel"><meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}"><meta property="og:type" content="website"><meta property="og:image" content="${ogImage}"><meta property="og:image:secure_url" content="${ogImage}"><meta property="og:image:type" content="image/png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="${escapeHtml(title)}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@talentxcel"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}"><meta name="twitter:image" content="${ogImage}"><meta name="twitter:image:alt" content="${escapeHtml(title)}"></head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p></main></body></html>`;
   return new Response(html, {
     status: 200,
     headers: {
@@ -137,7 +162,7 @@ const CANONICAL_ROLES_SET = new Set([
   'azure-cloud-engineer', 'gcp-cloud-architect', 'site-reliability-engineer',
   'database-administrator', 'sql-developer', 'postgresql-dba', 'security-engineer',
   'cybersecurity-analyst', 'qa-automation-engineer', 'sdet-engineer', 'blockchain-developer',
-  'smart-contract-developer', 'ai-engineer', 'machine-learning-engineer', 'data-scientist',
+  'smart-contract-developer', 'ai-engineer', 'machine-learning-engineer', 'ai-ml-engineer', 'aiml-engineer', 'ml-engineer', 'cloud-devops-engineer', 'data-scientist',
   'data-engineer', 'data-analyst', 'prompt-engineer', 'llm-engineer', 'nlp-engineer',
   'computer-vision-engineer', 'big-data-engineer', 'bi-developer', 'etl-developer',
   'product-manager', 'technical-product-manager', 'growth-product-manager', 'associate-product-manager',
@@ -179,7 +204,7 @@ const CORE_STATIC_ROUTES = new Set([
   '', 'reels', 'jobs', 'colleges', 'learning', 'resume', 'passport', 'network',
   'salary', 'salaries', 'directory', 'directory/colleges-a-z', 'directory/salaries-by-role',
   'directory/jobs-by-city', 'rankings', 'blog', 'news', 'about', 'contact', 'faq',
-  'terms', 'privacypolicy', 'hire', 'recruiters', 'government-jobs', 'services',
+  'terms', 'privacypolicy', 'hire', 'recruiters', 'staffing', 'recruitment', 'rpo', 'careers', 'government-jobs', 'services',
   'companies', 'uae', 'uk', 'usa', 'europe', 'world', 'talent',
   'resume/build', 'resume/ats-check', 'resume/cover-letter', 'resume/interview-prep', 'resume/templates',
   'tools/resume-checker', 'tools/ats-checker', 'tools/salary-analyzer',
@@ -416,6 +441,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     robotsDirective = 'index, follow';
   }
   // 3. Locations (Soft-404 Validation)
+    // 3. Locations (Soft-404 Validation)
   else if (prefix === 'locations' && secondary) {
     if (!CANONICAL_CITIES_SET.has(secondary.toLowerCase())) {
       return null; // Genuine 404 for invalid city entities
@@ -435,6 +461,31 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       </section>
     `;
     robotsDirective = 'noindex, follow';
+  }
+  // 3B. Standalone City Hub (e.g. /bangalore, /hyderabad directly on jobs.talentxcel.in)
+  else if (CANONICAL_CITIES_SET.has(cleanPath.toLowerCase())) {
+    const cityName = formatTitle(cleanPath);
+    title = `Jobs in ${cityName} (2026 Hiring & Openings) | TalentXcel Jobs`;
+    description = `Browse current TalentXcel job openings in ${cityName}. Review verified employer requirements, salary benchmarks, and direct application.`;
+    canonical = `https://talentxcel.in/locations/${cleanPath.toLowerCase()}`;
+    h1 = `Jobs in ${cityName}`;
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-white">Current Job Openings in ${escapeHtml(cityName)}</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Browse verified technology, engineering, data, and leadership opportunities in ${escapeHtml(cityName)}. Review requirements and apply directly.</p>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/jobs?location=${escapeHtml(cleanPath.toLowerCase())}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse ${escapeHtml(cityName)} Jobs &rarr;</a>
+          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Resume Scan &rarr;</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": `Jobs in ${cityName}`,
+      "url": canonical
+    };
   }
   // 4. Jobs Root Hub
   else if (cleanPath === 'jobs' || (prefix === 'jobs' && !secondary)) {
@@ -848,6 +899,24 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     }
   }
   // 9. Career Roadmaps (Soft-404 Validation)
+    // 9. Career Roadmaps (Soft-404 Validation)
+  else if (cleanPath === 'careers' || cleanPath === 'career-map') {
+    title = 'AI Career Roadmaps & Career Pathways (2026 Guide) | TalentXcel';
+    description = 'Explore comprehensive career progression roadmaps, high-demand skills, and verified certification pathways on TalentXcel Careers.';
+    canonical = 'https://talentxcel.in/career-map';
+    h1 = 'AI Career Progression & Role Pathways';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <h2 class="text-xl font-bold text-white">Career Progression Roadmaps &amp; Role Pathways</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Navigate verified progression milestones, required skills, and learning trajectories across technology, data, product, and leadership roles.</p>
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/career-map" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore Career Hub &rarr;</a>
+          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Resume Scan &rarr;</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  }
   else if (cleanPath.startsWith('careers/') || cleanPath.startsWith('career-map/')) {
     const slug = cleanPath.replace(/^(careers|career-map)\//, '').replace(/-roadmap.*/, '');
     if (!CANONICAL_ROLES_SET.has(slug)) {
@@ -1026,13 +1095,23 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description)}">
   <link rel="canonical" href="${canonical}">
+  <meta property="og:site_name" content="TalentXcel">
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:url" content="${canonical}">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:type" content="${cleanPath.startsWith('jobs') ? 'article' : (cleanPath.startsWith('passport') ? 'profile' : 'website')}">
+  <meta property="og:image" content="${resolveOgImageForRoute(cleanPath)}">
+  <meta property="og:image:secure_url" content="${resolveOgImageForRoute(cleanPath)}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${escapeHtml(title)}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@talentxcel">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
+  <meta name="twitter:image" content="${resolveOgImageForRoute(cleanPath)}">
+  <meta name="twitter:image:alt" content="${escapeHtml(title)}">
   <meta name="robots" content="${robotsDirective}">
   <script src="https://cdn.tailwindcss.com" defer></script>
   ${schemaTag}

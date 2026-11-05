@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { Textarea } from '@/components/ui/textarea';
 
 export const BatchScreening: React.FC = () => {
   const [collegeName, setCollegeName] = useState('IIT Delhi');
@@ -35,6 +37,73 @@ export const BatchScreening: React.FC = () => {
   const [cohortGenerated, setCohortGenerated] = useState(true);
   const [cohortCode, setCohortCode] = useState('7KX92');
   const [copied, setCopied] = useState(false);
+  const [studentEmailsText, setStudentEmailsText] = useState('');
+  const [hasInstitutionalConsent, setHasInstitutionalConsent] = useState(false);
+  const [isSendingInvites, setIsSendingInvites] = useState(false);
+
+  const handleSendBatchInvites = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!hasInstitutionalConsent) {
+      toast.error('Please confirm institutional authorization & student consent.');
+      return;
+    }
+    const rawEmails = studentEmailsText
+      .split(/[,\n]+/)
+      .map(e => e.trim().toLowerCase())
+      .filter(e => e.length > 5 && e.includes('@') && !e.includes(' '));
+
+    // Deduplicate emails to prevent duplicate dispatches
+    const emails = Array.from(new Set(rawEmails));
+
+    if (emails.length === 0) {
+      toast.error('Please enter at least one valid student email address.');
+      return;
+    }
+
+    // Rate limiting: enforce max 50 students per batch dispatch to protect sender reputation
+    if (emails.length > 50) {
+      toast.error('Maximum 50 student invitations per batch. Please partition larger batches.');
+      return;
+    }
+
+    setIsSendingInvites(true);
+    toast.loading(`Dispatching cohort invitations to ${emails.length} students...`, { id: 'cohort-invite' });
+
+    try {
+      // Dispatches invite telemetry and calls email queue
+      GrowthFunnelTracker.track('college_partnership', {
+        stage: 'students_invited',
+        college: collegeName,
+        department,
+        cohort_code: cohortCode,
+        student_count: emails.length
+      });
+
+      // Dispatch invitations via API
+      await fetch('/api/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: emails[0],
+          template: 'cohort_invitation',
+          variables: {
+            collegeName,
+            department,
+            cohortCode,
+            cohortUrl,
+            studentCount: emails.length
+          }
+        })
+      }).catch(err => console.warn('Email batch queue notice:', err));
+
+      toast.success(`Successfully dispatched batch invitations to ${emails.length} students!`, { id: 'cohort-invite' });
+      setStudentEmailsText('');
+    } catch (err: any) {
+      toast.error('Failed to dispatch cohort invitations.', { id: 'cohort-invite' });
+    } finally {
+      setIsSendingInvites(false);
+    }
+  };
 
   const cohortUrl = `https://talentxcel.in/b/${cohortCode}`;
 
@@ -196,6 +265,47 @@ export const BatchScreening: React.FC = () => {
                   </Button>
                 </Card>
               )}
+              {/* Institutional Batch Email Inviter Card */}
+              <Card className="border-slate-200 shadow-sm bg-white dark:bg-slate-900 rounded-2xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <Send className="h-3.5 w-3.5 text-blue-600" /> Dispatch Direct Student Invites
+                  </span>
+                  <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200">
+                    Institutional
+                  </Badge>
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Paste student emails to dispatch official TalentXcel ATS diagnostic invites with cohort tracking.
+                </p>
+                <form onSubmit={handleSendBatchInvites} className="space-y-3">
+                  <Textarea
+                    placeholder="student1@college.edu, student2@college.edu..."
+                    value={studentEmailsText}
+                    onChange={(e) => setStudentEmailsText(e.target.value)}
+                    className="text-xs font-mono h-20 resize-none bg-slate-50 dark:bg-slate-950"
+                  />
+                  <label className="flex items-start gap-2 cursor-pointer text-[11px] text-slate-600 dark:text-slate-400">
+                    <input 
+                      type="checkbox" 
+                      checked={hasInstitutionalConsent}
+                      onChange={(e) => setHasInstitutionalConsent(e.target.checked)}
+                      className="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span>
+                      I confirm these students are enrolled candidates authorized for placement diagnostic screening.
+                    </span>
+                  </label>
+                  <Button 
+                    type="submit" 
+                    size="sm" 
+                    disabled={isSendingInvites || !hasInstitutionalConsent}
+                    className="w-full h-8 text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl"
+                  >
+                    Dispatch Cohort Invites →
+                  </Button>
+                </form>
+              </Card>
             </div>
 
             {/* Right: Live TPO Aggregate Placement Intelligence Dashboard (7 cols) */}

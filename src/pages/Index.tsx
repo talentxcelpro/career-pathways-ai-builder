@@ -35,7 +35,12 @@ const Index = () => {
   }, []);
 
   if (loading) {
-    return null; // Let auth load first
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <span className="text-xs text-muted-foreground font-medium">Loading TalentXcel...</span>
+      </div>
+    );
   }
 
   const renderContent = () => {

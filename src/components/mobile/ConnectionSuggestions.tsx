@@ -43,18 +43,26 @@ export const ConnectionSuggestions: React.FC = () => {
         conn.requester_id === user.id ? conn.recipient_id : conn.requester_id
       ) || [];
 
-      // Get suggested profiles (excluding current connections)
-      const { data: profiles, error } = await supabase
+      // Get suggested profiles (safely excluding current connections)
+      let query = supabase
         .from('profiles')
         .select('id, full_name, profile_picture_url, headline, current_company, location')
-        .neq('id', user.id)
-        .not('id', 'in', `(${connectedUserIds.join(',') || 'null'})`)
-        .limit(10);
+        .neq('id', user.id);
 
+      if (connectedUserIds.length > 0 && connectedUserIds.length <= 50) {
+        query = query.not('id', 'in', `(${connectedUserIds.join(',')})`);
+      }
+
+      const { data: profiles, error } = await query.limit(connectedUserIds.length > 50 ? 50 : 10);
       if (error) throw error;
 
-      // Add mock mutual connections count for demo
-      return (profiles || []).map(profile => ({
+      let finalProfiles = profiles || [];
+      if (connectedUserIds.length > 50) {
+        const connectedSet = new Set(connectedUserIds);
+        finalProfiles = finalProfiles.filter(p => !connectedSet.has(p.id)).slice(0, 10);
+      }
+
+      return finalProfiles.map(profile => ({
         ...profile,
         mutual_connections: Math.floor(Math.random() * 15) + 1
       })) as ConnectionSuggestion[];

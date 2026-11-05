@@ -85,6 +85,16 @@ export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps
         }
 
         if (data.user) {
+          // Guarantee instant auto-connection with talentxcelpro
+          try {
+            supabase.from('connections').insert({
+              requester_id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+              recipient_id: data.user.id,
+              status: 'accepted',
+              message: "Welcome to TalentXcel! We're excited to have you in our community.",
+              connected_at: new Date().toISOString(),
+            }).then(() => {});
+          } catch {}
           // Login successful
           onSuccess?.();
           const { returnUrl } = conversionTelemetry.consumeAcquisitionReturnUrl();

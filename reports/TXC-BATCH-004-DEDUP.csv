@@ -1,0 +1,101 @@
+candidate_num,platform_name,input_domain,canonical_root_domain,category,dedup_status,database_source_reference
+1,EU-Startups,eu-startups.com,eu-startups.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+2,Arctic Startup,arcticstartup.com,arcticstartup.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+3,Startup Beat,startupbeat.com,startupbeat.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+4,Startup Benchmarks,startupbenchmarks.com,startupbenchmarks.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+5,Startup Inspire,startupinspire.com,startupinspire.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+6,Startup Tracker,startuptracker.io,startuptracker.io,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+7,Startup88,startup88.com,startup88.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+8,Startup Collections,startupcollections.com,startupcollections.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+9,Startup Heroes,startupheroes.io,startupheroes.io,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+10,The Startup Pitch,thestartuppitch.com,thestartuppitch.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+11,The Startup INC,thestartupinc.com,thestartupinc.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+12,Startups Watch,startups.watch,startups.watch,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+13,Startups Gallery,startupsgallery.com,startupsgallery.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+14,RocketHub,rockethub.com,rockethub.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+15,Gust,gust.com,gust.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+16,Magnitt,magnitt.com,magnitt.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+17,InnMind,innmind.com,innmind.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+18,Feedough,feedough.com,feedough.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+19,Springwise,springwise.com,springwise.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+20,Built In,builtin.com,builtin.com,Startup & Product Directory,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+21,AI Infinity,aiinfinity.com,aiinfinity.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+22,AI Library,ailibrary.org,ailibrary.org,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+23,AI Hustle,aihustle.com,aihustle.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+24,AI Tools Inc,aitools.inc,aitools.inc,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+25,Dokey AI,dokey.ai,dokey.ai,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+26,AI Startups,aistartups.net,aistartups.net,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+27,AI Resource Hub,airesourcehub.com,airesourcehub.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+28,LLM Relevance,llmrelevance.com,llmrelevance.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+29,BotsFloor,botsfloor.com,botsfloor.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+30,Bowora,bowora.com,bowora.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+31,DoMore AI,domore.ai,domore.ai,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+32,AIHunt,aihunt.app,aihunt.app,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+33,PromptZone,promptzone.com,promptzone.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+34,FlowGPT,flowgpt.com,flowgpt.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+35,Stacker News,stacker.news,stacker.news,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+36,All My Faves,allmyfaves.com,allmyfaves.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+37,Acid Tools,acidtools.com,acidtools.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+38,Tech Product Finder,techproductfinder.com,techproductfinder.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+39,SaaS Radar,saasradar.io,saasradar.io,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+40,Free SaaS Directory,freesaasdirectory.com,freesaasdirectory.com,AI & Software Discovery,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+41,Crozdesk,crozdesk.com,crozdesk.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+42,SoftwareWorld,softwareworld.co,softwareworld.co,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+43,Appvizer,appvizer.com,appvizer.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+44,CompareCamp,comparecamp.com,comparecamp.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+45,SiteJabber,sitejabber.com,sitejabber.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+46,ProvenExpert,provenexpert.com,provenexpert.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+47,Webwiki,webwiki.com,webwiki.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+48,Software Informer,software.informer.com,informer.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+49,AppAgg,appagg.com,appagg.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+50,Softpedia,softpedia.com,softpedia.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+51,Serchen,serchen.com,serchen.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+52,Cuspera,cuspera.com,cuspera.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+53,SelectHub,selecthub.com,selecthub.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+54,FeaturedCustomers,featuredcustomers.com,featuredcustomers.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+55,CrowdReviews,crowdreviews.com,crowdreviews.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+56,Tekpon,tekpon.com,tekpon.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+57,Business Software,business-software.com,business-software.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+58,SaaS Genius,saasgenius.com,saasgenius.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+59,SaaS Scout,saasscout.com,saasscout.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+60,SaaS Worthy,saasworthy.com,saasworthy.com,"SaaS, Business & Company Profiles",UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+61,API List,apilist.fun,apilist.fun,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+62,Public APIs,publicapis.io,publicapis.io,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+63,Open Source Alternative,opensourcealternative.to,opensourcealternative.to,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+64,NoCodeList,nocodelist.co,nocodelist.co,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+65,Discover Cloud,discovercloud.com,discovercloud.com,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+66,Tech Map,techmap.io,techmap.io,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+67,CodeProject,codeproject.com,codeproject.com,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+68,DZone,dzone.com,dzone.com,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+69,InfoQ,infoq.com,infoq.com,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+70,The New Stack,thenewstack.io,thenewstack.io,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+71,Slashdot,slashdot.org,slashdot.org,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+72,Lobsters,lobste.rs,lobste.rs,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+73,OWASP Projects,owasp.org,owasp.org,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+74,Stack Overflow for Teams,stackoverflow.com/teams,stackoverflow.com,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+75,Read the Docs,readthedocs.io,readthedocs.io,Developer & Technology Ecosystems,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+76,MakeUseOf,makeuseof.com,makeuseof.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+77,GeekWire,geekwire.com,geekwire.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+78,VentureBeat,venturebeat.com,venturebeat.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+79,Starter Story,starterstory.com,starterstory.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+80,Failory,failory.com,failory.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+81,Netted,netted.net,netted.net,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+82,The Rundown AI,therundown.ai,therundown.ai,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+83,Ben's Bites,bensbites.com,bensbites.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+84,Recruiting Brainfood,recruitingbrainfood.com,recruitingbrainfood.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+85,SourceCon,sourcecon.com,sourcecon.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+86,HR Daily Advisor,hrdailyadvisor.com,hrdailyadvisor.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+87,HR Exchange Network,hrexchangenetwork.com,hrexchangenetwork.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+88,Personnel Today,personneltoday.com,personneltoday.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+89,HRO Today,hrotoday.com,hrotoday.com,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+90,Human Capital Institute,hci.org,hci.org,Editorial & Founder Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+91,10words,10words.io,10words.io,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+92,Product Canyon,productcanyon.com,productcanyon.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+93,ProductLaunchpad,productlaunchpad.com,productlaunchpad.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+94,Simple Lister,simplelister.com,simplelister.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+95,Get Worm,getworm.com,getworm.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+96,Owwly,owwly.com,owwly.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+97,FiveTaco,fivetaco.com,fivetaco.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+98,Launched,launched.io,launched.io,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+99,Project Hatch,projecthatch.co,projecthatch.co,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE
+100,Website Launches,websitelaunches.com,websitelaunches.com,Directories & Launch Communities,UNIQUE_NEW_DOMAIN,NONE_UNIQUE

@@ -16,11 +16,19 @@ serve(async (req) => {
   try {
     const { message, command, sessionId, context } = await req.json();
 
-    if (!message) {
-      return new Response(JSON.stringify({ error: 'Message is required' }), {
+    if (!message || typeof message !== 'string') {
+      return new Response(JSON.stringify({ error: 'Valid message string is required' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Input bounds: enforce 4000 character ceiling to prevent cost drain
+    if (message.length > 4000) {
+      return new Response(
+        JSON.stringify({ error: 'Message exceeds maximum allowed length of 4000 characters.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     // Initialize Supabase client
@@ -48,6 +56,38 @@ serve(async (req) => {
     }
 
     // Get user profile for personalization
+    // Rate Limit & Usage Quota Check (SEC-REMEDIATION)
+    const today = new Date().toISOString().split('T')[0];
+    const { count: todayMessageCount } = await supabase
+      .from('ai_chat_messages')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('message_type', 'user')
+      .gte('created_at', `${today}T00:00:00.000Z`);
+
+    // Resolve user tier
+    const { data: subData } = await supabase
+      .from('subscribers')
+      .select('subscription_tier, status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .maybeSingle();
+
+    const userTier = (subData?.subscription_tier || 'Free').toLowerCase();
+    const dailyLimit = userTier.includes('premium') ? 1000 : userTier.includes('pro') ? 250 : userTier.includes('starter') ? 50 : 20;
+
+    if ((todayMessageCount || 0) >= dailyLimit) {
+      return new Response(
+        JSON.stringify({
+          error: `Daily AI chat quota reached (${todayMessageCount}/${dailyLimit}). Upgrade to Pro or Premium for expanded access.`,
+          code: 'quota_exceeded',
+          currentUsage: todayMessageCount,
+          limit: dailyLimit
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')

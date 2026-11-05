@@ -28,6 +28,7 @@ export interface SubdomainIdentity {
   disclaimer?: string;
   featuredInternalLinks: { text: string; href: string }[];
   siblingDomainCrossLinks: { text: string; href: string }[];
+  faqs: { question: string; answer: string }[];
   staticHeroHtml: string;
 }
 
@@ -83,6 +84,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Analyze Tech Compensation on TalentXcel Salary', href: 'https://salary.talentxcel.in/' },
       { text: 'Build an ATS Resume on TalentXcel Resume', href: 'https://resume.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "How are learning pathways structured?",
+        "answer": "Pathways group foundational concepts, intermediate projects, and advanced architectures into progressive milestones aligned with real-world job roles."
+    },
+    {
+        "question": "Are course certificates verifiable?",
+        "answer": "Yes. Certificates earned through verified partner programs can be linked directly to your digital Career Passport."
+    },
+    {
+        "question": "Does TalentXcel offer free learning resources?",
+        "answer": "Yes. Curated pathways incorporate open-access courses, documentation, and foundational assessments for self-paced study."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#0369a1;color:#e0f2fe;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Students, Fresh Graduates & Working Professionals</span>
@@ -148,6 +163,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Benchmark Market Salary on TalentXcel Salary', href: 'https://salary.talentxcel.in/' },
       { text: 'Plan Career Trajectory on TalentXcel Careers', href: 'https://careers.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "What is a Career Passport?",
+        "answer": "A Career Passport is a verified professional profile uniting authenticated work history, demonstrated skills, assessments, and certifications in one secure place."
+    },
+    {
+        "question": "How do recruiters view my passport?",
+        "answer": "You can generate a secure share link or QR code allowing verified recruiters to review your authenticated credentials without exposing private contact info."
+    },
+    {
+        "question": "What is the TalentScore assessment?",
+        "answer": "TalentScore provides an objective evaluation of your technical and professional capabilities through verified assessments and project audits."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#047857;color:#d1fae5;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Jobseekers & Working Professionals</span>
@@ -213,6 +242,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Verify Educational Degree on TalentXcel Colleges', href: 'https://colleges.talentxcel.in/' },
       { text: 'Learn New Tech Skills on TalentXcel Learning', href: 'https://learning.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "How are government recruitment notifications sourced?",
+        "answer": "Notifications are compiled from official gazettes, public commission releases (.gov.in, .nic.in), and verified agency notices."
+    },
+    {
+        "question": "Can I filter notifications by educational qualification?",
+        "answer": "Yes. You can filter by graduate, diploma, 10th/12th pass, and specialized engineering or medical qualification criteria."
+    },
+    {
+        "question": "Is there any fee to access government notification details?",
+        "answer": "No. All notification summaries, eligibility criteria, and links to official commission portals are completely free."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#b45309;color:#fef3c7;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Government-Job Aspirants & Public-Sector Jobseekers</span>
@@ -278,6 +321,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Verify Work Passports on TalentXcel Passport', href: 'https://passport.talentxcel.in/' },
       { text: 'Campus Talent on TalentXcel Colleges', href: 'https://colleges.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "What is Recruiter OS?",
+        "answer": "Recruiter OS is an integrated hiring workspace enabling teams to publish jobs, review applicant submissions, and search verified talent profiles."
+    },
+    {
+        "question": "How does candidate screening work?",
+        "answer": "Recruiter OS surfaces verified skills, assessment results, and resume parsing insights to help recruiters quickly identify strong matches."
+    },
+    {
+        "question": "Can recruiters manage team hiring pipelines?",
+        "answer": "Yes. Multi-seat recruiter accounts support team collaboration, stage tracking, candidate shortlists, and direct messaging."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#6b21a8;color:#f3e8ff;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Employers, Recruitment Teams & Staffing Agencies</span>
@@ -343,6 +400,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Build an ATS Resume on TalentXcel Resume', href: 'https://resume.talentxcel.in/' },
       { text: 'Learn Job-Ready Skills on TalentXcel Learning', href: 'https://learning.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "How many institutions are cataloged on TalentXcel Colleges?",
+        "answer": "The directory includes accredited higher education institutions across India, indexed with official affiliation and location data."
+    },
+    {
+        "question": "What information is available on individual college profiles?",
+        "answer": "Profiles detail academic programs, entrance examination eligibility, cutoffs, NIRF rankings, campus facilities, and placement summaries."
+    },
+    {
+        "question": "Can college placement cells manage their campus hiring profiles?",
+        "answer": "Yes. Authorized placement cells can manage batch screening codes and connect graduating cohorts directly with recruiters via TalentXcel."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#0f766e;color:#ccfbf1;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Colleges, Universities, Students & Placement Cells</span>
@@ -409,6 +480,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Learn Bridging Skills on TalentXcel Learning', href: 'https://learning.talentxcel.in/' },
       { text: 'Create an ATS Resume on TalentXcel Resume', href: 'https://resume.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "How do career roadmaps help plan progression?",
+        "answer": "Roadmaps illustrate the required technical competencies, architecture skills, and project experience needed to advance to each career level."
+    },
+    {
+        "question": "What does the Skill Gap Diagnostic evaluate?",
+        "answer": "It compares your current skill profile against active employer requirements for your target role and generates prioritized learning recommendations."
+    },
+    {
+        "question": "How does this differ from talentxcel.in/careers?",
+        "answer": "careers.talentxcel.in is an interactive career planning tool for users. talentxcel.in/careers is the recruitment page for careers at TalentXcel."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#4338ca;color:#e0e7ff;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Jobseekers, Working Professionals & Career Changers</span>
@@ -478,6 +563,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Map Skills to Higher Pay on TalentXcel Careers', href: 'https://careers.talentxcel.in/' },
       { text: 'Learn In-Demand Skills on TalentXcel Learning', href: 'https://learning.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "How are salary benchmark percentiles calculated?",
+        "answer": "Benchmarks are derived from employer job compensation disclosures, verified market research datasets, and user-reported compensation data calibrated across experience tiers."
+    },
+    {
+        "question": "What does the What-If Scenario Simulator do?",
+        "answer": "The simulator models potential compensation trajectories based on acquiring high-demand skills, transitioning between tech stacks, or relocating between metro hubs."
+    },
+    {
+        "question": "How are location differentials accounted for?",
+        "answer": "Compensation figures account for cost-of-living and market demand variance across major centers like Bangalore, Hyderabad, Pune, Mumbai, and Delhi NCR."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#0369a1;color:#e0f2fe;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Professionals, Jobseekers & Compensation Researchers</span>
@@ -545,6 +644,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Compare Market Pay on TalentXcel Salary', href: 'https://salary.talentxcel.in/' },
       { text: 'Create Digital Credential on TalentXcel Passport', href: 'https://passport.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "What makes a resume ATS-friendly on TalentXcel?",
+        "answer": "Templates use single-column, parseable structures with standard headers, clean typography, and zero parsing-inhibiting graphical elements."
+    },
+    {
+        "question": "How does the ATS Scanner evaluate resumes?",
+        "answer": "The scanner parses your uploaded resume against target job description keywords, highlighting missing skills, formatting issues, and section clarity."
+    },
+    {
+        "question": "Can I export my resume in different formats?",
+        "answer": "Yes. Completed resumes can be exported as cleanly formatted PDF documents ready for direct employer submission."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#1d4ed8;color:#dbeafe;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Freshers, Experienced Professionals & Jobseekers</span>
@@ -616,6 +729,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Plan Your Pathway on TalentXcel Careers', href: 'https://careers.talentxcel.in/' },
       { text: 'Hire Verified Talent on TalentXcel Employers', href: 'https://employers.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "How are job listings verified on TalentXcel Jobs?",
+        "answer": "Listings are published directly by verified employer accounts or aggregated with verified employer identity checks to ensure active, genuine vacancies."
+    },
+    {
+        "question": "Can I apply directly without external redirects?",
+        "answer": "Yes. For employers utilizing TalentXcel Recruiter OS, applications are submitted directly with your profile or uploaded resume without external redirects."
+    },
+    {
+        "question": "Are fresher and entry-level tech roles supported?",
+        "answer": "Yes. You can filter listings by experience tier, including fresher, entry-level, mid-level, and senior leadership positions."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <span style="display:inline-block;padding:4px 12px;background:#0369a1;color:#e0f2fe;font-size:0.8rem;font-weight:700;border-radius:9999px;margin-bottom:14px;text-transform:uppercase;letter-spacing:0.05em;">For Active Jobseekers, Passive Candidates & Professionals</span>
@@ -690,6 +817,20 @@ export const SUBDOMAIN_IDENTITIES: Record<string, SubdomainIdentity> = {
       { text: 'Government Careers', href: 'https://government.talentxcel.in/' },
       { text: 'Career Passport', href: 'https://passport.talentxcel.in/' },
     ],
+    faqs: [
+    {
+        "question": "What is TalentXcel?",
+        "answer": "TalentXcel is a unified career ecosystem integrating a professional talent network, verified career credentials, and specialist career intelligence tools."
+    },
+    {
+        "question": "How do the specialist subdomains connect with my account?",
+        "answer": "Your single TalentXcel account provides seamless authentication across all specialist subdomains via cross-domain session cookies (.talentxcel.in)."
+    },
+    {
+        "question": "What is the Skill Exchange Network?",
+        "answer": "A peer-to-peer learning marketplace where members exchange professional skills, mentor peers, and earn platform recognition."
+    }
+],
     staticHeroHtml: `
       <section class="tx-subdomain-hero" style="max-width:1100px;margin:0 auto;padding:40px 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;">
         <h1 style="font-size:2.25rem;font-weight:800;color:#f8fafc;margin-bottom:12px;line-height:1.2;">The Intelligent Career & Hiring Platform</h1>
@@ -706,4 +847,119 @@ export function getSubdomainIdentity(hostOrSubdomain: string): SubdomainIdentity
   const clean = hostOrSubdomain.toLowerCase().trim();
   const sub = clean.includes('.') ? clean.split('.')[0] : clean;
   return SUBDOMAIN_IDENTITIES[sub] || SUBDOMAIN_IDENTITIES.core;
+}
+
+
+function escapeXml(unsafe: string): string {
+  return (unsafe || '').replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+}
+
+/**
+ * Builds the user-visible, accessible semantic initial HTML for a specialist subdomain.
+ * Placed inside #root to be immediately visible to crawlers and users, then cleanly
+ * replaced when React mounts.
+ */
+export function buildSpecialistInitialHtml(identity: SubdomainIdentity): string {
+  const subdomainLabel = identity.subdomain ? identity.subdomain.charAt(0).toUpperCase() + identity.subdomain.slice(1) : 'Platform';
+
+  const internalLinks = (identity.featuredInternalLinks || [])
+    .map(link => `<a href="${escapeXml(link.href)}" style="background:#1e293b;color:#e2e8f0;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.875rem;border:1px solid #334155;display:inline-block;">${escapeXml(link.text)}</a>`)
+    .join('\n      ');
+
+  const faqsHtml = (identity.faqs || [])
+    .map(faq => `
+        <div style="background:#0f172a;border:1px solid #1e293b;border-radius:12px;padding:20px 24px;">
+          <h3 style="font-size:1.05rem;font-weight:700;color:#f8fafc;margin:0 0 8px 0;">${escapeXml(faq.question)}</h3>
+          <p style="font-size:0.95rem;color:#94a3b8;line-height:1.6;margin:0;">${escapeXml(faq.answer)}</p>
+        </div>`)
+    .join('\n');
+
+  const crossLinks = (identity.siblingDomainCrossLinks || [])
+    .map(cross => `<a href="${escapeXml(cross.href)}" style="color:#38bdf8;font-size:0.875rem;text-decoration:none;font-weight:500;">${escapeXml(cross.text)} &rarr;</a>`)
+    .join('\n        ');
+
+  return `<div id="tx-initial-content" class="tx-initial-content" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#e2e8f0;background:#090d16;min-height:100vh;padding:0;margin:0;">
+  <header style="border-bottom:1px solid #1e293b;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;">
+    <a href="/" style="font-size:1.25rem;font-weight:800;color:#ffffff;text-decoration:none;letter-spacing:-0.02em;">
+      Talent<span style="color:#38bdf8;">Xcel</span> <span style="font-size:0.8rem;font-weight:600;color:#94a3b8;margin-left:6px;padding:2px 8px;background:#1e293b;border-radius:6px;">${escapeXml(subdomainLabel)}</span>
+    </a>
+    <nav style="display:flex;gap:16px;font-size:0.875rem;">
+      <a href="https://talentxcel.in" style="color:#94a3b8;text-decoration:none;">Home</a>
+      <a href="https://jobs.talentxcel.in" style="color:#94a3b8;text-decoration:none;">Jobs</a>
+      <a href="https://salary.talentxcel.in" style="color:#94a3b8;text-decoration:none;">Salary</a>
+      <a href="https://colleges.talentxcel.in" style="color:#94a3b8;text-decoration:none;">Colleges</a>
+      <a href="https://resume.talentxcel.in" style="color:#94a3b8;text-decoration:none;">Resume</a>
+    </nav>
+  </header>
+
+  <main style="max-width:1100px;margin:0 auto;padding:48px 24px;">
+    <div style="margin-bottom:16px;">
+      <span style="display:inline-block;padding:5px 14px;background:#1e293b;color:#38bdf8;font-size:0.75rem;font-weight:700;border-radius:9999px;border:1px solid #334155;text-transform:uppercase;letter-spacing:0.05em;">
+        ${escapeXml(identity.audience)}
+      </span>
+    </div>
+
+    <h1 style="font-size:2.25rem;font-weight:800;color:#f8fafc;line-height:1.25;margin:0 0 16px 0;max-width:900px;">
+      ${escapeXml(identity.h1)}
+    </h1>
+
+    <p style="font-size:1.125rem;color:#94a3b8;line-height:1.7;margin:0 0 28px 0;max-width:850px;">
+      ${escapeXml(identity.supportingCopy)}
+    </p>
+
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:40px;">
+      <a href="${escapeXml(identity.primaryCtaUrl)}" style="background:#0284c7;color:#ffffff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:0.95rem;display:inline-block;">
+        ${escapeXml(identity.primaryCta)}
+      </a>
+      ${internalLinks}
+    </div>
+
+    ${identity.faqs && identity.faqs.length > 0 ? `
+    <section class="tx-domain-faqs" style="border-top:1px solid #1e293b;padding-top:40px;margin-top:40px;">
+      <h2 style="font-size:1.5rem;font-weight:700;color:#f1f5f9;margin-bottom:24px;">
+        Frequently Asked Questions
+      </h2>
+      <div style="display:grid;gap:16px;">
+${faqsHtml}
+      </div>
+    </section>
+    ` : ''}
+
+    ${identity.siblingDomainCrossLinks && identity.siblingDomainCrossLinks.length > 0 ? `
+    <section class="tx-cross-domains" style="border-top:1px solid #1e293b;padding-top:32px;margin-top:40px;">
+      <h3 style="font-size:0.9rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:16px;">
+        Explore the TalentXcel Platform
+      </h3>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;">
+        ${crossLinks}
+      </div>
+    </section>
+    ` : ''}
+
+    ${identity.disclaimer ? `
+    <p style="font-size:0.8rem;color:#64748b;margin-top:32px;line-height:1.5;">
+      ${escapeXml(identity.disclaimer)}
+    </p>
+    ` : ''}
+  </main>
+
+  <footer style="border-top:1px solid #1e293b;padding:32px 24px;text-align:center;font-size:0.8rem;color:#64748b;max-width:1200px;margin:40px auto 0 auto;">
+    <p style="margin:0 0 8px 0;">&copy; 2026 TalentXcel Services Pvt Ltd. All rights reserved.</p>
+    <div style="display:flex;justify-content:center;gap:16px;">
+      <a href="https://talentxcel.in/about" style="color:#64748b;text-decoration:none;">About</a>
+      <a href="https://talentxcel.in/privacypolicy" style="color:#64748b;text-decoration:none;">Privacy Policy</a>
+      <a href="https://talentxcel.in/terms" style="color:#64748b;text-decoration:none;">Terms of Service</a>
+      <a href="https://talentxcel.in/contact" style="color:#64748b;text-decoration:none;">Contact</a>
+    </div>
+  </footer>
+</div>`;
 }

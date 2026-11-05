@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useOptimizedAuth } from "@/contexts/OptimizedAuthContext";
+import { useUnreadMessageCount } from "@/hooks/useUnreadMessageCount";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,6 +40,7 @@ import {
 
 const PassportOverview: React.FC = () => {
   const { user } = useOptimizedAuth();
+  const { unreadCount } = useUnreadMessageCount();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
 
@@ -48,16 +50,16 @@ const PassportOverview: React.FC = () => {
     enabled: !!user?.id,
     queryFn: async () => {
       const uid = user!.id;
-      const [profile, passport, connections, jobs, certs, skillCerts, portfolio, resumes, applications] = await Promise.all([
+      const [profile, passport, connections, jobs, skillCerts, portfolio, resumes, applications] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
         supabase.from("career_passports").select("*").eq("user_id", uid).maybeSingle(),
         supabase.from("connections").select("id").or(`requester_id.eq.${uid},recipient_id.eq.${uid}`).eq("status", "accepted"),
         supabase.from("job_postings").select("id, title, company_name, location, salary_range, job_type").limit(3),
-        supabase.from("course_certificates").select("id").eq("user_id", uid),
+        
         supabase.from("skill_certifications").select("id").eq("user_id", uid),
         supabase.from("portfolio_items").select("id").eq("user_id", uid),
         supabase.from("resumes").select("id").eq("user_id", uid),
-        supabase.from("job_applications").select("id").eq("applicant_id", uid),
+        supabase.from("job_applications").select("id").eq("user_id", uid),
       ]);
 
       const userSkills = Array.isArray(profile.data?.skills) && profile.data.skills.length > 0 
@@ -67,10 +69,10 @@ const PassportOverview: React.FC = () => {
       return {
         profile: profile.data,
         passport: passport.data,
-        connectionsCount: connections.data?.length ?? 435,
-        certsCount: (certs.data?.length ?? 0) + (skillCerts.data?.length ?? 0) || 7,
+        connectionsCount: connections.data?.length ?? 0,
+        certsCount: skillCerts.data?.length ?? 0,
         projectsCount: portfolio.data?.length ?? 0,
-        resumesCount: resumes.data?.length ?? 1,
+        resumesCount: resumes.data?.length ?? 0,
         applicationsCount: applications.data?.length ?? 0,
         recommendedJobs: jobs.data || [],
         skills: userSkills,
@@ -80,7 +82,7 @@ const PassportOverview: React.FC = () => {
 
   const profile = passportData?.profile;
   const fullName = profile?.full_name || user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || "TalentXcel Profile";
-  const userTitle = profile?.title || profile?.headline || "Director Operations";
+  const userTitle = profile?.title || profile?.headline || "Professional Member";
   const location = profile?.location || "India";
   const username = profile?.username || profile?.slug || user?.id || "user";
   const avatarUrl = profile?.profile_picture_url || user?.user_metadata?.avatar_url || user?.user_metadata?.profile_picture_url;
@@ -676,14 +678,14 @@ const PassportOverview: React.FC = () => {
                 <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />
               </div>
 
-              <div onClick={() => navigate('/communication')} className="flex items-center justify-between p-2.5 rounded-xl hover:bg-muted/40 cursor-pointer transition-colors border border-border/40">
+              <div onClick={() => navigate('/messages')} className="flex items-center justify-between p-2.5 rounded-xl hover:bg-muted/40 cursor-pointer transition-colors border border-border/40">
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600">
                     <MessageSquare className="h-4 w-4" />
                   </div>
                   <div>
-                    <div className="font-bold text-foreground">2 new messages</div>
-                    <div className="text-[11px] text-muted-foreground">From your network</div>
+                    <div className="font-bold text-foreground">{unreadCount > 0 ? `${unreadCount} new message${unreadCount > 1 ? 's' : ''}` : 'Direct Messages'}</div>
+                    <div className="text-[11px] text-muted-foreground">{unreadCount > 0 ? 'From your network' : 'Connect and start a conversation'}</div>
                   </div>
                 </div>
                 <ArrowRight className="h-4 w-4 text-muted-foreground shrink-0" />

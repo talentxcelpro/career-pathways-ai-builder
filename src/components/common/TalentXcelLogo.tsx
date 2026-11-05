@@ -13,9 +13,10 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
   iconSize = 24,
   textSize = 'text-base sm:text-lg',
   showText = true,
-  theme = 'dark'
+  theme = 'auto'
 }) => {
-  const isDark = theme === 'dark' || theme === 'auto';
+  const isExplicitDark = theme === 'dark';
+  const isExplicitLight = theme === 'light';
 
   return (
     <div className={`flex items-center gap-2.5 select-none group ${className}`}>
@@ -47,7 +48,8 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
           {/* Circular outer gauge arc */}
           <path
             d="M 17 28 A 12 12 0 1 1 28 17"
-            stroke={isDark ? "#FFFFFF" : "#0F172A"}
+            stroke={isExplicitDark ? "#FFFFFF" : isExplicitLight ? "#0F172A" : "currentColor"}
+            className={theme === 'auto' ? "stroke-slate-900 dark:stroke-white" : ""}
             strokeWidth="3.2"
             strokeLinecap="round"
           />
@@ -79,15 +81,20 @@ export const TalentXcelLogo: React.FC<TalentXcelLogoProps> = ({
       {showText && (
         <span className={`${textSize} font-black tracking-tight flex items-center leading-none`}>
           <span 
-            className="font-extrabold tracking-[-0.03em]" 
-            style={{ color: isDark ? '#FFFFFF' : '#0F172A' }}
+            className={`font-extrabold tracking-[-0.03em] ${
+              isExplicitDark 
+                ? 'text-white' 
+                : isExplicitLight 
+                  ? 'text-slate-900' 
+                  : 'text-slate-900 dark:text-white'
+            }`}
           >
             Talent
           </span>
           <span 
-            className="font-black tracking-[-0.02em] ml-0.5 bg-gradient-to-r from-[#38BDF8] to-[#60A5FA] bg-clip-text text-transparent"
+            className="font-black tracking-[-0.02em] ml-0.5 bg-gradient-to-r from-[#0284C7] to-[#38BDF8] dark:from-[#38BDF8] dark:to-[#60A5FA] bg-clip-text text-transparent"
             style={{ 
-              filter: isDark ? 'drop-shadow(0 0 10px rgba(56,189,248,0.4))' : 'none'
+              filter: isExplicitDark ? 'drop-shadow(0 0 10px rgba(56,189,248,0.4))' : 'none'
             }}
           >
             Xcel

@@ -58,16 +58,19 @@ export const useEmployerAccess = () => {
         .maybeSingle();
       
       const isEmployer = profile?.is_employer === true || profile?.user_type === 'employer' || !!approvedReq;
-      const isApproved = profile?.employer_status === 'approved' || !!approvedReq || isEmployer;
-      const hasTeam = teamMembership && teamMembership.length > 0;
-      const hasAccess = isApproved || hasTeam || isEmployer;
+      const hasTeam = Boolean(teamMembership && teamMembership.length > 0 && teamMembership[0]?.is_active);
+      
+      // ── SEC-P0 GOVERNANCE: user_role is a requested role, NOT an automatic security entitlement ──
+      // Company verification or explicit admin approval is strictly required before unlocking employer capabilities
+      const isApproved = Boolean(isRootAdmin || profile?.employer_status === 'approved' || !!approvedReq || hasTeam);
+      const hasAccess = isApproved;
 
       return {
         profile,
         isEmployer,
         isApproved,
         hasEmployerAccess: hasAccess,
-        employerStatus: isApproved ? 'approved' : (profile?.employer_status || 'pending'),
+        employerStatus: isApproved ? 'approved' : (profile?.employer_status || (isEmployer ? 'pending' : 'none')),
         hasTeamMembership: hasTeam
       };
     },
@@ -79,7 +82,7 @@ export const useEmployerAccess = () => {
     isEmployer: accessData?.isEmployer ?? false,
     isApproved: accessData?.isApproved ?? false,
     hasEmployerAccess: accessData?.hasEmployerAccess ?? (user ? ROOT_ADMIN_EMAILS.includes((user.email || '').toLowerCase()) : false),
-    employerStatus: accessData?.employerStatus || 'approved',
+    employerStatus: accessData?.employerStatus || 'none',
     isLoading,
     refetch
   };

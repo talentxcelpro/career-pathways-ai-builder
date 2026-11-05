@@ -139,13 +139,14 @@ export const useLinkedInFeed = () => {
         if (conn.recipient_id === user.id) connections.add(conn.requester_id);
       });
 
-      // Get user's likes
-      const { data: userLikes } = await supabase
-        .from('post_likes')
-        .select('post_id')
-        .eq('user_id', user.id);
+      // Get user's likes and saved posts
+      const [userLikesRes, userSavesRes] = await Promise.all([
+        supabase.from('post_likes').select('post_id').eq('user_id', user.id),
+        supabase.from('post_saves').select('post_id').eq('user_id', user.id),
+      ]);
 
-      const likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
+      const likedPosts = new Set(userLikesRes.data?.map(like => like.post_id) || []);
+      const savedPosts = new Set(userSavesRes.data?.map(save => save.post_id) || []);
 
       // Create profiles map
       const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
@@ -199,9 +200,9 @@ export const useLinkedInFeed = () => {
           stats: {
             likes: postLikes.length,
             comments: postComments.length,
-            shares: 0, // Shares not implemented yet
+            shares: 0,
             isLiked,
-            isBookmarked: false
+            isBookmarked: savedPosts.has(post.id)
           },
           isJobPost: post.content_type === 'job' || post.tags?.includes('job'),
           isPromoted: false, // TODO: Implement promoted posts
@@ -339,9 +340,55 @@ export const useLinkedInFeed = () => {
     }
   };
 
-  const handleBookmark = (postId: string) => {
-    // TODO: Implement bookmarking
-    console.log('Bookmark post:', postId);
+  const handleBookmark = async (postId: string) => {
+    if (!user) return;
+
+    const queryKey = ['linkedInMobilePosts'] as const;
+    const previousData = queryClient.getQueryData<{
+      pages: Array<{ posts: LinkedInPost[]; nextPage?: number; hasMore: boolean }>;
+      pageParams: number[];
+    }>(queryKey);
+
+    const currentPost = previousData?.pages
+      .flatMap(page => page.posts)
+      .find(p => p.id === postId);
+    const isCurrentlyBookmarked = currentPost?.stats.isBookmarked ?? false;
+
+    // Optimistic toggle
+    if (previousData) {
+      const updatedPages = previousData.pages.map(page => ({
+        ...page,
+        posts: page.posts.map(p =>
+          p.id === postId
+            ? {
+                ...p,
+                stats: {
+                  ...p.stats,
+                  isBookmarked: !isCurrentlyBookmarked,
+                },
+              }
+            : p
+        )
+      }));
+      queryClient.setQueryData(queryKey, { ...previousData, pages: updatedPages });
+    }
+
+    try {
+      if (isCurrentlyBookmarked) {
+        await supabase
+          .from('post_saves')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+      } else {
+        await supabase
+          .from('post_saves')
+          .insert({ post_id: postId, user_id: user.id });
+      }
+    } catch (err) {
+      console.error('Error toggling bookmark:', err);
+      if (previousData) queryClient.setQueryData(queryKey, previousData);
+    }
   };
 
   const handleShare = (postId: string) => {

@@ -82,10 +82,7 @@ export function useRealCareerData() {
             .select('total_points')
             .eq('user_id', user.id)
             .maybeSingle(),
-          supabase
-            .from('career_achievements')
-            .select('*')
-            .eq('user_id', user.id),
+          Promise.resolve({ data: [] }),
           supabase
             .from('user_txc_balances')
             .select('total_earned')
@@ -105,7 +102,7 @@ export function useRealCareerData() {
             .select('id')
             .eq('user_id', user.id),
           supabase
-            .from('career_passport')
+            .from('career_passports')
             .select('tests_completed_count')
             .eq('user_id', user.id)
             .maybeSingle(),

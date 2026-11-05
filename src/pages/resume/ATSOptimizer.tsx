@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
+import { SocialShare } from '@/components/social/SocialShare';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Search, Zap, CheckCircle, AlertTriangle, Target, TrendingUp, FileText, ArrowRight, Sparkles, RefreshCw, Wand2, ShieldCheck, Check, Share2, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -19,6 +21,7 @@ import { useTieredAccess } from '@/hooks/useTieredAccess';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { supabase } from '@/integrations/supabase/client';
 import { recordUserIntent } from '@/utils/intentRouting';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 interface ATSReport {
   score: number;
@@ -228,6 +231,7 @@ export const ATSOptimizer: React.FC = () => {
   const runAnalysisOnFile = (fileName: string, textSnippet?: string) => {
     setIsScanning(true);
     conversionTelemetry.track('ats_started');
+    GrowthFunnelTracker.track('tool_usage', { tool_name: 'ats_scanner', stage: 'scan_started' });
     toast.loading('Auditing resume with ATS diagnostic bot...', { id: 'ats-scan' });
 
     setTimeout(() => {
@@ -253,6 +257,7 @@ export const ATSOptimizer: React.FC = () => {
       setIsScanning(false);
       conversionTelemetry.track('ats_completed', { score: dynamicScore });
       conversionTelemetry.track('signup_cta_view', { score: dynamicScore });
+      GrowthFunnelTracker.track('tool_usage', { tool_name: 'ats_scanner', stage: 'scan_completed', score: dynamicScore });
       GrowthEventTracker.getInstance().trackEvent('TOOL_COMPLETED', 'ATS_SCANNER', `ref_${dynamicScore}`);
       toast.success(`Audit Complete! ATS Compatibility Score: ${dynamicScore}/100`, { id: 'ats-scan' });
     }, 1200);
@@ -266,6 +271,15 @@ export const ATSOptimizer: React.FC = () => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDropRejected: (rejections) => {
+      const err = rejections[0]?.errors[0];
+      if (err?.code === 'file-too-large') {
+        toast.error('Resume exceeds maximum 5MB size limit. Please upload a smaller file.');
+      } else {
+        toast.error(err?.message || 'Invalid file format. Please upload PDF, DOCX, or TXT.');
+      }
+    },
+    maxSize: 5 * 1024 * 1024,
     accept: {
       'application/pdf': ['.pdf'],
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
@@ -273,6 +287,15 @@ export const ATSOptimizer: React.FC = () => {
     },
     maxFiles: 1
   });
+
+  const handleClearReport = () => {
+    setReport(null);
+    try {
+      localStorage.removeItem('txc_saved_ats_report');
+      sessionStorage.removeItem('txc_saved_ats_report');
+    } catch {}
+    toast.success('Diagnostic report and parsed data cleared from browser session');
+  };
 
   const handleRunDemo = () => {
     runAnalysisOnFile('Demo_Software_Engineer_Resume.pdf');
@@ -371,10 +394,14 @@ export const ATSOptimizer: React.FC = () => {
 
   return (
     <>
+      <SocialMetaHead
+        title={pageTitle}
+        description={pageDesc}
+        canonicalUrl={canonicalUrl}
+        category="resume"
+        ogType="website"
+      />
       <Helmet>
-        <title>{pageTitle}</title>
-        <meta name="description" content={pageDesc} />
-        <link rel="canonical" href={canonicalUrl} />
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
         </script>
@@ -410,6 +437,14 @@ export const ATSOptimizer: React.FC = () => {
                 <Wand2 className="h-3.5 w-3.5 text-emerald-600" />
                 Try Sample Resume
               </Button>
+              <SocialShare
+                contentType="tool"
+                title="Free ATS Resume Scanner & Parser Audit | TalentXcel"
+                description="Audit your resume against Fortune 500 applicant tracking algorithms in 10 seconds on TalentXcel."
+                url={canonicalUrl}
+                size="sm"
+                buttonText="Share Tool"
+              />
             </div>
           </div>
         </div>
@@ -456,6 +491,17 @@ export const ATSOptimizer: React.FC = () => {
                         <Button size="sm" variant="secondary" className="mt-3 text-xs h-7 pointer-events-none">
                           Browse Files
                         </Button>
+                      </div>
+
+                      {/* Explicit Privacy & Data Minimization Notice */}
+                      <div className="p-2.5 rounded-lg bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-900/40 text-[10px] text-slate-500 dark:text-slate-400 space-y-0.5">
+                        <div className="flex items-center gap-1 font-semibold text-blue-700 dark:text-blue-300">
+                          <ShieldCheck className="h-3 w-3" />
+                          <span>Privacy-First Client Parsing</span>
+                        </div>
+                        <p>
+                          Resumes are parsed locally in memory. Raw documents are never sold, advertised, or shared. You can delete your diagnostic report at any time.
+                        </p>
                       </div>
 
                       <div className="flex items-center justify-between pt-1">
@@ -505,6 +551,14 @@ export const ATSOptimizer: React.FC = () => {
                             <span className="text-xs font-bold text-muted-foreground font-mono truncate max-w-xs">
                               {report.fileName}
                             </span>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={handleClearReport}
+                              className="text-[11px] h-6 px-2 text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-medium"
+                            >
+                              Delete Report
+                            </Button>
                             <Badge variant="outline" className="text-[10px] uppercase font-bold">
                               Grade {report.grade}
                             </Badge>
@@ -777,6 +831,7 @@ export const ATSOptimizer: React.FC = () => {
                                 recordUserIntent('resume', '/resume/ats-check');
                                 conversionTelemetry.track('signup_cta_click', { source: 'ats_scanner', score: report.score });
                                 conversionTelemetry.setAcquisitionContext('ats_scanner', '/resume/ats-check');
+                                GrowthFunnelTracker.track('funnel_progression', { source: 'ats_scanner', action: 'save_score_signup', score: report.score });
                                 navigate('/auth?mode=signup&flow=ats_scanner&intent=resume&redirect=/resume/ats-check');
                               }}
                               className="h-10 text-xs font-bold gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"

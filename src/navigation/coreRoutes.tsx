@@ -35,7 +35,13 @@ const Security = lazy(() => import("../pages/Security"));
 const ResumeTemplates = lazy(() => import("../pages/ResumeTemplates"));
 
 const S = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={null}>{children}</Suspense>
+  <Suspense fallback={
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+    </div>
+  }>
+    {children}
+  </Suspense>
 );
 
 export const coreRoutes = [

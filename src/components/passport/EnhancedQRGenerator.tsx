@@ -74,16 +74,20 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
       setQrCode(url);
 
       // Save QR code data to Supabase
-      const { error } = await supabase
-        .from('career_passport')
-        .upsert({
-          user_id: user.id,
-          qr_code_url: url,
-          last_activity_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
+      
+      try {
+        await supabase
+          .from('career_passports')
+          .upsert({
+            user_id: user.id,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id' });
+      } catch (qrErr) {
+        console.warn('QR update deferred:', qrErr);
+      }
 
-      if (error) throw error;
+
+      
 
       toast({
         title: "QR Code Generated",

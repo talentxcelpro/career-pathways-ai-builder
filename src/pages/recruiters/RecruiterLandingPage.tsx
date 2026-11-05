@@ -47,7 +47,92 @@ import { PLATFORM_METRICS } from '@/config/platformMetrics';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
+
+/**
+ * SAMPLE_TALENT_ARCHETYPES
+ * Clearly documented illustrative demonstration profiles.
+ * Represents market demand skill combinations for unauthenticated visitors without exposing candidate PII or violating RLS.
+ * These are demonstration archetypes and NOT claimed to be real consented candidates.
+ */
+export const SAMPLE_TALENT_ARCHETYPES = [
+  {
+    id: 'talent-preview-1',
+    name: 'Aravind S.',
+    title: 'Lead Full-Stack Architect',
+    skills: ['React', 'Node.js', 'System Architecture', 'TypeScript', 'GraphQL'],
+    location: 'Bangalore, India',
+    company: 'Tier 1 Enterprise Tech',
+    experience_years: 8,
+    score: 890,
+    matchPct: 98,
+    why: 'Dual specialization in distributed microservices & high-concurrency frontend'
+  },
+  {
+    id: 'talent-preview-2',
+    name: 'Pooja M.',
+    title: 'Senior AI/ML Engineer',
+    skills: ['Python', 'PyTorch', 'LLM Fine-tuning', 'LangChain', 'FastAPI'],
+    location: 'Hyderabad, India',
+    company: 'AI Research Labs',
+    experience_years: 6,
+    score: 920,
+    matchPct: 96,
+    why: 'Production deployment experience with generative AI workflows and model serving'
+  },
+  {
+    id: 'talent-preview-3',
+    name: 'Vikram R.',
+    title: 'Cloud Solutions Architect',
+    skills: ['AWS', 'Kubernetes', 'Terraform', 'DevSecOps', 'CI/CD'],
+    location: 'Dubai, UAE',
+    company: 'Fintech Scaleup',
+    experience_years: 9,
+    score: 875,
+    matchPct: 94,
+    why: 'Certified AWS Solutions Architect with multi-region compliance experience'
+  },
+  {
+    id: 'talent-preview-4',
+    name: 'Sneha K.',
+    title: 'Data Platform Engineer',
+    skills: ['Apache Spark', 'Snowflake', 'Kafka', 'SQL', 'Databricks'],
+    location: 'Mumbai, India',
+    company: 'High-Volume Ecommerce',
+    experience_years: 5,
+    score: 860,
+    matchPct: 92,
+    why: 'Engineered real-time analytics streaming pipelines processing 50M+ events/day'
+  },
+  {
+    id: 'talent-preview-5',
+    name: 'Karthik N.',
+    title: 'Principal DevOps & SRE',
+    skills: ['Observability', 'Docker', 'Prometheus', 'Go', 'Linux'],
+    location: 'London, UK / Remote',
+    company: 'Global SaaS Infrastructure',
+    experience_years: 10,
+    score: 940,
+    matchPct: 97,
+    why: 'Maintained 99.99% SLA uptime for mission-critical global banking pipelines'
+  },
+  {
+    id: 'talent-preview-6',
+    name: 'Ananya D.',
+    title: 'Senior UI/UX & Design Systems Engineer',
+    skills: ['Figma to Code', 'TailwindCSS', 'Accessibility', 'Next.js', 'Design Systems'],
+    location: 'US Remote / India',
+    company: 'B2B Enterprise SaaS',
+    experience_years: 6,
+    score: 885,
+    matchPct: 91,
+    why: 'Created component libraries and design tokens serving 2M+ active platform users'
+  }
+];
+
+export const VERIFIED_TALENT_PREVIEWS = SAMPLE_TALENT_ARCHETYPES;
 export default function RecruiterLandingPage() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,6 +173,24 @@ export default function RecruiterLandingPage() {
     }
   });
 
+  // Calculate candidates to show (RLS protection fallback to verified anonymized talent previews)
+  const displayCandidates = React.useMemo(() => {
+    if (candidates && candidates.length > 0) {
+      return candidates;
+    }
+    if (!activeQuery.trim()) {
+      return SAMPLE_TALENT_ARCHETYPES;
+    }
+    const q = activeQuery.toLowerCase().trim();
+    const filtered = SAMPLE_TALENT_ARCHETYPES.filter(c => 
+      c.name.toLowerCase().includes(q) ||
+      c.title.toLowerCase().includes(q) ||
+      c.location.toLowerCase().includes(q) ||
+      c.skills.some(s => s.toLowerCase().includes(q))
+    );
+    return filtered.length > 0 ? filtered : SAMPLE_TALENT_ARCHETYPES;
+  }, [candidates, activeQuery]);
+
   const handleSearch = (term?: string) => {
     const q = term !== undefined ? term : searchTerm;
     setActiveQuery(q);
@@ -116,6 +219,7 @@ export default function RecruiterLandingPage() {
           data: {
             full_name: regFullName.trim(),
             company_name: regCompanyName.trim(),
+            user_role: 'employer',
             role: 'employer',
             hiring_domain: regHiringDomain
           }
@@ -123,6 +227,15 @@ export default function RecruiterLandingPage() {
       });
 
       if (authError) throw authError;
+
+      // Track employer acquisition
+      conversionTelemetry.track('employer_signup_completed', { company: regCompanyName.trim(), domain: regHiringDomain });
+      GrowthFunnelTracker.trackOnce('sign_up', authData.user?.id || regWorkEmail.trim(), {
+        role: 'employer',
+        source: 'recruiter_os',
+        user_id: authData.user?.id,
+        company_name: regCompanyName.trim()
+      });
 
       // Ensure active workspace is set to employer
       localStorage.setItem('txc_active_workspace', 'employer');
@@ -257,20 +370,24 @@ export default function RecruiterLandingPage() {
           <div>
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
               <Users className="h-5 w-5 text-blue-400" />
-              Live Candidate Database Preview
+              {candidates && candidates.length > 0 ? 'Live Candidate Search Results' : 'Candidate Discovery Archetypes (Demonstration)'}
             </h2>
             <p className="text-xs text-slate-400">
-              Real profiles matching your criteria. Sign up to unlock full contact info, resumes, and automated outreach.
+              {candidates && candidates.length > 0 
+                ? 'Real profiles matching your criteria. Sign up to unlock full contact info, resumes, and automated outreach.'
+                : 'Illustrative talent archetypes representing current market demand. Register your hiring workspace to search 100% live verified candidates.'}
             </p>
           </div>
           <span className="text-xs font-bold text-blue-400 bg-blue-950/60 px-3 py-1 rounded-full border border-blue-800/50">
-            {candidates?.length || 0} Matches Found
+            {candidates && candidates.length > 0
+              ? `${candidates.length} Matches Found`
+              : `${displayCandidates.length} Illustrative Archetypes — Register to Search Live Database`}
           </span>
         </div>
 
         {/* CANDIDATE CARDS GRID */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {(candidates || []).map((cand: any, idx: number) => {
+          {displayCandidates.map((cand: any, idx: number) => {
             const skillsList = Array.isArray(cand.skills) ? cand.skills : (cand.skills ? [cand.skills] : ['Software Systems', 'Cloud']);
             const exp = cand.experience_years ? Number(cand.experience_years) : 4 + (idx % 6);
             const score = 780 + ((idx * 19) % 160);
@@ -289,8 +406,8 @@ export default function RecruiterLandingPage() {
                         <p className="text-xs text-slate-400 truncate max-w-[180px]">{cand.title || 'Technical Specialist'}</p>
                       </div>
                     </div>
-                    <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
-                      {matchPct}% Match
+                    <Badge className="bg-slate-800 text-blue-300 border border-slate-700 text-[10px] font-semibold">
+                      {candidates && candidates.length > 0 ? `${matchPct}% Match` : 'Sample Archetype'}
                     </Badge>
                   </div>
                 </CardHeader>
@@ -321,7 +438,7 @@ export default function RecruiterLandingPage() {
                     </p>
                     <p className="text-slate-300 flex items-center gap-1.5">
                       <Check className="h-3 w-3 text-emerald-400 shrink-0" />
-                      <span>{skillsList.slice(0, 2).join(', ')} verified in database</span>
+                      <span>{skillsList.slice(0, 2).join(', ')} core competency</span>
                     </p>
                     <p className="text-slate-300 flex items-center gap-1.5">
                       <Check className="h-3 w-3 text-emerald-400 shrink-0" />

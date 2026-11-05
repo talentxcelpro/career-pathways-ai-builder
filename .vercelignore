@@ -1,0 +1,19 @@
+# Vercel Deployment Ignore Configuration
+# Keep Vercel deployments strictly focused on frontend application
+# Zero additional Vercel workload, zero serverless function overhead, zero added costs
+
+# Independent Backlink Acquisition Engine (Local/Independent runner only)
+backlink-engine/
+dist-external/
+reports/
+scratch/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Heavy raw datasets and audit scripts
+src/data/indianInstitutionsCatalog.json
+scripts/security-audit/
+scripts/storage-audit/
+claude-seo/

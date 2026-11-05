@@ -40,10 +40,6 @@ export function optimizedSearch(candidates, query) {
 
   if (!battle) return null;
 
-  const rawStages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
-  const currentStageObj = rawStages[currentStage - 1];
-  const currentStageName = typeof currentStageObj === 'string' ? currentStageObj : (currentStageObj?.name || 'Completed');
-
   const handleRunAndAdvance = async () => {
     if (userId === 'guest') {
       toast.error('Please log in to submit challenge stages and earn fast-track interview status.');
@@ -88,7 +84,7 @@ export function optimizedSearch(candidates, query) {
                   {battle.company_name}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">Stage {currentStage} of 4: {currentStageName}</p>
+              <p className="text-xs text-slate-400">Stage {currentStage} of 4: {(typeof battle.stages[currentStage - 1] === 'string' ? battle.stages[currentStage - 1] : battle.stages[currentStage - 1]?.name || battle.stages[currentStage - 1]?.desc) || 'Completed'}</p>
             </div>
           </div>
 
@@ -99,16 +95,14 @@ export function optimizedSearch(candidates, query) {
 
         {/* 4 Pipeline Stages Header */}
         <div className="grid grid-cols-4 gap-2">
-          {rawStages.map((stageItem: any, idx: number) => {
+          {battle.stages.map((rawStage, idx) => {
+            const stage = typeof rawStage === 'string' ? rawStage : rawStage?.name || rawStage?.desc || 'Stage';
             const num = idx + 1;
             const isDone = num < currentStage;
             const isCurrent = num === currentStage;
-            const stageName = typeof stageItem === 'string' ? stageItem : (stageItem?.name || `Stage ${num}`);
-            const stageKey = typeof stageItem === 'string' ? `${stageItem}_${idx}` : (stageItem?.id ? `ws_stage_${stageItem.id}` : `ws_stage_${idx}`);
-
             return (
               <div
-                key={stageKey}
+                key={`${idx}-${stage}`}
                 className={`p-2.5 rounded-xl border text-center text-xs font-bold ${
                   isDone
                     ? 'bg-[#20D994]/15 border-[#20D994]/40 text-[#20D994]'
@@ -117,7 +111,7 @@ export function optimizedSearch(candidates, query) {
                     : 'bg-[#071329] border-white/5 text-slate-500'
                 }`}
               >
-                {stageName}
+                {stage}
               </div>
             );
           })}

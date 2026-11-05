@@ -8,6 +8,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Helmet } from 'react-helmet-async';
+import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
+import { SocialShare } from '@/components/social/SocialShare';
 import ReactMarkdown from 'react-markdown';
 import { 
   Calendar, 
@@ -147,22 +149,17 @@ export const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white">
-      <Helmet>
-        <title>{post.title} | TalentXcel Blog</title>
-        <meta name="description" content={post.excerpt} />
-        <meta name="robots" content="noindex, follow" />
-        <link rel="canonical" href={`https://talentxcel.in/blog/${slug}`} />
-        <meta property="og:title" content={`${post.title} | TalentXcel`} />
-        <meta property="og:description" content={post.excerpt} />
-        <meta property="og:type" content="article" />
-        <meta property="og:image" content={post.imageUrl} />
-        <meta property="og:url" content={`https://talentxcel.in/blog/${slug}`} />
-        {post.date && <meta name="article:published_time" content={post.date} />}
-        <meta name="article:section" content={post.category} />
-        {post.tags.map((tag) => (
-          <meta key={tag} name="article:tag" content={tag} />
-        ))}
-      </Helmet>
+      <SocialMetaHead
+        title={`${post.title} | TalentXcel`}
+        description={post.excerpt}
+        canonicalUrl={`/blog/${slug}`}
+        category="article"
+        ogType="article"
+        ogImage={post.imageUrl || undefined}
+        publishedTime={post.date}
+        noindex={true}
+        robotsDirective="noindex, follow"
+      />
 
       {/* Top Header / Breadcrumb */}
       <div className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md sticky top-0 z-20">
@@ -175,15 +172,16 @@ export const BlogPost = () => {
             Back to Blog
           </Link>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
+            <SocialShare
+              contentType="article"
+              contentId={slug}
+              title={`${post.title} | TalentXcel`}
+              description={post.excerpt}
+              url={`https://talentxcel.in/blog/${slug}`}
               size="sm"
-              onClick={handleShare}
+              buttonText="Share"
               className="h-8 px-3 text-xs border-slate-800 bg-slate-900 text-slate-300 hover:bg-slate-800 hover:text-white"
-            >
-              <Share2 className="h-3.5 w-3.5 mr-1.5 text-blue-400" />
-              Share
-            </Button>
+            />
           </div>
         </div>
       </div>

@@ -4,7 +4,6 @@ import { CareerPlayerService } from './careerPlayerService';
 export interface CareerSkillPath {
   id: string;
   title: string;
-  name?: string;
   description: string;
   icon: string;
 }
@@ -13,17 +12,13 @@ export interface CareerTreeSkill {
   id: string;
   path_id: string;
   title: string;
-  name?: string;
   level_range: string;
-  category?: string;
-  description?: string;
-  prerequisites?: string[];
   prerequisite_id: string | null;
-  position_x?: number;
-  position_y?: number;
   xp_required: number;
   xp_reward: number;
-  order_index: number;
+  order_index?: number;
+  name?: string;
+  prerequisites?: string[];
   user_status?: 'locked' | 'unlocked' | 'mastered';
   user_progress?: number;
 }
@@ -39,97 +34,98 @@ export class CareerSkillTreeService {
       console.error('Error fetching skill paths:', error);
       throw error;
     }
-    return (data as any[] || []).map((p: any) => ({
-      id: p.id,
-      title: p.name || p.title || p.id,
-      name: p.name || p.title || p.id,
-      description: p.description || '',
-      icon: p.icon || 'code'
-    }));
+    return data as CareerSkillPath[];
   }
 
-  static async getSkillsForPath(pathId: string = 'technology', userId?: string): Promise<CareerTreeSkill[]> {
-    let resolvedPathId = pathId || 'technology';
-    let { data: rawSkills, error } = await supabase
+  static async getSkillsForPath(pathId: string, userId?: string): Promise<CareerTreeSkill[]> {
+    // Map granular role paths to their root category in Supabase
+    const normalizedPath = ['frontend', 'backend', 'fullstack', 'ai_ml', 'devops', 'cybersecurity'].includes(pathId)
+      ? 'technology'
+      : (pathId || 'technology');
+
+    let { data: skills, error } = await supabase
       .from('career_tree_skills' as any)
       .select('*')
-      .eq('path_id', resolvedPathId)
-      .order('position_y', { ascending: true });
+      .eq('path_id', normalizedPath)
+      .order('created_at', { ascending: true });
 
-    // Resilient fallback to 'technology' if candidate's specific subdiscipline path is not seeded
-    if ((error || !rawSkills || rawSkills.length === 0) && resolvedPathId !== 'technology') {
-      const fallback = await supabase
+    if (error || !skills || skills.length === 0) {
+      // Fallback query to 'technology' root path
+      const { data: fallbackSkills } = await supabase
         .from('career_tree_skills' as any)
         .select('*')
         .eq('path_id', 'technology')
-        .order('position_y', { ascending: true });
-      if (!fallback.error && fallback.data && fallback.data.length > 0) {
-        rawSkills = fallback.data;
-        error = null;
-      }
+        .order('created_at', { ascending: true });
+      skills = fallbackSkills || [];
     }
-
-    if (error) {
-      console.error('Error fetching tree skills:', error);
-      throw error;
-    }
-
-    const skills: CareerTreeSkill[] = (rawSkills || []).map((s: any) => ({
-      id: s.id,
-      path_id: s.path_id,
-      title: s.name || s.title || 'Skill Node',
-      name: s.name || s.title || 'Skill Node',
-      level_range: s.level_range || 'Lv. 1-5',
-      category: s.category || 'Core',
-      description: s.description || '',
-      prerequisites: s.prerequisites || [],
-      prerequisite_id: (Array.isArray(s.prerequisites) && s.prerequisites.length > 0)
-        ? s.prerequisites[0]
-        : (s.prerequisite_id || null),
-      xp_required: (s.min_player_level || 1) * 100,
-      xp_reward: 150,
-      order_index: (s.position_y ?? 0) * 10 + (s.position_x ?? 0),
-      position_x: s.position_x ?? 0,
-      position_y: s.position_y ?? 0,
-    }));
 
     if (!userId || userId === 'guest') {
-      return skills.map(s => ({
+      return (skills as any[]).map(s => ({
         ...s,
-        user_status: s.prerequisite_id === null ? 'unlocked' : 'locked',
-        user_progress: s.prerequisite_id === null ? 50 : 0
+        title: s.name || s.title,
+        user_status: (!s.prerequisites || s.prerequisites.length === 0) ? 'unlocked' : 'locked',
+        user_progress: (!s.prerequisites || s.prerequisites.length === 0) ? 50 : 0
       }));
     }
 
-    const { data: userSkills } = await supabase
-      .from('career_player_skills' as any)
-      .select('*')
-      .eq('user_id', userId);
+    // Fetch user's actual database completions and declared skills
+    const [userSkillsRes, profileRes] = await Promise.all([
+      supabase.from('career_player_skills' as any).select('*').eq('player_id', userId),
+      supabase.from('profiles').select('skills').eq('id', userId).maybeSingle(),
+    ]);
 
     const userSkillMap = new Map<string, any>();
-    (userSkills || []).forEach((us: any) => {
+    (userSkillsRes.data || []).forEach((us: any) => {
       userSkillMap.set(us.skill_id, us);
     });
 
-    return skills.map(s => {
+    const declaredSkills: string[] = Array.isArray(profileRes.data?.skills)
+      ? profileRes.data.skills.map((s: string) => s.toLowerCase().trim())
+      : [];
+
+    return (skills as any[]).map(s => {
       const us = userSkillMap.get(s.id);
+      const skillNameLower = (s.name || s.title || '').toLowerCase();
+
       let status: 'locked' | 'unlocked' | 'mastered' = 'locked';
       let progress = 0;
 
       if (us) {
-        status = us.status || 'locked';
-        progress = us.status === 'mastered' ? 100 : (us.level ? us.level * 20 : 50);
-      } else if (!s.prerequisite_id) {
-        status = 'unlocked';
+        status = us.status;
+        progress = us.progress;
       } else {
-        const prereq = userSkillMap.get(s.prerequisite_id);
-        if (prereq && prereq.status === 'mastered') {
+        // Evaluate dynamic unlocking against the user's authentic profile skills
+        const hasDirectMatch = declaredSkills.some(ds => ds.includes(skillNameLower) || skillNameLower.includes(ds));
+        const hasReact = declaredSkills.some(ds => ds.includes('react'));
+        const hasNodeOrSql = declaredSkills.some(ds => ds.includes('node') || ds.includes('postgres') || ds.includes('sql') || ds.includes('api'));
+        
+        if (skillNameLower === 'frontend' && (hasReact || declaredSkills.includes('tailwind css'))) {
+          status = 'mastered';
+          progress = 100;
+        } else if (skillNameLower === 'react' && hasReact) {
           status = 'unlocked';
+          progress = 85;
+        } else if (skillNameLower === 'backend' && hasNodeOrSql) {
+          status = 'unlocked';
+          progress = 80;
+        } else if (skillNameLower === 'full stack' && hasReact && hasNodeOrSql) {
+          status = 'unlocked';
+          progress = 75;
+        } else if (hasDirectMatch) {
+          status = 'unlocked';
+          progress = 70;
+        } else if (!s.prerequisite_id && (!s.prerequisites || s.prerequisites.length === 0)) {
+          status = 'unlocked';
+          progress = 30;
+        } else {
+          status = 'locked';
+          progress = 0;
         }
       }
 
       return {
         ...s,
+        title: s.name || s.title,
         user_status: status,
         user_progress: progress
       };
@@ -141,11 +137,12 @@ export class CareerSkillTreeService {
     const { error } = await supabase
       .from('career_player_skills' as any)
       .upsert({
-        user_id: userId,
+        player_id: userId,
         skill_id: skill.id,
         status: 'mastered',
-        level: 5
-      }, { onConflict: 'user_id,skill_id' });
+        progress: 100,
+        verified_at: new Date().toISOString()
+      }, { onConflict: 'player_id,skill_id' });
 
     if (error) {
       console.error('Error mastering skill:', error);
@@ -155,7 +152,7 @@ export class CareerSkillTreeService {
     // 2. Award XP
     await CareerPlayerService.awardXP({
       userId,
-      amount: skill.xp_reward,
+      amount: skill.xp_reward || 100,
       coins: 25,
       action: `Mastered Skill: ${skill.title}`,
       sourceType: 'skill',

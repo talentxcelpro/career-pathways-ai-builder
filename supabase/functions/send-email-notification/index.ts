@@ -411,11 +411,65 @@ const handler = async (req: Request): Promise<Response> => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    // ── Authentication & Anti-Relay Guard (SEC-REMEDIATION) ───────────────
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Unauthorized: Bearer token required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
+    const cronSecret = Deno.env.get('CRON_SECRET') || '';
+
+    const isServiceCall = (serviceRoleKey && token === serviceRoleKey) || (cronSecret && token === cronSecret);
+    let callerUser: any = null;
+
+    if (!isServiceCall) {
+      const { data: authData, error: authError } = await supabase.auth.getUser(token);
+      if (authError || !authData?.user) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Unauthorized: Invalid or expired token" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      callerUser = authData.user;
+    }
+
     const requestData: EmailNotificationRequest = await req.json();
+    const cleanEmail = requestData.recipient_email?.toLowerCase().trim();
+
+    if (!cleanEmail) {
+      return new Response(
+        JSON.stringify({ success: false, error: "recipient_email is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Security Guard: Authenticated users can ONLY trigger notifications for their own verified email
+    if (callerUser) {
+      if (cleanEmail !== callerUser.email?.toLowerCase().trim()) {
+        console.warn(`[SEC-RELAY] User ${callerUser.id} attempted sending to ${cleanEmail}`);
+        return new Response(
+          JSON.stringify({ success: false, error: "Forbidden: Cannot send notifications to external addresses." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (requestData.event_name && requestData.event_name.startsWith('campaign')) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Forbidden: Administrative privilege required for campaigns." }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
     console.log('📧 Email request received:', {
       event_name: requestData.event_name,
-      recipient_email: requestData.recipient_email,
-      recipient_name: requestData.recipient_name
+      recipient_email: cleanEmail,
+      recipient_name: requestData.recipient_name,
+      isServiceCall
     });
 
     // Prepare template data with aliases for compatibility
@@ -429,7 +483,6 @@ const handler = async (req: Request): Promise<Response> => {
     };
 
     // Check if recipient is suppressed
-    const cleanEmail = requestData.recipient_email?.toLowerCase().trim();
     const { data: suppressionData } = await supabase
       .from('email_suppression_list')
       .select('id, suppression_type, reason')

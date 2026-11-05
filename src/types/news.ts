@@ -4,7 +4,13 @@ export type NewsCategory =
   | 'Career Intelligence'
   | 'Education Intelligence'
   | 'TalentXcel Network'
-  | 'Press & Media';
+  | 'Press & Media'
+  | 'Career Advice'
+  | 'Interview Tips'
+  | 'Resume Help'
+  | 'Skill Development'
+  | 'Industry Insights'
+  | 'Market Trends';
 
 export type NewsArchetype =
   | 'Sector Report'
@@ -26,6 +32,7 @@ export interface NewsAuthor {
   name: string;
   role: string;
   avatar?: string;
+  email?: string;
 }
 
 export interface NewsArticle {
@@ -35,6 +42,8 @@ export interface NewsArticle {
   summary: string;
   content: string;
   category: Exclude<NewsCategory, 'All'>;
+  articleCategory?: string;
+  hubCategory?: string;
   archetype?: NewsArchetype;
   publishedAt: string;
   updatedAt?: string;
@@ -48,6 +57,7 @@ export interface NewsArticle {
   imageCaption?: string;
   imageLicense?: string;
   readTime: string;
+  readingTimeMinutes?: number;
   tags: string[];
   keyTakeaways: string[];
   isFeatured?: boolean;

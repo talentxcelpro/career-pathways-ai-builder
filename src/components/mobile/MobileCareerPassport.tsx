@@ -91,26 +91,18 @@ export const MobileCareerPassport: React.FC = () => {
           .eq('id', targetUserId)
           .single();
 
-        // Fetch public career passport data
+        // Fetch public career passport data safely
         const { data: passportData } = await supabase
-          .from('career_passport')
-          .select('completion_percentage, career_readiness_score, market_competitiveness_score, resumes_count, jobs_applied_count, certifications_count, connections_count')
-          .eq('user_id', targetUserId)
-          .single();
-
-        // Fetch public achievements
-        const { data: achievementsData } = await supabase
-          .from('career_achievements')
-          .select('achievement_type, achievement_title, achievement_description, points_awarded, earned_at')
-          .eq('user_id', targetUserId)
-          .eq('is_public', true)
-          .limit(5);
+          .from("career_passports")
+          .select("*")
+          .eq("user_id", targetUserId)
+          .maybeSingle();
 
         setPublicPassportData({
           profile: profileData,
           passport: passportData,
-          achievements: achievementsData || []
-        });
+          achievements: []
+        }); });
       } catch (error) {
         console.error('Error loading public passport:', error);
       } finally {

@@ -1,0 +1,902 @@
+[
+  {
+    "num": 1,
+    "name": "AEO Tools",
+    "inputDomain": "aeotools.space",
+    "canonicalRoot": "aeotools.space",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 2,
+    "name": "AI App Review",
+    "inputDomain": "ai-appreview.com",
+    "canonicalRoot": "ai-appreview.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 3,
+    "name": "AI Nav",
+    "inputDomain": "ai-nav.net",
+    "canonicalRoot": "ai-nav.net",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 4,
+    "name": "AI Sites Net",
+    "inputDomain": "ai-sites.net",
+    "canonicalRoot": "ai-sites.net",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 5,
+    "name": "AI Toolflow",
+    "inputDomain": "ai-toolflow.com",
+    "canonicalRoot": "ai-toolflow.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 6,
+    "name": "AI-Tools Directory",
+    "inputDomain": "ai-tools.directory",
+    "canonicalRoot": "ai-tools.directory",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 7,
+    "name": "AI Chief",
+    "inputDomain": "aichief.com",
+    "canonicalRoot": "aichief.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 8,
+    "name": "AIDir",
+    "inputDomain": "aidir.wiki",
+    "canonicalRoot": "aidir.wiki",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 9,
+    "name": "AI Directory Wiki",
+    "inputDomain": "aidirectory.wiki",
+    "canonicalRoot": "aidirectory.wiki",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 10,
+    "name": "AI Dream Hub",
+    "inputDomain": "aidreamhub.com",
+    "canonicalRoot": "aidreamhub.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 11,
+    "name": "AI Dust",
+    "inputDomain": "aidust.io",
+    "canonicalRoot": "aidust.io",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 12,
+    "name": "AI Tools Explore",
+    "inputDomain": "aiex.me",
+    "canonicalRoot": "aiex.me",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 13,
+    "name": "AI for Developers",
+    "inputDomain": "aifordevelopers.org",
+    "canonicalRoot": "aifordevelopers.org",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 14,
+    "name": "AI Hubs",
+    "inputDomain": "aihubs.ai",
+    "canonicalRoot": "aihubs.ai",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 15,
+    "name": "AI Hustle Tools",
+    "inputDomain": "aihustle.tools",
+    "canonicalRoot": "aihustle.tools",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 16,
+    "name": "AI Kaptan",
+    "inputDomain": "aikaptan.com",
+    "canonicalRoot": "aikaptan.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 17,
+    "name": "AI Match Pro",
+    "inputDomain": "aimatch.pro",
+    "canonicalRoot": "aimatch.pro",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 18,
+    "name": "AI Nave",
+    "inputDomain": "ainave.com",
+    "canonicalRoot": "ainave.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 19,
+    "name": "AI Pedia Hub",
+    "inputDomain": "aipediahub.com",
+    "canonicalRoot": "aipediahub.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 20,
+    "name": "AI Resource Pro",
+    "inputDomain": "airesource.pro",
+    "canonicalRoot": "airesource.pro",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 21,
+    "name": "AI Tools Guru",
+    "inputDomain": "aitoolguru.com",
+    "canonicalRoot": "aitoolguru.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 22,
+    "name": "AI Tool List",
+    "inputDomain": "aitoollist.org",
+    "canonicalRoot": "aitoollist.org",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 23,
+    "name": "AI Tools A2Z",
+    "inputDomain": "aitoolsa2z.com",
+    "canonicalRoot": "aitoolsa2z.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 24,
+    "name": "AI Tools Arena",
+    "inputDomain": "aitoolsarena.com",
+    "canonicalRoot": "aitoolsarena.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 25,
+    "name": "AI Tools Corner",
+    "inputDomain": "aitoolscorner.com",
+    "canonicalRoot": "aitoolscorner.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 26,
+    "name": "AI Tools Directory List",
+    "inputDomain": "aitoolsdirectorylist.com",
+    "canonicalRoot": "aitoolsdirectorylist.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 27,
+    "name": "AI Tools Explorer",
+    "inputDomain": "aitoolsexplorer.com",
+    "canonicalRoot": "aitoolsexplorer.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 28,
+    "name": "AI Tools Magazine",
+    "inputDomain": "aitoolsmagazine.com",
+    "canonicalRoot": "aitoolsmagazine.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 29,
+    "name": "AI Tools Pin",
+    "inputDomain": "aitoolspin.com",
+    "canonicalRoot": "aitoolspin.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 30,
+    "name": "AI Tools Prime",
+    "inputDomain": "aitoolsprime.com",
+    "canonicalRoot": "aitoolsprime.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 31,
+    "name": "AI Tool Trek",
+    "inputDomain": "aitooltrek.com",
+    "canonicalRoot": "aitooltrek.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": true,
+    "duplicateSource": "acquisition_targets: AI Tool Trek"
+  },
+  {
+    "num": 32,
+    "name": "AiToolz",
+    "inputDomain": "aitoolz.net",
+    "canonicalRoot": "aitoolz.net",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 33,
+    "name": "AI Top Tools",
+    "inputDomain": "aitoptools.com",
+    "canonicalRoot": "aitoptools.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 34,
+    "name": "AI XYZ",
+    "inputDomain": "aixyz.co",
+    "canonicalRoot": "aixyz.co",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 35,
+    "name": "All AI Tool List",
+    "inputDomain": "allaitoollist.com",
+    "canonicalRoot": "allaitoollist.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 36,
+    "name": "All AI Tools Tech",
+    "inputDomain": "allaitools.tech",
+    "canonicalRoot": "allaitools.tech",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 37,
+    "name": "All AI Website",
+    "inputDomain": "allaiwebsite.com",
+    "canonicalRoot": "allaiwebsite.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 38,
+    "name": "Allesora",
+    "inputDomain": "allesora.com",
+    "canonicalRoot": "allesora.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 39,
+    "name": "Ankore",
+    "inputDomain": "ankore.io",
+    "canonicalRoot": "ankore.io",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 40,
+    "name": "Appiod",
+    "inputDomain": "appiod.com",
+    "canonicalRoot": "appiod.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 41,
+    "name": "AppRater",
+    "inputDomain": "apprater.net",
+    "canonicalRoot": "apprater.net",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 42,
+    "name": "Apps400",
+    "inputDomain": "apps400.com",
+    "canonicalRoot": "apps400.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 43,
+    "name": "Appscribed",
+    "inputDomain": "appscribed.com",
+    "canonicalRoot": "appscribed.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 44,
+    "name": "AppsListo",
+    "inputDomain": "appslisto.com",
+    "canonicalRoot": "appslisto.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 45,
+    "name": "AppsMamma",
+    "inputDomain": "appsmamma.com",
+    "canonicalRoot": "appsmamma.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 46,
+    "name": "AppsMirror",
+    "inputDomain": "appsmirror.com",
+    "canonicalRoot": "appsmirror.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 47,
+    "name": "Ask AI For It",
+    "inputDomain": "askaiforit.com",
+    "canonicalRoot": "askaiforit.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 48,
+    "name": "Aura++",
+    "inputDomain": "auraplusplus.com",
+    "canonicalRoot": "auraplusplus.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 49,
+    "name": "Based Tools",
+    "inputDomain": "basedtools.ai",
+    "canonicalRoot": "basedtools.ai",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 50,
+    "name": "Best of AI",
+    "inputDomain": "bestofai.io",
+    "canonicalRoot": "bestofai.io",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 51,
+    "name": "Best of Web",
+    "inputDomain": "bestofweb.site",
+    "canonicalRoot": "bestofweb.site",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 52,
+    "name": "Beyond AI Tools",
+    "inputDomain": "beyondaitools.com",
+    "canonicalRoot": "beyondaitools.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 53,
+    "name": "Byblos AI",
+    "inputDomain": "byblosai.com",
+    "canonicalRoot": "byblosai.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 54,
+    "name": "Chatgate",
+    "inputDomain": "chatgate.ai",
+    "canonicalRoot": "chatgate.ai",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 55,
+    "name": "ClaudePro Directory",
+    "inputDomain": "claudepro.directory",
+    "canonicalRoot": "claudepro.directory",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 56,
+    "name": "DailyTech AI",
+    "inputDomain": "dailytech.ai",
+    "canonicalRoot": "dailytech.ai",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 57,
+    "name": "DataLook",
+    "inputDomain": "datalook.io",
+    "canonicalRoot": "datalook.io",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 58,
+    "name": "Dessign",
+    "inputDomain": "dessign.net",
+    "canonicalRoot": "dessign.net",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 59,
+    "name": "Direct2App",
+    "inputDomain": "direct2app.com",
+    "canonicalRoot": "direct2app.com",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 60,
+    "name": "EveryDev",
+    "inputDomain": "everydev.ai",
+    "canonicalRoot": "everydev.ai",
+    "group": "AI Discovery & Tool Directories",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 61,
+    "name": "Every AI",
+    "inputDomain": "every-ai.com",
+    "canonicalRoot": "every-ai.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 62,
+    "name": "Evol Magazine Tools",
+    "inputDomain": "evolmagazine.com",
+    "canonicalRoot": "evolmagazine.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 63,
+    "name": "Find An AI Tool",
+    "inputDomain": "findanaitools.com",
+    "canonicalRoot": "findanaitools.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 64,
+    "name": "Find My AI Tool",
+    "inputDomain": "findmyaitool.com",
+    "canonicalRoot": "findmyaitool.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 65,
+    "name": "Flaex",
+    "inputDomain": "flaex.ai",
+    "canonicalRoot": "flaex.ai",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 66,
+    "name": "FlowTools",
+    "inputDomain": "flowtools.co",
+    "canonicalRoot": "flowtools.co",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 67,
+    "name": "Future AGI Tools",
+    "inputDomain": "futureagitools.com",
+    "canonicalRoot": "futureagitools.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 68,
+    "name": "Futurepedia Wiki",
+    "inputDomain": "futurepedia.wiki",
+    "canonicalRoot": "futurepedia.wiki",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 69,
+    "name": "God of Prompt",
+    "inputDomain": "godofprompt.ai",
+    "canonicalRoot": "godofprompt.ai",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 70,
+    "name": "GrabOn AI Tools",
+    "inputDomain": "grabon.in",
+    "canonicalRoot": "grabon.in",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 71,
+    "name": "Havnai",
+    "inputDomain": "havnai.com",
+    "canonicalRoot": "havnai.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 72,
+    "name": "How2AI Tools",
+    "inputDomain": "how2aitools.com",
+    "canonicalRoot": "how2aitools.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 73,
+    "name": "HyperTools",
+    "inputDomain": "hypertools.so",
+    "canonicalRoot": "hypertools.so",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 74,
+    "name": "Intelligent Tools",
+    "inputDomain": "intelligenttools.co",
+    "canonicalRoot": "intelligenttools.co",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 75,
+    "name": "Kick Product",
+    "inputDomain": "kickproduct.com",
+    "canonicalRoot": "kickproduct.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 76,
+    "name": "Leading AI Tools",
+    "inputDomain": "leadingai.tools",
+    "canonicalRoot": "leadingai.tools",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 77,
+    "name": "LineZine",
+    "inputDomain": "linezine.com",
+    "canonicalRoot": "linezine.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 78,
+    "name": "List Your Tool",
+    "inputDomain": "listyourtool.com",
+    "canonicalRoot": "listyourtool.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 79,
+    "name": "Makerlist",
+    "inputDomain": "makerlist.io",
+    "canonicalRoot": "makerlist.io",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 80,
+    "name": "Marketing Tools List",
+    "inputDomain": "marketingtoolslist.com",
+    "canonicalRoot": "marketingtoolslist.com",
+    "group": "AI, SaaS & Productivity Discovery",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 81,
+    "name": "Most Popular AI Tools",
+    "inputDomain": "mostpopularaitools.com",
+    "canonicalRoot": "mostpopularaitools.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 82,
+    "name": "My AI Tool Hub",
+    "inputDomain": "myaitoolhub.com",
+    "canonicalRoot": "myaitoolhub.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 83,
+    "name": "NavFolders",
+    "inputDomain": "navfolders.com",
+    "canonicalRoot": "navfolders.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 84,
+    "name": "NavTools AI",
+    "inputDomain": "navtools.ai",
+    "canonicalRoot": "navtools.ai",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 85,
+    "name": "NeonRev",
+    "inputDomain": "neonrev.com",
+    "canonicalRoot": "neonrev.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 86,
+    "name": "Open SaaS Directory",
+    "inputDomain": "opensaas.directory",
+    "canonicalRoot": "opensaas.directory",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 87,
+    "name": "OpenTools",
+    "inputDomain": "opentools.ai",
+    "canonicalRoot": "opentools.ai",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 88,
+    "name": "Peak AI Growth",
+    "inputDomain": "peakaigrowth.com",
+    "canonicalRoot": "peakaigrowth.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 89,
+    "name": "Powered by AI",
+    "inputDomain": "poweredbyai.app",
+    "canonicalRoot": "poweredbyai.app",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 90,
+    "name": "Selljam AI",
+    "inputDomain": "selljam.ai",
+    "canonicalRoot": "selljam.ai",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 91,
+    "name": "Stackviv",
+    "inputDomain": "stackviv.ai",
+    "canonicalRoot": "stackviv.ai",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 92,
+    "name": "Startup Tools List",
+    "inputDomain": "startuptoolslist.com",
+    "canonicalRoot": "startuptoolslist.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 93,
+    "name": "Stratup AI",
+    "inputDomain": "stratup.ai",
+    "canonicalRoot": "stratup.ai",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 94,
+    "name": "Submit AI Tools",
+    "inputDomain": "submitaitools.org",
+    "canonicalRoot": "submitaitools.org",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 95,
+    "name": "Super AI Tools",
+    "inputDomain": "superaitools.io",
+    "canonicalRoot": "superaitools.io",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 96,
+    "name": "AI Hunt List",
+    "inputDomain": "aihuntlist.com",
+    "canonicalRoot": "aihuntlist.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 97,
+    "name": "AI You Need",
+    "inputDomain": "aiyouneed.com",
+    "canonicalRoot": "aiyouneed.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 98,
+    "name": "Launch Vault",
+    "inputDomain": "launchvault.dev",
+    "canonicalRoot": "launchvault.dev",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 99,
+    "name": "OpenHunts",
+    "inputDomain": "openhunts.com",
+    "canonicalRoot": "openhunts.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  },
+  {
+    "num": 100,
+    "name": "AI Agents Directory",
+    "inputDomain": "aiagentsdirectory.com",
+    "canonicalRoot": "aiagentsdirectory.com",
+    "group": "Launch, Agent & Founder Platforms",
+    "isDuplicate": false,
+    "duplicateSource": "NONE_UNIQUE"
+  }
+]

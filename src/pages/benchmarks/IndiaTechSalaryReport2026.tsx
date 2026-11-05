@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
+import { SocialShare } from '@/components/social/SocialShare';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +18,8 @@ import {
   MapPin, 
   ShieldCheck, 
   FileSpreadsheet, 
-  ExternalLink 
+  ExternalLink,
+  Globe
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
@@ -46,9 +49,32 @@ const BENCHMARK_DATA: SalaryBenchmarkRow[] = [
   { role: 'Cybersecurity Analyst / Engineer', experience: '2-5 Yrs', bangalore: '₹15L - ₹28L', delhiNcr: '₹14L - ₹26L', hyderabad: '₹13L - ₹24L', pune: '₹12L - ₹22L', tier2Avg: '₹8L - ₹15L', growthYoy: '+29%' }
 ];
 
+type CurrencyMode = 'INR' | 'USD' | 'EUR' | 'AED' | 'GBP';
+
+const FX_RATES: Record<CurrencyMode, { symbol: string; rate: number; label: string }> = {
+  INR: { symbol: '₹', rate: 1, label: 'INR (₹)' },
+  USD: { symbol: '$', rate: 86, label: 'USD ($)' },
+  EUR: { symbol: '€', rate: 93, label: 'EUR (€)' },
+  AED: { symbol: 'AED ', rate: 23.4, label: 'AED (د.إ)' },
+  GBP: { symbol: '£', rate: 110, label: 'GBP (£)' },
+};
+
+function formatCompensation(val: string, mode: CurrencyMode): string {
+  if (mode === 'INR' || !val) return val;
+  const fx = FX_RATES[mode];
+  const match = val.match(/₹?([\d.]+)L\s*-\s*₹?([\d.]+)L/);
+  if (!match) return val;
+  const lowInr = parseFloat(match[1]) * 100000;
+  const highInr = parseFloat(match[2]) * 100000;
+  const lowConverted = Math.round(lowInr / fx.rate / 1000);
+  const highConverted = Math.round(highInr / fx.rate / 1000);
+  return `${fx.symbol}${lowConverted}k - ${fx.symbol}${highConverted}k`;
+}
+
 export default function IndiaTechSalaryReport2026() {
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currency, setCurrency] = useState<CurrencyMode>('INR');
 
   const canonicalUrl = 'https://salary.talentxcel.in/benchmarks/india-tech-salary-report-2026';
 
@@ -99,26 +125,26 @@ export default function IndiaTechSalaryReport2026() {
   };
 
   const handleDownloadCsv = () => {
-    const headers = ['Role', 'Experience Level', 'Bangalore', 'Delhi NCR', 'Hyderabad', 'Pune', 'Tier-2 Average', 'YoY Growth'];
+    const headers = ['Role', 'Experience Level', `Bangalore (${currency})`, `Delhi NCR (${currency})`, `Hyderabad (${currency})`, `Pune (${currency})`, `Tier-2 Average (${currency})`, 'YoY Growth'];
     const rows = BENCHMARK_DATA.map(r => [
       `"${r.role}"`,
       `"${r.experience}"`,
-      `"${r.bangalore}"`,
-      `"${r.delhiNcr}"`,
-      `"${r.hyderabad}"`,
-      `"${r.pune}"`,
-      `"${r.tier2Avg}"`,
+      `"${formatCompensation(r.bangalore, currency)}"`,
+      `"${formatCompensation(r.delhiNcr, currency)}"`,
+      `"${formatCompensation(r.hyderabad, currency)}"`,
+      `"${formatCompensation(r.pune, currency)}"`,
+      `"${formatCompensation(r.tier2Avg, currency)}"`,
       `"${r.growthYoy}"`
     ]);
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'talentxcel-india-tech-salary-report-2026.csv');
+    link.setAttribute('download', `talentxcel-india-tech-salary-report-2026-${currency.toLowerCase()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success('CSV dataset downloaded successfully!');
+    toast.success(`CSV dataset (${currency}) downloaded successfully!`);
   };
 
   const filteredData = BENCHMARK_DATA.filter(item =>
@@ -128,14 +154,14 @@ export default function IndiaTechSalaryReport2026() {
 
   return (
     <>
+      <SocialMetaHead
+        title="India Tech Salary Report 2026 | Benchmark Compensation Data | TalentXcel"
+        description="Audited 2026 tech compensation benchmarks across Bangalore, Hyderabad, Delhi NCR, Pune, and Tier-2 Indian hubs. Free open dataset with CSV download and citations."
+        canonicalUrl={canonicalUrl}
+        category="salaries"
+        ogType="article"
+      />
       <Helmet>
-        <title>India Tech Salary Report 2026 | Benchmark Compensation Data | TalentXcel</title>
-        <meta name="description" content="Audited 2026 tech compensation benchmarks across Bangalore, Hyderabad, Delhi NCR, Pune, and Tier-2 Indian hubs. Free open dataset with CSV download and citations." />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content="India Tech Salary Report 2026 | TalentXcel" />
-        <meta property="og:description" content="Explore live 2026 compensation data across engineering, AI, DevOps, and product roles in India." />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:type" content="article" />
         <script type="application/ld+json">
           {JSON.stringify(datasetSchema)}
         </script>
@@ -152,7 +178,7 @@ export default function IndiaTechSalaryReport2026() {
               <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-xs px-3 py-1 font-semibold flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" /> CC BY 4.0 Open Data
               </Badge>
-              <span className="text-xs text-slate-400">Updated: Q1 2026 Edition</span>
+              <span className="text-xs text-slate-400">Updated: Q1 2026 Edition (FX Benchmark Date: November 05, 2026)</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-tight mb-4">
@@ -162,7 +188,7 @@ export default function IndiaTechSalaryReport2026() {
               Open-access benchmark compensation data analyzing real hiring offers, ATS verified profiles, and market ranges across Tier-1 and emerging Tier-2 tech hubs. Free for researchers, candidates, and hiring leaders.
             </p>
 
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <Button 
                 onClick={handleDownloadCsv}
                 className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold gap-2 text-sm shadow-lg shadow-emerald-600/20"
@@ -179,6 +205,15 @@ export default function IndiaTechSalaryReport2026() {
               >
                 <Copy className="w-4 h-4" /> Cite This Study
               </Button>
+              <SocialShare
+                contentType="article"
+                title="India Tech Salary Report 2026 | TalentXcel"
+                description="Audited 2026 tech compensation benchmarks across Bangalore, Hyderabad, Delhi NCR, and Tier-2 hubs."
+                url={canonicalUrl}
+                size="sm"
+                buttonText="Share Report"
+                className="border-slate-700 hover:bg-slate-800 text-slate-200"
+              />
             </div>
           </div>
         </div>
@@ -191,16 +226,36 @@ export default function IndiaTechSalaryReport2026() {
                 <BarChart3 className="w-5 h-5 text-blue-400" /> 2026 Tech Roles Compensation Matrix
               </h2>
               <p className="text-xs text-slate-400 mt-1">
-                Median gross annual compensation (INR) based on verified employer disclosures and hiring agreements.
+                Gross annual compensation benchmarks calibrated to Q1 2026 benchmark exchange rates (1 USD = ₹86, 1 EUR = ₹93, 1 AED = ₹23.4, 1 GBP = ₹110).
               </p>
             </div>
-            <input
-              type="text"
-              placeholder="Filter by role or experience..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 w-full sm:w-64"
-            />
+            
+            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              {/* International Currency Switcher */}
+              <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-xl p-1">
+                {(['INR', 'USD', 'EUR', 'AED', 'GBP'] as CurrencyMode[]).map((cur) => (
+                  <button
+                    key={cur}
+                    onClick={() => setCurrency(cur)}
+                    className={`px-2.5 py-1 text-[11px] font-bold rounded-lg transition-colors ${
+                      currency === cur
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
+                    }`}
+                  >
+                    {FX_RATES[cur].label}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="text"
+                placeholder="Filter by role..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 w-full sm:w-56"
+              />
+            </div>
           </div>
 
           <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 overflow-hidden shadow-xl">
@@ -210,11 +265,11 @@ export default function IndiaTechSalaryReport2026() {
                   <tr>
                     <th className="py-3.5 px-4 font-bold">Role Title</th>
                     <th className="py-3.5 px-4 font-bold">Experience</th>
-                    <th className="py-3.5 px-4 font-bold text-blue-400">Bangalore</th>
-                    <th className="py-3.5 px-4 font-bold">Delhi NCR</th>
-                    <th className="py-3.5 px-4 font-bold">Hyderabad</th>
-                    <th className="py-3.5 px-4 font-bold">Pune</th>
-                    <th className="py-3.5 px-4 font-bold text-emerald-400">Tier-2 Avg (Indore/Varanasi)</th>
+                    <th className="py-3.5 px-4 font-bold text-blue-400">Bangalore ({currency})</th>
+                    <th className="py-3.5 px-4 font-bold">Delhi NCR ({currency})</th>
+                    <th className="py-3.5 px-4 font-bold">Hyderabad ({currency})</th>
+                    <th className="py-3.5 px-4 font-bold">Pune ({currency})</th>
+                    <th className="py-3.5 px-4 font-bold text-emerald-400">Tier-2 Avg ({currency})</th>
                     <th className="py-3.5 px-4 font-bold text-amber-400">YoY Trend</th>
                   </tr>
                 </thead>
@@ -223,17 +278,41 @@ export default function IndiaTechSalaryReport2026() {
                     <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
                       <td className="py-3.5 px-4 font-semibold text-white">{row.role}</td>
                       <td className="py-3.5 px-4 text-slate-400">{row.experience}</td>
-                      <td className="py-3.5 px-4 font-mono font-bold text-blue-300">{row.bangalore}</td>
-                      <td className="py-3.5 px-4 font-mono">{row.delhiNcr}</td>
-                      <td className="py-3.5 px-4 font-mono">{row.hyderabad}</td>
-                      <td className="py-3.5 px-4 font-mono">{row.pune}</td>
-                      <td className="py-3.5 px-4 font-mono text-emerald-300 font-semibold">{row.tier2Avg}</td>
+                      <td className="py-3.5 px-4 font-mono font-bold text-blue-300">{formatCompensation(row.bangalore, currency)}</td>
+                      <td className="py-3.5 px-4 font-mono">{formatCompensation(row.delhiNcr, currency)}</td>
+                      <td className="py-3.5 px-4 font-mono">{formatCompensation(row.hyderabad, currency)}</td>
+                      <td className="py-3.5 px-4 font-mono">{formatCompensation(row.pune, currency)}</td>
+                      <td className="py-3.5 px-4 font-mono text-emerald-300 font-semibold">{formatCompensation(row.tier2Avg, currency)}</td>
                       <td className="py-3.5 px-4 font-mono font-bold text-amber-400">{row.growthYoy}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Active Job Matching Discovery Bridge */}
+          <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-blue-950/40 via-indigo-950/30 to-slate-900 border border-blue-800/40 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+            <div className="space-y-1 text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px]">
+                  2,236 Active Vacancies
+                </Badge>
+                <span className="text-xs text-slate-400">Audited Tech Corridors</span>
+              </div>
+              <h3 className="text-lg font-bold text-white">Looking for roles in these salary brackets?</h3>
+              <p className="text-xs text-slate-300 max-w-xl">
+                Explore verified opportunities matching your skills and salary expectations across Bangalore, Pune, Hyderabad, Noida, and remote corridors.
+              </p>
+            </div>
+            <a
+              href="https://jobs.talentxcel.in/jobs"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-500/20 transition-all shrink-0"
+            >
+              Browse Matching Jobs <ExternalLink className="w-3.5 h-3.5" />
+            </a>
           </div>
 
           {/* Citation & Attribution Box (Dofollow Link Magnet) */}

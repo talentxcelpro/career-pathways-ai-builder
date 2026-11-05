@@ -19,7 +19,7 @@ export default async function handler(req: Request) {
   const profile = await fetchProfileForMeta(username);
   const title = profile ? `${profile.name} — ${profile.headline || 'Professional Career Passport'} | TalentXcel` : 'Career Passport | TalentXcel';
   const description = profile?.summary?.slice(0, 200) || `${profile?.name || 'Candidate'}'s verified professional passport on TalentXcel.`;
-  const image = profile?.photoUrl || 'https://talentxcel.in/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png';
+  const image = profile?.photoUrl || 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
   const pageUrl = `https://talentxcel.in/passport/public/${username}`;
 
   const html = `<!DOCTYPE html>
@@ -30,7 +30,12 @@ export default async function handler(req: Request) {
   <meta name="description" content="${escapeHtml(description)}">
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
+  <meta property="og:site_name" content="TalentXcel">
   <meta property="og:image" content="${image}">
+  <meta property="og:image:secure_url" content="${image}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${escapeHtml(title)}">
   <meta property="og:url" content="${pageUrl}">
   <meta property="og:type" content="profile">
   <meta name="twitter:card" content="summary_large_image">

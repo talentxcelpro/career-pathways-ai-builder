@@ -1,16 +1,22 @@
 import React from 'react';
-import { BookOpen, Code2, Trophy, Briefcase, Sparkles, Map, Compass } from 'lucide-react';
+import { BookOpen, Code2, Trophy, Briefcase, Sparkles, Compass } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { gameAudio } from '@/utils/gameAudio';
+import { CareerDomainId, CAREER_DOMAINS } from '@/services/careerverse/careerDomainCatalog';
 
 interface HeroBannerProps {
+  domainId?: CareerDomainId;
   onOpenWorldMap?: () => void;
   onOpenQuickQuest?: () => void;
 }
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
+  domainId = 'technology',
   onOpenWorldMap,
   onOpenQuickQuest,
 }) => {
+  const domainConfig = CAREER_DOMAINS[domainId] || CAREER_DOMAINS.technology;
+
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#071329] via-[#0E1E40] to-[#121B38] border border-[#7047F5]/30 p-6 md:p-8 shadow-2xl">
       {/* Visual Citadel / Holographic Stargate Backdrop */}
@@ -59,17 +65,20 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
       {/* Main Content */}
       <div className="relative z-10 max-w-2xl">
         <div className="flex flex-wrap items-center gap-2 mb-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7047F5]/20 border border-[#7047F5]/40 text-xs font-semibold text-[#A34EFF] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#36D9F5]" />
-            <span>TalentXcel CareerVerse</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#7047F5]/20 border border-[#7047F5]/40 text-xs sm:text-sm font-semibold text-[#A34EFF] shadow-sm">
+            <Sparkles className="w-4 h-4 text-[#36D9F5]" />
+            <span>TalentXcel CareerVerse • {domainConfig.shortLabel}</span>
           </div>
 
           {onOpenWorldMap && (
             <button
-              onClick={onOpenWorldMap}
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#278DFF]/20 hover:bg-[#278DFF]/30 border border-[#278DFF]/40 text-xs font-semibold text-[#36D9F5] transition-all"
+              onClick={() => {
+                gameAudio.playClick();
+                onOpenWorldMap();
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#278DFF]/20 hover:bg-[#278DFF]/30 border border-[#278DFF]/40 text-xs sm:text-sm font-semibold text-[#36D9F5] transition-all cursor-pointer"
             >
-              <Compass className="w-3.5 h-3.5" />
+              <Compass className="w-4 h-4" />
               <span>World Map (2.5D)</span>
             </button>
           )}
@@ -83,49 +92,55 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         </h1>
 
         <p className="text-sm sm:text-base text-slate-300 font-medium mb-6">
-          Learn · Build Skills · Compete · Get Hired
+          {domainConfig.tagline}
         </p>
 
         {/* 4 Interactive Gateway Action Banners */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-xl">
           <Link
             to="/learning"
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#36D9F5]/60 transition-all group backdrop-blur-md"
+            onClick={() => gameAudio.playClick()}
+            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#36D9F5]/60 transition-all group backdrop-blur-md"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#7047F5]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-              <BookOpen className="w-4 h-4 text-[#36D9F5]" />
+            <div className="w-10 h-10 rounded-xl bg-[#7047F5]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <BookOpen className="w-5 h-5 text-[#36D9F5]" />
             </div>
-            <span className="text-xs font-bold text-white">Learn</span>
+            <span className="text-xs sm:text-sm font-bold text-white">Learn</span>
           </Link>
 
           <button
-            onClick={onOpenQuickQuest}
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#278DFF]/60 transition-all group backdrop-blur-md text-left"
+            onClick={() => {
+              gameAudio.playClick();
+              onOpenQuickQuest?.();
+            }}
+            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#278DFF]/60 transition-all group backdrop-blur-md text-left cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#278DFF]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-              <Code2 className="w-4 h-4 text-[#278DFF]" />
+            <div className="w-10 h-10 rounded-xl bg-[#278DFF]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <Code2 className="w-5 h-5 text-[#278DFF]" />
             </div>
-            <span className="text-xs font-bold text-white">Practice</span>
+            <span className="text-xs sm:text-sm font-bold text-white">Practice</span>
           </button>
 
           <a
             href="#leaderboard-section"
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#FFCA55]/60 transition-all group backdrop-blur-md"
+            onClick={() => gameAudio.playClick()}
+            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#FFCA55]/60 transition-all group backdrop-blur-md cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#FFCA55]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-              <Trophy className="w-4 h-4 text-[#FFCA55]" />
+            <div className="w-10 h-10 rounded-xl bg-[#FFCA55]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <Trophy className="w-5 h-5 text-[#FFCA55]" />
             </div>
-            <span className="text-xs font-bold text-white">Compete</span>
+            <span className="text-xs sm:text-sm font-bold text-white">Compete</span>
           </a>
 
           <Link
             to="/jobs"
-            className="flex flex-col items-center justify-center p-3 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#20D994]/60 transition-all group backdrop-blur-md"
+            onClick={() => gameAudio.playClick()}
+            className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-[#071329]/80 hover:bg-[#101E3B] border border-white/10 hover:border-[#20D994]/60 transition-all group backdrop-blur-md"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#20D994]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
-              <Briefcase className="w-4 h-4 text-[#20D994]" />
+            <div className="w-10 h-10 rounded-xl bg-[#20D994]/20 flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform">
+              <Briefcase className="w-5 h-5 text-[#20D994]" />
             </div>
-            <span className="text-xs font-bold text-white">Get Hired</span>
+            <span className="text-xs sm:text-sm font-bold text-white">Get Hired</span>
           </Link>
         </div>
       </div>

@@ -33,7 +33,8 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      await fetch('/api/email/send', {
+      // 1. Dispatch operational enquiry alert to support desk
+      const adminDispatch = fetch('/api/email/send', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +52,27 @@ const Contact = () => {
         }),
       });
 
-      toast.success("Message sent successfully! We'll get back to you soon.");
+      // 2. Dispatch immediate branded acknowledgement to the visitor
+      const autoReplyDispatch = formData.email ? fetch('/api/email/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: formData.email,
+          template: 'contact_auto_reply',
+          replyTo: 'support@talentxcel.in',
+          variables: {
+            name: formData.name,
+            subject: formData.subject,
+            message: formData.message,
+          },
+        }),
+      }) : Promise.resolve();
+
+      await Promise.allSettled([adminDispatch, autoReplyDispatch]);
+
+      toast.success("Message sent successfully! We've sent a confirmation to your email.");
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
       toast.success("Message sent successfully! We'll get back to you soon.");

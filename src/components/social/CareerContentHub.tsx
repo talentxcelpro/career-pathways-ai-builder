@@ -15,6 +15,7 @@ import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { FOUNDATION_NEWS_ARTICLES } from '@/data/newsArticles';
+import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import talentxcelLogo from "@/assets/talentxcel-logo.png";
 
 interface Article {
@@ -58,6 +59,7 @@ export function CareerContentHub() {
   const [editingArticleId, setEditingArticleId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [realProfileCount, setRealProfileCount] = useState<number>(591);
   const { toast } = useToast();
 
   // Form state for creating articles
@@ -75,17 +77,17 @@ export function CareerContentHub() {
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const getFallbackArticles = (): Article[] => {
-    return (FOUNDATION_NEWS_ARTICLES || []).slice(0, 8).map((a: any) => ({
+    return (FOUNDATION_NEWS_ARTICLES || []).map((a: any) => ({
       id: a.id,
       title: a.title,
       slug: a.slug || a.id,
-      category: a.category || "Career Advice",
+      category: a.hubCategory || a.category || "Career Advice",
       tags: Array.isArray(a.keyTakeaways) ? a.keyTakeaways.slice(0, 3) : ["Career", "AI", "Leadership"],
       summary: a.summary || "",
-      content: a.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n') || a.summary || "",
-      author_name: a.author?.name || "TalentXcel Research",
-      read_time: `${a.readingTimeMinutes || 5} min read`,
-      views: 1250,
+      content: a.content || (a.sections?.map((s: any) => `## ${s.heading}\n\n${s.body}`).join('\n\n')) || a.summary || "",
+      author_name: a.author?.name || "TalentXcelServices",
+      read_time: a.readTime || `${a.readingTimeMinutes || 6} min read`,
+      views: 0,
       is_featured: !!a.isFeatured,
       featured_image_url: a.imageUrl || undefined,
       created_at: a.publishedAt || new Date().toISOString()
@@ -154,13 +156,12 @@ export function CareerContentHub() {
       }
 
       const dbArticles = postsData.map(p => mapPostToArticle(p, profilesMap));
-      if (dbArticles.length < 4) {
-        const existingIds = new Set(dbArticles.map(a => a.id));
-        const fallbacks = getFallbackArticles().filter(a => !existingIds.has(a.id));
-        setArticles([...dbArticles, ...fallbacks]);
-      } else {
-        setArticles(dbArticles);
-      }
+      const existingIds = new Set(dbArticles.map(a => a.id));
+      const existingTitles = new Set(dbArticles.map(a => a.title.toLowerCase().trim()));
+      const fallbacks = getFallbackArticles().filter(a => 
+        !existingIds.has(a.id) && !existingTitles.has(a.title.toLowerCase().trim())
+      );
+      setArticles([...dbArticles, ...fallbacks]);
     } catch (error) {
       console.error('Error fetching articles:', error);
       setArticles(getFallbackArticles());
@@ -562,7 +563,17 @@ export function CareerContentHub() {
     if (article.status === 'draft') {
       return currentUserId && article.author_id === currentUserId;
     }
-    const matchesCategory = selectedCategory === "All" || article.category === selectedCategory;
+    let matchesCategory = selectedCategory === "All";
+    if (!matchesCategory) {
+      const normSelected = selectedCategory.toLowerCase().replace(/[\s_&\-]+/g, '');
+      const normArticleCat = (article.category || '').toLowerCase().replace(/[\s_&\-]+/g, '');
+      matchesCategory = 
+        normArticleCat === normSelected ||
+        normArticleCat.includes(normSelected) ||
+        normSelected.includes(normArticleCat) ||
+        (normSelected === 'interviewtips' && (normArticleCat.includes('interview') || (article.tags || []).some(t => t.toLowerCase().includes('interview')))) ||
+        (normSelected === 'resumehelp' && (normArticleCat.includes('resume') || normArticleCat.includes('cv') || (article.tags || []).some(t => t.toLowerCase().includes('resume'))));
+    }
     return matchesCategory;
   });
 
@@ -581,20 +592,10 @@ export function CareerContentHub() {
         {/* Header (Compacted to remove excessive empty space) */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-3 mb-1">
-            <div className="relative group">
-              <img 
-                src="/talentxcel-official-logo.png" 
-                alt="TalentXcel Logo" 
-                className="w-10 h-10 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300 object-contain bg-slate-900 p-1.5"
-              />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-            </div>
-            <div className="text-left">
-              <h1 className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
-                TalentXcel
-              </h1>
-              <p className="text-sm font-semibold text-muted-foreground leading-none">Career Hub</p>
-            </div>
+            <TalentXcelLogo iconSize={38} textSize="text-2xl sm:text-3xl font-black" theme="auto" />
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950/50 border border-blue-200/60 dark:border-blue-800/60">
+              Career Hub
+            </span>
           </div>
           
           <div className="max-w-2xl mx-auto">
@@ -609,7 +610,7 @@ export function CareerContentHub() {
             <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-primary/20 text-xs">
               <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
               <FileText className="w-3.5 h-3.5 text-primary" />
-              <span className="font-semibold">{articles.length}+ Articles</span>
+              <span className="font-semibold">{articles.length} Published Articles</span>
             </div>
             <div className="flex items-center gap-1.5 bg-card/50 backdrop-blur-sm px-3 py-1 rounded-full border border-secondary/20 text-xs">
               <Award className="w-3.5 h-3.5 text-secondary" />
@@ -1161,20 +1162,7 @@ export function CareerContentHub() {
             <p className="text-muted-foreground">
               Share your expertise, learn from others, and grow your career with SI-powered insights.
             </p>
-            <div className="flex items-center justify-center gap-6 mt-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-primary" />
-                <span className="font-medium">{articles.length > 0 ? `${Math.floor(Math.random() * 10000) + 5000}+ Active Professionals` : "Growing Community"}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FileText className="w-4 h-4 text-primary" />
-                <span className="font-medium">{articles.length}+ Expert Articles</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-primary" />
-                <span className="font-medium">AI-Powered Content</span>
-              </div>
-            </div>
+            
             <div className="text-xs text-muted-foreground mt-4">
               Powered by <span className="font-semibold text-primary">TalentXcel SI</span> • 
               Building the future of career development

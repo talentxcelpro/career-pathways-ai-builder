@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { Copy, Download, ExternalLink, Share2 } from "lucide-react";
+import { SocialShare } from "@/components/social/SocialShare";
 
 type VisibilityKey =
   | "education"
@@ -186,19 +187,17 @@ const SharePassport: React.FC = () => {
                 <ExternalLink className="mr-2 h-4 w-4" /> Open public passport
               </a>
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="col-span-2"
-              onClick={() =>
-                navigator.share?.({
-                  title: `${(profile as any)?.full_name ?? "My"} Career Passport`,
-                  url: publicUrl,
-                })
-              }
-            >
-              <Share2 className="mr-2 h-4 w-4" /> Share…
-            </Button>
+            <div className="col-span-2">
+              <SocialShare
+                contentType="passport"
+                title={`${(profile as any)?.full_name ?? "My"} Career Passport | TalentXcel`}
+                description="Explore my verified professional credentials and Career Passport on TalentXcel."
+                url={publicUrl}
+                size="sm"
+                buttonText="Share with Network"
+                className="w-full justify-center"
+              />
+            </div>
           </div>
         </Card>
       </div>

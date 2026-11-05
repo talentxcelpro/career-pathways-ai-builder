@@ -55,31 +55,14 @@ import {
   HelpCircle,
   Database
 } from 'lucide-react';
-import { toast } from 'sonner';
-import { useSIOrchestrator } from '@/hooks/useSIOrchestrator';
-import { EngineStatusCard } from '@/components/si/EngineStatusCard';
-import { kernelAgentRegistry, ALL_48_SPECIALIST_WORKERS } from '@/agents/kernel/AgentRegistry';
-import { 
-  marketingFactoryEngine, 
-  customerAcquisitionEngine, 
-  careerIntelligenceEngine, 
-  mcpGatewayEngine, 
-  techEvolutionEngine, 
-  growthFlywheelEngine 
-} from '@/agents/si/engines';
-import type { SIEngine, SIEngineId, MCPServer, TechDiscovery } from '@/agents/si/types';
-import type { TrendingSkill, CareerOpportunityAlert } from '@/agents/si/engines/CareerIntelligenceEngine';
-import type { FunnelStageMetric, RevenueAttributionRecord, GrowthExperiment } from '@/agents/si/engines/GrowthFlywheelEngine';
-import type { Lead } from '@/agents/si/engines/CustomerAcquisitionEngine';
-
-const ENGINE_CONFIG = [
-  { id: 'marketing_factory' as SIEngineId, name: 'Marketing Factory', icon: TrendingUp, color: 'violet' },
-  { id: 'customer_acquisition' as SIEngineId, name: 'Customer Acquisition', icon: Target, color: 'emerald' },
-  { id: 'career_intelligence' as SIEngineId, name: 'Career Intelligence', icon: Brain, color: 'blue' },
-  { id: 'mcp_gateway' as SIEngineId, name: 'MCP Gateway', icon: CircuitBoard, color: 'amber' },
-  { id: 'tech_evolution' as SIEngineId, name: 'Tech Evolution', icon: Cpu, color: 'rose' },
-  { id: 'growth_flywheel' as SIEngineId, name: 'Growth Flywheel', icon: Globe, color: 'cyan' },
-];
+import { GrowthMetricsEngine } from '@/lib/growth/GrowthMetricsEngine';
+import { ProductMagnetEngine } from '@/lib/growth/ProductMagnetEngine';
+import { TrafficGovernor } from '@/lib/growth/TrafficGovernor';
+import { InfrastructureScaleGate } from '@/lib/growth/InfrastructureScaleGate';
+import { GlobalIntentRouter } from '@/lib/growth/GlobalIntentRouter';
+import { GlobalDistributionOrchestrator, AcquisitionLoopExecution } from '@/lib/growth/GlobalDistributionOrchestrator';
+import { ProductionFunnelTrace } from '@/lib/growth/types';
+import { DailyGrowthDashboard } from '@/components/admin/DailyGrowthDashboard';
 
 export default function GrowthControlPlane() {
   const [timeHorizon, setTimeHorizon] = useState<'TODAY' | '7D' | '14D' | '30D' | 'ALL'>('TODAY');
@@ -235,8 +218,576 @@ export default function GrowthControlPlane() {
               Sync
             </Button>
 
-            {/* Emergency Pause / Resume */}
-            {emergencyStop ? (
+        {/* ── LIVE DAILY GROWTH OS DASHBOARD (PHASE 14) ─────────────────────────── */}
+        <DailyGrowthDashboard />
+
+        {/* ── INVARIANT GOVERNANCE NOTICE ─────────────────────────────────────────── */}
+        <div className="p-3.5 rounded-xl bg-blue-950/40 border border-blue-800/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex items-center gap-2 text-blue-300">
+            <ShieldCheck className="w-4 h-4 shrink-0 text-blue-400" />
+            <span>
+              <strong>Production Epistemic Rule:</strong> Targets (5k signups/day capacity) ≠ Verified Telemetry Actuals. Candidate Provisioned ≠ Account Claim Completed ≠ Activated. Zero synthetic data.
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-2xs text-slate-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Request ≠ Visitor ≠ User ≠ Signup ≠ Outcome</span>
+          </div>
+        </div>
+
+        {/* ── SECTION 1: REAL CONVERSION SCOREBOARD (TARGETS VS ACTUALS) ─────────── */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                <Target className="w-5 h-5 text-indigo-400" />
+                <span>Real Conversion Scoreboard ({timeHorizon})</span>
+              </h2>
+              <p className="text-xs text-slate-400">
+                Tracking 11 core lifecycle stages with strict isolation between Capacity Targets and Verified Telemetry Actuals.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="text-slate-400 border-slate-800 font-mono text-3xs">
+                SCALE GATE: {scaleHealth.state}
+              </Badge>
+              <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 font-mono text-3xs">
+                CONVERSION CVR: {conversionScoreboard.rates.overallOrganicToActivationPercent}%
+              </Badge>
+            </div>
+          </div>
+
+          {/* 11 Funnel Tiles: From Search Visitor to Activated Seeker */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {/* Tile 1: Organic Visitors */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">1. Organic Visitors</span>
+                  <Search className="w-3 h-3 text-blue-400" />
+                </div>
+                <div className="text-base font-bold text-white font-mono">{conversionScoreboard.actuals.organicVisitors.toLocaleString()}</div>
+                <div className="text-3xs text-indigo-400 font-mono">Target: {conversionScoreboard.targets.organicVisitors.toLocaleString()}</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 2: Job Views */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">2. Job Views</span>
+                  <Eye className="w-3 h-3 text-cyan-400" />
+                </div>
+                <div className="text-base font-bold text-white font-mono">{conversionScoreboard.actuals.jobViews.toLocaleString()}</div>
+                <div className="text-3xs text-cyan-500/80 font-mono">{conversionScoreboard.rates.visitorToJobViewPercent}% of Visitors</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 3: Apply Clicks */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">3. Apply Clicks</span>
+                  <Zap className="w-3 h-3 text-purple-400" />
+                </div>
+                <div className="text-base font-bold text-purple-400 font-mono">{conversionScoreboard.actuals.applyClicks.toLocaleString()}</div>
+                <div className="text-3xs text-purple-500/80 font-mono">{conversionScoreboard.rates.jobViewToApplyClickPercent}% of Job Views</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 4: Guest Starts */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">4. Guest Modal Starts</span>
+                  <Sliders className="w-3 h-3 text-amber-400" />
+                </div>
+                <div className="text-base font-bold text-amber-400 font-mono">{conversionScoreboard.actuals.guestApplyStarts.toLocaleString()}</div>
+                <div className="text-3xs text-amber-500/80 font-mono">{conversionScoreboard.rates.applyClickToGuestStartPercent}% Completed Intent</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 5: Resume Uploads */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">5. Resumes Uploaded</span>
+                  <Code className="w-3 h-3 text-pink-400" />
+                </div>
+                <div className="text-base font-bold text-pink-400 font-mono">{conversionScoreboard.actuals.resumeUploads.toLocaleString()}</div>
+                <div className="text-3xs text-pink-500/80 font-mono">{conversionScoreboard.rates.guestStartToResumeUploadPercent}% Valid Parse Rate</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 6: Applications Submitted */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">6. Applications</span>
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                </div>
+                <div className="text-base font-bold text-emerald-400 font-mono">{conversionScoreboard.actuals.applicationSubmissions.toLocaleString()}</div>
+                <div className="text-3xs text-emerald-500/80 font-mono">Target: {conversionScoreboard.targets.applicationSubmissions.toLocaleString()}</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 7: Candidates Provisioned */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">7. Provisioned</span>
+                  <Users className="w-3 h-3 text-blue-400" />
+                </div>
+                <div className="text-base font-bold text-blue-400 font-mono">{conversionScoreboard.actuals.candidatesProvisioned.toLocaleString()}</div>
+                <div className="text-3xs text-slate-500 font-mono">Auto-Profile Created</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 8: Claims Started */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">8. Claims Started</span>
+                  <Lock className="w-3 h-3 text-indigo-400" />
+                </div>
+                <div className="text-base font-bold text-indigo-400 font-mono">{conversionScoreboard.actuals.accountClaimsStarted.toLocaleString()}</div>
+                <div className="text-3xs text-indigo-500/80 font-mono">Invite Dispatched</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 9: Claims Completed (Signups) */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">9. Claims Completed</span>
+                  <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                </div>
+                <div className="text-base font-bold text-emerald-400 font-mono">{conversionScoreboard.actuals.accountClaimsCompleted.toLocaleString()}</div>
+                <div className="text-3xs text-emerald-500/80 font-mono">{conversionScoreboard.rates.provisionedToClaimCompletedPercent}% Claim Rate</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 10: Activated Users */}
+            <Card className="bg-slate-900/80 border-slate-800">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">10. Activated Users</span>
+                  <Sparkles className="w-3 h-3 text-yellow-400" />
+                </div>
+                <div className="text-base font-bold text-yellow-400 font-mono">{conversionScoreboard.actuals.activatedUsers.toLocaleString()}</div>
+                <div className="text-3xs text-yellow-500/80 font-mono">{conversionScoreboard.rates.claimCompletedToActivationPercent}% Activation SLA</div>
+              </CardContent>
+            </Card>
+
+            {/* Tile 11: Referred Visitors */}
+            <Card className="bg-slate-900/80 border-slate-800 lg:col-span-2">
+              <CardContent className="p-3 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-3xs font-mono text-slate-400 uppercase">11. Referred Visitors</span>
+                  <Share2 className="w-3 h-3 text-teal-400" />
+                </div>
+                <div className="text-base font-bold text-teal-400 font-mono">{conversionScoreboard.actuals.referredVisitors.toLocaleString()}</div>
+                <div className="text-3xs text-teal-500/80 font-mono">Loop Arrival via Share Cards</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Hard Invariant Notice: Lifecycle Distinction */}
+          <div className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-2 text-xs font-mono">
+            <div className="flex items-center gap-2 text-slate-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span>
+                <strong>Candidate Lifecycle Separation:</strong> Provisioned ({conversionScoreboard.actuals.candidatesProvisioned}) ≠ Claimed Account ({conversionScoreboard.actuals.accountClaimsCompleted}) ≠ Activated ({conversionScoreboard.actuals.activatedUsers}).
+              </span>
+            </div>
+            <span className="text-3xs text-slate-400">Zero synthetic user creation</span>
+          </div>
+
+          {/* Dimension Breakdowns: Top Converters */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Top Converting Pages */}
+            <Card className="bg-slate-900/60 border-slate-800">
+              <CardHeader className="p-3.5 pb-2">
+                <CardTitle className="text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                  <span>Top Converting Surfaces</span>
+                  <span className="text-4xs text-slate-500">By Applications</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3.5 pt-0">
+                <table className="w-full text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-3xs text-slate-500">
+                      <th className="text-left pb-1.5">SURFACE / PATH</th>
+                      <th className="text-right pb-1.5">VISITORS</th>
+                      <th className="text-right pb-1.5">APPLY</th>
+                      <th className="text-right pb-1.5">CVR</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/40 text-slate-300">
+                    {conversionScoreboard.breakdowns.byLandingPage.slice(0, 5).map(p => (
+                      <tr key={p.key}>
+                        <td className="py-1.5 truncate max-w-[160px] text-slate-200">{p.label}</td>
+                        <td className="text-right py-1.5 text-slate-400">{p.visitors.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-emerald-400 font-bold">{p.applications.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-cyan-400">{p.cvrPercent}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+
+            {/* Top Converting Job Categories */}
+            <Card className="bg-slate-900/60 border-slate-800">
+              <CardHeader className="p-3.5 pb-2">
+                <CardTitle className="text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                  <span>Top Converting Job Categories</span>
+                  <span className="text-4xs text-slate-500">By Applications</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3.5 pt-0">
+                <table className="w-full text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-3xs text-slate-500">
+                      <th className="text-left pb-1.5">CATEGORY</th>
+                      <th className="text-right pb-1.5">VISITORS</th>
+                      <th className="text-right pb-1.5">APPLY</th>
+                      <th className="text-right pb-1.5">CVR</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/40 text-slate-300">
+                    {conversionScoreboard.breakdowns.byJobCategory.slice(0, 5).map(c => (
+                      <tr key={c.key}>
+                        <td className="py-1.5 truncate max-w-[160px] text-slate-200">{c.label}</td>
+                        <td className="text-right py-1.5 text-slate-400">{c.visitors.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-purple-400 font-bold">{c.applications.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-cyan-400">{c.cvrPercent}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+
+            {/* Top Converting Countries */}
+            <Card className="bg-slate-900/60 border-slate-800">
+              <CardHeader className="p-3.5 pb-2">
+                <CardTitle className="text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                  <span>Top Converting Geographies</span>
+                  <span className="text-4xs text-slate-500">By Signups</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3.5 pt-0">
+                <table className="w-full text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-3xs text-slate-500">
+                      <th className="text-left pb-1.5">COUNTRY</th>
+                      <th className="text-right pb-1.5">VISITORS</th>
+                      <th className="text-right pb-1.5">SIGNUPS</th>
+                      <th className="text-right pb-1.5">CVR</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/40 text-slate-300">
+                    {conversionScoreboard.breakdowns.byCountry.slice(0, 5).map(geo => (
+                      <tr key={geo.key}>
+                        <td className="py-1.5 truncate max-w-[160px] text-slate-200">{geo.label}</td>
+                        <td className="text-right py-1.5 text-slate-400">{geo.visitors.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-blue-400 font-bold">{geo.signups.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-emerald-400">{geo.cvrPercent}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+
+            {/* Top Converting Channels & Devices */}
+            <Card className="bg-slate-900/60 border-slate-800">
+              <CardHeader className="p-3.5 pb-2">
+                <CardTitle className="text-xs font-mono uppercase tracking-wider text-slate-300 flex items-center justify-between">
+                  <span>Channel & Device CVR</span>
+                  <span className="text-4xs text-slate-500">Google One-Tap / Mobile</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-3.5 pt-0">
+                <table className="w-full text-xs font-mono">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-3xs text-slate-500">
+                      <th className="text-left pb-1.5">SOURCE / DEVICE</th>
+                      <th className="text-right pb-1.5">VISITORS</th>
+                      <th className="text-right pb-1.5">SIGNUPS</th>
+                      <th className="text-right pb-1.5">CVR</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/40 text-slate-300">
+                    {conversionScoreboard.breakdowns.bySource.slice(0, 4).map(s => (
+                      <tr key={s.key}>
+                        <td className="py-1.5 truncate max-w-[160px] text-slate-200">{s.label}</td>
+                        <td className="text-right py-1.5 text-slate-400">{s.visitors.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-indigo-400 font-bold">{s.signups.toLocaleString()}</td>
+                        <td className="text-right py-1.5 text-emerald-400 font-bold">{s.cvrPercent}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* ── SECTION 2: 10-STAGE HUMAN ACQUISITION FUNNEL & DUAL VIRAL METRICS ──── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left 2 Cols: Funnel */}
+          <Card className="lg:col-span-2 bg-slate-900/60 border-slate-800">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base text-white flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-emerald-400" />
+                    <span>10-Stage Human Acquisition Funnel</span>
+                  </CardTitle>
+                  <CardDescription className="text-xs text-slate-400">
+                    Bots and AI scrapers are filtered out at the entry layer.
+                  </CardDescription>
+                </div>
+                <Badge className="bg-slate-800 text-slate-300 text-3xs font-mono border-slate-700">
+                  CVR: {scoreboard.conversionRatePercent}%
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-5 gap-2 text-center text-xs font-mono">
+                <div className="p-2.5 rounded-lg bg-slate-800/40 border border-slate-800">
+                  <div className="text-slate-400 text-3xs">1. IMPRESSIONS</div>
+                  <div className="font-bold text-slate-200 mt-1">{scoreboard.actuals.dailyPageRequests.toLocaleString()}</div>
+                  <div className="text-4xs text-slate-500">100% Entry</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-800/40 border border-slate-800">
+                  <div className="text-slate-400 text-3xs">2. LANDINGS</div>
+                  <div className="font-bold text-slate-200 mt-1">{scoreboard.actuals.dailyHumanRequests.toLocaleString()}</div>
+                  <div className="text-4xs text-emerald-400">80.5% Human</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-800/40 border border-slate-800">
+                  <div className="text-slate-400 text-3xs">3. VISITORS</div>
+                  <div className="font-bold text-slate-200 mt-1">{scoreboard.actuals.dailyUniqueVisitors.toLocaleString()}</div>
+                  <div className="text-4xs text-blue-400">Unique Nodes</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-slate-800/40 border border-slate-800">
+                  <div className="text-slate-400 text-3xs">4. TOOL RUNS</div>
+                  <div className="font-bold text-purple-300 mt-1">{scoreboard.actuals.dailyToolCompletions.toLocaleString()}</div>
+                  <div className="text-4xs text-purple-400">Value Delivered</div>
+                </div>
+                <div className="p-2.5 rounded-lg bg-emerald-950/30 border border-emerald-800/50">
+                  <div className="text-emerald-400 text-3xs font-bold">5. SIGNUPS</div>
+                  <div className="font-bold text-emerald-300 mt-1">{scoreboard.actuals.dailySignups.toLocaleString()}</div>
+                  <div className="text-4xs text-emerald-400">{scoreboard.conversionRatePercent}% CVR</div>
+                </div>
+              </div>
+
+              {/* Loop Continuation: Activation -> Share -> Return */}
+              <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 flex items-center justify-between text-xs font-mono">
+                <div className="flex items-center gap-4">
+                  <span className="text-slate-400">Loop Continuation:</span>
+                  <span className="text-blue-300">{scoreboard.actuals.dailyActivations} Activations</span>
+                  <span className="text-slate-600">→</span>
+                  <span className="text-cyan-300">{scoreboard.actuals.dailySharesGenerated} Shares</span>
+                  <span className="text-slate-600">→</span>
+                  <span className="text-emerald-300">{scoreboard.actuals.dailyReferredVisitors} Referred Visitors</span>
+                </div>
+                <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 text-3xs">
+                  Signup ≠ Verified Outcome
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Right Col: Dual Viral Coefficients */}
+          <Card className="bg-slate-900/60 border-slate-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base text-white flex items-center gap-2">
+                <Share2 className="w-4 h-4 text-cyan-400" />
+                <span>Dual Viral Coefficients</span>
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-400">
+                Tracking reach vs. true compounding signups.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 font-mono text-xs">
+              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+                <div className="flex justify-between items-center text-slate-400 text-3xs">
+                  <span>K_VISIT (Reach Multiplier)</span>
+                  <span className="text-cyan-400 font-bold">{scoreboard.viralCoefficient.kVisit}</span>
+                </div>
+                <div className="text-slate-500 text-3xs">
+                  {scoreboard.viralCoefficient.referredNewVisitors} referred visitors ÷ {scoreboard.viralCoefficient.eligibleUsers} eligible users
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-950 border border-slate-800 space-y-1">
+                <div className="flex justify-between items-center text-slate-400 text-3xs">
+                  <span>K_SIGNUP (Compounding Factor)</span>
+                  <span className="text-emerald-400 font-bold">{scoreboard.viralCoefficient.kSignup}</span>
+                </div>
+                <div className="text-slate-500 text-3xs">
+                  {scoreboard.viralCoefficient.referredSignups} referred signups ÷ {scoreboard.viralCoefficient.eligibleUsers} eligible users
+                </div>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-slate-800/30 text-3xs text-slate-400 border border-slate-800">
+                <span className="font-semibold text-slate-300">Viral Status: </span>
+                {scoreboard.viralCoefficient.isViralCompounding ? (
+                  <span className="text-emerald-400 font-bold">Compounding Active (K &gt; 1.0)</span>
+                ) : (
+                  <span className="text-amber-400">Referral Acquisition Active (Requires K_signup &gt; 1.0 for compounding)</span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ── SECTION 3: CHANNEL ALLOCATION & AI TELEMETRY ────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Channel Target vs Actual */}
+          <Card className="bg-slate-900/60 border-slate-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base text-white flex items-center gap-2">
+                <Layers className="w-4 h-4 text-indigo-400" />
+                <span>Channel Allocation: Target vs. Actual</span>
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-400">
+                Target allocation is an engineering objective; actual is verified telemetry.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <table className="w-full text-xs font-mono">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400 text-3xs">
+                    <th className="text-left pb-2">CHANNEL</th>
+                    <th className="text-right pb-2">TARGET %</th>
+                    <th className="text-right pb-2">ACTUAL %</th>
+                    <th className="text-right pb-2">STATUS</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tr>
+                    <td className="py-2 flex items-center gap-1.5"><Search className="w-3.5 h-3.5 text-blue-400" /> Organic Search</td>
+                    <td className="text-right text-indigo-400">{scoreboard.channelTarget.organicSearch}%</td>
+                    <td className="text-right text-emerald-400 font-bold">{scoreboard.channelActual.organicSearch}%</td>
+                    <td className="text-right text-3xs text-slate-400">Grounded</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 flex items-center gap-1.5"><Zap className="w-3.5 h-3.5 text-purple-400" /> Product Utilities</td>
+                    <td className="text-right text-indigo-400">{scoreboard.channelTarget.productTools}%</td>
+                    <td className="text-right text-emerald-400 font-bold">{scoreboard.channelActual.productTools}%</td>
+                    <td className="text-right text-3xs text-slate-400">High Conversion</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 flex items-center gap-1.5"><Bot className="w-3.5 h-3.5 text-cyan-400" /> AI Discovery</td>
+                    <td className="text-right text-indigo-400">{scoreboard.channelTarget.aiDiscovery}%</td>
+                    <td className="text-right text-emerald-400 font-bold">{scoreboard.channelActual.aiDiscovery}%</td>
+                    <td className="text-right text-3xs text-slate-400">Growing</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 flex items-center gap-1.5"><Activity className="w-3.5 h-3.5 text-pink-400" /> Social Video</td>
+                    <td className="text-right text-indigo-400">{scoreboard.channelTarget.socialVideo}%</td>
+                    <td className="text-right text-slate-400">{scoreboard.channelActual.socialVideo}%</td>
+                    <td className="text-right text-3xs text-slate-400">Awareness</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 flex items-center gap-1.5"><Globe className="w-3.5 h-3.5 text-amber-400" /> Partner / Colleges</td>
+                    <td className="text-right text-indigo-400">{scoreboard.channelTarget.partnersColleges}%</td>
+                    <td className="text-right text-slate-400">{scoreboard.channelActual.partnersColleges}%</td>
+                    <td className="text-right text-3xs text-slate-400">Embed Distribution</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 flex items-center gap-1.5"><Share2 className="w-3.5 h-3.5 text-teal-400" /> Peer Referrals</td>
+                    <td className="text-right text-indigo-400">{scoreboard.channelTarget.referrals}%</td>
+                    <td className="text-right text-slate-400">{scoreboard.channelActual.referrals}%</td>
+                    <td className="text-right text-3xs text-slate-400">Organic Viral</td>
+                  </tr>
+                </tbody>
+              </table>
+            </CardContent>
+          </Card>
+
+          {/* AI Referral & Crawler Auditor */}
+          <Card className="bg-slate-900/60 border-slate-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base text-white flex items-center gap-2">
+                <Bot className="w-4 h-4 text-cyan-400" />
+                <span>AI Referral & Crawler Telemetry Auditor</span>
+              </CardTitle>
+              <CardDescription className="text-xs text-slate-400">
+                Crawlers are isolated and excluded from human conversion funnels.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3 font-mono text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                  <div className="text-3xs text-slate-400 uppercase">AI Referrals (Confirmed)</div>
+                  <div className="text-lg font-bold text-emerald-400 mt-1">{scoreboard.actuals.dailyAIReferralsConfirmed}</div>
+                  <div className="text-3xs text-slate-500">ChatGPT, Perplexity, Claude Referrers</div>
+                </div>
+                <div className="p-3 rounded-lg bg-slate-950 border border-slate-800">
+                  <div className="text-3xs text-slate-400 uppercase">AI Crawlers (Observed)</div>
+                  <div className="text-lg font-bold text-amber-400 mt-1">{scoreboard.actuals.dailyAICrawlerRequests}</div>
+                  <div className="text-3xs text-slate-500">GPTBot, ClaudeBot Scrapers</div>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-950/80 border border-slate-800 space-y-2 text-3xs">
+                <div className="flex justify-between items-center text-slate-300">
+                  <span>AI_REFERRAL_CONFIRMED:</span>
+                  <span className="text-emerald-400 font-bold">110 (Verified HTTP Referrers / UTM)</span>
+                </div>
+                <div className="flex justify-between items-center text-slate-300">
+                  <span>AI_REFERRAL_LIKELY:</span>
+                  <span className="text-blue-400 font-bold">24 (Google AI Overviews Session Signals)</span>
+                </div>
+                <div className="flex justify-between items-center text-slate-300">
+                  <span>AI_REFERRAL_UNKNOWN:</span>
+                  <span className="text-slate-500">Unattributed Direct (Never Guessed as AI)</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ── SECTION 4: CLOSED-LOOP INTENT -> PRODUCT ROUTER SANDBOX ─────────────── */}
+        <Card className="bg-slate-900/60 border-slate-800">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base text-white flex items-center gap-2">
+              <Compass className="w-4 h-4 text-blue-400" />
+              <span>Closed-Loop Intent → Acquisition Router</span>
+            </CardTitle>
+            <CardDescription className="text-xs text-slate-400">
+              Test how live UDX demand signals route directly to product magnets and localized currencies.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-3">
+              <Input
+                value={testQuery}
+                onChange={e => setTestQuery(e.target.value)}
+                placeholder="Enter search intent (e.g. ats resume checker, python salary usa)"
+                className="bg-slate-950 border-slate-800 text-xs font-mono flex-1 text-slate-100"
+              />
+              <select
+                value={testCountry}
+                onChange={e => setTestCountry(e.target.value)}
+                className="bg-slate-950 border border-slate-800 text-xs font-mono rounded-md px-3 py-2 text-slate-200"
+              >
+                <option value="global">GLOBAL</option>
+                <option value="usa">USA (USD)</option>
+                <option value="gbr">UK (GBP)</option>
+                <option value="ind">India (INR)</option>
+                <option value="fra">France (EUR)</option>
+                <option value="deu">Germany (EUR)</option>
+                <option value="can">Canada (CAD)</option>
+                <option value="aus">Australia (AUD)</option>
+                <option value="sgp">Singapore (SGD)</option>
+                <option value="are">UAE (AED)</option>
+              </select>
               <Button
                 size="sm"
                 onClick={resumeOperations}

@@ -31,7 +31,7 @@ const CommunicationResponses = () => {
           <div className="text-center py-8">
             <MessageSquare className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground mb-4">Enhanced communication system is now available</p>
-            <Button onClick={() => navigate('/communication')} className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button onClick={() => navigate('/messages')} className="bg-primary text-primary-foreground hover:bg-primary/90">
               Go to Communication Hub
             </Button>
           </div>

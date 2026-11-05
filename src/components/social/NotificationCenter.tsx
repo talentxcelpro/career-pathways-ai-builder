@@ -52,7 +52,14 @@ export const NotificationCenter: React.FC = () => {
 
       if (error) throw error;
 
-      return (data || []).map(notification => ({
+      return (data || [])
+        .filter(n => 
+          !n.message?.includes('User A') && 
+          !n.title?.includes('User A') &&
+          !n.message?.toLowerCase().includes('principal ai architect') &&
+          !n.message?.toLowerCase().includes('test user')
+        )
+        .map(notification => ({
         ...notification,
         actor_user: null
       }));

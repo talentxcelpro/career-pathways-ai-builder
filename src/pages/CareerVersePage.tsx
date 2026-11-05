@@ -30,9 +30,15 @@ import {
   careerQuestEngine,
   PlayableQuest
 } from '@/services/careerverse/careerQuestEngine';
+import {
+  CareerDomainId,
+  CAREER_DOMAINS,
+  detectDomainFromProfile
+} from '@/services/careerverse/careerDomainCatalog';
 
 import { CareerVerseHeader } from '@/components/careerverse/CareerVerseHeader';
 import { CareerVerseSidebar } from '@/components/careerverse/CareerVerseSidebar';
+import { CareerDomainSelector } from '@/components/careerverse/CareerDomainSelector';
 import { HeroBanner } from '@/components/careerverse/HeroBanner';
 import { PlayerCharacterHUD } from '@/components/careerverse/character/PlayerCharacterHUD';
 import { DailyQuestsCard } from '@/components/careerverse/DailyQuestsCard';
@@ -53,8 +59,10 @@ import { FullSkillTreeModal } from '@/components/careerverse/FullSkillTreeModal'
 import { RewardsStoreModal } from '@/components/careerverse/RewardsStoreModal';
 import { AchievementsModal } from '@/components/careerverse/AchievementsModal';
 import { AICareerCompanionModal } from '@/components/careerverse/AICareerCompanionModal';
-import { Loader2, Sparkles, LogIn, UserPlus, X, MapPin, AlertTriangle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Sparkles, LogIn, UserPlus, AlertCircle, RefreshCw, MapPin, X } from 'lucide-react';
+import confetti from 'canvas-confetti';
+import { gameAudio } from '@/utils/gameAudio';
 
 export const CareerVersePage: React.FC = () => {
   const { user: contextUser, loading: contextAuthLoading } = useOptimizedAuth();
@@ -64,6 +72,13 @@ export const CareerVersePage: React.FC = () => {
   const [activeUser, setActiveUser] = useState<User | null>(contextUser ?? null);
   const [authResolved, setAuthResolved] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // Multi-Industry Domain Track State
+  const [selectedDomain, setSelectedDomain] = useState<CareerDomainId>(() => {
+    const stored = localStorage.getItem('careerverse_domain') as CareerDomainId;
+    if (stored && CAREER_DOMAINS[stored]) return stored;
+    return 'technology';
+  });
 
   // Primary Game State
   const [player, setPlayer] = useState<CareerPlayer>(GUEST_PLAYER);
@@ -117,24 +132,12 @@ export const CareerVersePage: React.FC = () => {
 
     resolveAuthSession();
 
-    // 2. Subscribe to authentication state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return;
-      console.log('[CareerVerse Auth Event]:', event, session?.user?.id);
-
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED' || event === 'TOKEN_REFRESHED') {
-        if (session?.user) {
-          // Requirement 9: Immediately transition from guest mode to real player profile
-          setActiveUser(session.user);
-          setFetchError(null);
-        }
-      } else if (event === 'SIGNED_OUT') {
-        // Requirement 10: Ensure logout immediately removes authenticated private data from interface
-        setActiveUser(null);
-        setPlayer(GUEST_PLAYER);
-        setUnifiedProfile(careerIntelligenceEngine.getGuestProfile());
-        setGuild(null);
-        setFetchError(null);
+    // 2. Subscribe to Supabase auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (isMounted) {
+        const newUser = session?.user ?? null;
+        setActiveUser(newUser);
+        setAuthResolved(true);
       }
     });
 
@@ -144,14 +147,14 @@ export const CareerVersePage: React.FC = () => {
     };
   }, [contextUser]);
 
-  // Requirement 3, 4, 5, 8, 11: Join Career Passport, profiles, skills, education, experience and calculate real progress
+  // Load authentic career data from Supabase
   const loadCareerData = useCallback(async (userToLoad: User | null) => {
     try {
       setPageLoading(true);
       setFetchError(null);
 
       if (!userToLoad) {
-        // Requirement 7: Honest guest preview
+        // Honest guest preview
         const guestProf = careerIntelligenceEngine.getGuestProfile();
         setUnifiedProfile(guestProf);
         setPlayer(GUEST_PLAYER);
@@ -182,6 +185,18 @@ export const CareerVersePage: React.FC = () => {
       const profData = await careerIntelligenceEngine.evaluateUserProfile(uid);
       setUnifiedProfile(profData);
 
+      // Automatically determine domain track if not manually chosen
+      const storedDomain = localStorage.getItem('careerverse_domain') as CareerDomainId;
+      if (storedDomain && CAREER_DOMAINS[storedDomain]) {
+        setSelectedDomain(storedDomain);
+      } else {
+        const detected = detectDomainFromProfile(profData.headline, [
+          ...profData.unassessedDeclaredSkills,
+          ...profData.assessedSkills.map(s => s.name)
+        ]);
+        setSelectedDomain(detected);
+      }
+
       // Get or activate authenticated player record
       const pData = await CareerPlayerService.getOrActivatePlayer(
         uid,
@@ -210,7 +225,6 @@ export const CareerVersePage: React.FC = () => {
       setPlayableQuests(pQuests);
     } catch (err: any) {
       console.error('Error loading authentic CareerVerse player data:', err);
-      // Requirement 8: If profile retrieval fails, show loading/error state and retry option. Never silently substitute demo data!
       setFetchError(err?.message || 'Failed to retrieve authentic player profile from Supabase.');
     } finally {
       setPageLoading(false);
@@ -251,8 +265,9 @@ export const CareerVersePage: React.FC = () => {
     const channel = CareerRealtimeService.subscribeToPlayerUpdates(activeUser.id, (updated) => {
       setPlayer((prev) => ({
         ...prev,
-        ...updated
+        ...updated,
       }));
+
       setUnifiedProfile((prev) => ({
         ...prev,
         totalXP: updated.xp ?? prev.totalXP,
@@ -278,8 +293,18 @@ export const CareerVersePage: React.FC = () => {
     }
   };
 
+  // Handle Domain Selection
+  const handleSelectDomain = (domain: CareerDomainId) => {
+    setSelectedDomain(domain);
+    localStorage.setItem('careerverse_domain', domain);
+  };
+
   // Launch playable games
   const handleLaunchCodeArena = () => {
+    if (selectedDomain !== 'technology') {
+      handleLaunchLogicDuel();
+      return;
+    }
     const codeQuest = playableQuests.find((q) => q.type === 'code_challenge') || playableQuests[0];
     if (codeQuest) {
       setActiveCodeQuest(codeQuest);
@@ -287,6 +312,40 @@ export const CareerVersePage: React.FC = () => {
   };
 
   const handleLaunchLogicDuel = () => {
+    const domainConfig = CAREER_DOMAINS[selectedDomain] || CAREER_DOMAINS.technology;
+    
+    // For non-tech domains or student tracks, launch dynamic industry-aligned quiz
+    if (selectedDomain !== 'technology') {
+      const domainCombatActions = domainConfig.boss.combatActions;
+      const domainQuizQuest: PlayableQuest = {
+        id: `quest_logic_${selectedDomain}`,
+        title: `${domainConfig.shortLabel} Decision Duel`,
+        description: `Rapid-fire case & scenario decision sprint in ${domainConfig.shortLabel}.`,
+        lore: `Master real-world diagnostic reflexes in ${domainConfig.label}.`,
+        type: 'timed_quiz',
+        category: 'soft_skills',
+        difficulty: 'Easy',
+        xpReward: 120,
+        coinReward: 20,
+        timeLimitSeconds: 60,
+        targetSkill: domainConfig.shortLabel,
+        completed: false,
+        playableData: {
+          instructions: ['Answer each question within the 60s countdown timer.', 'Consecutive correct answers build streak multipliers.'],
+          rules: ['Timer does not pause', 'Wrong answer resets combo'],
+          questions: domainCombatActions.map((ca, idx) => ({
+            id: `q_${ca.id}`,
+            prompt: ca.taskPrompt,
+            options: ca.options,
+            correctAnswerIndex: ca.correctIndex,
+            explanation: ca.explanation,
+          })),
+        },
+      };
+      setActiveLogicQuest(domainQuizQuest);
+      return;
+    }
+
     const logicQuest = playableQuests.find((q) => q.type === 'timed_quiz') || playableQuests[1] || playableQuests[0];
     if (logicQuest) {
       setActiveLogicQuest(logicQuest);
@@ -305,7 +364,7 @@ export const CareerVersePage: React.FC = () => {
         </div>
         <div className="text-center">
           <h3 className="font-black text-lg text-white">Connecting to CareerVerse...</h3>
-          <p className="text-xs text-slate-400 mt-1">Calibrating authentic player credentials and live combat arenas</p>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">Calibrating authentic player credentials and live combat arenas</p>
         </div>
       </div>
     );
@@ -316,21 +375,18 @@ export const CareerVersePage: React.FC = () => {
     return (
       <div className="min-h-screen bg-[#071329] flex flex-col items-center justify-center gap-5 text-white p-4">
         <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 shadow-xl">
-          <AlertTriangle className="w-8 h-8" />
+          <AlertCircle className="w-8 h-8" />
         </div>
         <div className="text-center max-w-md">
-          <h3 className="font-black text-xl text-white">Profile Synchronization Failed</h3>
-          <p className="text-sm text-slate-400 mt-2">
+          <h2 className="text-xl font-black text-white">Unable to Load Career Profile</h2>
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
             {fetchError}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">
-            TalentXcel CareerVerse requires authentic player profile records and will never silently substitute demo data.
           </p>
         </div>
         <div className="flex items-center gap-3 mt-2">
           <Button
             onClick={() => loadCareerData(activeUser)}
-            className="bg-[#278DFF] hover:bg-[#1a7ae0] text-white font-bold px-5 py-2 rounded-xl flex items-center gap-2"
+            className="bg-[#278DFF] hover:bg-[#1a7ae0] text-white font-bold px-5 py-2 rounded-xl flex items-center gap-2 cursor-pointer"
           >
             <RefreshCw className="w-4 h-4" />
             Retry Connection
@@ -338,7 +394,7 @@ export const CareerVersePage: React.FC = () => {
           <Button
             variant="outline"
             onClick={() => navigate('/')}
-            className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl"
+            className="border-white/10 text-slate-300 hover:text-white hover:bg-white/5 px-4 py-2 rounded-xl cursor-pointer"
           >
             Go to Home
           </Button>
@@ -347,26 +403,53 @@ export const CareerVersePage: React.FC = () => {
     );
   }
 
-  const primaryBossBattle = bossBattles[0] || {
-    id: '22222222-2222-4000-8000-000000000001',
-    title: 'Frontend Developer Challenge',
-    company_name: 'Microsoft',
-    company_logo: 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg',
-    job_id: null,
-    role_type: 'Hiring Internship',
-    description: 'Complete the 4-stage technical recruitment pipeline to earn direct interview access.',
-    stages: ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'],
-    xp_reward: 500,
-    coins_reward: 150,
-    badge_name: 'Dragon Slayer',
-    is_live: true,
-    user_participation: {
-      current_stage: 1,
-      status: 'active',
-      code_submission: null,
-      feedback: null
-    }
-  };
+  // Derive dynamic boss battle corresponding to chosen domain
+  const domainConfig = CAREER_DOMAINS[selectedDomain] || CAREER_DOMAINS.technology;
+  const primaryBossBattle: CareerBossBattle = (selectedDomain === 'technology' && bossBattles[0])
+    ? bossBattles[0]
+    : {
+        id: domainConfig.boss.id,
+        title: domainConfig.boss.title,
+        company_name: domainConfig.boss.companyName,
+        company_logo: null,
+        job_id: null,
+        role_type: domainConfig.boss.roleType,
+        description: `Defeat ${domainConfig.boss.title} to unlock fast-track interview opportunities.`,
+        stages: ['Competency Assessment', 'Problem-Solving Duel', 'Strategy Review', 'Executive Interview'],
+        xp_reward: domainConfig.boss.xpReward,
+        coins_reward: 50,
+        badge_name: domainConfig.boss.badge,
+        is_live: true,
+        user_participation: {
+          current_stage: 1,
+          status: 'active',
+          code_submission: null,
+          feedback: null
+        }
+      };
+
+  // Derive active daily quests for chosen domain
+  const displayQuests = (selectedDomain === 'technology' && quests.length > 0)
+    ? quests
+    : [
+        ...domainConfig.dailyQuests.map((dq) => ({
+          id: dq.id,
+          title: dq.title,
+          description: dq.description,
+          category: dq.category,
+          xp_reward: dq.xpReward,
+          coins_reward: 20,
+          skill_tag: domainConfig.shortLabel,
+          is_active: true,
+          user_progress: quests.find(q => q.id === dq.id)?.user_progress || {
+            status: 'pending' as const,
+            progress: 0,
+            current_step: 0,
+            total_steps: 1
+          }
+        })),
+        ...quests.filter(q => !domainConfig.dailyQuests.some(dq => dq.id === q.id)).slice(0, 1)
+      ];
 
   return (
     <div className="min-h-screen bg-[#071329] text-white flex flex-col selection:bg-[#7047F5] selection:text-white">
@@ -380,7 +463,7 @@ export const CareerVersePage: React.FC = () => {
       {/* Guest Preview Notice Banner if not logged in */}
       {isGuest && (
         <div className="bg-gradient-to-r from-[#7047F5]/30 via-[#278DFF]/20 to-[#101E3B] border-b border-[#36D9F5]/30 px-4 py-2.5">
-          <div className="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm">
             <div className="flex items-center gap-2 text-slate-200">
               <Sparkles className="w-4 h-4 text-[#36D9F5] flex-shrink-0" />
               <span>
@@ -392,7 +475,7 @@ export const CareerVersePage: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/auth?tab=login')}
-                className="text-xs h-7 px-3 text-white hover:bg-white/10"
+                className="text-xs sm:text-sm h-7 px-3 text-white hover:bg-white/10"
               >
                 <LogIn className="w-3.5 h-3.5 mr-1" />
                 Log In
@@ -400,7 +483,7 @@ export const CareerVersePage: React.FC = () => {
               <Button
                 size="sm"
                 onClick={() => navigate('/auth?tab=signup')}
-                className="text-xs h-7 px-3 bg-[#20D994] hover:bg-[#1cb57b] text-slate-950 font-bold"
+                className="text-xs sm:text-sm h-7 px-3 bg-[#20D994] hover:bg-[#1cb57b] text-slate-950 font-bold"
               >
                 <UserPlus className="w-3.5 h-3.5 mr-1" />
                 Join Free
@@ -433,16 +516,23 @@ export const CareerVersePage: React.FC = () => {
           onOpenAchievements={() => setIsAchievementsModalOpen(true)}
         />
 
-        {/* Center Main Stage (Hero, Player HUD, Quests, Tree Preview, Boss Battle) */}
+        {/* Center Main Stage (Domain Selector, Hero, Player HUD, Quests, Tree Preview, Boss Battle) */}
         <div className="flex-1 flex flex-col gap-6 min-w-0">
+          {/* Multi-Industry Domain Track Selector */}
+          <CareerDomainSelector
+            selectedDomain={selectedDomain}
+            onSelectDomain={handleSelectDomain}
+          />
+
           {/* Stargate Citadel Hero Banner */}
           <HeroBanner
+            domainId={selectedDomain}
             onOpenWorldMap={() => setIsWorldMapOpen(true)}
             onOpenQuickQuest={handleLaunchCodeArena}
           />
 
           {/* 3-Column Core Widgets Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-stretch">
             {/* Player Character HUD (Authentic Evidence, No Truncation, 5-Axis Attributes) */}
             <PlayerCharacterHUD
               profile={unifiedProfile}
@@ -455,7 +545,7 @@ export const CareerVersePage: React.FC = () => {
             {/* Daily Quests Card with Live Arena Shortcuts */}
             <div id="daily-quests" className="h-full">
               <DailyQuestsCard
-                quests={quests}
+                quests={displayQuests}
                 streak={unifiedProfile.streakDays || player.current_streak}
                 onSelectQuest={(q) => setActiveQuest(q)}
                 onLaunchCodeArena={handleLaunchCodeArena}
@@ -467,6 +557,7 @@ export const CareerVersePage: React.FC = () => {
             <div className="h-full">
               <SkillTreePreviewCard
                 skills={treeSkills}
+                domainId={selectedDomain}
                 onOpenFullTree={() => setIsSkillTreeModalOpen(true)}
               />
             </div>
@@ -476,6 +567,7 @@ export const CareerVersePage: React.FC = () => {
           <div id="boss-battles">
             <BossBattleCard
               battle={primaryBossBattle}
+              domainId={selectedDomain}
               onOpenWorkspace={() => setIsBossArenaOpen(true)}
             />
           </div>
@@ -514,6 +606,12 @@ export const CareerVersePage: React.FC = () => {
           userId={player.id}
           onClose={() => setActiveCodeQuest(null)}
           onSuccess={async (xp) => {
+            gameAudio.playLevelUp();
+            confetti({
+              particleCount: 120,
+              spread: 80,
+              origin: { y: 0.6 },
+            });
             await loadPlayerData();
             setActiveCodeQuest(null);
           }}
@@ -526,6 +624,12 @@ export const CareerVersePage: React.FC = () => {
           userId={player.id}
           onClose={() => setActiveLogicQuest(null)}
           onSuccess={async (xp) => {
+            gameAudio.playLevelUp();
+            confetti({
+              particleCount: 120,
+              spread: 80,
+              origin: { y: 0.6 },
+            });
             await loadPlayerData();
             setActiveLogicQuest(null);
           }}
@@ -536,8 +640,15 @@ export const CareerVersePage: React.FC = () => {
         <PlayableBossBattleArena
           battle={primaryBossBattle}
           userId={player.id}
+          domainId={selectedDomain}
           onClose={() => setIsBossArenaOpen(false)}
           onVictory={async () => {
+            gameAudio.playLevelUp();
+            confetti({
+              particleCount: 180,
+              spread: 100,
+              origin: { y: 0.5 },
+            });
             await loadPlayerData();
             setIsBossArenaOpen(false);
           }}
@@ -555,7 +666,7 @@ export const CareerVersePage: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsWorldMapOpen(false)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -583,6 +694,12 @@ export const CareerVersePage: React.FC = () => {
         userId={player.id}
         onClose={() => setActiveQuest(null)}
         onQuestClaimed={async () => {
+          gameAudio.playXpGain();
+          confetti({
+            particleCount: 80,
+            spread: 60,
+            origin: { y: 0.7 },
+          });
           await loadPlayerData();
           const updatedQuests = await CareerQuestService.getQuests(player.id);
           setQuests(updatedQuests);

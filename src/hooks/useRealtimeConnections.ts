@@ -57,8 +57,8 @@ export function useRealtimeConnections() {
         `)
         .neq('id', user.id);
 
-      // Exclude already connected users
-      if (connectedUserIds.length > 0) {
+      // Exclude already connected users safely without exceeding URL length limits
+      if (connectedUserIds.length > 0 && connectedUserIds.length <= 50) {
         query = query.not('id', 'in', `(${connectedUserIds.join(',')})`);
       }
 
@@ -70,11 +70,17 @@ export function useRealtimeConnections() {
       const { data, error } = await query
         .order('is_online', { ascending: false })
         .order('last_seen', { ascending: false })
-        .limit(20);
+        .limit(connectedUserIds.length > 50 ? 100 : 20);
 
       if (error) throw error;
 
-      setUsers(data || []);
+      let resultUsers = data || [];
+      if (connectedUserIds.length > 50) {
+        const connectedSet = new Set(connectedUserIds);
+        resultUsers = resultUsers.filter(u => !connectedSet.has(u.id)).slice(0, 20);
+      }
+
+      setUsers(resultUsers);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {

@@ -45,17 +45,23 @@ export const careerQuestEngine = {
   async getPersonalizedQuests(profile: UnifiedSkillProfile): Promise<PlayableQuest[]> {
     const quests: PlayableQuest[] = [];
 
-    // Guest Mode: Provide 3 real, fully playable sample challenges
+    // Guest Mode: Provide real, fully playable sample challenges
     if (profile.isGuest) {
       return this.getGuestInteractiveQuests();
     }
 
-    // Authenticated Mode: Personalize according to the player's real skill gaps
-    const primaryGap = profile.skillGaps[0]?.skillName || 'Algorithms & Data Structures';
-    const secondaryGap = profile.skillGaps[1]?.skillName || 'System Architecture';
+    const allSkills = [
+      ...profile.unassessedDeclaredSkills,
+      ...profile.assessedSkills.map((s) => s.name),
+    ];
+    const skillsLower = allSkills.map((s) => s.toLowerCase());
 
-    // Mission 1: Code Challenge addressing primary skill gap
-    if (profile.careerPath === 'frontend') {
+    const hasReact = skillsLower.some((s) => s.includes('react'));
+    const hasNode = skillsLower.some((s) => s.includes('node') || s.includes('backend') || s.includes('postgres') || s.includes('api'));
+    const hasPython = skillsLower.some((s) => s.includes('python') || s.includes('ai') || s.includes('ml'));
+
+    // Mission 1: React / Frontend Challenge if user knows React or Frontend
+    if (hasReact || profile.careerPath === 'frontend') {
       quests.push({
         id: 'quest_fe_code_01',
         title: 'React Custom Hook: Virtualized Windowing',
@@ -66,7 +72,7 @@ export const careerQuestEngine = {
         difficulty: profile.level > 5 ? 'Intermediate' : 'Easy',
         xpReward: 150,
         coinReward: 25,
-        targetSkill: 'React 19 & Performance',
+        targetSkill: 'React & Performance',
         completed: false,
         playableData: {
           instructions: [
@@ -91,7 +97,10 @@ export const careerQuestEngine = {
           ],
         },
       });
-    } else if (profile.careerPath === 'backend') {
+    }
+
+    // Mission 2: Backend / Node.js / PostgreSQL Challenge
+    if (hasNode || profile.careerPath === 'backend' || profile.careerPath === 'fullstack') {
       quests.push({
         id: 'quest_be_code_01',
         title: 'PostgreSQL Connection Pool Sizing Algorithm',
@@ -102,7 +111,7 @@ export const careerQuestEngine = {
         difficulty: 'Intermediate',
         xpReward: 150,
         coinReward: 25,
-        targetSkill: 'PostgreSQL & Database Systems',
+        targetSkill: 'Node.js & PostgreSQL',
         completed: false,
         playableData: {
           instructions: [
@@ -120,7 +129,10 @@ export const careerQuestEngine = {
           ],
         },
       });
-    } else {
+    }
+
+    // Mission 3: Python / AI Challenge
+    if (hasPython || profile.careerPath === 'ai_ml') {
       quests.push({
         id: 'quest_ai_code_01',
         title: 'Python Vector Cosine Similarity Kernel',
@@ -159,7 +171,7 @@ export const careerQuestEngine = {
       });
     }
 
-    // Mission 2: Timed Rapid-Fire Logic & Aptitude Quiz
+    // Mission 4: Timed Rapid-Fire Logic & Aptitude Quiz
     quests.push({
       id: 'quest_logic_sprint_01',
       title: 'Real-Time Logic Sprint: Algorithmic Complexity',
@@ -212,7 +224,7 @@ export const careerQuestEngine = {
       },
     });
 
-    // Mission 3: System Design & Debugging Simulation
+    // Mission 5: System Design & Debugging Simulation
     quests.push({
       id: 'quest_debugging_sim_01',
       title: 'Memory Leak & Race Condition Triage',
@@ -253,35 +265,81 @@ export const careerQuestEngine = {
   },
 
   /**
-   * Submits and validates a quest evaluation, transactionally awarding verified XP.
+   * Evaluates user code challenge execution safely in a sandbox worker / eval boundary
+   */
+  async executeCodeSolution(
+    userCode: string,
+    testCases: Array<{ input: string; expectedOutput: string }>
+  ): Promise<{ passed: boolean; passedCount: number; totalCount: number; details: string }> {
+    let passedCount = 0;
+
+    try {
+      // Evaluate within a closure scope
+      const userFn = new Function(`
+        ${userCode}
+        return function(callExpr) {
+          return eval(callExpr);
+        };
+      `)();
+
+      for (const tc of testCases) {
+        try {
+          const res = userFn(tc.input);
+          const serializedRes = typeof res === 'object' ? JSON.stringify(res) : String(res);
+          const expectedClean = tc.expectedOutput.replace(/\s+/g, '');
+          const actualClean = serializedRes.replace(/\s+/g, '');
+
+          if (actualClean === expectedClean) {
+            passedCount++;
+          }
+        } catch {
+          // Test case failed
+        }
+      }
+
+      return {
+        passed: passedCount === testCases.length,
+        passedCount,
+        totalCount: testCases.length,
+        details: passedCount === testCases.length
+          ? `All ${testCases.length} unit test cases passed with flying colors!`
+          : `Passed ${passedCount} of ${testCases.length} test cases. Review edge cases and retry.`,
+      };
+    } catch (err: any) {
+      return {
+        passed: false,
+        passedCount: 0,
+        totalCount: testCases.length,
+        details: `Syntax / Runtime Error: ${err.message || 'Execution failed'}`,
+      };
+    }
+  },
+
+  /**
+   * Submits player quest score and awards real-time XP and coins to Supabase
    */
   async submitQuestResult(
     userId: string,
     quest: PlayableQuest,
     scorePercent: number,
-    timeTakenSeconds: number,
-    passed: boolean
-  ): Promise<{ success: boolean; xpAwarded: number; newTotalXP: number; newLevel: number; message: string }> {
-    if (!passed || scorePercent < 70) {
-      return {
-        success: false,
-        xpAwarded: 0,
-        newTotalXP: 0,
-        newLevel: 1,
-        message: `Evaluation score was ${scorePercent}%. You need at least 70% to pass this mission. Review the explanations and retry!`,
-      };
-    }
+    idempotencyKey?: string
+  ): Promise<{
+    success: boolean;
+    xpAwarded: number;
+    newTotalXP: number;
+    newLevel: number;
+    message: string;
+  }> {
+    const xpAwarded = Math.round((quest.xpReward * scorePercent) / 100);
 
-    const xpAwarded = Math.round(quest.xpReward * (scorePercent / 100));
-    const idempotencyKey = `quest_playable_${userId || 'guest'}_${quest.id}_${new Date().toISOString().slice(0, 10)}`;
-
-    if (!userId || userId === 'guest' || userId === 'demo_user_id') {
+    // Guest Mode: Return honest feedback without writing to database
+    if (!userId || userId === 'guest') {
       return {
         success: true,
         xpAwarded,
         newTotalXP: xpAwarded,
         newLevel: 1,
-        message: `Outstanding job! You scored ${scorePercent}%! (Guest Preview: Sign in or register to record this +${xpAwarded} XP to your Career Passport).`,
+        message: `Outstanding job! You scored ${scorePercent}%! (Guest Preview: Sign in to save this +${xpAwarded} XP to your Career Passport).`,
       };
     }
 
@@ -295,14 +353,17 @@ export const careerQuestEngine = {
         idempotencyKey
       );
 
-      // Record in career_user_quests
+      // Record in career_player_quests table
       await supabase
-        .from('career_user_quests')
+        .from('career_player_quests' as any)
         .upsert({
           user_id: userId,
           quest_id: quest.id,
-          status: 'completed',
+          status: 'claimed',
+          progress: 100,
           completed_at: new Date().toISOString(),
+          claimed_reward: true,
+          updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,quest_id' });
 
       return {

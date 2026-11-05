@@ -34,8 +34,10 @@ import {
   Radio,
   FileText,
   Target,
-  Filter
+  Filter,
+  Gift
 } from 'lucide-react';
+import { GrowthEngineAdminPanel } from '@/components/admin/GrowthEngineAdminPanel';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -224,6 +226,9 @@ export default function GrowthOperationsCenter() {
           <TabsTrigger value="phase9" className="data-[state=active]:bg-emerald-950/80 data-[state=active]:text-emerald-300 data-[state=active]:border-emerald-500/40 text-xs font-bold border border-transparent">
             <Radio className="w-3.5 h-3.5 mr-1.5 text-emerald-400 animate-pulse" /> Phase 9: GSC Organic OS
           </TabsTrigger>
+          <TabsTrigger value="growth-engine" className="data-[state=active]:bg-blue-950/80 data-[state=active]:text-blue-300 data-[state=active]:border-blue-500/40 text-xs font-bold border border-transparent">
+            <Gift className="w-3.5 h-3.5 mr-1.5 text-pink-400" /> Referral Growth Engine
+          </TabsTrigger>
           <TabsTrigger value="overview" className="data-[state=active]:bg-slate-800 text-xs">
             <Sparkles className="w-3.5 h-3.5 mr-1.5 text-blue-400" /> Executive Overview
           </TabsTrigger>
@@ -243,6 +248,13 @@ export default function GrowthOperationsCenter() {
             <Brain className="w-3.5 h-3.5 mr-1.5 text-rose-400" /> AI CEO Closed-Loop
           </TabsTrigger>
         </TabsList>
+
+        {/* TAB: REFERRAL VIRAL GROWTH ENGINE */}
+        <TabsContent value="growth-engine" className="space-y-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl text-slate-100">
+            <GrowthEngineAdminPanel />
+          </div>
+        </TabsContent>
 
         {/* TAB 0: PHASE 9 — GSC-LED ORGANIC GROWTH OPERATIONS */}
         <TabsContent value="phase9" className="space-y-6">

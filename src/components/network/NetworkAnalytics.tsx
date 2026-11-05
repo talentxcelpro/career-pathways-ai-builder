@@ -82,67 +82,106 @@ export const NetworkAnalytics = () => {
     queryFn: async (): Promise<AnalyticsData> => {
       if (!currentUser?.id) throw new Error('User not authenticated');
 
-      // Fetch real analytics data from database
-      const [profileData, postsData, connectionsData] = await Promise.all([
-        // Get profile analytics
+      const now = new Date();
+      const days = selectedPeriod === '7d' ? 7 : selectedPeriod === '30d' ? 30 : selectedPeriod === '90d' ? 90 : 365;
+      const cutoffDate = new Date(now.getTime() - days * 24 * 60 * 60 * 1000).toISOString();
+
+      // Fetch real analytics data filtered by the selected period
+      const [profileData, viewsResult, postsData, connectionsData, sharesData, verificationsData, trendsData] = await Promise.all([
         supabase
           .from('profiles')
           .select('profile_views_count, skills, career_goals, career_interests')
           .eq('id', currentUser.id)
           .maybeSingle(),
-        
-        // Get user's posts analytics
+        supabase
+          .from('profile_views')
+          .select('id', { count: 'exact', head: true })
+          .eq('profile_id', currentUser.id)
+          .gte('created_at', cutoffDate),
         supabase
           .from('posts')
-          .select('likes_count, comments_count, views_count')
-          .eq('author_id', currentUser.id),
-        
-        // Get connections count
+          .select('id, likes_count, comments_count, views_count')
+          .eq('author_id', currentUser.id)
+          .gte('created_at', cutoffDate),
         supabase
           .from('connections')
-          .select('*', { count: 'exact' })
+          .select('id', { count: 'exact', head: true })
           .or(`requester_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
-          .eq('status', 'accepted')
+          .eq('status', 'accepted'),
+        supabase
+          .from('post_shares')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', currentUser.id)
+          .gte('created_at', cutoffDate),
+        supabase
+          .from('skill_verifications')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', currentUser.id),
+        supabase
+          .from('skill_demand_trends')
+          .select('skill_name, demand_score, growth_percentage, trend_direction')
+          .limit(6)
       ]);
 
       const profile = profileData.data;
       const posts = postsData.data || [];
-      const connectionsCount = connectionsData.count || 0;
+      const postIds = posts.map(p => p.id);
 
-      // Calculate analytics from real data
+      // Real live post saves / bookmarks
+      let realBookmarksCount = 0;
+      if (postIds.length > 0) {
+        const { count: savesCount } = await supabase
+          .from('post_saves')
+          .select('id', { count: 'exact', head: true })
+          .in('post_id', postIds);
+        realBookmarksCount = savesCount || 0;
+      }
+
+      // Calculate real analytics from measured events
       const totalArticleViews = posts.reduce((sum, post) => sum + (post.views_count || 0), 0);
       const totalArticleLikes = posts.reduce((sum, post) => sum + (post.likes_count || 0), 0);
       const totalArticleComments = posts.reduce((sum, post) => sum + (post.comments_count || 0), 0);
+      const realProfileViews = viewsResult.count !== null && viewsResult.count !== undefined 
+        ? viewsResult.count 
+        : (profile?.profile_views_count || 0);
+
+      const dynamicTrends = (trendsData.data && trendsData.data.length > 0)
+        ? trendsData.data.map((t: any) => ({
+            skill: t.skill_name || 'Technology',
+            demand: t.demand_score || 85,
+            growth: t.growth_percentage || 10,
+            trend: (t.trend_direction as any) || 'up'
+          }))
+        : [
+            { skill: 'AI & Machine Learning', demand: 95, growth: 24, trend: 'up' as const },
+            { skill: 'Distributed Systems', demand: 91, growth: 18, trend: 'up' as const },
+            { skill: 'Cloud Platform Engineering', demand: 88, growth: 14, trend: 'up' as const },
+            { skill: 'Product Management', demand: 84, growth: 8, trend: 'stable' as const },
+            { skill: 'Security & DevOps', demand: 82, growth: 11, trend: 'up' as const }
+          ];
 
       return {
-        profileViews: profile?.profile_views_count || 0,
-        profileShares: Math.floor((profile?.profile_views_count || 0) * 0.02), // Estimate shares as 2% of views
-        endorsements: (profile?.skills || []).length * 3, // Estimate endorsements based on skills
+        profileViews: realProfileViews,
+        profileShares: sharesData.count || 0,
+        endorsements: verificationsData.count || (profile?.skills?.length || 0),
         skillInterests: profile?.skills || profile?.career_interests || [],
         articleViews: totalArticleViews,
         articleLikes: totalArticleLikes,
-        articleBookmarks: Math.floor(totalArticleLikes * 0.5), // Estimate bookmarks as 50% of likes
+        articleBookmarks: realBookmarksCount,
         articleComments: totalArticleComments,
         careerProgress: {
-          currentLevel: 'Professional', // Could be enhanced with more profile data
+          currentLevel: profile?.skills?.length ? `Verified Specialist (${profile.skills.length} skills)` : 'Professional Member',
           skillsGained: (profile?.skills || []).length,
-          connectionsGrown: connectionsCount,
+          connectionsGrown: connectionsData.count || 0,
           articlesPublished: posts.length
         },
-        skillTrends: [
-          { skill: 'AI/Machine Learning', demand: 95, growth: 23, trend: 'up' },
-          { skill: 'React/Frontend', demand: 88, growth: 12, trend: 'up' },
-          { skill: 'Data Science', demand: 92, growth: 18, trend: 'up' },
-          { skill: 'Product Management', demand: 85, growth: 8, trend: 'stable' },
-          { skill: 'DevOps', demand: 78, growth: -3, trend: 'down' },
-          { skill: 'Mobile Development', demand: 72, growth: 5, trend: 'stable' }
-        ]
+        skillTrends: dynamicTrends
       };
     },
     enabled: !!currentUser?.id
   });
 
-  // Live Realtime Subscriptions using central event bus (zero binding conflicts)
+    // Live Realtime Subscriptions using central event bus (zero binding conflicts)
   useRealtimeUpdates(['connections', 'user_activities'], () => {
     refetchAnalytics();
     refetchProfile();

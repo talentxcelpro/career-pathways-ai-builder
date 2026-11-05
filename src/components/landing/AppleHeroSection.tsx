@@ -49,10 +49,10 @@ export const AppleHeroSection = () => {
           {/* Left Column: Headline, Subtitle, Highlights */}
           <div className="lg:col-span-6 text-left space-y-2.5 sm:space-y-4">
             <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
-              Your Career.<br />
-              Your Talent.<br />
+              Get Discovered.<br />
+              Get Matched.<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-400 dark:via-indigo-400 dark:to-purple-400">
-                A Global Platform.
+                Get Hired Worldwide.
               </span>
             </h1>
 

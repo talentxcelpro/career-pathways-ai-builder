@@ -1,0 +1,642 @@
+{
+  "fullyVerifiedReady": [
+    {
+      "num": 3,
+      "name": "AI Bookmarks",
+      "domain": "aibookmarks.net",
+      "submissionUrl": "https://aibookmarks.net/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 19,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 5,
+      "name": "AI Dev Tools Directory",
+      "domain": "aidevtools.dev",
+      "submissionUrl": "https://www.aidevtools.dev/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 7,
+      "name": "AI Gear Base",
+      "domain": "aigearbase.com",
+      "submissionUrl": "https://aigearbase.com/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 20,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 9,
+      "name": "AI Kendra",
+      "domain": "aikendra.com",
+      "submissionUrl": "https://aikendra.com/submit",
+      "freeProof": true,
+      "prices": [
+        "$0",
+        "$29",
+        "$9",
+        "$12"
+      ],
+      "inputsCount": 13,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 13,
+      "name": "AI SaaS Radar",
+      "domain": "aisaasradar.com",
+      "submissionUrl": "https://aisaasradar.com/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 6,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 16,
+      "name": "AI Tool Finder",
+      "domain": "aitoolfinder.org",
+      "submissionUrl": "https://aitoolfinder.org/submit",
+      "freeProof": true,
+      "prices": [
+        "$99",
+        "$350",
+        "$500",
+        "$900",
+        "$1"
+      ],
+      "inputsCount": 11,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 17,
+      "name": "AI Tool Index",
+      "domain": "aitoolindex.io",
+      "submissionUrl": "https://aitoolindex.io/submit",
+      "freeProof": true,
+      "prices": [
+        "$49"
+      ],
+      "inputsCount": 10,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 24,
+      "name": "AI ToolsXplorer",
+      "domain": "aitoolsxplorer.in",
+      "submissionUrl": "https://www.aitoolsxplorer.in/submit-tool",
+      "freeProof": true,
+      "prices": [
+        "$1",
+        "$0",
+        "$10"
+      ],
+      "inputsCount": 4,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 25,
+      "name": "AI-Tool.ai",
+      "domain": "ai-tool.ai",
+      "submissionUrl": "https://ai-tool.ai/submit-tool",
+      "freeProof": true,
+      "prices": [
+        "$20"
+      ],
+      "inputsCount": 4,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 37,
+      "name": "Aimyflow",
+      "domain": "aimyflow.com",
+      "submissionUrl": "https://aimyflow.com/en/submit",
+      "freeProof": true,
+      "prices": [
+        "$6",
+        "$19",
+        "$1",
+        "$18",
+        "$21",
+        "$22",
+        "$23",
+        "$17",
+        "$20"
+      ],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 43,
+      "name": "Catch AI Information",
+      "domain": "catchaiinfo.com",
+      "submissionUrl": "https://catchaiinfo.com/submit-a-tool/",
+      "freeProof": true,
+      "prices": [
+        "$9"
+      ],
+      "inputsCount": 12,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 45,
+      "name": "Content & Marketing",
+      "domain": "content-and-marketing.com",
+      "submissionUrl": "https://www.content-and-marketing.com/submit-a-tool/",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 6,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 48,
+      "name": "Deekoya AI",
+      "domain": "deekoyaai.in",
+      "submissionUrl": "https://deekoyaai.in/submit-tool",
+      "freeProof": true,
+      "prices": [
+        "$1",
+        "$2",
+        "$22",
+        "$30"
+      ],
+      "inputsCount": 13,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 51,
+      "name": "DigitalHelp AI Tools",
+      "domain": "digitalhelp.uno",
+      "submissionUrl": "https://digitalhelp.uno/submit-tool/",
+      "freeProof": true,
+      "prices": [
+        "$10",
+        "$99",
+        "$0",
+        "$49"
+      ],
+      "inputsCount": 12,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 52,
+      "name": "Directory of Agents",
+      "domain": "directoryofagents.com",
+      "submissionUrl": "https://directoryofagents.com/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 4,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 63,
+      "name": "Goze Tools",
+      "domain": "goze.tools",
+      "submissionUrl": "https://goze.tools/submit",
+      "freeProof": true,
+      "prices": [
+        "$2",
+        "$11",
+        "$1",
+        "$5",
+        "$14",
+        "$15",
+        "$16",
+        "$17",
+        "$18",
+        "$19"
+      ],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 66,
+      "name": "LargeMI",
+      "domain": "largemi.com",
+      "submissionUrl": "https://www.largemi.com/en/submit-tool",
+      "freeProof": true,
+      "prices": [
+        "$1",
+        "$10",
+        "$13"
+      ],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 67,
+      "name": "LaunchToolsAI",
+      "domain": "launchtoolsai.com",
+      "submissionUrl": "https://launchtoolsai.com/submit-tool",
+      "freeProof": true,
+      "prices": [
+        "$1",
+        "$11"
+      ],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 75,
+      "name": "Master AI Finder",
+      "domain": "masteraifinder.com",
+      "submissionUrl": "https://masteraifinder.com/submit.php",
+      "freeProof": true,
+      "prices": [
+        "$19"
+      ],
+      "inputsCount": 14,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 77,
+      "name": "NeedAITool",
+      "domain": "needaitool.com",
+      "submissionUrl": "https://www.needaitool.com/submit",
+      "freeProof": true,
+      "prices": [
+        "$29",
+        "$79",
+        "$1",
+        "$10",
+        "$0",
+        "$22"
+      ],
+      "inputsCount": 6,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 78,
+      "name": "NeuronFeed",
+      "domain": "neuronfeed.com",
+      "submissionUrl": "https://neuronfeed.com/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 5,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 79,
+      "name": "New AI Tools Today",
+      "domain": "newaitoolstoday.com",
+      "submissionUrl": "https://newaitoolstoday.com/submit/",
+      "freeProof": true,
+      "prices": [
+        "$19",
+        "$79",
+        "$49",
+        "$29",
+        "$59",
+        "$0"
+      ],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 80,
+      "name": "Next Week AI",
+      "domain": "nextweekai.com",
+      "submissionUrl": "https://nextweekai.com/submit/",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 5,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 82,
+      "name": "ProfitTools AI",
+      "domain": "profittoolsai.com",
+      "submissionUrl": "https://profittoolsai.com/submit.html",
+      "freeProof": true,
+      "prices": [
+        "$0",
+        "$79",
+        "$199",
+        "$29",
+        "$99",
+        "$59",
+        "$708",
+        "$149",
+        "$1"
+      ],
+      "inputsCount": 3,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 83,
+      "name": "PromptHive",
+      "domain": "prompthive.pages.dev",
+      "submissionUrl": "https://prompthive.pages.dev/submit/",
+      "freeProof": true,
+      "prices": [
+        "$19",
+        "$39"
+      ],
+      "inputsCount": 57,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 87,
+      "name": "Stackdrop",
+      "domain": "getstackdrop.com",
+      "submissionUrl": "https://getstackdrop.com/submit",
+      "freeProof": true,
+      "prices": [
+        "$9",
+        "$0"
+      ],
+      "inputsCount": 4,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 90,
+      "name": "ThatsMyAI",
+      "domain": "thatsmy.ai",
+      "submissionUrl": "https://thatsmy.ai/submit-tool",
+      "freeProof": true,
+      "prices": [
+        "$49",
+        "$99",
+        "$0",
+        "$1",
+        "$10",
+        "$9",
+        "$21"
+      ],
+      "inputsCount": 7,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 92,
+      "name": "ToolDock",
+      "domain": "zalize.com",
+      "submissionUrl": "https://tools.zalize.com/submit",
+      "freeProof": true,
+      "prices": [],
+      "inputsCount": 8,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 94,
+      "name": "ToolVerity",
+      "domain": "toolverity.com",
+      "submissionUrl": "https://toolverity.com/submit",
+      "freeProof": true,
+      "prices": [
+        "$29",
+        "$1",
+        "$5",
+        "$16",
+        "$0",
+        "$13"
+      ],
+      "inputsCount": 6,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    },
+    {
+      "num": 100,
+      "name": "AIforme Wiki",
+      "domain": "aiforme.wiki",
+      "submissionUrl": "https://aiforme.wiki/submit",
+      "freeProof": true,
+      "prices": [
+        "$1",
+        "$9",
+        "$12"
+      ],
+      "inputsCount": 4,
+      "categoryProof": true,
+      "productFit": "ATS Resume Diagnostic Scanner (https://talentxcel.in/resume/ats-check)"
+    }
+  ],
+  "pendingTerms": [
+    {
+      "num": 4,
+      "name": "AI Compare",
+      "domain": "aicompare.to",
+      "submissionUrl": "https://aicompare.to/submit",
+      "inputsCount": 4,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 10,
+      "name": "AI Made Easy",
+      "domain": "aimadeeasy.app",
+      "submissionUrl": "https://aimadeeasy.app/submit-tool/",
+      "inputsCount": 24,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 11,
+      "name": "Qwen AI Site",
+      "domain": "qwenai.site",
+      "submissionUrl": "https://qwenai.site/submit",
+      "inputsCount": 4,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 15,
+      "name": "AI Suggests",
+      "domain": "aisuggests.ai",
+      "submissionUrl": "https://aisuggests.ai/",
+      "inputsCount": 0,
+      "missingProof": "Website URL field missing explicit tag"
+    },
+    {
+      "num": 20,
+      "name": "AI Tools Directory Site",
+      "domain": "aitoolsdirectory.site",
+      "submissionUrl": "https://aitoolsdirectory.site/submit.html",
+      "inputsCount": 6,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 21,
+      "name": "AI Tools Library",
+      "domain": "aitools.sh",
+      "submissionUrl": "https://aitools.sh/submit-a-tool/",
+      "inputsCount": 15,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 26,
+      "name": "AIAppDrop",
+      "domain": "aiappdrop.com",
+      "submissionUrl": "https://aiappdrop.com/submit/",
+      "inputsCount": 5,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 27,
+      "name": "AICPB",
+      "domain": "aicpb.com",
+      "submissionUrl": "https://www.aicpb.com/submit",
+      "inputsCount": 0,
+      "missingProof": "Explicit free tier text missing from form page; Website URL field missing explicit tag"
+    },
+    {
+      "num": 31,
+      "name": "AIMarketly",
+      "domain": "aimarketly.com",
+      "submissionUrl": "https://www.aimarketly.com/submit",
+      "inputsCount": 8,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 33,
+      "name": "AIToolsMagic",
+      "domain": "aitoolsmagic.com",
+      "submissionUrl": "https://aitoolsmagic.com/submit-tool",
+      "inputsCount": 0,
+      "missingProof": "Website URL field missing explicit tag"
+    },
+    {
+      "num": 50,
+      "name": "DigitalCreatorAI",
+      "domain": "digitalcreatorai.com",
+      "submissionUrl": "https://digitalcreatorai.com/submit-a-tool/",
+      "inputsCount": 9,
+      "missingProof": "Explicit free tier text missing from form page; Website URL field missing explicit tag"
+    },
+    {
+      "num": 57,
+      "name": "FindToolz",
+      "domain": "findtoolz.com",
+      "submissionUrl": "https://findtoolz.com/submit-tool/",
+      "inputsCount": 12,
+      "missingProof": "Explicit free tier text missing from form page; Website URL field missing explicit tag"
+    },
+    {
+      "num": 61,
+      "name": "Generator AI Tools",
+      "domain": "aigenerator.tools",
+      "submissionUrl": "https://aigenerator.tools/submit",
+      "inputsCount": 4,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 65,
+      "name": "KeelTools",
+      "domain": "keeltools.com",
+      "submissionUrl": "https://keeltools.com/submit/",
+      "inputsCount": 6,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 72,
+      "name": "Liteworker",
+      "domain": "liteworker.ai",
+      "submissionUrl": "https://liteworker.ai/about/#submit-tool",
+      "inputsCount": 6,
+      "missingProof": "Explicit free tier text missing from form page; Website URL field missing explicit tag"
+    },
+    {
+      "num": 89,
+      "name": "TechReel",
+      "domain": "techreel.in",
+      "submissionUrl": "https://techreel.in/submit-tool/",
+      "inputsCount": 13,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 96,
+      "name": "Tooloso",
+      "domain": "tooloso.com",
+      "submissionUrl": "https://www.tooloso.com/submit-tool/",
+      "inputsCount": 6,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 101,
+      "name": "AI Tools",
+      "domain": "aitools.ai",
+      "submissionUrl": "https://www.aitools.ai/submit-a-resource",
+      "inputsCount": 15,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 102,
+      "name": "AI Xplore",
+      "domain": "aixplore.in",
+      "submissionUrl": "https://aixplore.in/submit_tool",
+      "inputsCount": 4,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 103,
+      "name": "Vona AI Tools",
+      "domain": "vonalab.com",
+      "submissionUrl": "https://vonalab.com/submit",
+      "inputsCount": 4,
+      "missingProof": "Explicit free tier text missing from form page"
+    },
+    {
+      "num": 119,
+      "name": "AI Respo",
+      "domain": "airespo.com",
+      "submissionUrl": "https://airespo.com/submit-tool/",
+      "inputsCount": 3,
+      "missingProof": "Explicit free tier text missing from form page; Website URL field missing explicit tag"
+    },
+    {
+      "num": 172,
+      "name": "Human or Not",
+      "domain": "humanornot.co",
+      "submissionUrl": "https://www.humanornot.co/submit-tool",
+      "inputsCount": 2,
+      "missingProof": "Explicit free tier text missing from form page"
+    }
+  ],
+  "blockedOrPaid": [
+    {
+      "num": 14,
+      "name": "AI Shortcut Lab",
+      "domain": "aishortcutlab.com",
+      "reason": "HTTP 404 - Failed to fetch form endpoint (Empty)"
+    },
+    {
+      "num": 28,
+      "name": "AICompare Ninja",
+      "domain": "aicompare.ninja",
+      "reason": "HTTP 404 - Failed to fetch form endpoint (Empty)"
+    },
+    {
+      "num": 175,
+      "name": "NextPedia",
+      "domain": "nextpedia.io",
+      "reason": "HTTP 404 - Failed to fetch form endpoint (Empty)"
+    }
+  ]
+}

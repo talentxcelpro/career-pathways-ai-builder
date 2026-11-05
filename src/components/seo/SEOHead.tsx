@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, DEFAULT_OG_IMAGE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+
+const FALLBACK_DEFAULT_OG_IMAGE = 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
+const SAFE_OG_IMAGE = typeof DEFAULT_OG_IMAGE !== 'undefined' && DEFAULT_OG_IMAGE ? DEFAULT_OG_IMAGE : FALLBACK_DEFAULT_OG_IMAGE;
+const SAFE_TITLE = typeof DEFAULT_TITLE !== 'undefined' && DEFAULT_TITLE ? DEFAULT_TITLE : 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
+const SAFE_DESCRIPTION = typeof DEFAULT_DESCRIPTION !== 'undefined' && DEFAULT_DESCRIPTION ? DEFAULT_DESCRIPTION : 'TalentXcel brings together professional profiles, job listings, career resources, resume tools, and hiring services.';
 
 export interface SEOHeadProps {
   title?: string;
@@ -22,9 +27,9 @@ export interface SEOHeadProps {
 }
 
 export const SEOHead: React.FC<SEOHeadProps> = ({
-  title = DEFAULT_TITLE,
-  description = DEFAULT_DESCRIPTION,
-  image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
+  title = SAFE_TITLE,
+  description = SAFE_DESCRIPTION,
+  image = SAFE_OG_IMAGE,
   url,
   type = 'website',
   structuredData,
@@ -44,7 +49,7 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     updateMetaTags({
       title,
       description,
-      image: absoluteUrl(image),
+      image: absoluteUrl(image || SAFE_OG_IMAGE),
       url: canonicalFor(url || window.location.pathname),
       type: type === 'jobposting' ? 'article' : type,
     });

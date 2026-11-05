@@ -156,7 +156,7 @@ export const ModuleEngagementTracker = () => {
   }, [location.pathname]);
 
   const getModuleProgress = (moduleName: string) => {
-    return moduleProgress[moduleName] || Math.floor(Math.random() * 60) + 20; // Mock progress
+    return moduleProgress[moduleName] || 0;
   };
 
   const getCompletedModules = () => {

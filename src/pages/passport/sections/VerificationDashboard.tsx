@@ -22,7 +22,7 @@ const VerificationDashboard: React.FC = () => {
           supabase.from("profiles").select("*").eq("id", uid).maybeSingle(),
           supabase.from("education").select("id").eq("user_id", uid),
           supabase.from("work_experience").select("id, company").eq("user_id", uid),
-          supabase.from("course_certificates").select("id").eq("user_id", uid),
+          Promise.resolve({ data: [] }),
           supabase.from("skill_certifications").select("id").eq("user_id", uid),
           supabase.from("user_skills").select("id").eq("user_id", uid),
           supabase.from("portfolio_items").select("id").eq("user_id", uid),

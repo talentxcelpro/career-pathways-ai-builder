@@ -8,17 +8,29 @@ import { discoveryVitePlugin } from "./src/lib/discovery/discoveryVitePlugin";
 export default defineConfig(({ mode }) => ({
   base: '/',
   server: {
-    host: "::",
+    host: "0.0.0.0",
     port: 8080,
     watch: {
-      ignored: ["**/dist/**", "**/.git/**"],
+      ignored: [
+        '**/.git/**',
+        '**/dist/**',
+        '**/dist-external/**',
+        '**/reports/**',
+        '**/docs/**',
+        '**/backlink-engine/**',
+        '**/android/**',
+        '**/ios/**',
+        '**/chrome-extension/**',
+        '**/apps/**',
+        '**/scratch/**',
+        '**/scripts/**',
+        '**/node_modules/**',
+      ],
     },
   },
   plugins: [
     react(),
-    discoveryVitePlugin(),
-    mode === 'development' && mcpPlugin(),
-  ].filter(Boolean),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -33,14 +45,25 @@ export default defineConfig(({ mode }) => ({
     global: "globalThis",
   },
   optimizeDeps: {
+    entries: ['index.html'],
     include: [
       'react',
       'react-dom',
+      'react-dom/client',
       'react/jsx-runtime',
       'react/jsx-dev-runtime',
+      'react-router-dom',
+      '@tanstack/react-query',
+      'lucide-react',
+      'react-markdown',
       '@radix-ui/react-tooltip',
       '@radix-ui/react-popover',
       '@radix-ui/react-dialog',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-avatar',
+      '@radix-ui/react-dropdown-menu',
+      'clsx',
+      'tailwind-merge',
     ],
   },
   build: {

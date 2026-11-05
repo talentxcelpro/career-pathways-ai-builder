@@ -11,6 +11,8 @@ import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { getStoredReferral, clearStoredReferral } from '@/utils/referralTracker';
 
 interface AuthPageProps {
   mode?: 'signin' | 'signup';
@@ -111,6 +113,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       console.log('Auth attempt:', { authMode, userType, redirectUrl });
 
       if (authMode === 'signup') {
+        const storedRef = getStoredReferral();
+        const referralCode = searchParams.get('ref') || searchParams.get('referral') || storedRef.code;
+
         const { data, error } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
@@ -120,7 +125,8 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
               full_name: formData.fullName,
               user_type: userType,
               company_name: userType === 'employer' ? formData.companyName : null,
-              onboarding_flow: currentFlow
+              onboarding_flow: currentFlow,
+              referral_code: referralCode || null
             }
           }
         });
@@ -128,7 +134,36 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signup successful:', data);
+        if (data.user?.id) {
+          try {
+            supabase.from('connections').insert({
+              requester_id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+              recipient_id: data.user.id,
+              status: 'accepted',
+              message: "Welcome to TalentXcel! We're excited to have you in our community.",
+              connected_at: new Date().toISOString(),
+            }).then(() => {});
+          } catch {}
+        }
         conversionTelemetry.track('signup_completed', { source: currentFlow });
+        GrowthFunnelTracker.trackOnce('sign_up', data.user?.id || formData.email, {
+          role: userType,
+          source: currentFlow,
+          user_id: data.user?.id,
+          referral_code: referralCode || undefined
+        });
+
+        if (data.user?.id && referralCode) {
+          try {
+            await (supabase.rpc as any)('process_successful_referral', {
+              p_referee_id: data.user.id,
+              p_referral_code: referralCode
+            });
+            clearStoredReferral();
+          } catch (refErr) {
+            console.warn('Referral attribution deferred:', refErr);
+          }
+        }
         const destination = resolvePostAuthDestination({
           searchParams,
           role: userType,
@@ -152,6 +187,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signin successful:', data);
+        GrowthFunnelTracker.track('login', {
+          role: userType,
+          user_id: data.user?.id
+        });
         const destination = resolvePostAuthDestination({
           searchParams,
           role: userType,

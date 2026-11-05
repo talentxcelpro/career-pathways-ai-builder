@@ -11,6 +11,11 @@ const ChunkErrorFallback = ({ error, resetErrorBoundary }: { error: Error; reset
       <p className="text-muted-foreground max-w-md">
         Failed to load page resources. This can happen due to network issues or outdated cache.
       </p>
+      {import.meta.env.DEV && error && (
+        <pre className="text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 p-3 rounded-lg max-w-lg text-left overflow-auto border border-red-200 dark:border-red-900 font-mono">
+          {error.message || String(error)}
+        </pre>
+      )}
       <div className="flex gap-2 justify-center">
         <button
           onClick={async () => {

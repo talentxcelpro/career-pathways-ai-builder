@@ -42,6 +42,7 @@ import { useMobileDetection } from '@/hooks/useMobileDetection';
 import { TalentXcelLogo } from '@/components/common/TalentXcelLogo';
 import { getCurrentUniverse } from '@/config/domainArchitecture';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -200,8 +201,13 @@ export const Navbar = () => {
     return null;
   }
 
+  const isNetworkPage = location.pathname === '/network' || location.pathname.startsWith('/network/');
+
   return (
-    <nav className="bg-[#0b0f19] text-white shadow-md border-b border-slate-800/80 sticky top-0 z-50">
+    <nav className={cn(
+      "bg-[#0b0f19] text-white shadow-md border-b border-slate-800/80 sticky top-0 z-50",
+      isNetworkPage && "hidden md:block"
+    )}>
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           

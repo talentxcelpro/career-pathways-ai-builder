@@ -23,13 +23,7 @@ const CertificatesSection: React.FC = () => {
     queryFn: async (): Promise<CertRow[]> => {
       const uid = user!.id;
       const [course, skill] = await Promise.all([
-        supabase
-          .from("course_certificates")
-          .select(
-            "id, certificate_number, issued_at, certificate_data, courses(title, instructor_name, duration_hours)",
-          )
-          .eq("user_id", uid)
-          .order("issued_at", { ascending: false }),
+        Promise.resolve({ data: [] }),
         supabase
           .from("skill_certifications")
           .select("*")

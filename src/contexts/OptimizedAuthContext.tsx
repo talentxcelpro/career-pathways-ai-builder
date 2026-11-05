@@ -4,6 +4,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { attributeStoredReferral } from '@/utils/referralTracker';
 
 import { syncSessionFromCrossSubdomainCookie } from '@/lib/auth/crossSubdomainStorage';
 
@@ -51,6 +52,42 @@ const getStoredSession = (): { user: User | null; session: Session | null } => {
   return { user: null, session: null };
 };
 
+const ensureUserProfileAndAdminConnection = async (user: User) => {
+  if (!user?.id) return;
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!profile) {
+      const emailBase = (user.email ? user.email.split('@')[0] : 'user')
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '_');
+      const fallbackUsername = `${emailBase}_${user.id.slice(0, 6)}`;
+      const fullName = user.user_metadata?.full_name || 
+                       user.user_metadata?.name || 
+                       (user.email ? user.email.split('@')[0] : 'TalentXcel Member');
+
+      await supabase.from('profiles').upsert({
+        id: user.id,
+        username: fallbackUsername,
+        full_name: fullName,
+        email: user.email || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        profile_completed: false,
+        verification_status: 'unverified'
+      }, { onConflict: 'id' });
+    }
+
+    await supabase.rpc('create_admin_connections', { target_user_id: user.id });
+  } catch (err) {
+    console.warn('Auto profile & connection check handled:', err);
+  }
+};
+
 export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => {
   const initial = getStoredSession();
   const [user, setUser] = useState<User | null>(initial.user);
@@ -96,16 +133,19 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           if (window.location.pathname !== '/') {
             navigate('/', { replace: true });
           }
-        } else if (event === 'SIGNED_IN' && session?.user) {
-          const currentPath = window.location.pathname;
-          
-          // Only redirect if on auth pages
-          if (currentPath.startsWith('/auth')) {
-            const redirectPath = resolvePostAuthDestination({
-              searchParams: new URLSearchParams(window.location.search),
-              userMetadata: session.user.user_metadata,
-            });
-            navigate(redirectPath, { replace: true });
+        } else if (session?.user) {
+          // Guarantee real-time profile existence on ANY authenticated event
+          ensureUserProfileAndAdminConnection(session.user).catch(() => {});
+          if (event === 'SIGNED_IN') {
+            attributeStoredReferral().catch(() => {});
+            const currentPath = window.location.pathname;
+            if (currentPath.startsWith('/auth')) {
+              const redirectPath = resolvePostAuthDestination({
+                searchParams: new URLSearchParams(window.location.search),
+                userMetadata: session.user.user_metadata,
+              });
+              navigate(redirectPath, { replace: true });
+            }
           }
         }
         
@@ -123,6 +163,9 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           setUser(session?.user ?? null);
           
           // Auto-redirect if user is already authenticated and lands on auth pages
+          if (session?.user) {
+            ensureUserProfileAndAdminConnection(session.user).catch(() => {});
+          }
           if (session?.user && window.location.pathname.startsWith('/auth')) {
             const redirectPath = resolvePostAuthDestination({
               searchParams: new URLSearchParams(window.location.search),
@@ -164,6 +207,11 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
+      try {
+        localStorage.removeItem('txc_saved_ats_report');
+        sessionStorage.removeItem('txc_saved_ats_report');
+        localStorage.removeItem('txc_active_workspace');
+      } catch {}
     } catch (error) {
       console.error('Sign out failed:', error);
     } finally {

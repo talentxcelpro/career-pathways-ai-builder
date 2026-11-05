@@ -1,0 +1,2215 @@
+[
+  {
+    "num": 3,
+    "name": "AI Bookmarks",
+    "domain": "aibookmarks.net",
+    "submissionUrl": "https://aibookmarks.net/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "csrf_token",
+          "website",
+          "vendor_name",
+          "email",
+          "phone",
+          "company_linkedin",
+          "tool_name",
+          "tool_url",
+          "target_audience",
+          "press_kit_url",
+          "affiliate_url",
+          "agree",
+          "csrf_token",
+          "website",
+          "name",
+          "email",
+          "whatsapp",
+          "subject"
+        ],
+        "textareas": [
+          "description",
+          "message"
+        ],
+        "selects": [
+          "category",
+          "pricing_model"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 4,
+    "name": "AI Compare",
+    "domain": "aicompare.to",
+    "submissionUrl": "https://aicompare.to/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "website",
+          "category",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 5,
+    "name": "AI Dev Tools Directory",
+    "domain": "aidevtools.dev",
+    "submissionUrl": "https://www.aidevtools.dev/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "url",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 7,
+    "name": "AI Gear Base",
+    "domain": "aigearbase.com",
+    "submissionUrl": "https://aigearbase.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "website_url",
+          "tagline",
+          "logo_url",
+          "demo_url",
+          "video_url",
+          "gallery_urls",
+          "features",
+          "platforms_check",
+          "platforms_check",
+          "platforms_check",
+          "platforms_check",
+          "platforms_check",
+          "platforms_check",
+          "is_nsfw",
+          "submitter_name",
+          "submitter_email",
+          "is_owner",
+          "captcha_answer",
+          "captcha_expected"
+        ],
+        "textareas": [
+          "description",
+          "screenshots"
+        ],
+        "selects": [
+          "category_id",
+          "pricing_type"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 9,
+    "name": "AI Kendra",
+    "domain": "aikendra.com",
+    "submissionUrl": "https://aikendra.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "repoUrl",
+          "email",
+          "submission_code",
+          "agree",
+          "newsletter",
+          "name",
+          "url",
+          "tagline",
+          "tags",
+          "email",
+          "submission_code",
+          "agree",
+          "newsletter"
+        ],
+        "textareas": [
+          "note",
+          "desc",
+          "features",
+          "pricingNote"
+        ],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$0",
+          "$29",
+          "$9",
+          "$12"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 10,
+    "name": "AI Made Easy",
+    "domain": "aimadeeasy.app",
+    "submissionUrl": "https://aimadeeasy.app/submit-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "q",
+          "relationship",
+          "relationship",
+          "connection",
+          "connection",
+          "connection",
+          "connection",
+          "toolName",
+          "toolWebsite",
+          "launched",
+          "who",
+          "who",
+          "who",
+          "who",
+          "who",
+          "who",
+          "who",
+          "who",
+          "contactName",
+          "email",
+          "hp",
+          "agree",
+          "terms"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "job",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 11,
+    "name": "Qwen AI Site",
+    "domain": "qwenai.site",
+    "submissionUrl": "https://qwenai.site/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "url",
+          "submitterEmail",
+          "email"
+        ],
+        "textareas": [
+          "description",
+          "note"
+        ],
+        "selects": [
+          "category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 13,
+    "name": "AI SaaS Radar",
+    "domain": "aisaasradar.com",
+    "submissionUrl": "https://aisaasradar.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "tool_name",
+          "website_url",
+          "submitter_email",
+          "tags",
+          "company_website",
+          "no_offers"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 14,
+    "name": "AI Shortcut Lab",
+    "domain": "aishortcutlab.com",
+    "submissionUrl": "https://aishortcutlab.com/submit",
+    "fetchStatus": 404,
+    "fetchError": null,
+    "analysis": null
+  },
+  {
+    "num": 15,
+    "name": "AI Suggests",
+    "domain": "aisuggests.ai",
+    "submissionUrl": "https://aisuggests.ai/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 16,
+    "name": "AI Tool Finder",
+    "domain": "aitoolfinder.org",
+    "submissionUrl": "https://aitoolfinder.org/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "companyWebsite",
+          "productName",
+          "productUrl",
+          "productPricing",
+          "productMedia",
+          "contactName",
+          "contactEmail",
+          "sourceUrl",
+          "startedAt",
+          "acceptTerms",
+          "mediaRights"
+        ],
+        "textareas": [
+          "productSummary"
+        ],
+        "selects": [
+          "productCategory",
+          "requestIntent",
+          "requestedPackage",
+          "targetGuide"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$99",
+          "$350",
+          "$500",
+          "$900",
+          "$1"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 17,
+    "name": "AI Tool Index",
+    "domain": "aitoolindex.io",
+    "submissionUrl": "https://aitoolindex.io/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "companyWebsite",
+          "toolName",
+          "websiteUrl",
+          "companyName",
+          "submitterName",
+          "submitterEmail",
+          "interestedInFeaturedPlacement",
+          "cf-turnstile-response",
+          "companyWebsite",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricingModel"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$49"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 20,
+    "name": "AI Tools Directory Site",
+    "domain": "aitoolsdirectory.site",
+    "submissionUrl": "https://aitoolsdirectory.site/submit.html",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "_captcha",
+          "_template",
+          "_subject",
+          "Tool Name",
+          "Tool URL",
+          "Your Email"
+        ],
+        "textareas": [
+          "Description"
+        ],
+        "selects": [
+          "Category",
+          "Pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 21,
+    "name": "AI Tools Library",
+    "domain": "aitools.sh",
+    "submissionUrl": "https://aitools.sh/submit-a-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "post_type",
+          "s",
+          "post_type",
+          "s",
+          "action",
+          "bw_submit_tool_nonce",
+          "_wp_http_referer",
+          "tool_name",
+          "tool_url",
+          "tool_tags",
+          "submitter_name",
+          "submitter_email",
+          "email",
+          "aitn_hp",
+          "source_url"
+        ],
+        "textareas": [
+          "tool_description"
+        ],
+        "selects": [
+          "tool_category",
+          "tool_pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 24,
+    "name": "AI ToolsXplorer",
+    "domain": "aitoolsxplorer.in",
+    "submissionUrl": "https://www.aitoolsxplorer.in/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "website",
+          "email",
+          "url"
+        ],
+        "textareas": [
+          "description",
+          "features"
+        ],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$1",
+          "$0",
+          "$10"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 25,
+    "name": "AI-Tool.ai",
+    "domain": "ai-tool.ai",
+    "submissionUrl": "https://ai-tool.ai/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "pricing",
+          "pricing",
+          "pricing",
+          "pricing"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$20"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 26,
+    "name": "AIAppDrop",
+    "domain": "aiappdrop.com",
+    "submissionUrl": "https://aiappdrop.com/submit/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "tool_name",
+          "website",
+          "tagline",
+          "name",
+          "email"
+        ],
+        "textareas": [
+          "description",
+          "notes"
+        ],
+        "selects": [
+          "pricing",
+          "category",
+          "has_api",
+          "open_source"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 27,
+    "name": "AICPB",
+    "domain": "aicpb.com",
+    "submissionUrl": "https://www.aicpb.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 28,
+    "name": "AICompare Ninja",
+    "domain": "aicompare.ninja",
+    "submissionUrl": "https://www.aicompare.ninja/submit",
+    "fetchStatus": 404,
+    "fetchError": null,
+    "analysis": null
+  },
+  {
+    "num": 31,
+    "name": "AIMarketly",
+    "domain": "aimarketly.com",
+    "submissionUrl": "https://www.aimarketly.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "tagline",
+          "url",
+          "email",
+          "logo_url",
+          "screenshots",
+          "tags",
+          "integrations"
+        ],
+        "textareas": [
+          "description",
+          "pros",
+          "cons"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 33,
+    "name": "AIToolsMagic",
+    "domain": "aitoolsmagic.com",
+    "submissionUrl": "https://aitoolsmagic.com/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 37,
+    "name": "Aimyflow",
+    "domain": "aimyflow.com",
+    "submissionUrl": "https://aimyflow.com/en/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "website",
+          "url",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": false,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$6",
+          "$19",
+          "$1",
+          "$18",
+          "$21",
+          "$22",
+          "$23",
+          "$17",
+          "$20"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 43,
+    "name": "Catch AI Information",
+    "domain": "catchaiinfo.com",
+    "submissionUrl": "https://catchaiinfo.com/submit-a-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "website_hp",
+          "tool_name",
+          "website_url",
+          "starting_price",
+          "features",
+          "tags",
+          "submitter_name",
+          "submitter_email",
+          "email",
+          "website_hp",
+          "s",
+          "s"
+        ],
+        "textareas": [
+          "short_description",
+          "description"
+        ],
+        "selects": [
+          "category",
+          "subcategory",
+          "pricing_model"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$9"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 45,
+    "name": "Content & Marketing",
+    "domain": "content-and-marketing.com",
+    "submissionUrl": "https://www.content-and-marketing.com/submit-a-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "action",
+          "cam_submit_nonce",
+          "_wp_http_referer",
+          "tool_name",
+          "email",
+          "website"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "listing_type"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 48,
+    "name": "Deekoya AI",
+    "domain": "deekoyaai.in",
+    "submissionUrl": "https://deekoyaai.in/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "$ACTION_REF_1",
+          "$ACTION_1:0",
+          "$ACTION_1:1",
+          "$ACTION_KEY",
+          "website",
+          "name",
+          "url",
+          "contact",
+          "$ACTION_REF_3",
+          "$ACTION_3:0",
+          "$ACTION_3:1",
+          "$ACTION_KEY",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$1",
+          "$2",
+          "$22",
+          "$30"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 50,
+    "name": "DigitalCreatorAI",
+    "domain": "digitalcreatorai.com",
+    "submissionUrl": "https://digitalcreatorai.com/submit-a-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "post_id",
+          "form_id",
+          "referer_title",
+          "queried_id",
+          "form_fields[name]",
+          "form_fields[email]",
+          "form_fields[field_ceea7ba]",
+          "form_fields[field_5ee2c1c]",
+          "form_fields[field_8e544ef]"
+        ],
+        "textareas": [
+          "form_fields[message]",
+          "form_fields[field_3df1730]"
+        ],
+        "selects": [
+          "form_fields[field_1df61ac]"
+        ],
+        "hasUrlField": false,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 51,
+    "name": "DigitalHelp AI Tools",
+    "domain": "digitalhelp.uno",
+    "submissionUrl": "https://digitalhelp.uno/submit-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "s",
+          "s",
+          "tool_name",
+          "tool_url",
+          "tool_tagline",
+          "tool_emoji",
+          "tool_starting_price",
+          "submitter_name",
+          "submitter_email",
+          "listing_type",
+          "listing_type",
+          "email"
+        ],
+        "textareas": [
+          "tool_description"
+        ],
+        "selects": [
+          "tool_category",
+          "tool_pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$10",
+          "$99",
+          "$0",
+          "$49"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 52,
+    "name": "Directory of Agents",
+    "domain": "directoryofagents.com",
+    "submissionUrl": "https://directoryofagents.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "website",
+          "tagline",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 57,
+    "name": "FindToolz",
+    "domain": "findtoolz.com",
+    "submissionUrl": "https://findtoolz.com/submit-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "post_id",
+          "form_id",
+          "referer_title",
+          "queried_id",
+          "form_fields[name]",
+          "form_fields[email]",
+          "form_fields[field_07030ff]",
+          "form_fields[field_4fa557d][]",
+          "form_fields[field_4fa557d][]",
+          "form_fields[field_4fa557d][]",
+          "form_fields[message]",
+          "form_fields[field_c45a30d]"
+        ],
+        "textareas": [],
+        "selects": [
+          "form_fields[field_142f240]"
+        ],
+        "hasUrlField": false,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 61,
+    "name": "Generator AI Tools",
+    "domain": "aigenerator.tools",
+    "submissionUrl": "https://aigenerator.tools/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "tool-name",
+          "website-url",
+          "tags",
+          "contact-email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 63,
+    "name": "Goze Tools",
+    "domain": "goze.tools",
+    "submissionUrl": "https://goze.tools/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "url",
+          "cf-turnstile-response"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$2",
+          "$11",
+          "$1",
+          "$5",
+          "$14",
+          "$15",
+          "$16",
+          "$17",
+          "$18",
+          "$19"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 65,
+    "name": "KeelTools",
+    "domain": "keeltools.com",
+    "submissionUrl": "https://keeltools.com/submit/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "company",
+          "url",
+          "name",
+          "email",
+          "marketing_consent"
+        ],
+        "textareas": [
+          "note"
+        ],
+        "selects": [
+          "category",
+          "function_category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 66,
+    "name": "LargeMI",
+    "domain": "largemi.com",
+    "submissionUrl": "https://www.largemi.com/en/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "pricing",
+          "pricing",
+          "pricing"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$1",
+          "$10",
+          "$13"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 67,
+    "name": "LaunchToolsAI",
+    "domain": "launchtoolsai.com",
+    "submissionUrl": "https://launchtoolsai.com/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "toolName",
+          "url",
+          "email"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$1",
+          "$11"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 72,
+    "name": "Liteworker",
+    "domain": "liteworker.ai",
+    "submissionUrl": "https://liteworker.ai/about/#submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "wpforms[fields][0]",
+          "wpforms[fields][1]",
+          "wpforms[fields][3]",
+          "wpforms[id]",
+          "wpforms[author]",
+          "wpforms[post_id]"
+        ],
+        "textareas": [
+          "wpforms[fields][2]"
+        ],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 75,
+    "name": "Master AI Finder",
+    "domain": "masteraifinder.com",
+    "submissionUrl": "https://masteraifinder.com/submit.php",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "website_name",
+          "website_link",
+          "tagline",
+          "pricing_details",
+          "logo",
+          "logo_link",
+          "demo_video_url",
+          "screenshot",
+          "twitter_link",
+          "discord_link",
+          "github_link",
+          "linkedin_link",
+          "meta_title",
+          "meta_keywords"
+        ],
+        "textareas": [
+          "about",
+          "features",
+          "meta_description"
+        ],
+        "selects": [
+          "category_id",
+          "free_paid"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": false,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$19"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 77,
+    "name": "NeedAITool",
+    "domain": "needaitool.com",
+    "submissionUrl": "https://www.needaitool.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "url",
+          "tagline",
+          "submitterEmail",
+          "notes",
+          "company_title_confirm"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$29",
+          "$79",
+          "$1",
+          "$10",
+          "$0",
+          "$22"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 78,
+    "name": "NeuronFeed",
+    "domain": "neuronfeed.com",
+    "submissionUrl": "https://neuronfeed.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "q",
+          "email",
+          "source",
+          "website"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": false,
+        "hasEmailField": true,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 79,
+    "name": "New AI Tools Today",
+    "domain": "newaitoolstoday.com",
+    "submissionUrl": "https://newaitoolstoday.com/submit/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "website",
+          "extra",
+          "website"
+        ],
+        "textareas": [],
+        "selects": [
+          "tier"
+        ],
+        "hasUrlField": true,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$19",
+          "$79",
+          "$49",
+          "$29",
+          "$59",
+          "$0"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 80,
+    "name": "Next Week AI",
+    "domain": "nextweekai.com",
+    "submissionUrl": "https://nextweekai.com/submit/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "website",
+          "tool_name",
+          "website_url",
+          "description",
+          "email"
+        ],
+        "textareas": [
+          "long_description"
+        ],
+        "selects": [
+          "category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 82,
+    "name": "ProfitTools AI",
+    "domain": "profittoolsai.com",
+    "submissionUrl": "https://profittoolsai.com/submit.html",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "plan",
+          "plan",
+          "plan"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$0",
+          "$79",
+          "$199",
+          "$29",
+          "$99",
+          "$59",
+          "$708",
+          "$149",
+          "$1"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 83,
+    "name": "PromptHive",
+    "domain": "prompthive.pages.dev",
+    "submissionUrl": "https://prompthive.pages.dev/submit/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "q",
+          "toolName",
+          "website",
+          "launchYear",
+          "pricingUrl",
+          "access",
+          "access",
+          "access",
+          "access",
+          "access",
+          "access",
+          "access",
+          "licence",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "platforms",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "models",
+          "logoUrl",
+          "demoVideo",
+          "docsUrl",
+          "linkX",
+          "linkLinkedin",
+          "linkGithub",
+          "linkYoutube",
+          "linkDiscord",
+          "linkProductHunt",
+          "companyName",
+          "founderName",
+          "role",
+          "email",
+          "contactUrl",
+          "accuracy",
+          "editorial",
+          "company_website_confirm",
+          "started_at"
+        ],
+        "textareas": [
+          "shortDescription",
+          "longDescription",
+          "whyFeature",
+          "pricingDetail",
+          "screenshotUrls",
+          "anythingElse"
+        ],
+        "selects": [
+          "category",
+          "subcategory",
+          "country",
+          "pricingModel"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$19",
+          "$39"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 87,
+    "name": "Stackdrop",
+    "domain": "getstackdrop.com",
+    "submissionUrl": "https://getstackdrop.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "url",
+          "submitter_email",
+          "website"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$9",
+          "$0"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 89,
+    "name": "TechReel",
+    "domain": "techreel.in",
+    "submissionUrl": "https://techreel.in/submit-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "s",
+          "trst_submit_tool_nonce",
+          "_wp_http_referer",
+          "trst_action",
+          "trst_website_check",
+          "tool_name",
+          "tool_url",
+          "logo_url",
+          "best_for",
+          "short_description",
+          "submitter_name",
+          "submitter_email",
+          "s"
+        ],
+        "textareas": [
+          "full_description",
+          "features"
+        ],
+        "selects": [
+          "tool_category",
+          "pricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 90,
+    "name": "ThatsMyAI",
+    "domain": "thatsmy.ai",
+    "submissionUrl": "https://thatsmy.ai/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "toolName",
+          "websiteUrl",
+          "listingPlan",
+          "listingPlan",
+          "listingPlan",
+          "contactEmail",
+          "logoUpload"
+        ],
+        "textareas": [
+          "shortDescription"
+        ],
+        "selects": [
+          "toolCategory",
+          "useCase",
+          "pricingModel"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$49",
+          "$99",
+          "$0",
+          "$1",
+          "$10",
+          "$9",
+          "$21"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 92,
+    "name": "ToolDock",
+    "domain": "zalize.com",
+    "submissionUrl": "https://tools.zalize.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "q",
+          "name",
+          "tagline",
+          "website_url",
+          "logo_url",
+          "tags",
+          "submitter_email",
+          "website"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "pricing",
+          "category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 94,
+    "name": "ToolVerity",
+    "domain": "toolverity.com",
+    "submissionUrl": "https://toolverity.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "name",
+          "website",
+          "email",
+          "role",
+          "company",
+          "consent"
+        ],
+        "textareas": [
+          "description"
+        ],
+        "selects": [
+          "category",
+          "pricingModel"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$29",
+          "$1",
+          "$5",
+          "$16",
+          "$0",
+          "$13"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 96,
+    "name": "Tooloso",
+    "domain": "tooloso.com",
+    "submissionUrl": "https://www.tooloso.com/submit-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "tv_submit_nonce",
+          "_wp_http_referer",
+          "title",
+          "url",
+          "email",
+          "track"
+        ],
+        "textareas": [
+          "desc"
+        ],
+        "selects": [
+          "pricing",
+          "category"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 100,
+    "name": "AIforme Wiki",
+    "domain": "aiforme.wiki",
+    "submissionUrl": "https://aiforme.wiki/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "toolName",
+          "website",
+          "category",
+          "email"
+        ],
+        "textareas": [
+          "note"
+        ],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": true,
+        "uniquePrices": [
+          "$1",
+          "$9",
+          "$12"
+        ],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 101,
+    "name": "AI Tools",
+    "domain": "aitools.ai",
+    "submissionUrl": "https://www.aitools.ai/submit-a-resource",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "Name",
+          "Email",
+          "AI Tool Name",
+          "Podcast",
+          "Newsletter",
+          "Ebook",
+          "Template",
+          "Course",
+          "Tool Software",
+          "Tool Software 3",
+          "Tool Software 3",
+          "Tool Software 2",
+          "Facebook",
+          "Website",
+          "Listing Images"
+        ],
+        "textareas": [
+          "Resource Description"
+        ],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 102,
+    "name": "AI Xplore",
+    "domain": "aixplore.in",
+    "submissionUrl": "https://aixplore.in/submit_tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "toolName",
+          "toolWebsite",
+          "logoUrl",
+          "submitterEmail"
+        ],
+        "textareas": [
+          "toolDescription",
+          "additionalInfo"
+        ],
+        "selects": [
+          "submissionType",
+          "toolCategory",
+          "toolPricing"
+        ],
+        "hasUrlField": true,
+        "hasNameField": true,
+        "hasEmailField": true,
+        "hasDescField": true,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 103,
+    "name": "Vona AI Tools",
+    "domain": "vonalab.com",
+    "submissionUrl": "https://vonalab.com/submit",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "lang",
+          "website",
+          "email",
+          "consent"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": false,
+        "hasEmailField": true,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 119,
+    "name": "AI Respo",
+    "domain": "airespo.com",
+    "submissionUrl": "https://airespo.com/submit-tool/",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "s",
+          "wp_rest_nonce",
+          "_wp_http_referer"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": false,
+        "hasNameField": false,
+        "hasEmailField": false,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 172,
+    "name": "Human or Not",
+    "domain": "humanornot.co",
+    "submissionUrl": "https://www.humanornot.co/submit-tool",
+    "fetchStatus": 200,
+    "fetchError": null,
+    "analysis": {
+      "fields": {
+        "inputs": [
+          "Email 2",
+          "URL 2"
+        ],
+        "textareas": [],
+        "selects": [],
+        "hasUrlField": true,
+        "hasNameField": false,
+        "hasEmailField": true,
+        "hasDescField": false,
+        "hasSubmitButton": true
+      },
+      "pricing": {
+        "hasFreeMention": false,
+        "uniquePrices": [],
+        "hasPaidOnly": false
+      },
+      "hasReciprocalMention": false,
+      "mentionsCareerOrProductivity": true
+    }
+  },
+  {
+    "num": 175,
+    "name": "NextPedia",
+    "domain": "nextpedia.io",
+    "submissionUrl": "https://nextpedia.io/submit",
+    "fetchStatus": 404,
+    "fetchError": null,
+    "analysis": null
+  }
+]

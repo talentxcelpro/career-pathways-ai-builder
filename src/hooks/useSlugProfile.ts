@@ -93,12 +93,51 @@ export function useSlugProfile(slug?: string) {
         conditions.push(`id.eq.${cleanSlug}`);
       }
 
-      const { data, error } = await supabase
+      // Handle concatenated username + id prefix pattern: e.g. lifeislove83934f40a0 -> lifeislove8393 + 4f40a0
+      const matchSuffix = cleanSlug.match(/^(.+?)[-_]?([a-f0-9]{6})$/i);
+      if (matchSuffix) {
+        const prefix = matchSuffix[1];
+        const hex = matchSuffix[2];
+        conditions.push(`username.ilike.${prefix}_${hex}`);
+        conditions.push(`username.ilike.${prefix}${hex}`);
+        conditions.push(`email.ilike.${prefix}@%`);
+        
+      }
+
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .or(conditions.join(','))
         .limit(1)
         .maybeSingle();
+
+      // Robust fallback if user profile has non-standard slug or partial email/name matching
+      if (!data) {
+        const firstWord = cleanSlug.split(/[-_]/)[0];
+        if (firstWord && firstWord.length >= 3) {
+          const { data: fbData } = await supabase
+            .from('profiles')
+            .select('*')
+            .or(`email.ilike.${firstWord}%,full_name.ilike.%${firstWord}%,username.ilike.%${firstWord}%`)
+            .limit(1)
+            .maybeSingle();
+          if (fbData) {
+            data = fbData;
+          }
+        }
+      }
+
+      if (!data && cleanSlug.length >= 4) {
+        const { data: fbData2 } = await supabase
+          .from('profiles')
+          .select('*')
+          .or(`username.ilike.%${cleanSlug}%,slug.ilike.%${cleanSlug}%,email.ilike.%${cleanSlug}%`)
+          .limit(1)
+          .maybeSingle();
+        if (fbData2) {
+          data = fbData2;
+        }
+      }
 
       if (data) {
         const d = data as any;
@@ -166,6 +205,44 @@ export function useSlugProfile(slug?: string) {
 }
 
 export const CURATED_FALLBACK_PROFILES: Record<string, Partial<SlugProfile>> = {
+  talentxcelservices: {
+    id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+    full_name: 'TalentXcel Services',
+    title: 'Director Operations',
+    headline: 'Executive Editorial & Talent Advisory Desk • TalentXcel Services',
+    location: 'India & Global Remote',
+    email: 'talentxcelpro@gmail.com',
+    about: 'Official operations, executive talent advisory, and editorial desk for TalentXcel. Overseeing cross-industry leadership career intelligence, executive transitions, and global workforce solutions.',
+    profile_picture_url: '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png',
+    cover_image_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80',
+    skills: ['Executive Search', 'Career Transitions', 'Talent Operations', 'Workforce Intelligence', 'Leadership Development', 'Strategic Advisory'],
+    slug: 'talentxcelservices',
+    username: 'talentxcelservices',
+    company_name: 'TalentXcel Services',
+    is_public: true,
+    user_type: 'professional',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  talentxcel: {
+    id: '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062',
+    full_name: 'TalentXcel Services',
+    title: 'Director Operations',
+    headline: 'Executive Editorial & Talent Advisory Desk • TalentXcel Services',
+    location: 'India & Global Remote',
+    email: 'talentxcelpro@gmail.com',
+    about: 'Official operations, executive talent advisory, and editorial desk for TalentXcel. Overseeing cross-industry leadership career intelligence, executive transitions, and global workforce solutions.',
+    profile_picture_url: '/lovable-uploads/6d89e12a-6a33-4059-acbe-49af3b255eb3.png',
+    cover_image_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&auto=format&fit=crop&q=80',
+    skills: ['Executive Search', 'Career Transitions', 'Talent Operations', 'Workforce Intelligence', 'Leadership Development', 'Strategic Advisory'],
+    slug: 'talentxcel',
+    username: 'talentxcel',
+    company_name: 'TalentXcel Services',
+    is_public: true,
+    user_type: 'professional',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
   sarahchen: {
     id: 'txc-sarah-chen',
     full_name: 'Sarah Chen',
