@@ -24,6 +24,12 @@ window.addEventListener('vite:preloadError', (event) => {
 const container = document.getElementById("root");
 if (!container) throw new Error("Root element not found");
 
+// Cleanly remove initial pre-rendered semantic SEO shell upon React mount
+const initialContent = document.getElementById("tx-initial-content");
+if (initialContent) {
+  initialContent.remove();
+}
+
 console.log('🚀 Starting React application...');
 
 const root = createRoot(container);
@@ -52,4 +58,3 @@ if (!import.meta.env.PROD && 'serviceWorker' in navigator) {
 
 // Register service worker for aggressive caching in production
 registerServiceWorker();
-
