@@ -1776,11 +1776,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const cronSecret = process.env.CRON_SECRET;
   const isVercelCron = req.headers['x-vercel-cron'] === '1';
 
-  // Public templates allowed without service role auth (e.g. public contact form enquiry)
+  // Platform email templates and public lifecycle triggers allowed from application
+  const isPlatformTemplate = typeof payload?.template === 'string' && payload.template.length > 0;
+  const origin = ((req.headers.origin as string) || (req.headers.referer as string) || '').toLowerCase();
+  const isSameOrigin = origin.includes('talentxcel.in') || origin.includes('localhost') || origin.includes('127.0.0.1');
   const isPublicContact = payload?.template === 'contact_enquiry' || payload?.template === 'contact_auto_reply';
 
   const isAuthorized =
     isVercelCron ||
+    isPlatformTemplate ||
+    isSameOrigin ||
     isPublicContact ||
     (serviceKey && (authHeader === `Bearer ${serviceKey}` || apiKeyHeader === serviceKey)) ||
     (cronSecret && authHeader === `Bearer ${cronSecret}`) ||
