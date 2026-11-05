@@ -62,15 +62,34 @@
   - Ingested on app boot in `App.tsx` and triggered on `SIGNED_IN` event in `OptimizedAuthContext.tsx`.
 
 ---
-## Phase 3: User Surface Real-Time Integration (In Progress)
-- Wire `ViralGrowthEngineDashboard.tsx` to read from new RPCs:
-  - `get_my_referral_stats()`
-  - `get_my_referral_funnel()`
-  - `get_my_mission_progress()`
-  - `get_referral_leaderboard(period, limit)`
-- Real-time invalidation via Supabase Realtime channel (`referrals-user-{userId}`).
-- Channel-specific sharing with `utm_source` query parameter and `trackShareClick`.
-- Reusable QR generator component integration with PNG download.
-- Honest empty states and zero fake numbers.
+## Phase 3: User Surface Real-Time Integration (Completed)
+- **Component Upgraded**: `src/components/referral/ViralGrowthEngineDashboard.tsx` refactored to read directly from Phase 1 RPCs with resilient fallbacks:
+  - `get_my_referral_stats()`: Backed by real database rows. Zero fake or estimated numbers.
+  - `get_my_referral_funnel()`: Real 5-stage funnel (Link Opened -> Signed Up -> Email Verified -> Activated -> Reward Qualified) backed by `referral_share_events` and `referrals`.
+  - `get_my_mission_progress()`: Server-evaluated missions from `referral_missions` and `referral_mission_claims`.
+  - `get_referral_leaderboard(p_period, p_limit)`: Filterable by Weekly, Monthly, and All-Time with IST calendar boundaries.
+- **Real-Time Subscription**: Supabase Realtime channel `referrals-user-{userId}` listens to `referrals`, `referral_mission_claims`, and `referral_share_events` with debounced refresh and 45s fallback polling.
+- **Channel Share Studio**: One-click sharing for WhatsApp (first), LinkedIn, Telegram, X, Facebook, and Email with automatic `utm_source` query parameter append and client telemetry logging via `trackShareClick()`.
+- **QR Code Engine**: Canvas QR generation via `qrcode` package with instant high-resolution PNG download.
+- **Server Mission Claims**: Connects to `claim-referral-mission` edge function; atomic credit of TXC platform credits via `txc_award_reward` with server-side criteria verification.
+- **Privacy Enforcement**: Leadboard and Direct Invited Contacts show masked identifiers (`Member a3f8...`), never exposing raw email addresses (India DPDP compliant).
+- **Navigation Mounted**: Swapped in both `src/pages/Network.tsx` (`tab=refer-and-earn`) and `src/pages/ReferAndEarn.tsx` while safely preserving `RealTimeReferralDashboard.tsx` in repo.
+
+---
+## Phase 4: Admin Growth Operations Command Engine (In Progress)
+- Wire `GrowthEngineAdminPanel.tsx` to read from new administrative RPCs:
+  - `get_admin_referral_overview(p_start, p_end, p_channel)`
+  - `get_admin_k_factor(p_period)`
+  - `get_admin_referral_leaderboard(p_period, p_limit)`
+- Implement dual K-factor computation:
+  - (a) Population K = qualified referrals / active users at start ($i \times c$)
+  - (b) K per active referrer = qualified referrals / active referrers
+  - Display median viral cycle time, 12-week trend, sample size $n$, and low-sample warning if $n < 30$.
+- Multi-dimensional filters: Date range (`All time`, `Last 30 days`, `Last 7 days`) and Channel breakdown (`All channels`, WhatsApp, Telegram, etc.).
+- Mission management view: live qualification and claim counts, daily TXC budget gauge, and global rewards killswitch toggle (`referral_program_settings.rewards_paused`).
+- Fraud review queue: Flagged entries from `referral_fraud_flags` (hashes only). Action triggers: `Hold`, `Clear`, `Confirm & Revoke` via audit ledger `referral_admin_actions`.
+- Client-side CSV export for overview metrics and leaderboard.
+- Real-time admin subscription to live changes on `referral_share_events`, `referrals`, and `referral_fraud_flags`.
+
 
 

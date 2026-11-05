@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useReferralSystem } from '@/hooks/useReferralSystem';
-import { RealTimeReferralDashboard } from '@/components/referral/RealTimeReferralDashboard';
+import { ViralGrowthEngineDashboard } from '@/components/referral/ViralGrowthEngineDashboard';
 import { useHapticFeedback } from '@/hooks/useHapticFeedback';
 import { 
   Gift, 
@@ -328,7 +328,7 @@ const ReferAndEarn: React.FC = () => {
               <h2 className="text-xl font-bold text-foreground mb-2">Your Dashboard</h2>
               <p className="text-sm text-muted-foreground">Track progress and share your link</p>
             </div>
-            <RealTimeReferralDashboard />
+            <ViralGrowthEngineDashboard />
           </div>
         </section>
       )}
