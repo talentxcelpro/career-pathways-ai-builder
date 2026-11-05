@@ -61,12 +61,7 @@ export function FollowingFollowersList() {
         const ADMIN_ID = '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062';
         if (newProfile?.id && newProfile.id !== ADMIN_ID) {
           try {
-            await supabase.from('connections').insert({
-              requester_id: newProfile.id,
-              recipient_id: ADMIN_ID,
-              status: 'accepted',
-              connected_at: new Date().toISOString()
-            });
+            await supabase.rpc('create_admin_connections', { target_user_id: newProfile.id });
           } catch (e) {
             console.warn('Realtime auto-connect handled:', e);
           }
@@ -108,12 +103,19 @@ export function FollowingFollowersList() {
             c.requester_id === user.id ? c.recipient_id : c.requester_id
           ).filter(Boolean);
 
-          const { data: profilesData } = await supabase
-            .from('profiles')
-            .select('id, full_name, profile_picture_url, title, location, current_company')
-            .in('id', otherUserIds);
+          // Safe chunked profile fetch in batches of 100
+          const chunkSize = 100;
+          const allProfiles = [];
+          for (let i = 0; i < otherUserIds.length; i += chunkSize) {
+            const chunk = otherUserIds.slice(i, i + chunkSize);
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, full_name, profile_picture_url, title, location, current_company')
+              .in('id', chunk);
+            if (profilesData) allProfiles.push(...profilesData);
+          }
 
-          const profileMap = new Map((profilesData || []).map(p => [p.id, p]));
+          const profileMap = new Map(allProfiles.map(p => [p.id, p]));
 
           const mappedConnections: ConnectionItem[] = connectionsData.map(c => {
             const otherId = c.requester_id === user.id ? c.recipient_id : c.requester_id;

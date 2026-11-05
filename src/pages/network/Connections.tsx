@@ -124,25 +124,35 @@ const Connections = () => {
 
       if (otherUserIds.length === 0) return [];
 
-      const { data: profiles, error: profilesError } = await supabase
-        .from('profiles')
-        .select(`
-          id, 
-          full_name, 
-          title, 
-          profile_picture_url, 
-          headline,
-          location,
-          current_company,
-          is_online,
-          last_seen,
-          skills
-        `)
-        .in('id', otherUserIds);
+      // Fetch profiles in safe batches of 100 to avoid HTTP GET URL length limit errors (>8KB)
+      const chunkSize = 100;
+      const allProfiles: any[] = [];
+      for (let i = 0; i < otherUserIds.length; i += chunkSize) {
+        const chunk = otherUserIds.slice(i, i + chunkSize);
+        const { data: profilesChunk, error: profilesError } = await supabase
+          .from('profiles')
+          .select(`
+            id, 
+            full_name, 
+            title, 
+            profile_picture_url, 
+            headline,
+            location,
+            current_company,
+            is_online,
+            last_seen,
+            skills
+          `)
+          .in('id', chunk);
 
-      if (profilesError) throw profilesError;
+        if (profilesError) {
+          console.error('Error fetching profiles batch:', profilesError);
+        } else if (profilesChunk) {
+          allProfiles.push(...profilesChunk);
+        }
+      }
 
-      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const profilesMap = new Map(allProfiles.map(p => [p.id, p]));
 
       return connectionsData.map(conn => {
         const otherUserId = conn.requester_id === user.id ? conn.recipient_id : conn.requester_id;
