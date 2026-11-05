@@ -93,12 +93,38 @@ export function useSlugProfile(slug?: string) {
         conditions.push(`id.eq.${cleanSlug}`);
       }
 
-      const { data, error } = await supabase
+      // Handle concatenated username + id prefix pattern: e.g. lifeislove83934f40a0 -> lifeislove8393 + 4f40a0
+      const matchSuffix = cleanSlug.match(/^(.+?)[-_]?([a-f0-9]{6})$/i);
+      if (matchSuffix) {
+        const prefix = matchSuffix[1];
+        const hex = matchSuffix[2];
+        conditions.push(`username.ilike.${prefix}_${hex}`);
+        conditions.push(`username.ilike.${prefix}${hex}`);
+        conditions.push(`email.ilike.${prefix}@%`);
+      }
+
+      let { data, error } = await supabase
         .from('profiles')
         .select('*')
         .or(conditions.join(','))
         .limit(1)
         .maybeSingle();
+
+      // Robust fallback if user profile has non-standard slug or partial email/name matching
+      if (!data) {
+        const firstWord = cleanSlug.split(/[-_]/)[0];
+        if (firstWord && firstWord.length >= 3) {
+          const { data: fbData } = await supabase
+            .from('profiles')
+            .select('*')
+            .or(`email.ilike.${firstWord}%,full_name.ilike.%${firstWord}%,username.ilike.${firstWord}%`)
+            .limit(1)
+            .maybeSingle();
+          if (fbData) {
+            data = fbData;
+          }
+        }
+      }
 
       if (data) {
         const d = data as any;

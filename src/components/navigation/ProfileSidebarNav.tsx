@@ -24,11 +24,13 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
+import { useUnreadMessageCount } from '@/hooks/useUnreadMessageCount';
 
 export const ProfileSidebarNav: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useOptimizedAuth();
+  const { unreadCount } = useUnreadMessageCount();
 
   // Categorized Global & Contextual Platform Navigation (100% Ecosystem Preserved)
   const navSections = [
@@ -38,7 +40,13 @@ export const ProfileSidebarNav: React.FC = () => {
         { label: 'Career Passport', icon: ShieldCheck, path: '/passport', badge: 'Identity', badgeColor: 'bg-blue-600' },
         { label: 'Network & Feed', icon: Users, path: '/network' },
         { label: 'Jobs & Opportunities', icon: Briefcase, path: '/jobs' },
-        { label: 'Messages', icon: MessageSquare, path: '/communication', badge: '3', badgeColor: 'bg-purple-600' },
+        { 
+          label: 'Messages', 
+          icon: MessageSquare, 
+          path: '/messages', 
+          badge: unreadCount > 0 ? (unreadCount > 99 ? '99+' : String(unreadCount)) : undefined, 
+          badgeColor: 'bg-purple-600' 
+        },
       ]
     },
     {

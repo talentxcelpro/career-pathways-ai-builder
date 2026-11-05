@@ -54,6 +54,7 @@ import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
 const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
 const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
 const DailyGrowthDashboard = lazy(() => import("@/components/admin/DailyGrowthDashboard"));
+const RewardLiabilityDashboard = lazy(() => import("@/components/admin/RewardLiabilityDashboard"));
 const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 const GlobalJobsAutomationCenter = lazy(() => import("@/pages/admin/GlobalJobsAutomationCenter"));
 const ReferAndEarn = lazy(() => import("@/pages/ReferAndEarn"));
@@ -727,6 +728,7 @@ const App = () => {
                 <Route path="/admin/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/daily-growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Daily Growth Dashboard...</div>}><UDXSuperAdminGuard><DailyGrowthDashboard /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/daily-growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Daily Growth Dashboard...</div>}><UDXSuperAdminGuard><DailyGrowthDashboard /></UDXSuperAdminGuard></Suspense>} />
+                <Route path="/admin/reward-liability" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Reward Liability Dashboard...</div>}><UDXSuperAdminGuard><RewardLiabilityDashboard /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/global-jobs" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Global Jobs Automation Network...</div>}><UDXSuperAdminGuard><GlobalJobsAutomationCenter /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/grow" element={<Suspense fallback={<div className="min-h-screen bg-[#070b14] text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Career Growth Hub...</div>}><CandidateGrowthPage /></Suspense>} />
                 <Route path="/referrals" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
@@ -1140,7 +1142,8 @@ const App = () => {
                                 <Route path="/employer/cv-database" element={<CVDatabase />} />
 
                                 {/* Communication Routes */}
-                                <Route path="/communication" element={<Communication />} />
+                                <Route path="/communication" element={<Navigate to="/messages" replace />} />
+                                <Route path="/communication/messages" element={<Navigate to="/messages" replace />} />
                                 {communicationRoutes.map((route) => (
                                   <Route key={route.path} path={route.path} element={route.element} />
                                 ))}

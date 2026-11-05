@@ -479,11 +479,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                             .join('')
                             .toUpperCase() || 'TX';
 
-                          const profileSlug = generatePersonProfileSlug(
-                            person.username || person.full_name,
-                            person.id,
-                            person.custom_profile_url
-                          );
+                          const profileSlug = (person as any).slug || (person as any).custom_profile_url || person.username || person.id;
                           const profileLink = getPublicProfilePath(profileSlug);
 
                           return (
