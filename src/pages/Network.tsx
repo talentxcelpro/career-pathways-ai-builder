@@ -51,6 +51,7 @@ import { Menu, Layers, LayoutGrid } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { useNetworkNavigationMetrics } from "@/hooks/useNetworkNavigationMetrics";
 
 const Network: React.FC = () => {
   const { user } = useAuth();
@@ -58,6 +59,7 @@ const Network: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'feed';
+  const { connectionCount, articleCount, pendingRequestsCount, profile: liveProfile } = useNetworkNavigationMetrics();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   
   const handleTabChange = (value: string) => {
@@ -112,8 +114,14 @@ const Network: React.FC = () => {
     <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
       {/* LEFT COLUMN: PROFILE CARD + QUICK METRICS (hidden on mobile, shown on md+) */}
       <div className="hidden md:block md:col-span-4 lg:col-span-3 space-y-3">
-        <LinkedInStyleBanner profile={user?.user_metadata} isOwnProfile={true} />
-        <NetworkSidebarNav activeTab={activeTab} onTabChange={handleTabChange} connectionCount={537} />
+        <LinkedInStyleBanner profile={liveProfile || user?.user_metadata} isOwnProfile={true} />
+        <NetworkSidebarNav 
+          activeTab={activeTab} 
+          onTabChange={handleTabChange} 
+          connectionCount={connectionCount} 
+          articleCount={articleCount}
+          pendingRequestsCount={pendingRequestsCount}
+        />
       </div>
 
       {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT (full-width on mobile, col-span-6 on lg) */}
@@ -218,7 +226,9 @@ const Network: React.FC = () => {
                         handleTabChange(tab);
                         setMobileDrawerOpen(false);
                       }} 
-                      connectionCount={537} 
+                      connectionCount={connectionCount} 
+                      articleCount={articleCount}
+                      pendingRequestsCount={pendingRequestsCount}
                     />
                   </SheetContent>
                 </Sheet>

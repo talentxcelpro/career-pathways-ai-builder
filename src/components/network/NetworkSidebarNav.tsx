@@ -18,12 +18,16 @@ interface NetworkSidebarNavProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
   connectionCount?: number;
+  articleCount?: number;
+  pendingRequestsCount?: number;
 }
 
 export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
   activeTab,
   onTabChange,
-  connectionCount = 537
+  connectionCount = 0,
+  articleCount = 35,
+  pendingRequestsCount = 0,
 }) => {
   const navigate = useNavigate();
 
@@ -67,7 +71,8 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
       icon: Users,
       iconColor: 'text-blue-500',
       description: 'Real accepted connections',
-      badge: `${connectionCount}`
+      badge: `${connectionCount}`,
+      hasPending: pendingRequestsCount > 0
     },
     {
       id: 'discover',
@@ -75,7 +80,7 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
       icon: Compass,
       iconColor: 'text-emerald-500',
       description: 'Career Hub & Articles',
-      badge: '45 Articles'
+      badge: `${articleCount} Articles`
     },
     {
       id: 'analytics',
@@ -153,6 +158,12 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
                       <span className="relative flex h-2 w-2" title="Active Creator Distribution">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                      </span>
+                    )}
+                    {item.hasPending && (
+                      <span className="relative flex h-2 w-2" title="Pending Connection Requests">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                       </span>
                     )}
                   </div>
