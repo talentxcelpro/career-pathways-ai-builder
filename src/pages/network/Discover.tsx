@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,7 +22,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { getStandardAvatarUrl } from '@/utils/avatarUtils';
@@ -102,6 +102,21 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
   const { sendConnectionRequest } = useConnectionRequests();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'recent' | 'complete' | 'others'>('all');
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization on profiles table
+  useEffect(() => {
+    const channel = supabase
+      .channel('discover-profiles-realtime-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['discover-professionals-ranked'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   const { data: allProfiles = [], isLoading } = useQuery({
     queryKey: ['discover-professionals-ranked'],

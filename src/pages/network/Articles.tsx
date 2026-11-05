@@ -15,7 +15,8 @@ import {
   Plus,
   Newspaper
 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArticleCard } from '@/components/posts/ArticleCard';
@@ -58,6 +59,22 @@ const Articles = () => {
   const [activeTab, setActiveTab] = useState('all');
 
   const { subscriptions, isSubscribedTo } = useArticleSubscriptions(user?.id);
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization on posts table
+  useEffect(() => {
+    const channel = supabase
+      .channel('network-articles-realtime-sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['articles'] });
+        queryClient.invalidateQueries({ queryKey: ['my-articles-count'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   // Genuine count of articles written by current user
   const { data: myArticlesCount = 0 } = useQuery({

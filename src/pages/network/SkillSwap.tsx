@@ -369,6 +369,7 @@ const SkillSwap: React.FC = () => {
             </div>
 
             {/* Exchanges Grid */}
+            {filteredExchanges.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
               {filteredExchanges.map((exchange, index) => (
                 <div 
@@ -465,6 +466,21 @@ const SkillSwap: React.FC = () => {
                 </div>
               ))}
             </div>
+            ) : (
+              <div className="text-center py-16 bg-white dark:bg-card rounded-2xl border border-slate-200/80 shadow-xs p-8">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-950/60 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ArrowLeftRight className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-1.5">No skill swaps available right now</h3>
+                <p className="text-xs text-muted-foreground max-w-sm mx-auto mb-6">
+                  Be the first to share your expertise and request knowledge from other members!
+                </p>
+                <Button onClick={() => setShowCreateForm(true)} className="apple-button">
+                  <Plus className="h-4 w-4 mr-1.5" />
+                  Create Your First Exchange
+                </Button>
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="my-exchanges" className="space-y-6">

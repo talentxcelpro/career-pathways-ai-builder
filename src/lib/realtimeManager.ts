@@ -6,7 +6,9 @@ const TABLES_TO_WATCH = [
   'job_applications', 
   'user_activities',
   'messages',
-  'txc_transactions'
+  'txc_transactions',
+  'profiles',
+  'posts'
 ] as const;
 
 export type WatchedTable = typeof TABLES_TO_WATCH[number];

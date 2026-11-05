@@ -231,6 +231,7 @@ export const Verified: React.FC = () => {
   };
 
   const goldCount = verifiedProfiles.filter(p => p.verification_level === 'gold').length;
+  const silverCount = verifiedProfiles.filter(p => p.verification_level === 'silver').length;
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950/40">
@@ -254,7 +255,7 @@ export const Verified: React.FC = () => {
             </div>
           </div>
 
-          {/* Compact Telemetry Counters */}
+          {/* Compact Telemetry Counters - 100% Real Live Rows */}
           <div className="flex items-center gap-1.5 flex-wrap shrink-0">
             <div className="px-2.5 py-1 rounded-lg bg-slate-50 dark:bg-slate-800 border text-center">
               <span className="text-xs font-black text-foreground block leading-none">{isLoading ? '...' : verifiedProfiles.length}</span>
@@ -264,13 +265,13 @@ export const Verified: React.FC = () => {
               <span className="text-xs font-black text-amber-600 block leading-none">{isLoading ? '...' : goldCount}</span>
               <span className="text-[9px] text-amber-700/80 dark:text-amber-300 font-medium">Gold</span>
             </div>
+            <div className="px-2.5 py-1 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/60 text-center">
+              <span className="text-xs font-black text-emerald-600 block leading-none">{isLoading ? '...' : silverCount}</span>
+              <span className="text-[9px] text-emerald-700/80 dark:text-emerald-300 font-medium">Silver</span>
+            </div>
             <div className="px-2.5 py-1 rounded-lg bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 text-center">
               <span className="text-xs font-black text-blue-600 block leading-none">{isLoading ? '...' : uniqueIndustries.length}</span>
               <span className="text-[9px] text-blue-700/80 dark:text-blue-300 font-medium">Industries</span>
-            </div>
-            <div className="px-2.5 py-1 rounded-lg bg-purple-50/70 dark:bg-purple-950/30 border border-purple-200/60 text-center">
-              <span className="text-xs font-black text-purple-600 block leading-none">98%</span>
-              <span className="text-[9px] text-purple-700/80 dark:text-purple-300 font-medium">Response</span>
             </div>
           </div>
         </div>

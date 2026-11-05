@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTieredAccess, AccessTier } from '@/hooks/useTieredAccess';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   CURRENT_CREATOR_TARGETS_CONFIG, 
@@ -100,6 +100,25 @@ export const CreatorStudio: React.FC<CreatorStudioProps> = ({ isEmbedded = false
   const navigate = useNavigate();
   const { currentTier } = useTieredAccess();
   const [activeTab, setActiveTab] = useState<'targets' | 'performance' | 'ledger' | 'integrity' | 'payouts'>('targets');
+  const queryClient = useQueryClient();
+
+  // Real-time synchronization on posts and profile_views
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel('creator-studio-realtime-' + user.id)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['creator-studio-metrics-v2'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profile_views' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['creator-studio-metrics-v2'] });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.id, queryClient]);
 
   // Reporting period boundaries
   const now = new Date();
