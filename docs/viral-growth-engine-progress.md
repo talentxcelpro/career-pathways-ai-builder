@@ -41,9 +41,36 @@
 - **Rule 7 Approval Gate**: Pending user approval before applying SQL to live production.
 
 ---
-## Phase 2: Edge Functions Implementation (In Progress)
-- `supabase/functions/track-referral-event/index.ts` (public, bot-ignoring, rate-limited, salted hashes)
-- `supabase/functions/attribute-referral/index.ts` (JWT, fraud checks, alias detection)
-- `supabase/functions/claim-referral-mission/index.ts` (JWT, progress re-verification in SQL, idempotent payout)
-- Client-side landing & attribution capture in `AuthPage.tsx`, `UnifiedAuthForm.tsx`, `OAuthCallback.tsx` (persist `?ref=` for 30 days)
+## Phase 2: Edge Functions Implementation (Completed)
+- **`supabase/functions/track-referral-event/index.ts`**:
+  - Public endpoint (`verify_jwt = false`) with rate limiting via `_shared/rateLimiter.ts`.
+  - Filters out bots and social link preview crawlers (WhatsApp, Telegram, LinkedIn, Slack, etc.).
+  - Computes salted SHA-256 hashes of visitor, IP, and UA. Raw IPs and UAs are never stored.
+  - Inserts into `referral_share_events` with unique daily deduplication.
+- **`supabase/functions/attribute-referral/index.ts`**:
+  - JWT authenticated endpoint called on user registration/login.
+  - Blocks self-referrals, flags disposable email domains, email aliases (+ tags), and IP velocity.
+  - Idempotent: checks for existing attribution.
+  - Inserts new referral record with `reward_status` held or none depending on risk signals.
+- **`supabase/functions/claim-referral-mission/index.ts`**:
+  - JWT authenticated endpoint.
+  - Re-evaluates mission progress criteria server-side in SQL before awarding.
+  - Enforces `referral_program_settings.rewards_paused` killswitch.
+  - Awards TXC platform credits via `txc_award_reward` RPC with idempotency key `mission_claim_{user_id}_{mission_id}_{period_key}`.
+- **Client-Side Telemetry (`src/utils/referralTracker.ts`)**:
+  - Captures `?ref=`, `utm_source`, and `utm_campaign` with a 30-day persistence window.
+  - Ingested on app boot in `App.tsx` and triggered on `SIGNED_IN` event in `OptimizedAuthContext.tsx`.
+
+---
+## Phase 3: User Surface Real-Time Integration (In Progress)
+- Wire `ViralGrowthEngineDashboard.tsx` to read from new RPCs:
+  - `get_my_referral_stats()`
+  - `get_my_referral_funnel()`
+  - `get_my_mission_progress()`
+  - `get_referral_leaderboard(period, limit)`
+- Real-time invalidation via Supabase Realtime channel (`referrals-user-{userId}`).
+- Channel-specific sharing with `utm_source` query parameter and `trackShareClick`.
+- Reusable QR generator component integration with PNG download.
+- Honest empty states and zero fake numbers.
+
 

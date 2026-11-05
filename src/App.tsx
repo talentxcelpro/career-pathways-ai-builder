@@ -28,6 +28,7 @@ import { initializeProductionOptimizations } from '@/utils/productionOptimizer';
 import { initializePerformanceOptimizations } from '@/utils/performanceOptimizations';
 import { initializeJobsOptimizations } from '@/utils/jobsPerformanceOptimizer';
 import { ReactErrorBoundary } from './components/error/ReactErrorBoundary';
+import { initReferralCapture } from '@/utils/referralTracker';
 import { InstallPrompt, InstallButton } from '@/components/pwa/InstallPrompt';
 import { IOSInstallPrompt } from '@/components/pwa/IOSInstallPrompt';
 import { ChromePWAPrompt } from '@/components/pwa/ChromePWAPrompt';
@@ -287,6 +288,9 @@ const App = () => {
         document.documentElement.setAttribute('data-color-scheme', savedColorScheme);
       }
     } catch {}
+
+    // Initialize 30-day referral campaign capture
+    initReferralCapture().catch(() => {});
 
     // Defer ALL optimizations to after initial paint
     setTimeout(() => {

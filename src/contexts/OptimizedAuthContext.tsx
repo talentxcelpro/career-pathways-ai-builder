@@ -4,6 +4,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { attributeStoredReferral } from '@/utils/referralTracker';
 
 import { syncSessionFromCrossSubdomainCookie } from '@/lib/auth/crossSubdomainStorage';
 
@@ -99,6 +100,8 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
         } else if (event === 'SIGNED_IN' && session?.user) {
           // Guarantee real-time auto-connection with main account for every joining user
           supabase.rpc('create_admin_connections', { target_user_id: session.user.id }).catch(() => {});
+          // Attribute any stored referral code
+          attributeStoredReferral().catch(() => {});
           const currentPath = window.location.pathname;
           
           // Only redirect if on auth pages
