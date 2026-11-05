@@ -218,6 +218,30 @@ export default function GrowthControlPlane() {
               Sync
             </Button>
 
+            {/* Emergency Pause / Resume */}
+            {emergencyStop ? (
+              <Button
+                size="sm"
+                onClick={resumeOperations}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs h-9 px-3"
+              >
+                <Play className="w-3.5 h-3.5 mr-1.5" />
+                Resume Operations
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={triggerEmergencyStop}
+                variant="destructive"
+                className="bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800/80 font-mono text-xs h-9 px-3"
+              >
+                <Pause className="w-3.5 h-3.5 mr-1.5" />
+                Emergency Pause
+              </Button>
+            )}
+          </div>
+        </div>
+
         {/* ── LIVE DAILY GROWTH OS DASHBOARD (PHASE 14) ─────────────────────────── */}
         <DailyGrowthDashboard />
 
@@ -789,26 +813,17 @@ export default function GrowthControlPlane() {
                 <option value="are">UAE (AED)</option>
               </select>
               <Button
+                onClick={() => {
+                  if (typeof handleRunTrace === 'function') handleRunTrace();
+                }}
                 size="sm"
-                onClick={resumeOperations}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs h-9 px-3"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs"
               >
-                <Play className="w-3.5 h-3.5 mr-1.5" />
-                Resume Operations
+                Trace Acquisition Loop
               </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={triggerEmergencyStop}
-                variant="destructive"
-                className="bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-800/80 font-mono text-xs h-9 px-3"
-              >
-                <Pause className="w-3.5 h-3.5 mr-1.5" />
-                Emergency Pause
-              </Button>
-            )}
-          </div>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* ── NAVIGATION TABS (ALL 12 SECTIONS A-L UNIFIED) ────────────────────────── */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
