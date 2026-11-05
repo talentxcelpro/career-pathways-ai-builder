@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { updateMetaTags } from '@/utils/metaTags';
 import { injectStructuredData } from '@/utils/structuredData';
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, DEFAULT_OG_IMAGE, absoluteUrl, canonicalFor, isNoindexPath } from '@/config/seo';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 export interface SEOHeadProps {
@@ -24,7 +24,7 @@ export interface SEOHeadProps {
 export const SEOHead: React.FC<SEOHeadProps> = ({
   title = DEFAULT_TITLE,
   description = DEFAULT_DESCRIPTION,
-  image = '/lovable-uploads/711de76d-0f05-4939-b8b5-4acd21eb3119.png',
+  image = DEFAULT_OG_IMAGE,
   url,
   type = 'website',
   structuredData,
