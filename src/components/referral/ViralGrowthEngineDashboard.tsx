@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { trackShareClick } from '@/utils/referralTracker';
 import { toast } from 'sonner';
 import QRCode from 'qrcode';
+import { QRCodeSVG } from 'qrcode.react';
 import {
   Users,
   Gift,
@@ -146,7 +147,18 @@ const MetricCard: React.FC<{
 export const ViralGrowthEngineDashboard: React.FC = () => {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [referralCode, setReferralCode] = useState<string | null>(() => {
+    if (typeof window !== 'undefined' && user?.id) {
+      return 'TXC' + user.id.replace(/-/g, '').slice(0, 8).toUpperCase();
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    if (user?.id && !referralCode) {
+      setReferralCode('TXC' + user.id.replace(/-/g, '').slice(0, 8).toUpperCase());
+    }
+  }, [user?.id, referralCode]);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string>('');
@@ -196,44 +208,57 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
     return () => clearInterval(timer);
   }, [lastUpdated]);
 
-  // 1. Fetch or create user's referral code
+  // 1. Fetch or create user's referral code with dual-table & deterministic safety
   const loadReferralCode = useCallback(async () => {
-    if (!user?.id) return;
+    if (!user?.id) return null;
+    const deterministicCode = 'TXC' + user.id.replace(/-/g, '').slice(0, 8).toUpperCase();
+
     try {
-      const { data: existing } = await supabase
-        .from('referrals')
+      // Check user_referrals table (real Supabase table)
+      const { data: uRef } = await supabase
+        .from('user_referrals')
         .select('referral_code')
         .eq('referrer_id', user.id)
-        .limit(1)
         .maybeSingle();
 
-      if (existing?.referral_code) {
-        setReferralCode(existing.referral_code);
-        return existing.referral_code;
+      if (uRef?.referral_code) {
+        setReferralCode(uRef.referral_code);
+        return uRef.referral_code;
       }
 
-      // Generate new clean deterministic code if none exists
-      const newCode = 'TXC' + Math.random().toString(36).substring(2, 7).toUpperCase();
-      const { data: created, error } = await supabase
-        .from('referrals')
+      // Check profiles table
+      const { data: prof } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (prof?.referral_code) {
+        setReferralCode(prof.referral_code);
+        return prof.referral_code;
+      }
+
+      // Insert into user_referrals if not present
+      const { data: created } = await supabase
+        .from('user_referrals')
         .insert({
           referrer_id: user.id,
-          referral_code: newCode,
-          status: 'pending',
-          reward_type: 'credit',
-          reward_amount: 1000,
+          referral_code: deterministicCode,
+          total_referrals: 0,
+          successful_referrals: 0,
+          is_active: true
         })
         .select('referral_code')
-        .single();
+        .maybeSingle();
 
-      if (!error && created) {
-        setReferralCode(created.referral_code);
-        return created.referral_code;
-      }
+      const finalCode = created?.referral_code || deterministicCode;
+      setReferralCode(finalCode);
+      return finalCode;
     } catch (e) {
-      console.warn('Could not load referral code:', e);
+      console.warn('Notice in loadReferralCode (using clean deterministic code):', e);
+      setReferralCode(deterministicCode);
+      return deterministicCode;
     }
-    return null;
   }, [user?.id]);
 
   // 2. Hydrate dashboard from RPCs with graceful query fallbacks
@@ -794,23 +819,50 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
 
               {showQR && (
                 <div className="flex flex-col items-center gap-3 p-4 bg-slate-50 dark:bg-muted/30 rounded-xl border border-slate-200/80 dark:border-border/40">
-                  {qrDataUrl ? (
-                    <img src={qrDataUrl} alt="Referral QR Code" className="w-48 h-48 rounded-lg shadow-xs bg-white p-2" />
-                  ) : (
-                    <div className="w-48 h-48 bg-muted rounded-lg animate-pulse" />
-                  )}
+                  <div className="bg-white p-3 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
+                    <QRCodeSVG
+                      id="referral-qr-svg"
+                      value={buildReferralUrl('qr') || `https://talentxcel.in/signup?ref=${referralCode || 'TXC'}`}
+                      size={180}
+                      level="H"
+                      includeMargin={false}
+                    />
+                  </div>
                   <p className="text-[10px] text-muted-foreground text-center">
                     Scan to open your referral link directly on mobile
                   </p>
-                  {qrDataUrl && (
-                    <a
-                      href={qrDataUrl}
-                      download={`talentxcel-referral-${referralCode}.png`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-all"
-                    >
-                      <Download className="h-3.5 w-3.5" /> Download QR (PNG)
-                    </a>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const svg = document.getElementById('referral-qr-svg');
+                      if (svg) {
+                        const svgData = new XMLSerializer().serializeToString(svg);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 400;
+                        canvas.height = 400;
+                        const ctx = canvas.getContext('2d');
+                        const img = new (window as any).Image();
+                        img.onload = () => {
+                          if (ctx) {
+                            ctx.fillStyle = '#ffffff';
+                            ctx.fillRect(0, 0, 400, 400);
+                            ctx.drawImage(img, 20, 20, 360, 360);
+                            const pngFile = canvas.toDataURL('image/png');
+                            const downloadLink = document.createElement('a');
+                            downloadLink.download = `talentxcel-referral-${referralCode || 'qr'}.png`;
+                            downloadLink.href = pngFile;
+                            downloadLink.click();
+                            toast.success('QR Code downloaded successfully!');
+                          }
+                        };
+                        img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 rounded-lg transition-all"
+                  >
+                    <Download className="h-3.5 w-3.5" /> Download QR (PNG)
+                  </Button>
                 </div>
               )}
             </CardContent>
