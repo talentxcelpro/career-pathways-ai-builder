@@ -1,18 +1,20 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import {
-  Home,
-  UserCheck,
-  Target,
-  GitBranch,
-  ShieldAlert,
-  Users,
-  Trophy,
-  Gift,
+import { 
+  Home, 
+  Map, 
+  Target, 
+  GitBranch, 
+  Swords, 
+  Trophy, 
+  ShoppingBag, 
+  Award,
+  Sparkles,
   ArrowRight,
-  Sparkles
+  ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { gameAudio } from '@/utils/gameAudio';
 
 interface SidebarProps {
   activeSection: string;
@@ -29,33 +31,37 @@ export const CareerVerseSidebar: React.FC<SidebarProps> = ({
   onOpenPassport,
   onOpenRewards,
   onOpenSkillTree,
-  onOpenAchievements
+  onOpenAchievements,
 }) => {
   const navItems = [
     { id: 'home', label: 'Home', icon: Home, action: () => onNavigateSection('home') },
-    { id: 'passport', label: 'Career Passport', icon: UserCheck, action: onOpenPassport },
+    { id: 'passport', label: 'Career Passport', icon: ShieldCheck, action: onOpenPassport },
     { id: 'quests', label: 'Quests', icon: Target, action: () => onNavigateSection('quests') },
-    { id: 'skills', label: 'Skill Tree', icon: GitBranch, action: onOpenSkillTree },
-    { id: 'boss', label: 'Boss Battles', icon: ShieldAlert, action: () => onNavigateSection('boss') },
-    { id: 'guilds', label: 'Guilds', icon: Users, action: () => onNavigateSection('guilds') },
+    { id: 'tree', label: 'Skill Tree', icon: GitBranch, action: onOpenSkillTree },
+    { id: 'boss', label: 'Boss Battles', icon: Swords, action: () => onNavigateSection('boss') },
+    { id: 'guilds', label: 'Guilds', icon: Trophy, action: () => onNavigateSection('guilds') },
     { id: 'leaderboards', label: 'Leaderboards', icon: Trophy, action: () => onNavigateSection('leaderboards') },
-    { id: 'rewards', label: 'Rewards Store', icon: Gift, action: onOpenRewards },
+    { id: 'rewards', label: 'Rewards Store', icon: ShoppingBag, action: onOpenRewards },
   ];
 
   return (
-    <aside className="w-64 flex-shrink-0 hidden xl:flex flex-col gap-6">
-      {/* Navigation Rail */}
-      <div className="bg-[#101E3B]/80 border border-white/5 rounded-2xl p-3 flex flex-col gap-1.5 shadow-xl">
+    <aside className="w-64 flex-shrink-0 hidden md:flex flex-col gap-6">
+      {/* Navigation List */}
+      <div className="bg-[#101E3B]/90 border border-white/10 rounded-2xl p-3 shadow-xl backdrop-blur-md flex flex-col gap-1">
         {navItems.map((item) => {
-          const Icon = item.icon;
           const isActive = activeSection === item.id;
+          const Icon = item.icon;
+
           return (
             <button
               key={item.id}
-              onClick={item.action}
-              className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              onClick={() => {
+                gameAudio.playClick();
+                item.action();
+              }}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
                 isActive
-                  ? 'bg-gradient-to-r from-[#7047F5] to-[#278DFF] text-white shadow-lg shadow-[#7047F5]/25'
+                  ? 'bg-gradient-to-r from-[#7047F5] to-[#278DFF] text-white shadow-lg shadow-[#7047F5]/30 font-bold'
                   : 'text-slate-300 hover:text-white hover:bg-white/5'
               }`}
             >
@@ -76,17 +82,17 @@ export const CareerVerseSidebar: React.FC<SidebarProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5 mb-1">
-          <h4 className="font-bold text-white text-base">Go Premium</h4>
-          <span className="text-xs">👑</span>
+          <h4 className="font-black text-white text-base">Go Premium</h4>
+          <span className="text-sm">👑</span>
         </div>
-        <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-          Unlock exclusive quests, certificates, and direct recruiter access.
+        <p className="text-xs sm:text-sm text-slate-300 mb-4 leading-relaxed">
+          Unlock exclusive quests, verified certificates, and direct recruiter access.
         </p>
 
-        <Link to="/pricing">
-          <Button className="w-full bg-gradient-to-r from-[#FFCA55] to-[#FFA726] hover:from-[#ffbe3b] hover:to-[#f59714] text-slate-950 font-bold text-xs py-2 h-auto shadow-lg shadow-[#FFCA55]/25">
+        <Link to="/pricing" onClick={() => gameAudio.playClick()}>
+          <Button className="w-full bg-gradient-to-r from-[#FFCA55] to-[#FFA726] hover:from-[#ffbe3b] hover:to-[#f59714] text-slate-950 font-black text-xs sm:text-sm py-2.5 h-auto shadow-lg shadow-[#FFCA55]/25 cursor-pointer">
             Upgrade
-            <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+            <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </Link>
       </div>

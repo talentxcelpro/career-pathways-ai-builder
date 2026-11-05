@@ -1,3 +1,5 @@
+const ProSubscription = React.lazy(() => import('@/pages/pro/ProSubscription'));
+const ProSubscriptionPolicy = React.lazy(() => import('@/pages/pro/ProSubscriptionPolicy'));
 import { useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { PageSpecificBottomNav } from '@/components/navigation/PageSpecificBottomNav';
@@ -53,6 +55,7 @@ import UDXDiscoveryDashboard from "@/pages/discovery/UDXDiscoveryDashboard";
 import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
 const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
 const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
+const DailyGrowthDashboard = lazy(() => import("@/components/admin/DailyGrowthDashboard"));
 const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 const GlobalJobsAutomationCenter = lazy(() => import("@/pages/admin/GlobalJobsAutomationCenter"));
 const ReferAndEarn = lazy(() => import("@/pages/ReferAndEarn"));
@@ -363,25 +366,52 @@ const App = () => {
                                     <>
                                       <Route path="/" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobsPage /></Suspense>} />
                                       <Route path="/jobs" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobsPage /></Suspense>} />
-                                      <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
-                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
+
+                                      {/* City & Location Hubs - Must precede :slugOrId wildcard */}
                                       <Route path="/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/bengaluru" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/mumbai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/delhi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/delhi-ncr" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/hyderabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/chennai" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/pune" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/varanasi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/noida" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/gurgaon" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/gurugram" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                                       <Route path="/lucknow" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/kolkata" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/ahmedabad" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/chandigarh" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/jaipur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/kochi" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/coimbatore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/indore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/bhopal" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/patna" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/nagpur" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/surat" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/vadodara" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/visakhapatnam" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/locations/:location" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+                                      <Route path="/jobs/locations/:location" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
+
+                                      {/* Role & Experience Matrix */}
                                       <Route path="/:role/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleCity /></Suspense>} />
                                       <Route path="/:role/:experience/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
                                       <Route path="/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
+
+                                      {/* Company Role Pages */}
                                       <Route path="/company/salesforce/jobs/data-engineer" element={<Navigate to="/career-insights" replace />} />
                                       <Route path="/company/:company/jobs/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                                       <Route path="/company/:company/jobs" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                                       <Route path="/top-companies/:company/:role/:city" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                                       <Route path="/top-companies/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+
+                                      {/* Specific & Wildcard Job Details (Strictly AFTER city and role hubs) */}
+                                      <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
+                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
                                     </>
                                   )}
 
@@ -398,6 +428,9 @@ const App = () => {
                                       <Route path="/certificates" element={<Suspense fallback={null}><Certificates /></Suspense>} />
                                       <Route path="/providers" element={<Suspense fallback={null}><AllProvidersPage /></Suspense>} />
                                       <Route path="/providers/:slug" element={<Suspense fallback={null}><ProviderPage /></Suspense>} />
+                                      {/* Consolidate duplicate college routes to authoritative colleges domain */}
+                                      <Route path="/colleges/*" element={<Navigate to="https://colleges.talentxcel.in/colleges" replace />} />
+                                      <Route path="/colleges" element={<Navigate to="https://colleges.talentxcel.in/colleges" replace />} />
                                     </>
                                   )}
 
@@ -466,12 +499,26 @@ const App = () => {
                                       <Route path="/scholarships" element={<Suspense fallback={null}><Scholarships /></Suspense>} />
                                       <Route path="/pathway" element={<Suspense fallback={null}><CareerPathway /></Suspense>} />
                                       <Route path="/batch" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
+                                      <Route path="/b/:cohortCode" element={<Suspense fallback={<div>Loading...</div>}><BatchScreening /></Suspense>} />
+                                      {/* Cross-subdomain navigation safety handlers */}
+                                      <Route path="/jobs/*" element={<Navigate to="https://jobs.talentxcel.in/jobs" replace />} />
+                                      <Route path="/jobs" element={<Navigate to="https://jobs.talentxcel.in/jobs" replace />} />
+                                      <Route path="/resume/*" element={<Navigate to="https://resume.talentxcel.in/resume" replace />} />
+                                      <Route path="/resume" element={<Navigate to="https://resume.talentxcel.in/resume" replace />} />
+                                      <Route path="/salary/*" element={<Navigate to="https://salary.talentxcel.in/salary" replace />} />
+                                      <Route path="/salary" element={<Navigate to="https://salary.talentxcel.in/salary" replace />} />
+                                      <Route path="/network/*" element={<Navigate to="https://talentxcel.in/network" replace />} />
+                                      <Route path="/network" element={<Navigate to="https://talentxcel.in/network" replace />} />
                                     </>
                                   )}
 
                                   {currentUniverse === 'CAREERS' && (
                                     <>
                                       <Route path="/" element={<AICareerHub />} />
+                                      <Route path="/careers" element={<AICareerHub />} />
+                                      <Route path="/careers/:role" element={<CareerRoadmapGenerator />} />
+                                      <Route path="/careers/ai-ml-engineer" element={<CareerRoadmapGenerator />} />
+                                      <Route path="/ai-ml-engineer" element={<CareerRoadmapGenerator />} />
                                       <Route path="/career-map" element={<AICareerHub />} />
                                       <Route path="/career-map/:role" element={<CareerRoadmapGenerator />} />
                                       <Route path="/ai-career-hub" element={<AICareerHub />} />
@@ -678,6 +725,8 @@ const App = () => {
                 <Route path="/admin/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
                 <Route path="/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
+                <Route path="/daily-growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Daily Growth Dashboard...</div>}><UDXSuperAdminGuard><DailyGrowthDashboard /></UDXSuperAdminGuard></Suspense>} />
+                <Route path="/admin/daily-growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Daily Growth Dashboard...</div>}><UDXSuperAdminGuard><DailyGrowthDashboard /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/global-jobs" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Global Jobs Automation Network...</div>}><UDXSuperAdminGuard><GlobalJobsAutomationCenter /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/grow" element={<Suspense fallback={<div className="min-h-screen bg-[#070b14] text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Career Growth Hub...</div>}><CandidateGrowthPage /></Suspense>} />
                 <Route path="/referrals" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
@@ -963,6 +1012,11 @@ const App = () => {
                                 <Route path="/gamification" element={<Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>} />
                                 <Route path="/play" element={<Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>} />
                                 <Route path="/careerverse" element={<Suspense fallback={<div className="min-h-screen bg-[#071329] flex items-center justify-center text-white">Loading CareerVerse...</div>}><CareerVersePage /></Suspense>} />
+                                <Route path="/pricing" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                                <Route path="/subscription" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                                <Route path="/plans" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                                <Route path="/pro/subscription" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                                <Route path="/pro/policy" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Policy...</div>}><ProSubscriptionPolicy /></Suspense>} />
                                 <Route path="/t/@:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/t/:username" element={<UniversalProfileRouteHandler />} />
                                 <Route path="/p/@:username" element={<UniversalProfileRouteHandler />} />

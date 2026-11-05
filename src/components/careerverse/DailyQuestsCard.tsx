@@ -35,123 +35,127 @@ export const DailyQuestsCard: React.FC<DailyQuestsProps> = ({
   });
 
   return (
-    <div className="bg-[#101E3B] border border-white/10 rounded-2xl p-5 shadow-2xl flex flex-col justify-between gap-4 relative overflow-hidden backdrop-blur-xl">
+    <div className="bg-[#101E3B] border border-white/10 rounded-2xl p-5 shadow-2xl flex flex-col justify-between gap-4 relative overflow-hidden backdrop-blur-xl h-full">
       {/* Background Glow */}
       <div className="absolute -top-12 -left-12 w-36 h-36 rounded-full bg-[#36D9F5]/10 blur-2xl pointer-events-none" />
 
-      <div className="z-10">
-        {/* Header with Title and Countdown */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#36D9F5]/15 border border-[#36D9F5]/30 flex items-center justify-center text-[#36D9F5]">
-              <Target className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-base leading-tight">Daily Quests</h3>
-              <p className="text-[11px] text-slate-400">Personalized Skill Missions</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5 text-xs text-slate-300 font-medium bg-[#071329] px-2.5 py-1 rounded-lg border border-white/5">
-            <Clock className="w-3.5 h-3.5 text-[#36D9F5]" />
-            <span>14h 26m left</span>
-          </div>
-        </div>
-
-        {/* Quest List */}
-        <div className="flex flex-col gap-2.5">
-          {dailyQuests.map((quest) => {
-            const isCompleted = quest.user_progress?.status === 'completed' || quest.user_progress?.status === 'claimed';
-            return (
-              <button
-                key={quest.id}
-                onClick={() => {
-                  gameAudio.playClick();
-                  onSelectQuest(quest);
-                }}
-                className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                  isCompleted
-                    ? 'bg-[#071329]/60 border-[#20D994]/30 text-slate-300'
-                    : 'bg-[#071329] border-white/5 hover:border-[#36D9F5]/40 text-white hover:bg-[#071329]/80'
-                }`}
-              >
-                <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                  {isCompleted ? (
-                    <CheckCircle2 className="w-4 h-4 text-[#20D994] flex-shrink-0" />
-                  ) : (
-                    <Circle className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                  )}
-                  <span className={`text-xs font-semibold truncate ${isCompleted ? 'line-through text-slate-400' : ''}`}>
-                    {quest.title}
-                  </span>
-                </div>
-
-                <span className="text-xs font-black text-[#20D994] bg-[#20D994]/10 px-2 py-0.5 rounded-md flex-shrink-0 border border-[#20D994]/20">
-                  +{quest.xp_reward} XP
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Interactive Playable Arena Shortcut Buttons */}
-        {(onLaunchCodeArena || onLaunchLogicDuel) && (
-          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-white/5">
-            {onLaunchCodeArena && (
-              <button
-                onClick={() => {
-                  gameAudio.playClick();
-                  onLaunchCodeArena();
-                }}
-                className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-gradient-to-r from-[#7047F5]/20 to-[#278DFF]/20 hover:from-[#7047F5]/30 hover:to-[#278DFF]/30 border border-[#36D9F5]/30 text-[11px] font-bold text-white transition-all shadow-sm cursor-pointer"
-              >
-                <Terminal className="w-3.5 h-3.5 text-[#36D9F5]" />
-                <span>Code Arena</span>
-              </button>
-            )}
-
-            {onLaunchLogicDuel && (
-              <button
-                onClick={() => {
-                  gameAudio.playClick();
-                  onLaunchLogicDuel();
-                }}
-                className="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-gradient-to-r from-[#FFCA55]/20 to-[#FFA726]/20 hover:from-[#FFCA55]/30 hover:to-[#FFA726]/30 border border-[#FFCA55]/30 text-[11px] font-bold text-white transition-all shadow-sm cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5 text-[#FFCA55]" />
-                <span>60s Logic Duel</span>
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* 7-Day Streak Panel */}
-      <div className="pt-3 border-t border-white/5 flex items-center justify-between z-10">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-[#FFA726] to-[#FF5722] flex items-center justify-center text-white shadow-sm">
-            <Flame className="w-3.5 h-3.5" />
-          </div>
-          <span className="text-xs font-bold text-white">
-            {streak} Day{streak !== 1 ? 's' : ''} Streak
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1">
-          {days.map((d, i) => (
-            <div key={i} className="flex flex-col items-center gap-0.5">
-              <span className="text-[9px] text-slate-500 font-medium">{d.label.slice(0, 1)}</span>
-              <div
-                className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black ${
-                  d.active
-                    ? 'bg-[#20D994] text-slate-950 shadow-sm shadow-[#20D994]/40'
-                    : 'bg-white/5 text-slate-600 border border-white/5'
-                }`}
-              >
-                {d.active ? '✓' : ''}
+      <div className="z-10 flex flex-col justify-between h-full">
+        <div>
+          {/* Header with Title and Countdown */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-[#36D9F5]/15 border border-[#36D9F5]/30 flex items-center justify-center text-[#36D9F5]">
+                <Target className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="font-black text-white text-base sm:text-lg leading-tight">Daily Quests</h3>
+                <p className="text-xs text-slate-300 font-medium">Personalized Skill Missions</p>
               </div>
             </div>
-          ))}
+
+            <div className="flex items-center gap-1.5 text-xs text-slate-200 font-semibold bg-[#071329] px-2.5 py-1 rounded-lg border border-white/10">
+              <Clock className="w-3.5 h-3.5 text-[#36D9F5]" />
+              <span>14h 26m left</span>
+            </div>
+          </div>
+
+          {/* Quest List */}
+          <div className="flex flex-col gap-2.5">
+            {dailyQuests.map((quest) => {
+              const isCompleted = quest.user_progress?.status === 'completed' || quest.user_progress?.status === 'claimed';
+              return (
+                <button
+                  key={quest.id}
+                  onClick={() => {
+                    gameAudio.playClick();
+                    onSelectQuest(quest);
+                  }}
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                    isCompleted
+                      ? 'bg-[#071329]/60 border-[#20D994]/30 text-slate-300'
+                      : 'bg-[#071329] border-white/5 hover:border-[#36D9F5]/40 text-white hover:bg-[#071329]/90'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-4 h-4 text-[#20D994] flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                    )}
+                    <span className={`text-xs sm:text-sm font-semibold truncate ${isCompleted ? 'line-through text-slate-400' : 'text-white'}`}>
+                      {quest.title}
+                    </span>
+                  </div>
+
+                  <span className="text-xs font-black text-[#20D994] bg-[#20D994]/10 px-2.5 py-0.5 rounded-md flex-shrink-0 border border-[#20D994]/20">
+                    +{quest.xp_reward} XP
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Interactive Playable Arena Shortcut Buttons */}
+          {(onLaunchCodeArena || onLaunchLogicDuel) && (
+            <div className="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/10">
+              {onLaunchCodeArena && (
+                <button
+                  onClick={() => {
+                    gameAudio.playClick();
+                    onLaunchCodeArena();
+                  }}
+                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#278DFF]/15 hover:bg-[#278DFF]/25 border border-[#278DFF]/40 text-white text-xs sm:text-sm font-bold transition-all shadow-md group cursor-pointer"
+                >
+                  <Terminal className="w-4 h-4 text-[#36D9F5] group-hover:scale-110 transition-transform" />
+                  <span>Interactive Arena</span>
+                </button>
+              )}
+
+              {onLaunchLogicDuel && (
+                <button
+                  onClick={() => {
+                    gameAudio.playClick();
+                    onLaunchLogicDuel();
+                  }}
+                  className="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-[#7047F5]/20 hover:bg-[#7047F5]/30 border border-[#7047F5]/40 text-white text-xs sm:text-sm font-bold transition-all shadow-md group cursor-pointer"
+                >
+                  <Zap className="w-4 h-4 text-[#A34EFF] group-hover:scale-110 transition-transform" />
+                  <span>Timed Duel</span>
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* 7-Day Activity Streak Strip */}
+        <div className="pt-4 border-t border-white/5 mt-3">
+          <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
+            <span className="text-slate-300 font-semibold flex items-center gap-1">
+              <Flame className="w-4 h-4 text-[#FFCA55]" />
+              <span>Streak Progress</span>
+            </span>
+            <span className="font-bold text-[#FFCA55]">
+              {streak} Day{streak !== 1 ? 's' : ''} Active
+            </span>
+          </div>
+
+          <div className="grid grid-cols-7 gap-1.5">
+            {days.map((day, idx) => (
+              <div
+                key={idx}
+                className={`py-1.5 rounded-lg text-center flex flex-col items-center justify-center transition-all ${
+                  day.active
+                    ? 'bg-[#20D994]/20 border border-[#20D994]/40 text-[#20D994] shadow-sm'
+                    : 'bg-[#071329] border border-white/5 text-slate-500'
+                }`}
+              >
+                <span className="text-[10px] sm:text-xs font-bold leading-none">{day.label}</span>
+                <span className="text-xs leading-none mt-1">
+                  {day.active ? '●' : '○'}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

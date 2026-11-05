@@ -2,21 +2,27 @@ import React from 'react';
 import { ShieldAlert, CheckCircle2, Circle, Trophy, Award, KeyRound, ArrowRight, Swords, Sparkles, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CareerBossBattle } from '@/services/careerverse/careerBossBattleService';
+import { CareerDomainId, CAREER_DOMAINS } from '@/services/careerverse/careerDomainCatalog';
+import { gameAudio } from '@/utils/gameAudio';
 
 interface BossBattleProps {
   battle: CareerBossBattle;
+  domainId?: CareerDomainId;
   onOpenWorkspace: (battle: CareerBossBattle) => void;
 }
 
 export const BossBattleCard: React.FC<BossBattleProps> = ({
   battle,
+  domainId = 'technology',
   onOpenWorkspace
 }) => {
   const currentStage = battle.user_participation?.current_stage || 1;
-  const rawStages = battle.stages || ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+  const rawStages = battle.stages || ['Stage 1', 'Stage 2', 'Stage 3', 'Final Review'];
   const stages = Array.isArray(rawStages)
     ? rawStages.map((s: any) => typeof s === 'string' ? s : s?.name || s?.desc || s?.title || 'Stage')
-    : ['Code Challenge', 'Debug & Improve', 'Tech Interview', 'Final Interview'];
+    : ['Stage 1', 'Stage 2', 'Stage 3', 'Final Review'];
+
+  const domainConfig = CAREER_DOMAINS[domainId] || CAREER_DOMAINS.technology;
 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-[#101E3B] border border-white/10 p-6 md:p-7 shadow-2xl backdrop-blur-xl">
@@ -26,13 +32,15 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
 
       {/* Top Header */}
       <div className="flex items-center justify-between mb-5 relative z-10">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-[#FF4757]/15 border border-[#FF4757]/30 flex items-center justify-center text-[#FF4757] shadow-lg shadow-[#FF4757]/20">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-[#FF4757]/15 border border-[#FF4757]/30 flex items-center justify-center text-[#FF4757] shadow-lg shadow-[#FF4757]/20">
             <Swords className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-black text-white text-base md:text-lg tracking-tight">Boss Battle – Job Challenge</h3>
-            <p className="text-xs text-slate-400">Prove technical mastery to unlock fast-track hiring</p>
+            <h3 className="font-black text-white text-base sm:text-xl tracking-tight">Boss Battle – Employer Challenge</h3>
+            <p className="text-xs sm:text-sm text-slate-300 font-medium">
+              Prove competency in <span className="text-[#36D9F5] font-semibold">{domainConfig.shortLabel}</span> to unlock fast-track hiring
+            </p>
           </div>
         </div>
 
@@ -99,11 +107,11 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
                 <polygon points="100,45 108,58 100,70 92,58" fill="#FF4757" stroke="#FFA726" strokeWidth="1" />
               </svg>
 
-              {/* Boss Tag Overlay */}
-              <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1 rounded-xl bg-black/80 backdrop-blur-md text-[10px] font-black text-center text-[#36D9F5] border border-white/10 flex items-center justify-between">
+              {/* Boss Tag Overlay with crisp font */}
+              <div className="absolute bottom-2 left-2 right-2 px-2.5 py-1 rounded-xl bg-black/85 backdrop-blur-md text-xs font-black text-center text-[#36D9F5] border border-white/10 flex items-center justify-between">
                 <span>Lv. 15 Guardian Boss</span>
-                <span className="text-[#FF4757] flex items-center gap-0.5">
-                  <Heart className="w-2.5 h-2.5 fill-[#FF4757]" /> 10,000 HP
+                <span className="text-[#FF4757] flex items-center gap-1">
+                  <Heart className="w-3.5 h-3.5 fill-[#FF4757]" /> 10,000 HP
                 </span>
               </div>
             </div>
@@ -114,7 +122,7 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
         <div className="md:col-span-8 flex flex-col gap-4">
           {/* Company Title */}
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-white p-2 flex items-center justify-center shadow-lg shadow-white/5 flex-shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-white p-2 flex items-center justify-center shadow-lg shadow-white/5 flex-shrink-0">
               <img
                 src={battle.company_logo || 'https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg'}
                 alt={battle.company_name}
@@ -122,8 +130,8 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
               />
             </div>
             <div>
-              <h4 className="text-lg sm:text-xl font-black text-white">{battle.title}</h4>
-              <p className="text-xs text-slate-300 font-medium">
+              <h4 className="text-lg sm:text-2xl font-black text-white">{battle.title}</h4>
+              <p className="text-xs sm:text-sm text-slate-300 font-medium">
                 {battle.company_name} <span className="text-[#36D9F5] font-semibold">({battle.role_type})</span>
               </p>
             </div>
@@ -139,12 +147,12 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
               return (
                 <div
                   key={`${idx}-${stageName}`}
-                  className={`flex flex-col items-center p-2.5 rounded-xl border text-center transition-all ${
+                  className={`flex flex-col items-center p-3 rounded-xl border text-center transition-all ${
                     isPast
                       ? 'bg-[#20D994]/15 border-[#20D994]/50 text-[#20D994]'
                       : isCurrent
                       ? 'bg-[#278DFF]/20 border-[#278DFF] text-white shadow-lg shadow-[#278DFF]/20'
-                      : 'bg-[#071329] border-white/5 text-slate-500'
+                      : 'bg-[#071329] border-white/5 text-slate-400'
                   }`}
                 >
                   <div className="mb-1">
@@ -156,25 +164,25 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
                       <Circle className="w-4 h-4 text-slate-600" />
                     )}
                   </div>
-                  <span className="text-[11px] font-bold leading-tight">{stageName}</span>
+                  <span className="text-xs sm:text-sm font-bold leading-tight">{stageName}</span>
                 </div>
               );
             })}
           </div>
 
           {/* Victory Rewards */}
-          <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2.5 pt-2 text-xs sm:text-sm">
             <span className="font-bold text-white">Victory Reward:</span>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFCA55]/15 text-[#FFCA55] font-bold border border-[#FFCA55]/20">
-              <Trophy className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FFCA55]/15 text-[#FFCA55] font-bold border border-[#FFCA55]/20">
+              <Trophy className="w-4 h-4" />
               <span>+{battle.xp_reward} XP</span>
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#7047F5]/20 text-[#A34EFF] font-bold border border-[#7047F5]/30">
-              <Award className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#7047F5]/20 text-[#A34EFF] font-bold border border-[#7047F5]/30">
+              <Award className="w-4 h-4" />
               <span>Verified Skill Badge</span>
             </div>
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#20D994]/15 text-[#20D994] font-bold border border-[#20D994]/30">
-              <KeyRound className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#20D994]/15 text-[#20D994] font-bold border border-[#20D994]/30">
+              <KeyRound className="w-4 h-4" />
               <span>Interview Fast-Track</span>
             </div>
           </div>
@@ -182,8 +190,11 @@ export const BossBattleCard: React.FC<BossBattleProps> = ({
           {/* Action Button */}
           <div className="pt-2">
             <Button
-              onClick={() => onOpenWorkspace(battle)}
-              className="w-full sm:w-auto px-8 bg-gradient-to-r from-[#7047F5] via-[#278DFF] to-[#36D9F5] hover:from-[#6035e0] hover:to-[#1a7ae0] text-white font-black text-sm h-11 rounded-xl shadow-lg shadow-[#7047F5]/30 flex items-center justify-center gap-2 group"
+              onClick={() => {
+                gameAudio.playClick();
+                onOpenWorkspace(battle);
+              }}
+              className="w-full sm:w-auto px-8 bg-gradient-to-r from-[#7047F5] via-[#278DFF] to-[#36D9F5] hover:from-[#6035e0] hover:to-[#1a7ae0] text-white font-black text-sm h-11 rounded-xl shadow-lg shadow-[#7047F5]/30 flex items-center justify-center gap-2 group cursor-pointer"
             >
               <Swords className="w-4 h-4 group-hover:rotate-45 transition-transform" />
               <span>Enter Boss Battle Arena</span>
