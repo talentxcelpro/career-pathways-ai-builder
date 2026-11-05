@@ -1,6 +1,4 @@
-const ProSubscription = React.lazy(() => import('@/pages/pro/ProSubscription'));
-const ProSubscriptionPolicy = React.lazy(() => import('@/pages/pro/ProSubscriptionPolicy'));
-import { useEffect, lazy, Suspense } from "react";
+import React, { useEffect, lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { PageSpecificBottomNav } from '@/components/navigation/PageSpecificBottomNav';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -59,6 +57,8 @@ const DailyGrowthDashboard = lazy(() => import("@/components/admin/DailyGrowthDa
 const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 const GlobalJobsAutomationCenter = lazy(() => import("@/pages/admin/GlobalJobsAutomationCenter"));
 const ReferAndEarn = lazy(() => import("@/pages/ReferAndEarn"));
+const ProSubscription = lazy(() => import("@/pages/pro/ProSubscription"));
+const ProSubscriptionPolicy = lazy(() => import("@/pages/pro/ProSubscriptionPolicy"));
 const JobPost = lazy(() => import('@/pages/jobs/JobPost'));
 const JobPostAI = lazy(() => import('@/pages/employer/jobs/JobPostAI'));
 const JobPostPreview = lazy(() => import('@/pages/employer/jobs/JobPostPreview'));
