@@ -102,7 +102,7 @@ export const MobileCareerPassport: React.FC = () => {
           profile: profileData,
           passport: passportData,
           achievements: []
-        }); });
+        });
       } catch (error) {
         console.error('Error loading public passport:', error);
       } finally {
