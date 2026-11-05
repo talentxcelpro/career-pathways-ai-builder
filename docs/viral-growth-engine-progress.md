@@ -76,20 +76,36 @@
 - **Navigation Mounted**: Swapped in both `src/pages/Network.tsx` (`tab=refer-and-earn`) and `src/pages/ReferAndEarn.tsx` while safely preserving `RealTimeReferralDashboard.tsx` in repo.
 
 ---
-## Phase 4: Admin Growth Operations Command Engine (In Progress)
-- Wire `GrowthEngineAdminPanel.tsx` to read from new administrative RPCs:
-  - `get_admin_referral_overview(p_start, p_end, p_channel)`
-  - `get_admin_k_factor(p_period)`
-  - `get_admin_referral_leaderboard(p_period, p_limit)`
-- Implement dual K-factor computation:
-  - (a) Population K = qualified referrals / active users at start ($i \times c$)
-  - (b) K per active referrer = qualified referrals / active referrers
-  - Display median viral cycle time, 12-week trend, sample size $n$, and low-sample warning if $n < 30$.
-- Multi-dimensional filters: Date range (`All time`, `Last 30 days`, `Last 7 days`) and Channel breakdown (`All channels`, WhatsApp, Telegram, etc.).
-- Mission management view: live qualification and claim counts, daily TXC budget gauge, and global rewards killswitch toggle (`referral_program_settings.rewards_paused`).
-- Fraud review queue: Flagged entries from `referral_fraud_flags` (hashes only). Action triggers: `Hold`, `Clear`, `Confirm & Revoke` via audit ledger `referral_admin_actions`.
-- Client-side CSV export for overview metrics and leaderboard.
-- Real-time admin subscription to live changes on `referral_share_events`, `referrals`, and `referral_fraud_flags`.
+## Phase 4: Admin Growth Operations Command Engine (Completed)
+- **Component Upgraded**: `src/components/admin/GrowthEngineAdminPanel.tsx` updated with complete real-time telemetry:
+  - Consumes `get_admin_referral_overview`, `get_admin_k_factor`, and `get_admin_referral_leaderboard` with zero fabricated data.
+  - Resilient SQL fallbacks to existing `referrals` table if migrations are pending execution.
+- **Dual K-Factor Architecture**:
+  - Population K-factor ($K_{pop} = i \times c$) across active platform members.
+  - Active Referrer K-factor ($K_{ref}$) per link-sharing participant.
+  - Median viral cycle time, sample size ($n$), and low-sample warning if $n < 30$.
+- **Multi-Dimensional Filters**:
+  - Date Range: `All Time`, `30 Days`, `7 Days`.
+  - Channel Breakdown: WhatsApp, Telegram, LinkedIn, X, Facebook, Email, Direct Copy, QR Scan, Mobile Native.
+- **5-Stage Multi-Stage Funnel**:
+  - Link Clicks (`referral_share_events`) -> Signups (`referrals`) -> Verified -> Activated -> Granted TXC.
+- **Program Governance & Kill Switch**:
+  - Admin toggle for `referral_program_settings.rewards_paused` with audit logging into `referral_admin_actions`.
+  - Daily TXC Platform Credit budget tracking gauge.
+- **Anti-Abuse & Fraud Review Queue**:
+  - DPDP-compliant hashed queue for self-referrals, device collisions, disposable emails, and velocity flags.
+  - Audited action controls: `Clear Flag`, `Hold Reward`, `Confirm & Revoke`.
+- **Client-Side CSV Export**:
+  - Generates downloadable CSV containing platform metrics, leaderboard rankings, and channel breakdowns.
+- **Real-Time Integration**:
+  - Supabase Realtime channel `growth-engine-admin-live` listening to changes across all four core growth tables.
+
+---
+## Phase 5: Verification, Documentation & Production Runbook (In Progress)
+- Author comprehensive system documentation in `docs/viral-growth-engine.md`.
+- Author SQL validation test script in `supabase/tests/viral_growth_engine_test.sql`.
+- Full project verification: `npx tsc --noEmit` and build check.
+- Stage production runbook for applying migration upon user approval.
 
 
 
