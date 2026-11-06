@@ -22,6 +22,8 @@
     "growth:lab": "node scripts/growth-lab-command-center.cjs",
     "domain:seo": "node scripts/domain-seo-command-center.cjs",
     "verify:subdomains": "npx tsx scripts/verify-live-subdomain-contracts.ts",
+    "si:daily-cycle": "npx tsx scripts/run-si-daily-cycle.ts",
+    "si:test": "npx tsx scripts/test-si-growth-os.ts",
     "ota:push": "npx tsx scripts/ota-push.ts",
     "backlink:status": "node backlink-engine/cli.cjs status",
     "backlink:run": "node backlink-engine/cli.cjs run-all",

@@ -1,0 +1,1612 @@
+{
+  "timestamp": "2026-11-03T01:35:01.230Z",
+  "target_project": "pvwwtquuexhyydwihjbi",
+  "target_environment": "TalentXcel Staging",
+  "branch": "main",
+  "commit": "0a46bd32953e1a383133d88e301ca9b9c206d1c0",
+  "tables_rls": [
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "candidate_communications"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "candidate_notes"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_badges"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_boss_battles"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_boss_participants"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_event_registrations"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_events"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_goals"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_guild_members"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_guilds"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_player_badges"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_player_quests"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_player_skills"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_players"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_quests"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_reward_redemptions"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_rewards"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_skill_paths"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_tree_skills"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "career_xp_ledger"
+    },
+    {
+      "rowsecurity": false,
+      "schemaname": "public",
+      "tablename": "companies"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "company_profiles"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "company_team_members"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "connections"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "courses"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "cover_letters"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "edge_rate_limits"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "email_templates"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "interviews"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "job_analytics"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "job_applications"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "jobs"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "learning_paths"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "post_comments"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "post_reactions"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "posts"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "profiles"
+    },
+    {
+      "rowsecurity": false,
+      "schemaname": "public",
+      "tablename": "resume_downloads"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "resumes"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "saved_jobs"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "user_courses"
+    },
+    {
+      "rowsecurity": true,
+      "schemaname": "public",
+      "tablename": "user_roles"
+    }
+  ],
+  "policies": [
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Team members can manage communications for their company jobs",
+      "qual": "(job_id IN ( SELECT j.id\n   FROM (jobs j\n     JOIN company_team_members ctm ON ((j.company_id = ctm.company_id)))\n  WHERE ((ctm.user_id = auth.uid()) AND (ctm.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "candidate_communications",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Team members can manage notes for their company jobs",
+      "qual": "(job_id IN ( SELECT j.id\n   FROM (jobs j\n     JOIN company_team_members ctm ON ((j.company_id = ctm.company_id)))\n  WHERE ((ctm.user_id = auth.uid()) AND (ctm.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "candidate_notes",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public badges read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_badges",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public boss battles read",
+      "qual": "(is_live = true)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_boss_battles",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users insert own boss participation",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_boss_participants",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users read own boss participants",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_boss_participants",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users update own boss participation",
+      "qual": "((auth.uid() = player_id) OR (auth.uid() IN ( SELECT users.id\n   FROM auth.users\n  WHERE ((users.email)::text ~~ '%@talentxcel.in'::text))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_boss_participants",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users insert registrations",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_event_registrations",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users view registrations",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_event_registrations",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public events read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_events",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can manage own career goals",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_goals",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public guild members read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_guild_members",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can join guild",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_guild_members",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "DELETE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can leave guild",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_guild_members",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Auth guilds insert",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_guilds",
+      "with_check": "(auth.uid() IS NOT NULL)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public guilds read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_guilds",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public player badges read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_badges",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users insert own badge",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_badges",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users insert own quests",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_quests",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users read own quests",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_quests",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users update own quests",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_quests",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users insert own skills",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_skills",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users read own skills",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_skills",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users update own skills",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_player_skills",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public players read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_players",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can insert own player record",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_players",
+      "with_check": "(auth.uid() = id)"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can update own player record",
+      "qual": "(auth.uid() = id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_players",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public quests read",
+      "qual": "(is_active = true)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_quests",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users insert redemptions",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_reward_redemptions",
+      "with_check": "(auth.uid() = player_id)"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users view own redemptions",
+      "qual": "(auth.uid() = player_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_reward_redemptions",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public rewards read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_rewards",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public skill paths read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_skill_paths",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Public tree skills read",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_tree_skills",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view own XP ledger",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "career_xp_ledger",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Anyone can view companies",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "companies",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Authenticated users can create companies",
+      "qual": null,
+      "roles": "{authenticated}",
+      "schemaname": "public",
+      "tablename": "companies",
+      "with_check": "true"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Company admins can update companies",
+      "qual": "(id IN ( SELECT company_profiles.company_id\n   FROM company_profiles\n  WHERE (company_profiles.owner_id = auth.uid())\nUNION\n SELECT company_team_members.company_id\n   FROM company_team_members\n  WHERE ((company_team_members.user_id = auth.uid()) AND (company_team_members.role = 'admin'::team_role) AND (company_team_members.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "companies",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Company owners can manage their company profile",
+      "qual": "(owner_id = auth.uid())",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "company_profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Team members can view company profile",
+      "qual": "(EXISTS ( SELECT 1\n   FROM company_team_members\n  WHERE ((company_team_members.company_id = company_profiles.company_id) AND (company_team_members.user_id = auth.uid()) AND (company_team_members.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "company_profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Company admins can manage team members",
+      "qual": "is_company_admin_or_owner(company_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "company_team_members",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can create connection requests",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "connections",
+      "with_check": "(auth.uid() = requester_id)"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can update their connections",
+      "qual": "((auth.uid() = requester_id) OR (auth.uid() = recipient_id))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "connections",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view their connections",
+      "qual": "((auth.uid() = requester_id) OR (auth.uid() = recipient_id))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "connections",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Anyone can view active courses",
+      "qual": "(is_active = true)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "courses",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Instructors can manage own courses",
+      "qual": "(auth.uid() = created_by)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "courses",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can manage own cover letters",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "cover_letters",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Team members can manage email templates for their company",
+      "qual": "(company_id IN ( SELECT company_team_members.company_id\n   FROM company_team_members\n  WHERE ((company_team_members.user_id = auth.uid()) AND (company_team_members.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "email_templates",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Team members can manage interviews for their company jobs",
+      "qual": "(application_id IN ( SELECT ja.id\n   FROM ((job_applications ja\n     JOIN jobs j ON ((ja.job_id = j.id)))\n     JOIN company_team_members ctm ON ((j.company_id = ctm.company_id)))\n  WHERE ((ctm.user_id = auth.uid()) AND (ctm.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "interviews",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Team members can view analytics for their company jobs",
+      "qual": "(job_id IN ( SELECT j.id\n   FROM (jobs j\n     JOIN company_team_members ctm ON ((j.company_id = ctm.company_id)))\n  WHERE ((ctm.user_id = auth.uid()) AND (ctm.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "job_analytics",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Employers can view applications for their jobs",
+      "qual": "(EXISTS ( SELECT 1\n   FROM (jobs j\n     JOIN company_team_members ctm ON ((j.company_id = ctm.company_id)))\n  WHERE ((j.id = job_applications.job_id) AND (ctm.user_id = auth.uid()) AND (ctm.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "job_applications",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can create own applications",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "job_applications",
+      "with_check": "(auth.uid() = user_id)"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can update own applications",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "job_applications",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view own applications",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "job_applications",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Anyone can view active jobs",
+      "qual": "(is_active = true)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "jobs",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Companies can manage their jobs",
+      "qual": "(auth.uid() = posted_by)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "jobs",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Company team members can manage their jobs",
+      "qual": "(company_id IN ( SELECT company_team_members.company_id\n   FROM company_team_members\n  WHERE ((company_team_members.user_id = auth.uid()) AND (company_team_members.is_active = true))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "jobs",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view published jobs",
+      "qual": "(is_active = true)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "jobs",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Anyone can view learning paths",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "learning_paths",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Creators can manage own paths",
+      "qual": "(auth.uid() = created_by)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "learning_paths",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can create comments",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "post_comments",
+      "with_check": "(auth.uid() = author_id)"
+    },
+    {
+      "cmd": "DELETE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can delete own comments",
+      "qual": "(auth.uid() = author_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "post_comments",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can update own comments",
+      "qual": "(auth.uid() = author_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "post_comments",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view comments on visible posts",
+      "qual": "(EXISTS ( SELECT 1\n   FROM posts\n  WHERE ((posts.id = post_comments.post_id) AND ((posts.is_public = true) OR (posts.author_id = auth.uid())))))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "post_comments",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can manage own reactions",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "post_reactions",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view all reactions",
+      "qual": "true",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "post_reactions",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can create own posts",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "posts",
+      "with_check": "(auth.uid() = author_id)"
+    },
+    {
+      "cmd": "DELETE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can delete own posts",
+      "qual": "(auth.uid() = author_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "posts",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can update own posts",
+      "qual": "(auth.uid() = author_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "posts",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view public posts",
+      "qual": "((is_public = true) OR (auth.uid() = author_id))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "posts",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can insert own profile",
+      "qual": null,
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": "(auth.uid() = id)"
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can update own profile",
+      "qual": "(auth.uid() = id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can view public profiles",
+      "qual": "((is_profile_public = true) OR (auth.uid() = id))",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "profiles",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can manage own resumes",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "resumes",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can manage own saved jobs",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "saved_jobs",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Users can manage own enrollments",
+      "qual": "(auth.uid() = user_id)",
+      "roles": "{public}",
+      "schemaname": "public",
+      "tablename": "user_courses",
+      "with_check": null
+    },
+    {
+      "cmd": "ALL",
+      "permissive": "PERMISSIVE",
+      "policyname": "Admins can manage documents",
+      "qual": "((bucket_id = 'documents'::text) AND is_app_admin(auth.uid()))",
+      "roles": "{authenticated}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": null
+    },
+    {
+      "cmd": "DELETE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Candidates can delete own documents",
+      "qual": "((bucket_id = 'documents'::text) AND ((auth.uid() = owner) OR ((auth.uid())::text = (storage.foldername(name))[1]) OR is_app_admin(auth.uid())))",
+      "roles": "{authenticated}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": null
+    },
+    {
+      "cmd": "INSERT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Candidates can insert own documents",
+      "qual": null,
+      "roles": "{authenticated}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": "((bucket_id = 'documents'::text) AND ((owner IS NULL) OR (auth.uid() = owner)) AND ((auth.uid())::text = (storage.foldername(name))[1]))"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Candidates can read own documents",
+      "qual": "((bucket_id = 'documents'::text) AND ((auth.uid() = owner) OR ((auth.uid())::text = (storage.foldername(name))[1])))",
+      "roles": "{authenticated}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "permissive": "PERMISSIVE",
+      "policyname": "Candidates can update own documents",
+      "qual": "((bucket_id = 'documents'::text) AND ((auth.uid() = owner) OR ((auth.uid())::text = (storage.foldername(name))[1])) AND ((auth.uid())::text = (storage.foldername(name))[1]))",
+      "roles": "{authenticated}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": "((bucket_id = 'documents'::text) AND ((owner IS NULL) OR (auth.uid() = owner)) AND ((auth.uid())::text = (storage.foldername(name))[1]))"
+    },
+    {
+      "cmd": "SELECT",
+      "permissive": "PERMISSIVE",
+      "policyname": "Employers can view applicant documents",
+      "qual": "((bucket_id = 'documents'::text) AND (EXISTS ( SELECT 1\n   FROM ((job_applications ja\n     JOIN jobs j ON ((ja.job_id = j.id)))\n     JOIN company_team_members ctm ON ((j.company_id = ctm.company_id)))\n  WHERE ((ctm.user_id = auth.uid()) AND (ctm.is_active = true) AND ((ja.user_id = objects.owner) OR ((ja.user_id)::text = (storage.foldername(objects.name))[1]))))))",
+      "roles": "{authenticated}",
+      "schemaname": "storage",
+      "tablename": "objects",
+      "with_check": null
+    }
+  ],
+  "functions": [
+    {
+      "arguments": "p_rate_key text, p_endpoint text, p_max_requests integer, p_window_seconds integer",
+      "function_name": "check_rate_limit",
+      "is_security_definer": true,
+      "owner": "postgres",
+      "runtime_config": [
+        "search_path=public, pg_temp"
+      ],
+      "schema_name": "public",
+      "volatility": "v"
+    },
+    {
+      "arguments": "user_uuid uuid",
+      "function_name": "is_app_admin",
+      "is_security_definer": true,
+      "owner": "postgres",
+      "runtime_config": [
+        "search_path=public"
+      ],
+      "schema_name": "public",
+      "volatility": "s"
+    },
+    {
+      "arguments": "company_uuid uuid",
+      "function_name": "is_company_admin_or_owner",
+      "is_security_definer": true,
+      "owner": "postgres",
+      "runtime_config": null,
+      "schema_name": "public",
+      "volatility": "s"
+    },
+    {
+      "arguments": "p_resume_id uuid",
+      "function_name": "record_resume_download_atomic",
+      "is_security_definer": true,
+      "owner": "postgres",
+      "runtime_config": [
+        "search_path=public"
+      ],
+      "schema_name": "public",
+      "volatility": "v"
+    }
+  ],
+  "routine_privileges": [
+    {
+      "grantee": "postgres",
+      "privilege_type": "EXECUTE",
+      "routine_name": "check_rate_limit",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "check_rate_limit",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_app_admin",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_app_admin",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_app_admin",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_app_admin",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_app_admin",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_company_admin_or_owner",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_company_admin_or_owner",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_company_admin_or_owner",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_company_admin_or_owner",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "is_company_admin_or_owner",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "PUBLIC",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_resume_download_atomic",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_resume_download_atomic",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_resume_download_atomic",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_resume_download_atomic",
+      "routine_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "EXECUTE",
+      "routine_name": "record_resume_download_atomic",
+      "routine_schema": "public"
+    }
+  ],
+  "table_privileges": [
+    {
+      "grantee": "postgres",
+      "privilege_type": "DELETE",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "INSERT",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "REFERENCES",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "SELECT",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRIGGER",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRUNCATE",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "UPDATE",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "DELETE",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "INSERT",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "REFERENCES",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "SELECT",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "TRIGGER",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "TRUNCATE",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "UPDATE",
+      "table_name": "edge_rate_limits",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "DELETE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "INSERT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "REFERENCES",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "SELECT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "TRIGGER",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "TRUNCATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "anon",
+      "privilege_type": "UPDATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "DELETE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "INSERT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "REFERENCES",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "SELECT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "TRIGGER",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "TRUNCATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "UPDATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "DELETE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "INSERT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "REFERENCES",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "SELECT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRIGGER",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRUNCATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "UPDATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "DELETE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "INSERT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "REFERENCES",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "SELECT",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "TRIGGER",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "TRUNCATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "UPDATE",
+      "table_name": "resume_downloads",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "authenticated",
+      "privilege_type": "SELECT",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "DELETE",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "INSERT",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "REFERENCES",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "SELECT",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRIGGER",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "TRUNCATE",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "postgres",
+      "privilege_type": "UPDATE",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "DELETE",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "INSERT",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "REFERENCES",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "SELECT",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "TRIGGER",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "TRUNCATE",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    },
+    {
+      "grantee": "service_role",
+      "privilege_type": "UPDATE",
+      "table_name": "user_roles",
+      "table_schema": "public"
+    }
+  ],
+  "storage_buckets": [
+    {
+      "allowed_mime_types": null,
+      "file_size_limit": null,
+      "id": "cover-letters",
+      "name": "cover-letters",
+      "public": false
+    },
+    {
+      "allowed_mime_types": null,
+      "file_size_limit": null,
+      "id": "cv-files",
+      "name": "cv-files",
+      "public": false
+    },
+    {
+      "allowed_mime_types": null,
+      "file_size_limit": null,
+      "id": "documents",
+      "name": "documents",
+      "public": false
+    },
+    {
+      "allowed_mime_types": null,
+      "file_size_limit": null,
+      "id": "resumes",
+      "name": "resumes",
+      "public": false
+    },
+    {
+      "allowed_mime_types": null,
+      "file_size_limit": null,
+      "id": "user-uploads",
+      "name": "user-uploads",
+      "public": false
+    }
+  ],
+  "users": [
+    {
+      "created_at": "2026-11-02 08:28:39.745476+00",
+      "email": "audit_cand1@talentxcel-audit.local",
+      "id": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+      "role": "authenticated"
+    },
+    {
+      "created_at": "2026-11-02 08:28:40.35375+00",
+      "email": "audit_cand2@talentxcel-audit.local",
+      "id": "45bdd0a1-37e0-4728-8dc6-67be4ebdb735",
+      "role": "authenticated"
+    },
+    {
+      "created_at": "2026-11-02 08:28:41.005285+00",
+      "email": "audit_rec1@talentxcel-audit.local",
+      "id": "d5336939-770b-442b-88d0-a6edd6850657",
+      "role": "authenticated"
+    },
+    {
+      "created_at": "2026-11-02 08:28:41.508221+00",
+      "email": "audit_rec2@talentxcel-audit.local",
+      "id": "5b2022b9-37f0-4fc1-807d-56cec1044303",
+      "role": "authenticated"
+    }
+  ],
+  "profiles": [
+    {
+      "email": "audit_cand1@talentxcel-audit.local",
+      "full_name": "Audit Candidate Alpha",
+      "id": "0b28a473-bcbb-4c49-b291-f9ea0daf4add",
+      "user_role": "job_seeker"
+    },
+    {
+      "email": "audit_cand2@talentxcel-audit.local",
+      "full_name": null,
+      "id": "45bdd0a1-37e0-4728-8dc6-67be4ebdb735",
+      "user_role": "job_seeker"
+    },
+    {
+      "email": "audit_rec1@talentxcel-audit.local",
+      "full_name": null,
+      "id": "d5336939-770b-442b-88d0-a6edd6850657",
+      "user_role": "job_seeker"
+    },
+    {
+      "email": "audit_rec2@talentxcel-audit.local",
+      "full_name": null,
+      "id": "5b2022b9-37f0-4fc1-807d-56cec1044303",
+      "user_role": "job_seeker"
+    }
+  ]
+}

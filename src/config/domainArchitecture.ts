@@ -386,6 +386,8 @@ export function getCanonicalDomainForRoute(pathname: string): string {
  * - Removes trailing slash (except root '/').
  * - Eliminates duplicate cross-domain indexing and canonical loops.
  */
+export const CANARY_SALARY_INDEPENDENCE_ENABLED = typeof process !== 'undefined' && process.env?.SEO_DEPLOY_SALARY_CANARY !== 'undefined' ? process.env.SEO_DEPLOY_SALARY_CANARY !== 'false' : true;
+
 export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string): string {
   let pathname = '/';
   let hostFromUrl = '';
@@ -423,6 +425,14 @@ export function formatCanonicalUrl(pathOrUrl?: string, currentHostname?: string)
   if (activeUniverse !== 'CORE' && pathname === '/') {
     return `${UNIVERSE_PRIMARY_DOMAIN[activeUniverse]}/`;
   }
+  // CANARY: Salary Topical Authority Canary (SEO-004 Executive Governance Decision)
+  // salary.talentxcel.in serves as the controlled development canary for independent topical authority.
+  // When targetUniverse is SALARY, canonical resolves to https://salary.talentxcel.in${pathname}.
+  // All other subdomains preserve apex consolidation (https://talentxcel.in) without global canonical shifts.
+  if (CANARY_SALARY_INDEPENDENCE_ENABLED && targetUniverse === 'SALARY') {
+    return `https://salary.talentxcel.in${pathname === '/' ? '/' : pathname}`;
+  }
+
 
   // APEX AUTHORITY CONSOLIDATION (Naukri / AmbitionBox Architecture):
   // All programmatic catalog and search routes (/colleges, /salary, /jobs, /locations, /resume, /directory, /compare, /p)

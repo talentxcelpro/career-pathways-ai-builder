@@ -9,9 +9,13 @@ import { createClient } from "@supabase/supabase-js";
 import * as fs from "fs";
 
 const STAGING_URL = "https://pvwwtquuexhyydwihjbi.supabase.co";
+const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2d3d0cXV1ZXhoeXlkd2loamJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1OTI1NzYsImV4cCI6MjEwOTE2ODU3Nn0.ZBevJqFcBzb2UAwwr_o5zgUcrrI5uf1rFgsn-cMFXnQ";
 const SERVICE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB2d3d0cXV1ZXhoeXlkd2loamJpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MzU5MjU3NiwiZXhwIjoyMTA5MTY4NTc2fQ.fnYAXFI51Rpc6-GrnKN2Ui-Cyj_6K0aundMWZi0oJEI";
 
 const adminClient = createClient(STAGING_URL, SERVICE_KEY, {
+  auth: { persistSession: false },
+});
+const authClient = createClient(STAGING_URL, ANON_KEY, {
   auth: { persistSession: false },
 });
 
@@ -52,8 +56,8 @@ export async function setupTestIdentities(): Promise<Record<string, TestIdentity
       user = newUser.user;
     }
 
-    // 2. Generate session / JWT token
-    const { data: sessionData, error: signinErr } = await adminClient.auth.signInWithPassword({
+    // 2. Generate session / JWT token via authClient (anon)
+    const { data: sessionData, error: signinErr } = await authClient.auth.signInWithPassword({
       email: cfg.email,
       password: "AuditPassword123!Secure",
     });

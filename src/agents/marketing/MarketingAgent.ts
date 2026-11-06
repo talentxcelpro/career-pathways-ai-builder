@@ -5,6 +5,7 @@ import { eventBus } from '../shared/EventBus';
 import { businessMemory } from '../shared/BusinessMemory';
 import { guardrails } from '../shared/Guardrails';
 import { agentAuditLog } from '../shared/AuditLog';
+import { toolRegistry } from '../shared/ToolRegistry';
 import { claim1MarketingService } from '@/services/claim1MarketingService';
 import type { AgentStatus } from '../shared/types';
 import type { Claim1Prospect } from '@/types/claim1Marketing';

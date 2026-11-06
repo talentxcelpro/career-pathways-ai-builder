@@ -29,15 +29,17 @@ export class BusinessMemory {
         jobsTodayRes,
         claim1EntitiesRes,
         claim1ListingsRes,
+        claim1BidsRes,
         todayEventsRes,
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact', head: true }),
         supabase.from('profiles').select('id', { count: 'exact', head: true }).gte('created_at', `${todayIso}T00:00:00Z`),
         supabase.from('companies').select('id', { count: 'exact', head: true }),
-        supabase.from('scraped_jobs' as any).select('id', { count: 'exact', head: true }),
-        supabase.from('scraped_jobs' as any).select('id', { count: 'exact', head: true }).gte('created_at', `${todayIso}T00:00:00Z`),
+        supabase.from('jobs').select('id', { count: 'exact', head: true }),
+        supabase.from('jobs').select('id', { count: 'exact', head: true }).gte('created_at', `${todayIso}T00:00:00Z`),
         supabase.from('claim1_entities').select('id', { count: 'exact', head: true }).not('owner_user_id', 'is', null),
         supabase.from('claim1_listings').select('id, current_bid_amount, bid_count'),
+        supabase.from('claim1_bids').select('id, amount, status'),
         supabase.from('claim1_growth_events' as any).select('id, event_type, metadata').gte('created_at', `${todayIso}T00:00:00Z`),
       ]);
 
@@ -45,9 +47,14 @@ export class BusinessMemory {
         (l) => (l.bid_count || 0) > 0 || (l.current_bid_amount || 0) > 0
       ).length;
 
-      const totalRev = (claim1ListingsRes.data as any[] || []).reduce(
-        (sum, l) => sum + (Number(l.current_bid_amount) || 0), 0
+      // Strict revenue truth: collected revenue comes from verified/paid bids only
+      const verifiedBids = ((claim1BidsRes.data || []) as any[]).filter(
+        (b) => b.status === 'VERIFIED' || b.status === 'PAID'
       );
+      const totalCollectedRev = verifiedBids.reduce(
+        (sum, b) => sum + (Number(b.amount) || 0), 0
+      );
+      const totalRev = totalCollectedRev; // strictly verified collected revenue
       const revToday = 0;
 
       const events = (todayEventsRes?.data as any[]) || [];
@@ -55,16 +62,16 @@ export class BusinessMemory {
       const failedActions = events.filter((e) => e.metadata?.success === false).length;
 
       this.cache = {
-        usersTotal: profilesTotalRes.count || 529,
+        usersTotal: profilesTotalRes.count || 543,
         usersAcquiredToday: profilesTodayRes.count || 0,
-        employersTotal: companiesTotalRes.count || 37,
+        employersTotal: companiesTotalRes.count || 4,
         employersAcquiredToday: 0,
-        companiesTotal: companiesTotalRes.count || 37,
-        jobsActiveTotal: jobsTotalRes.count || 4812,
+        companiesTotal: companiesTotalRes.count || 4,
+        jobsActiveTotal: jobsTotalRes.count || 2236,
         jobsAddedToday: jobsTodayRes.count || 0,
         collegesTotal: 1509,
         claim1ClaimedCount: claim1EntitiesRes.count || 1,
-        claim1ActiveBids: activeBids || 9,
+        claim1ActiveBids: activeBids,
         claim1ReclaimRate48hPct: 83.3,
         platformRevenueINR: totalRev,
         revenueGeneratedTodayINR: revToday,
@@ -82,16 +89,16 @@ export class BusinessMemory {
       return this.cache;
     } catch {
       return {
-        usersTotal: 529,
+        usersTotal: 543,
         usersAcquiredToday: 0,
-        employersTotal: 37,
+        employersTotal: 4,
         employersAcquiredToday: 0,
-        companiesTotal: 37,
-        jobsActiveTotal: 4812,
+        companiesTotal: 4,
+        jobsActiveTotal: 2236,
         jobsAddedToday: 0,
         collegesTotal: 1509,
         claim1ClaimedCount: 1,
-        claim1ActiveBids: 9,
+        claim1ActiveBids: 0,
         claim1ReclaimRate48hPct: 83.3,
         platformRevenueINR: 0,
         revenueGeneratedTodayINR: 0,
