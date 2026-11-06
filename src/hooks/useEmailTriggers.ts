@@ -45,7 +45,7 @@ export const useEmailTriggers = () => {
               recipientName: templateData?.name || templateData?.recipient_name || recipientEmail.split('@')[0],
               template: triggerType,
               priority: priority === 'high' ? 1 : (priority === 'low' ? 3 : 2),
-              immediate: priority === 'high',
+              immediate: true,
               variables: templateData
             })
           });

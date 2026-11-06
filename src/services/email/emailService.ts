@@ -66,6 +66,37 @@ export class EmailService {
     // 4. Critical Immediate Dispatch: If CRITICAL or immediate send requested, attempt immediate send
     if (priority === EmailPriority.CRITICAL || (payload as any).immediate === true) {
       try {
+        if (typeof window !== 'undefined') {
+          try {
+            const apiRes = await fetch('/api/email/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: cleanEmail,
+                recipientName: payload.recipientName || 'User',
+                template: payload.template,
+                priority: priority === EmailPriority.CRITICAL ? 1 : 2,
+                immediate: true,
+                variables: payload.variables
+              })
+            });
+            if (apiRes.ok) {
+              const apiData = await apiRes.json();
+              emailGovernor.recordDispatch(cleanEmail, payload.category, payload.template);
+              return {
+                success: true,
+                messageId: apiData.messageId,
+                status: 'sent',
+                mode: 'ses',
+                attempts: 1,
+                statusCode: 200,
+                durationMs: apiData.durationMs || 250
+              };
+            }
+          } catch (apiErr) {
+            console.warn('Direct API send failed, trying provider:', apiErr);
+          }
+        }
         const rendered = await renderEmailTemplate(
           payload.template,
           payload.variables,
