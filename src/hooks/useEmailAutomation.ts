@@ -129,35 +129,19 @@ export const useEmailAutomation = () => {
     jobTitle: string, 
     companyName: string
   ) => {
-    try {
-      // Queue email using the new automation system
-      const { error } = await supabase
-        .from('email_automation_queue')
-        .insert({
-          trigger_type: 'application_confirmation',
-          recipient_email: userEmail,
-          recipient_name: userName,
-          template_data: {
-            name: userName,
-            recipient_name: userName,
-            job_title: jobTitle,
-            company_name: companyName,
-            application_id: 'APP-' + Math.random().toString(36).substr(2, 9).toUpperCase()
-          },
-          scheduled_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Failed to queue application confirmation email:', error);
-        throw error;
+    return sendAutomatedEmail({
+      template: 'application_confirmation' as any,
+      trigger: 'job_application',
+      to: userEmail,
+      subject: Application Submitted:  at ,
+      data: {
+        name: userName,
+        recipient_name: userName,
+        job_title: jobTitle,
+        company_name: companyName,
+        application_id: 'APP-' + Math.random().toString(36).substr(2, 9).toUpperCase()
       }
-
-      console.log('Application confirmation email queued successfully');
-      return { success: true };
-    } catch (error) {
-      console.error('Error triggering application confirmation email:', error);
-      throw error;
-    }
+    });
   };
 
   const triggerTeamInviteEmail = async (
@@ -240,32 +224,16 @@ export const useEmailAutomation = () => {
   };
 
   const triggerProfileCompletionReminder = async (userEmail: string, userName: string) => {
-    try {
-      // Queue email using the new automation system
-      const { error } = await supabase
-        .from('email_automation_queue')
-        .insert({
-          trigger_type: 'profile_completion_reminder',
-          recipient_email: userEmail,
-          recipient_name: userName,
-          template_data: {
-            name: userName || 'there',
-            recipient_name: userName || 'there'
-          },
-          scheduled_at: new Date().toISOString()
-        });
-
-      if (error) {
-        console.error('Failed to queue profile completion reminder:', error);
-        throw error;
+    return sendAutomatedEmail({
+      template: 'profile_incomplete' as any,
+      trigger: 'profile_reminder',
+      to: userEmail,
+      subject: 'Complete Your TalentXcel Profile to Unlock 3x Recruiter Visibility',
+      data: {
+        name: userName || 'there',
+        recipient_name: userName || 'there'
       }
-
-      console.log('Profile completion reminder queued successfully');
-      return { success: true };
-    } catch (error) {
-      console.error('Error triggering profile completion reminder:', error);
-      throw error;
-    }
+    });
   };
 
   return {

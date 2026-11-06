@@ -61,6 +61,33 @@ const OAuthCallback = () => {
           if (!exchangeError && exchangeData?.session) {
             setStatus('success');
             toast.success('Signed in successfully!');
+
+            // Trigger Welcome email for new OAuth user
+            const oAuthUser = exchangeData.session.user;
+            if (oAuthUser?.email) {
+              const welcomeKey = 	xc_welcomed_;
+              if (!localStorage.getItem(welcomeKey)) {
+                localStorage.setItem(welcomeKey, 'true');
+                const fullName = oAuthUser.user_metadata?.full_name || oAuthUser.user_metadata?.name || oAuthUser.email.split('@')[0];
+                fetch('/api/email/send', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    to: oAuthUser.email,
+                    recipientName: fullName,
+                    template: 'welcome',
+                    priority: 1,
+                    immediate: true,
+                    variables: {
+                      first_name: fullName.split(' ')[0],
+                      name: fullName,
+                      email: oAuthUser.email
+                    }
+                  })
+                }).catch(() => {});
+              }
+            }
+
             const dest = resolvePostAuthDestination({
               searchParams: requestUrl.searchParams,
               userMetadata: exchangeData.session.user?.user_metadata,

@@ -80,6 +80,30 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
         profile_completed: false,
         verification_status: 'unverified'
       }, { onConflict: 'id' });
+
+      // Automatically trigger welcome email for any new user (Google, LinkedIn, One Tap, Email)
+      if (user.email) {
+        const welcomeKey = 	xc_welcomed_;
+        if (typeof window !== 'undefined' && !localStorage.getItem(welcomeKey)) {
+          localStorage.setItem(welcomeKey, 'true');
+          fetch('/api/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              to: user.email,
+              recipientName: fullName,
+              template: 'welcome',
+              priority: 1,
+              immediate: true,
+              variables: {
+                first_name: fullName.split(' ')[0],
+                name: fullName,
+                email: user.email
+              }
+            })
+          }).catch(err => console.warn('[AuthContext] Welcome email trigger non-fatal:', err));
+        }
+      }
     }
 
     await supabase.rpc('create_admin_connections', { target_user_id: user.id });
