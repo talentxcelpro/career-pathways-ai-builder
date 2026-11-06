@@ -63,15 +63,52 @@ export const ConnectionRequests: React.FC = () => {
   // Accept connection mutation
   const acceptConnectionMutation = useMutation({
     mutationFn: async (connectionId: string) => {
-      const { error } = await supabase
+      const { data: conn, error } = await supabase
         .from('connections')
         .update({ 
           status: 'accepted',
           connected_at: new Date().toISOString()
         })
-        .eq('id', connectionId);
+        .eq('id', connectionId)
+        .select('requester_id, user_id')
+        .maybeSingle();
 
       if (error) throw error;
+
+      // Trigger automatic Connection Accepted email to requester
+      if (conn?.requester_id) {
+        try {
+          const { data: reqProfile } = await supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', conn.requester_id)
+            .maybeSingle();
+
+          const { data: myProfile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('id', conn.user_id)
+            .maybeSingle();
+
+          if (reqProfile?.email) {
+            fetch('/api/email/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: reqProfile.email,
+                recipientName: reqProfile.full_name || 'Professional',
+                template: 'connection_accepted',
+                priority: 1,
+                immediate: true,
+                variables: {
+                  name: myProfile?.full_name || 'A TalentXcel member',
+                  recipient_name: reqProfile.full_name || 'Professional'
+                }
+              })
+            }).catch(e => console.warn('Connection email non-fatal:', e));
+          }
+        } catch (_) {}
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['connectionRequests'] });

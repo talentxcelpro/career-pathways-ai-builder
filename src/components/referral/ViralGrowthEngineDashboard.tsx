@@ -109,7 +109,7 @@ const SHARE_PLATFORMS: Array<{
     color: 'bg-blue-600 hover:bg-blue-700',
     textColor: 'text-white',
     icon: Globe,
-    build: (url) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
+    build: (url, msg) => `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent(msg)}`,
   },
   {
     id: 'email',
@@ -445,7 +445,8 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
   // Helper for generating referral URL with channel utm
   const buildReferralUrl = useCallback((channel: ReferralChannel) => {
     if (!referralCode) return '';
-    const base = typeof window !== 'undefined' ? window.location.origin : 'https://talentxcel.in';
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const base = isLocal ? 'https://talentxcel.in' : (typeof window !== 'undefined' ? window.location.origin : 'https://talentxcel.in');
     return `${base}/signup?ref=${referralCode}&utm_source=${channel}&utm_medium=referral`;
   }, [referralCode]);
 

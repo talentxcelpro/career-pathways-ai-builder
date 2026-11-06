@@ -24,7 +24,12 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
   const { user, loading } = useAuth();
   const [searchParams] = useSearchParams();
   const location = useLocation();
-  const [authMode, setAuthMode] = useState(mode);
+  const isSignupPath = location.pathname === '/signup' || 
+                       location.pathname === '/join' || 
+                       location.pathname === '/register' || 
+                       location.pathname === '/auth/signup' ||
+                       location.pathname === '/auth/register';
+  const [authMode, setAuthMode] = useState<'signin' | 'signup'>(mode === 'signup' || isSignupPath ? 'signup' : 'signin');
   const [userType, setUserType] = useState<'candidate' | 'employer'>('candidate');
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,8 +51,10 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     const urlMode = searchParams.get('mode');
     if (urlMode === 'signup' || urlMode === 'signin') {
       setAuthMode(urlMode);
+    } else if (isSignupPath) {
+      setAuthMode('signup');
     }
-  }, [searchParams]);
+  }, [searchParams, isSignupPath]);
 
   // Redirect if already authenticated
   if (!loading && user) {

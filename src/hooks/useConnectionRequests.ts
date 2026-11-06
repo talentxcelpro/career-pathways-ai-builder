@@ -34,6 +34,38 @@ export const useConnectionRequests = () => {
         .single();
 
       if (error) throw error;
+
+      // Automatically dispatch Connection Request email notification
+      if (data && recipientId) {
+        supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', recipientId)
+          .maybeSingle()
+          .then(({ data: recProfile }) => {
+            if (recProfile?.email) {
+              const myName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A professional';
+              fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  to: recProfile.email,
+                  recipientName: recProfile.full_name || 'Professional',
+                  template: 'connection_request',
+                  priority: 1,
+                  immediate: true,
+                  variables: {
+                    inviter_name: myName,
+                    name: recProfile.full_name || 'Professional',
+                    recipient_name: recProfile.full_name || 'Professional'
+                  }
+                })
+              }).catch(() => {});
+            }
+          })
+          .catch(() => {});
+      }
+
       return data;
     },
     onSuccess: async () => {
@@ -54,10 +86,42 @@ export const useConnectionRequests = () => {
         .from('connections')
         .update({ status: 'accepted' })
         .eq('id', connectionId)
-        .select()
+        .select('id, requester_id, recipient_id')
         .single();
 
       if (error) throw error;
+
+      // Automatically dispatch Connection Accepted email notification
+      if (data?.requester_id) {
+        supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', data.requester_id)
+          .maybeSingle()
+          .then(async ({ data: reqProfile }) => {
+            if (reqProfile?.email) {
+              const { data: { user } } = await supabase.auth.getUser();
+              const myName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'A TalentXcel member';
+              fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  to: reqProfile.email,
+                  recipientName: reqProfile.full_name || 'Professional',
+                  template: 'connection_accepted',
+                  priority: 1,
+                  immediate: true,
+                  variables: {
+                    name: myName,
+                    recipient_name: reqProfile.full_name || 'Professional'
+                  }
+                })
+              }).catch(() => {});
+            }
+          })
+          .catch(() => {});
+      }
+
       return data;
     },
     onSuccess: async () => {

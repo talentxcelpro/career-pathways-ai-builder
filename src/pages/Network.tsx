@@ -47,11 +47,12 @@ import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 import { NetworkSidebarNav } from "@/components/network/NetworkSidebarNav";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Layers, LayoutGrid } from "lucide-react";
+import { Menu, Layers, LayoutGrid, Compass, ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { useNetworkNavigationMetrics } from "@/hooks/useNetworkNavigationMetrics";
+import { ExploreNavigationDrawer } from "@/components/navigation/ExploreNavigationDrawer";
 
 const Network: React.FC = () => {
   const { user } = useAuth();
@@ -61,6 +62,7 @@ const Network: React.FC = () => {
   const activeTab = searchParams.get('tab') || 'feed';
   const { connectionCount, articleCount, pendingRequestsCount, profile: liveProfile } = useNetworkNavigationMetrics();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [exploreDrawerOpen, setExploreDrawerOpen] = useState(false);
   
   const handleTabChange = (value: string) => {
     setSearchParams(prev => {
@@ -131,6 +133,24 @@ const Network: React.FC = () => {
 
       {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO (hidden on mobile, shown on lg+) */}
       <div className="hidden lg:block lg:col-span-3 space-y-3">
+        {/* Quick Explore Ecosystem Button on Desktop */}
+        <button
+          type="button"
+          onClick={() => setExploreDrawerOpen(true)}
+          className="w-full py-2.5 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-muted/80 border border-slate-200/80 dark:border-border/60 rounded-2xl transition-all shadow-2xs flex items-center justify-between group cursor-pointer"
+        >
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 shadow-2xs">
+              <Compass className="h-4 w-4" />
+            </div>
+            <div className="text-left">
+              <p className="text-xs font-extrabold text-foreground tracking-tight group-hover:text-blue-600 transition-colors">Explore Ecosystem</p>
+              <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Jobs, Career Passport &amp; Tools</p>
+            </div>
+          </div>
+          <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+        </button>
+
         {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
         <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
           <div className="flex items-center justify-between mb-2">
@@ -183,32 +203,18 @@ const Network: React.FC = () => {
           {/* MOBILE ONLY: COMPACT TOP APP BAR WITH INLINE MODULES LAUNCHER                */}
           {/* ============================================================================ */}
           <div className="md:hidden mb-2">
-            {/* Top Navigation Bar: Hamburger ☰ | TalentXcel Brand | MODULES [⊞] | 🔔 | Avatar */}
+            {/* Top Navigation Bar: Hamburger ☰ (9 Modules) | TalentXcel Brand | EXPLORE [🧭] (Ecosystem) | 🔔 | Avatar */}
             <div className="flex items-center justify-between px-3 py-1.5 -mx-2.5 -mt-1.5 bg-white/95 dark:bg-card/95 backdrop-blur-md border-b border-slate-200/80 dark:border-border/60 sticky top-0 z-40">
               <div className="flex items-center gap-2">
-                <button 
-                  type="button"
-                  onClick={() => setMobileDrawerOpen(true)}
-                  className="p-1 -ml-1 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-muted rounded-lg active:scale-95 transition-transform"
-                  aria-label="Open Network Navigation"
-                >
-                  <Menu className="h-5 w-5" />
-                </button>
-                <div className="flex items-center gap-1.5">
-                  <TalentXcelLogo iconSize={20} textSize="text-sm font-extrabold" theme="light" />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1.5">
-                {/* Modules Drawer Trigger Button: MODULES [⊞] */}
+                {/* Left Navigation: Hamburger Menu ☰ opening 9 Network Modules */}
                 <Sheet open={mobileDrawerOpen} onOpenChange={setMobileDrawerOpen}>
                   <SheetTrigger asChild>
                     <button 
-                      className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/80 font-bold text-[11px] shadow-2xs transition-all active:scale-95"
-                      aria-label="Open Network Modules"
+                      type="button"
+                      className="p-1 -ml-1 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-muted rounded-lg active:scale-95 transition-transform cursor-pointer"
+                      aria-label="Open Network Navigation"
                     >
-                      <span>MODULES</span>
-                      <LayoutGrid className="h-3 w-3" />
+                      <Menu className="h-5 w-5" />
                     </button>
                   </SheetTrigger>
                   <SheetContent side="left" className="p-3 w-[85%] max-w-xs overflow-y-auto z-[100]">
@@ -216,8 +222,11 @@ const Network: React.FC = () => {
                       <SheetTitle className="text-xs font-extrabold flex items-center justify-between uppercase tracking-wider text-slate-800 dark:text-slate-100">
                         <div className="flex items-center gap-1.5">
                           <Layers className="h-3.5 w-3.5 text-blue-600" />
-                          <span>Network Navigation</span>
+                          <span>Network Modules</span>
                         </div>
+                        <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200">
+                          9 Hubs
+                        </Badge>
                       </SheetTitle>
                     </SheetHeader>
                     <NetworkSidebarNav 
@@ -232,6 +241,28 @@ const Network: React.FC = () => {
                     />
                   </SheetContent>
                 </Sheet>
+                <div className="flex items-center gap-1.5">
+                  <TalentXcelLogo iconSize={20} textSize="text-sm font-extrabold" theme="light" />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {/* Right Navigation: EXPLORE [🧭] opening 3-Intent Ecosystem Mega-Drawer */}
+                <button 
+                  type="button"
+                  onClick={() => setExploreDrawerOpen(true)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/80 dark:border-blue-800/80 font-bold text-[11px] shadow-2xs transition-all active:scale-95 cursor-pointer"
+                  aria-label="Open Explore Menu"
+                >
+                  <span>EXPLORE</span>
+                  <Compass className="h-3 w-3" />
+                </button>
+
+                {/* Explore Navigation Drawer (3 Pillars: Find a Job, Build My Career, Hire Talent) */}
+                <ExploreNavigationDrawer 
+                  open={exploreDrawerOpen} 
+                  onOpenChange={setExploreDrawerOpen} 
+                />
 
                 <div className="relative text-slate-600 dark:text-slate-300">
                   <NotificationBell />

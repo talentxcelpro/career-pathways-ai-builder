@@ -273,6 +273,34 @@ const People: React.FC = () => {
         }
       } else {
         toast.success(`Connection request sent to ${userName}!`);
+
+        // Automatically dispatch Connection Request email to recipient
+        supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', userId)
+          .maybeSingle()
+          .then(({ data: recProfile }) => {
+            if (recProfile?.email) {
+              const myName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A professional';
+              fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  to: recProfile.email,
+                  recipientName: recProfile.full_name || userName,
+                  template: 'connection_request',
+                  priority: 1,
+                  immediate: true,
+                  variables: {
+                    inviter_name: myName,
+                    name: recProfile.full_name || userName,
+                    recipient_name: recProfile.full_name || userName
+                  }
+                })
+              }).catch(() => {});
+            }
+          });
       }
 
       setConnectedIds(prev => new Set(prev).add(userId));
