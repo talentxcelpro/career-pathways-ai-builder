@@ -1,4 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL =
+  process.env.TX_SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL ||
+  process.env.SUPABASE_URL ||
+  'https://dthlgsnakhoftinssokm.supabase.co';
 
 /**
  * Master Inlined 25-Template Platform Engine for TalentXcel Serverless Routes
@@ -22,6 +29,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export const CANONICAL_URL = 'https://talentxcel.in';
 export const DOMAIN = 'talentxcel.in';
+export const DEFAULT_REGION = 'us-east-1';
 export const LOGO_URL = 'https://talentxcel.in/assets/talentxcel-brand-logo.png';
 export const FAVICON_URL = 'https://talentxcel.in/favicon.png';
 export const FAVICON_ICO = 'https://talentxcel.in/favicon.ico';

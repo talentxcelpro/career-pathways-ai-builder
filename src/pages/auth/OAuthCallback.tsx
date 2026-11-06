@@ -65,7 +65,7 @@ const OAuthCallback = () => {
             // Trigger Welcome email for new OAuth user
             const oAuthUser = exchangeData.session.user;
             if (oAuthUser?.email) {
-              const welcomeKey = 	xc_welcomed_;
+              const welcomeKey = 'txc_welcomed_' + oAuthUser.id;
               if (!localStorage.getItem(welcomeKey)) {
                 localStorage.setItem(welcomeKey, 'true');
                 const fullName = oAuthUser.user_metadata?.full_name || oAuthUser.user_metadata?.name || oAuthUser.email.split('@')[0];

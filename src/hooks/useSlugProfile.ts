@@ -143,14 +143,16 @@ export function useSlugProfile(slug?: string) {
         const d = data as any;
         return {
           ...d,
-          title: d.title || (d.headline ? d.headline.split(/[•–-]/)[0].trim() : 'Verified Professional'),
-          headline: d.headline || d.title || 'Verified Professional & Industry Specialist',
+          title: d.title || d.current_job_title || (d.headline ? d.headline.split(/[-–|•]/)[0].trim() : 'Verified Professional'),
+          headline: d.headline || d.current_job_title || d.title || 'Verified Professional & Industry Specialist',
           location: d.location || 'Global Remote',
-          about: d.about || `${d.full_name || 'This member'} is a verified professional on the TalentXcel Global Network. Connect to explore career opportunities, projects, and collaboration.`,
+          about: d.about || d.bio || `${d.full_name || 'This member'} is a verified professional on the TalentXcel Global Network. Connect to explore career opportunities, projects, and collaboration.`,
           skills: (Array.isArray(d.skills) && d.skills.length > 0)
             ? d.skills
+            : (Array.isArray(d.verified_skills) && d.verified_skills.length > 0)
+            ? d.verified_skills
             : ['Strategic Planning', 'Leadership', 'Cross-Functional Delivery', 'Problem Solving'],
-          is_public: d.is_public !== false,
+          is_public: d.is_profile_public !== false && d.is_public !== false,
         } as SlugProfile;
       }
 

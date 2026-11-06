@@ -454,6 +454,33 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     `;
     robotsDirective = 'index, follow';
   }
+  // 1C. Refer and Earn -> Canonical to /network?tab=refer-and-earn
+  else if (
+    cleanPath === 'refer-and-earn' ||
+    cleanPath === 'referrals' ||
+    cleanPath === 'referral' ||
+    cleanPath.startsWith('refer-and-earn')
+  ) {
+    title = 'Refer & Earn — TalentXcel Viral Career & Rewards Network';
+    description = 'Invite colleagues and friends to TalentXcel. Unlock premium career tools, earn Career Coins, and expand your professional reach.';
+    canonical = 'https://talentxcel.in/network?tab=refer-and-earn';
+    h1 = 'Refer Professionals & Unlock TalentXcel Rewards';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">
+          🎁 TalentXcel Viral Growth Engine &amp; Referral Program
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Refer Peers. Earn Rewards. Accelerate Careers.</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          Share your unique referral link to unlock Career Coins, free ATS Resume Scans, and exclusive professional badges.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/network?tab=refer-and-earn" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Open Refer &amp; Earn Hub &rarr;</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  }
   // 2. Reels
   else if (cleanPath === 'reels') {
     title = 'TalentXcel Reels — Global Tech, AI & Career Stories';

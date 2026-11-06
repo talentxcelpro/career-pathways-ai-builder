@@ -172,7 +172,7 @@ const modules: ModuleItem[] = [
     name: 'Refer & Earn',
     description: 'Invite friends and earn rewards',
     icon: Gift,
-    route: '/refer-and-earn',
+    route: '/network?tab=refer-and-earn',
     category: 'social'
   },
   {

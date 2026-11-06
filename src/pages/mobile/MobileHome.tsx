@@ -96,7 +96,7 @@ export const MobileHome = () => {
       title: 'Refer & Earn',
       description: 'Invite friends & earn',
       icon: <Gift className="w-6 h-6" />,
-      route: '/refer-and-earn',
+      route: '/network?tab=refer-and-earn',
       badge: '$50',
       color: 'bg-pink-100 text-pink-600'
     },

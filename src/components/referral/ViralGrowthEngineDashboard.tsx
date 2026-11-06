@@ -444,10 +444,10 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
 
   // Helper for generating referral URL with channel utm
   const buildReferralUrl = useCallback((channel: ReferralChannel) => {
-    if (!referralCode) return '';
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const base = isLocal ? 'https://talentxcel.in' : (typeof window !== 'undefined' ? window.location.origin : 'https://talentxcel.in');
-    return `${base}/signup?ref=${referralCode}&utm_source=${channel}&utm_medium=referral`;
+    const codeParam = referralCode ? `&ref=${encodeURIComponent(referralCode)}` : '';
+    return `${base}/network?tab=refer-and-earn${codeParam}&utm_source=${channel}&utm_medium=referral`;
   }, [referralCode]);
 
   // Copy handler
@@ -467,9 +467,10 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
 
   // Social share dispatcher
   const handleShare = useCallback((platform: typeof SHARE_PLATFORMS[0]) => {
-    if (!referralCode) return;
     const url = buildReferralUrl(platform.id);
-    trackShareClick(referralCode, platform.id);
+    if (referralCode) {
+      trackShareClick(referralCode, platform.id);
+    }
     window.open(platform.build(url, SHARE_MESSAGE), '_blank', 'noopener,noreferrer');
   }, [referralCode, buildReferralUrl]);
 
@@ -823,7 +824,7 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
                   <div className="bg-white p-3 rounded-xl shadow-xs border border-slate-200 flex items-center justify-center">
                     <QRCodeSVG
                       id="referral-qr-svg"
-                      value={buildReferralUrl('qr') || `https://talentxcel.in/signup?ref=${referralCode || 'TXC'}`}
+                      value={buildReferralUrl('qr') || `https://talentxcel.in/network?tab=refer-and-earn&ref=${referralCode || 'TXC'}`}
                       size={180}
                       level="H"
                       includeMargin={false}
