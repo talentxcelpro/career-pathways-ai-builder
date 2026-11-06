@@ -101,3 +101,37 @@ export const BASE_EMAIL_TEMPLATE = `<!DOCTYPE html>
   </table>
 </body>
 </html>`;
+
+export const WELCOME_TEMPLATE = BASE_EMAIL_TEMPLATE.replace('{{content}}', `
+  <div style="font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Hi {{name}},</div>
+  <h1 style="margin: 0 0 14px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">Welcome to TalentXcel</h1>
+  <p style="margin: 0 0 12px 0; font-size: 14.5px; line-height: 23px; color: #334155;">Your account is now active. Explore your connected professional ecosystem designed to help you build your identity, unlock opportunities and accelerate your career.</p>
+  <div style="text-align: center; margin: 28px 0 10px 0;">
+    <a href="https://talentxcel.in" style="background-color: #0071e3; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 980px; font-weight: 600; font-size: 14px; display: inline-block;">Get Started &rarr;</a>
+  </div>
+`);
+
+export const JOB_NOTIFICATION_TEMPLATE = BASE_EMAIL_TEMPLATE.replace('{{content}}', `
+  <div style="font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Hi {{name}},</div>
+  <h1 style="margin: 0 0 14px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">New High-Priority Job Match</h1>
+  <p style="margin: 0 0 12px 0; font-size: 14.5px; line-height: 23px; color: #334155;">A new role matching your skills and experience has opened on TalentXcel.</p>
+  <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin: 20px 0;">
+    <div style="font-size: 16px; font-weight: 700; color: #0f172a;">{{jobTitle}}</div>
+    <div style="font-size: 13.5px; color: #64748b; margin-top: 4px;">{{companyName}}</div>
+  </div>
+  <div style="text-align: center; margin: 28px 0 10px 0;">
+    <a href="https://talentxcel.in/jobs" style="background-color: #0071e3; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 980px; font-weight: 600; font-size: 14px; display: inline-block;">View Opportunity &rarr;</a>
+  </div>
+`);
+
+export const SECURITY_ALERT_TEMPLATE = BASE_EMAIL_TEMPLATE.replace('{{content}}', `
+  <div style="font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 8px;">Hi {{name}},</div>
+  <h1 style="margin: 0 0 14px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">Security Alert: New Sign-in</h1>
+  <p style="margin: 0 0 12px 0; font-size: 14.5px; line-height: 23px; color: #334155;">We detected a new sign-in to your TalentXcel account from a new device or browser.</p>
+  <div style="background-color: #fff9f0; border: 1px solid #ffe6c3; border-radius: 12px; padding: 16px; margin: 20px 0; font-size: 13px; color: #b25e00;">
+    If this was you, you can safely ignore this alert. If you did not initiate this sign-in, please reset your password immediately.
+  </div>
+  <div style="text-align: center; margin: 28px 0 10px 0;">
+    <a href="https://talentxcel.in/settings/security" style="background-color: #0f172a; color: #ffffff; text-decoration: none; padding: 12px 32px; border-radius: 980px; font-weight: 600; font-size: 14px; display: inline-block;">Review Account Security &rarr;</a>
+  </div>
+`);
