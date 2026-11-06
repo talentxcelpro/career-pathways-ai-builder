@@ -273,7 +273,31 @@ async function prerender() {
 
   // 0. Pre-render All Core Public Product Surface Hubs
   console.log('Pre-rendering Core Public Product Surface Hubs...');
-  const coreHubs = [    {
+    const coreHubs = [
+    {
+      route: '/signup',
+      title: 'Join TalentXcel — Global Career Platform, Jobs & Career Passport',
+      desc: 'Join TalentXcel to build your verified Career Passport, unlock AI resume tools, discover high-growth jobs, and connect with 500,000+ global professionals.',
+      h1: 'Create Your TalentXcel Career Account',
+      bodyHtml: `
+        <div class="space-y-8">
+          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center max-w-3xl mx-auto space-y-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              🚀 Welcome to the Global Career Network
+            </span>
+            <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Unlock Your Full Career Potential</h2>
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+              Sign up to access verified salary benchmarks, AI resume tailoring, global tech opportunities, and your portable digital Career Passport.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+              <a href="/auth?mode=signup" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Get Started Free &rarr;</a>
+              <a href="/auth?mode=signin" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition">Log In to Existing Account</a>
+            </div>
+          </section>
+        </div>
+      `,
+    },
+    {
       route: '/career-insights',
       title: 'AI Career Operating System & Career Insights — Global Tech Telemetry | TalentXcel',
       desc: 'Explore career resources and tools for comparing roles, planning skills, and navigating career transitions.',

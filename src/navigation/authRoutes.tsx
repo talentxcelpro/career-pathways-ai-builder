@@ -28,6 +28,46 @@ export const authRoutes = [
     isPublic: true
   },
   {
+    title: "Sign Up",
+    to: "/signup",
+    page: (
+      <AuthErrorBoundaryWrapper>
+        <S><AuthPage mode="signup" /></S>
+      </AuthErrorBoundaryWrapper>
+    ),
+    isPublic: true
+  },
+  {
+    title: "Join",
+    to: "/join",
+    page: (
+      <AuthErrorBoundaryWrapper>
+        <S><AuthPage mode="signup" /></S>
+      </AuthErrorBoundaryWrapper>
+    ),
+    isPublic: true
+  },
+  {
+    title: "Register",
+    to: "/register",
+    page: (
+      <AuthErrorBoundaryWrapper>
+        <S><AuthPage mode="signup" /></S>
+      </AuthErrorBoundaryWrapper>
+    ),
+    isPublic: true
+  },
+  {
+    title: "Auth Sign Up",
+    to: "/auth/signup",
+    page: (
+      <AuthErrorBoundaryWrapper>
+        <S><AuthPage mode="signup" /></S>
+      </AuthErrorBoundaryWrapper>
+    ),
+    isPublic: true
+  },
+  {
     title: "Login",
     to: "/auth/login",
     page: <S><Login /></S>,

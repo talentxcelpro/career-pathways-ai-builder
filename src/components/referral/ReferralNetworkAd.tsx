@@ -148,7 +148,7 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
                 className="bg-white text-primary hover:bg-white/90 font-semibold"
                 asChild
               >
-                <Link to="/refer-and-earn">
+                <Link to="/network?tab=refer-and-earn">
                   <Zap className="w-4 h-4 mr-2" />
                   {isNewUser ? 'Start Referring' : 'View Dashboard'}
                 </Link>
@@ -160,7 +160,7 @@ export const ReferralNetworkAd: React.FC<ReferralNetworkAdProps> = ({
                 className="text-white border-white/30 hover:bg-white/10"
                 asChild
               >
-                <Link to="/refer-and-earn#rewards">
+                <Link to="/network?tab=refer-and-earn">
                   View Rewards
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Link>

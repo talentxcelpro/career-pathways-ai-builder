@@ -55,7 +55,7 @@ export const ReferralPromoBanner: React.FC<ReferralPromoBannerProps> = ({
             </div>
             <div className="flex items-center space-x-2">
               <Button size="sm" asChild>
-                <Link to="/refer-and-earn">
+                <Link to="/network?tab=refer-and-earn">
                   {isNewUser ? 'Get Started' : 'View Progress'}
                   <ChevronRight className="w-4 h-4 ml-1" />
                 </Link>
@@ -158,14 +158,14 @@ export const ReferralPromoBanner: React.FC<ReferralPromoBannerProps> = ({
         
         <div className="flex space-x-3">
           <Button asChild className="flex-1">
-            <Link to="/refer-and-earn">
+            <Link to="/network?tab=refer-and-earn">
               <Gift className="w-4 h-4 mr-2" />
               {isNewUser ? 'Start Referring' : 'Manage Referrals'}
             </Link>
           </Button>
           {!isNewUser && (
             <Button variant="outline" asChild>
-              <Link to="/refer-and-earn#share">Share Link</Link>
+              <Link to="/network?tab=refer-and-earn">Share Link</Link>
             </Button>
           )}
         </div>

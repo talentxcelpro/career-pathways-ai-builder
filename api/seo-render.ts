@@ -10,7 +10,7 @@ export function resolveOgImageForRoute(cleanPath: string): string {
   if (lower.startsWith('salary') || lower.startsWith('salaries')) {
     return 'https://talentxcel.in/assets/og/talentxcel-og-salaries.png';
   }
-  if (lower.startsWith('passport') || lower.startsWith('candidate') || lower.startsWith('profile')) {
+  if (lower.startsWith('passport') || lower.startsWith('candidate') || lower.startsWith('profile') || lower.startsWith('signup') || lower.startsWith('join') || lower.startsWith('register')) {
     return 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
   }
   if (lower.startsWith('resume') || lower.startsWith('ats') || lower.startsWith('tools')) {
@@ -418,6 +418,64 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
           <a href="/jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Global Opportunities &rarr;</a>
           <a href="/career-insights" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold text-sm rounded-xl border border-slate-700 transition">AI-Powered Career Intelligence</a>
           <a href="/hire" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Hire Talent (Recruiter OS)</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  }
+  // 1B. Public Auth, Signup, Registration & Referral Onboarding (Essential for Social Crawlers)
+  else if (
+    cleanPath === 'signup' || 
+    cleanPath === 'register' || 
+    cleanPath === 'join' || 
+    cleanPath === 'auth' || 
+    cleanPath.startsWith('signup') || 
+    cleanPath.startsWith('register') || 
+    cleanPath.startsWith('auth/')
+  ) {
+    title = 'Join TalentXcel — Global Career Platform, Jobs & Career Passport';
+    description = 'Join TalentXcel to build your verified Career Passport, unlock AI-powered resume tools, explore millions of global job opportunities, and connect with 500,000+ professionals.';
+    canonical = 'https://talentxcel.in/signup';
+    h1 = 'Create Your TalentXcel Career Account';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+          🚀 Welcome to the Future of Work &amp; Career Acceleration
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Unlock Your Full Career Potential</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          Sign up to access verified salary benchmarks, AI resume tailoring, global tech opportunities, and your portable digital Career Passport.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/auth?mode=signup" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Get Started Free &rarr;</a>
+          <a href="/auth?mode=signin" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition">Log In to Existing Account</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  }
+  // 1C. Refer and Earn -> Canonical to /network?tab=refer-and-earn
+  else if (
+    cleanPath === 'refer-and-earn' ||
+    cleanPath === 'referrals' ||
+    cleanPath === 'referral' ||
+    cleanPath.startsWith('refer-and-earn')
+  ) {
+    title = 'Refer & Earn — TalentXcel Viral Career & Rewards Network';
+    description = 'Invite colleagues and friends to TalentXcel. Unlock premium career tools, earn Career Coins, and expand your professional reach.';
+    canonical = 'https://talentxcel.in/network?tab=refer-and-earn';
+    h1 = 'Refer Professionals & Unlock TalentXcel Rewards';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold">
+          🎁 TalentXcel Viral Growth Engine &amp; Referral Program
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Refer Peers. Earn Rewards. Accelerate Careers.</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          Share your unique referral link to unlock Career Coins, free ATS Resume Scans, and exclusive professional badges.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/network?tab=refer-and-earn" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Open Refer &amp; Earn Hub &rarr;</a>
         </div>
       </section>
     `;

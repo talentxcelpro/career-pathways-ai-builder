@@ -57,7 +57,7 @@ const DailyGrowthDashboard = lazy(() => import("@/components/admin/DailyGrowthDa
 const RewardLiabilityDashboard = lazy(() => import("@/components/admin/RewardLiabilityDashboard"));
 const CandidateGrowthPage = lazy(() => import("@/pages/CandidateGrowthPage"));
 const GlobalJobsAutomationCenter = lazy(() => import("@/pages/admin/GlobalJobsAutomationCenter"));
-const ReferAndEarn = lazy(() => import("@/pages/ReferAndEarn"));
+import { ReferAndEarnRedirect } from "@/navigation/referralRoutes";
 const ProSubscription = lazy(() => import("@/pages/pro/ProSubscription").then(m => ({ default: m.default || m.ProSubscription })));
 const ProSubscriptionPolicy = lazy(() => import("@/pages/pro/ProSubscriptionPolicy"));
 const JobPost = lazy(() => import('@/pages/jobs/JobPost'));
@@ -146,6 +146,7 @@ const IndustryJobs                    = lazy(() => import('@/pages/seo/IndustryJ
 const CareerVersePage                 = lazy(() => import('./pages/CareerVersePage'));
 const PrivacyPolicy                   = lazy(() => import('./pages/PrivacyPolicy'));
 const Terms                           = lazy(() => import('./pages/auth/Terms'));
+const AuthPage                        = lazy(() => import('@/pages/auth/AuthPage').then(m => ({ default: m.AuthPage })));
 const Platform                        = lazy(() => import('./pages/Platform'));
 const DebugPage                       = lazy(() => import('./pages/DebugPage'));
 const SystemDiagnostics               = lazy(() => import('./pages/SystemDiagnostics'));
@@ -665,6 +666,11 @@ const App = () => {
                 <Route path="/directory/jobs-by-city" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading City Job Directory...</div>}><JobsCityDirectory /></Suspense>} />
 
                 {/* PRIORITY ROUTES - These must come BEFORE navItems.map to take precedence */}
+                {/* Public Onboarding, Registration & Referral Entry Points */}
+                <Route path="/signup" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
+                <Route path="/join" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
+                <Route path="/register" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
+                <Route path="/auth/signup" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
                 <Route path="/network" element={<Suspense fallback={<PageFallbackSkeleton />}><NetworkMainPage /></Suspense>} />
                 <Route path="/pricing" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
                 <Route path="/subscription" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
@@ -755,9 +761,9 @@ const App = () => {
                 <Route path="/admin/reward-liability" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Reward Liability Dashboard...</div>}><UDXSuperAdminGuard><RewardLiabilityDashboard /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/global-jobs" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Global Jobs Automation Network...</div>}><UDXSuperAdminGuard><GlobalJobsAutomationCenter /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/grow" element={<Suspense fallback={<div className="min-h-screen bg-[#070b14] text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Career Growth Hub...</div>}><CandidateGrowthPage /></Suspense>} />
-                <Route path="/referrals" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
-                <Route path="/referral" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
-                <Route path="/refer-and-earn" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>}><ReferAndEarn /></Suspense>} />
+                <Route path="/referrals" element={<ReferAndEarnRedirect />} />
+                <Route path="/referral" element={<ReferAndEarnRedirect />} />
+                <Route path="/refer-and-earn" element={<ReferAndEarnRedirect />} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/privacypolicy" element={<PrivacyPolicy />} />

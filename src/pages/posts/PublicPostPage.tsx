@@ -25,6 +25,8 @@ import { toast } from 'sonner';
 import { getPublicPostUrl, getPublicProfileUrl } from '@/lib/seo/canonicalUrls';
 import { buildPostSchema, buildBreadcrumbSchema, buildVideoObjectSchema } from '@/lib/seo/structuredDataSchemas';
 import { buildPostSeoData } from '@/lib/seo/postSeoModel';
+import { UniversalPostContent } from '@/components/network/UniversalPostContent';
+import { UniversalPostMedia } from '@/components/network/UniversalPostMedia';
 
 function generateDeterministicTitle(content: string, authorName: string): string {
   if (!content) return `${authorName} on TalentXcel`;
@@ -103,7 +105,7 @@ export default function PublicPostPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 py-12 px-4">
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="w-full max-w-[680px] mx-auto space-y-6">
           <Skeleton className="h-6 w-32 bg-slate-200" />
           <div className="bg-white dark:bg-slate-900 border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
             <div className="flex items-center gap-3">
@@ -219,7 +221,7 @@ Explore hiring velocity across key tech metro hubs, benchmark 25th, 50th, and 90
       </Helmet>
 
       <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 py-8 px-4 pb-20">
-        <div className="max-w-3xl mx-auto space-y-6">
+        <div className="w-full max-w-[680px] mx-auto space-y-6">
           {/* Breadcrumbs */}
           <nav aria-label="Breadcrumb" className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-medium">
             <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
@@ -273,33 +275,18 @@ Explore hiring velocity across key tech metro hubs, benchmark 25th, 50th, and 90
               {headline}
             </h1>
 
-            {/* Post Content Body - Pure High Contrast Readability */}
-            <div className="text-slate-700 dark:text-slate-200 text-sm sm:text-base leading-relaxed whitespace-pre-line break-words font-normal">
-              {cleanContent}
-            </div>
+            {/* Post Content Body - Safe Linkification, Markdown Bold & URL Previews */}
+            <UniversalPostContent 
+              content={effectivePost.content} 
+              tags={topics.map((t) => t.slug)} 
+            />
 
-            {/* Post Media (if any) */}
+            {/* Post Media - Natural Ratio, Never Cropped */}
             {Array.isArray(effectivePost.media_urls) && effectivePost.media_urls.length > 0 && (
-              <div className="grid grid-cols-1 gap-4 pt-2">
-                {effectivePost.media_urls.map((url: string, idx: number) => {
-                  const isVideo = url.endsWith('.mp4') || url.endsWith('.webm');
-                  return isVideo ? (
-                    <video
-                      key={idx}
-                      src={url}
-                      controls
-                      className="rounded-xl border border-slate-200 max-h-[500px] w-full bg-black"
-                    />
-                  ) : (
-                    <img
-                      key={idx}
-                      src={url}
-                      alt="Post attachment"
-                      className="rounded-xl border border-slate-200 max-h-[500px] object-cover w-full shadow-xs"
-                    />
-                  );
-                })}
-              </div>
+              <UniversalPostMedia 
+                mediaUrls={effectivePost.media_urls} 
+                headline={headline} 
+              />
             )}
 
             {/* Topic Badges */}

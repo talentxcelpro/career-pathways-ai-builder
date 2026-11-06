@@ -41,14 +41,10 @@ interface PageSpecificBottomNavProps {
   className?: string;
 }
 
-const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] => {
+const getPageNavigation = (currentPath: string, navigate: any, currentSearch: string = ""): BottomNavItem[] => {
   const basePath = currentPath.split('?')[0]; // Remove query params
   
   switch (true) {
-    // CareerVerse / RPG / Play routes - delegated to specialized MobileCareerVerseNav
-    case basePath === '/play' || basePath === '/careerverse' || basePath === '/rpg':
-      return [];
-
     // Jobs Page Navigation
     case basePath === '/jobs' || basePath.startsWith('/jobs/'):
       return [
@@ -89,13 +85,15 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
       ];
 
     // Network Page Navigation  
-    case basePath === '/network' || basePath.startsWith('/network/'):
+    case basePath === '/network' || basePath.startsWith('/network/'): {
+      const searchParams = new URLSearchParams(currentSearch);
+      const currentTab = searchParams.get('tab') || 'feed';
       return [
         {
           icon: Users,
           label: 'Network',
           action: () => navigate('/network'),
-          isActive: true
+          isActive: currentTab === 'feed' || currentTab === 'smart-feed'
         },
         {
           icon: Play,
@@ -112,16 +110,17 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Gift,
           label: 'Rewards',
-          action: () => navigate('/gamification'),
-          isActive: false
+          action: () => navigate('/network?tab=gamification'),
+          isActive: currentTab === 'gamification'
         },
         {
           icon: Send,
           label: 'Refer',
-          action: () => navigate('/refer-and-earn'),
-          isActive: false
+          action: () => navigate('/network?tab=refer-and-earn'),
+          isActive: currentTab === 'refer-and-earn'
         }
       ];
+    }
 
     // Learning Page Navigation
     case basePath === '/learning' || basePath.startsWith('/learning/'):
@@ -375,7 +374,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Send,
           label: 'Refer',
-          action: () => navigate('/refer-and-earn'),
+          action: () => navigate('/network?tab=refer-and-earn'),
           isActive: false
         }
       ];
@@ -449,7 +448,7 @@ const getPageNavigation = (currentPath: string, navigate: any): BottomNavItem[] 
         {
           icon: Send,
           label: 'Refer',
-          action: () => navigate('/refer-and-earn'),
+          action: () => navigate('/network?tab=refer-and-earn'),
           isActive: false
         }
       ];
@@ -464,12 +463,13 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
 
   console.log('PageSpecificBottomNav - isMobile:', isMobile, 'currentPath:', location.pathname);
   
-  const navigationItems = getPageNavigation(location.pathname, navigate);
-
-  // Don't render on desktop or if page has no custom navigation
-  if (!isMobile || navigationItems.length === 0) {
+  // Don't render on desktop or in certain contexts
+  if (!isMobile) {
+    console.log('PageSpecificBottomNav - Not mobile, returning null');
     return null;
   }
+
+  const navigationItems = getPageNavigation(location.pathname, navigate, location.search);
   const isDefaultNav = location.pathname === '/';
   const isNetworkPage = location.pathname === '/network' || location.pathname.startsWith('/network/');
 

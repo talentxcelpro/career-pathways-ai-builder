@@ -141,7 +141,7 @@ export const ModulesShowcase = () => {
       description: 'Invite friends and earn rewards',
       longDescription: 'Earn cash rewards and bonuses by referring friends to join the platform.',
       icon: <Gift className="w-6 h-6" />,
-      route: '/refer-and-earn',
+      route: '/network?tab=refer-and-earn',
       category: 'rewards',
       features: ['Cash Rewards', 'Bonus Points', 'Tracking Dashboard', 'Social Sharing'],
       status: 'live',

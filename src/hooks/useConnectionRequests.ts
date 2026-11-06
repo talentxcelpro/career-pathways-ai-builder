@@ -8,19 +8,27 @@ export const useConnectionRequests = () => {
   const { triggerConnectionMade } = useTXCIntegration();
 
   const sendConnectionRequest = useMutation({
-    mutationFn: async (recipientId: string) => {
+    mutationFn: async (arg: string | { recipientId: string; message?: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Check if connection already exists
-      const { data: existingConnection } = await supabase
-        .from('connections')
-        .select('id')
-        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${user.id})`)
-        .single();
+      // Normalize string or object argument
+      const recipientId = typeof arg === 'string' ? arg : arg.recipientId;
+      const connectionMessage = typeof arg === 'string' ? null : (arg.message || null);
 
-      if (existingConnection) {
-        throw new Error('Connection already exists');
+      if (!recipientId || typeof recipientId !== 'string') {
+        throw new Error('Valid recipient UUID is required');
+      }
+
+      // Check if connection already exists
+      const { data: existingConnections } = await supabase
+        .from('connections')
+        .select('id, status')
+        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${recipientId}),and(requester_id.eq.${recipientId},recipient_id.eq.${user.id})`)
+        .limit(1);
+
+      if (existingConnections && existingConnections.length > 0) {
+        throw new Error('Connection request or connection already exists');
       }
 
       const { data, error } = await supabase
@@ -28,6 +36,7 @@ export const useConnectionRequests = () => {
         .insert({
           requester_id: user.id,
           recipient_id: recipientId,
+          message: connectionMessage,
           status: 'pending'
         })
         .select()

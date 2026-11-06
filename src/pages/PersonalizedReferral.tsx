@@ -109,7 +109,7 @@ const PersonalizedReferral: React.FC = () => {
   }
 
   if (!referrerProfile) {
-    return <Navigate to="/refer-and-earn" replace />;
+    return <Navigate to="/network?tab=refer-and-earn" replace />;
   }
 
   return (

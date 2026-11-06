@@ -311,7 +311,7 @@ function NativeRoutes() {
               )}
             />
             <Route path="/gamification" element={<GamificationCenter />} />
-            <Route path="/refer-and-earn" element={<ReferAndEarn />} />
+            <Route path="/refer-and-earn" element={<Navigate to="/network?tab=refer-and-earn" replace />} />
             <Route path="/mobile/reels" element={<MobileReels />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/mobile/qr-scanner" element={<MobileQRScanner />} />

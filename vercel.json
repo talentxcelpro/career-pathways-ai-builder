@@ -1416,6 +1416,21 @@
       ],
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/refer-and-earn",
+      "destination": "/network?tab=refer-and-earn",
+      "permanent": false
+    },
+    {
+      "source": "/referrals",
+      "destination": "/network?tab=refer-and-earn",
+      "permanent": false
+    },
+    {
+      "source": "/referral",
+      "destination": "/network?tab=refer-and-earn",
+      "permanent": false
     }
   ],
   "rewrites": [

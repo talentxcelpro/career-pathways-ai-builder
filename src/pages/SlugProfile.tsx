@@ -66,17 +66,26 @@ const SlugProfile = () => {
       if (!user?.id || !profile?.id) return { status: 'none', id: null };
       const isProfileUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
       if (!isProfileUUID) return { status: 'none', id: null };
-      const { data } = await supabase
+      // Query connections involving the user and target profile safely
+      const { data, error } = await supabase
         .from('connections')
         .select('id, status, requester_id, recipient_id')
-        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${profile.id}),and(requester_id.eq.${profile.id},recipient_id.eq.${user.id})`)
-        .maybeSingle();
+        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(25);
 
-      if (!data) return { status: 'none', id: null };
+      if (error || !data || data.length === 0) return { status: 'none', id: null };
+
+      const match = data.find(c => 
+        (c.requester_id === user.id && c.recipient_id === profile.id) ||
+        (c.requester_id === profile.id && c.recipient_id === user.id)
+      );
+
+      if (!match) return { status: 'none', id: null };
       return { 
-        status: data.status, 
-        id: data.id,
-        isRequester: data.requester_id === user.id
+        status: match.status, 
+        id: match.id,
+        isRequester: match.requester_id === user.id
       };
     },
     enabled: Boolean(user?.id && profile?.id),
@@ -501,9 +510,9 @@ const SlugProfile = () => {
                     <Eye className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="text-xl md:text-2xl font-bold">{stats?.profileViews || 24}</div>
+                    <div className="text-xl md:text-2xl font-bold">{stats?.profileViews ?? 0}</div>
                     <div className="text-xs text-muted-foreground font-medium">
-                      Profile Views <span className="text-primary font-semibold">({stats?.uniqueViewers || 10} unique)</span>
+                      Profile Views <span className="text-primary font-semibold">({stats?.uniqueViewers ?? 0} unique)</span>
                     </div>
                   </div>
                 </div>
@@ -513,7 +522,7 @@ const SlugProfile = () => {
                     <Users className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="text-xl md:text-2xl font-bold">{stats?.connections || 2}</div>
+                    <div className="text-xl md:text-2xl font-bold">{stats?.connections ?? 0}</div>
                     <div className="text-xs text-muted-foreground font-medium">Connections</div>
                   </div>
                 </div>
@@ -523,7 +532,7 @@ const SlugProfile = () => {
                     <Briefcase className="h-5 w-5" />
                   </div>
                   <div>
-                    <div className="text-xl md:text-2xl font-bold">{candidateSkills.length > 0 ? candidateSkills.length : 3}</div>
+                    <div className="text-xl md:text-2xl font-bold">{candidateSkills.length}</div>
                     <div className="text-xs text-muted-foreground font-medium">Services &amp; Capabilities</div>
                   </div>
                 </div>
@@ -534,7 +543,9 @@ const SlugProfile = () => {
                   </div>
                   <div>
                     <div className="text-sm font-bold">Member</div>
-                    <div className="text-xs text-muted-foreground font-medium">Since May 2025</div>
+                    <div className="text-xs text-muted-foreground font-medium">
+                      Since {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '2025'}
+                    </div>
                   </div>
                 </div>
 
@@ -812,7 +823,7 @@ const SlugProfile = () => {
                         <Users className="h-4 w-4 text-amber-500" />
                         Network
                       </span>
-                      <span className="text-muted-foreground font-semibold">{stats?.connections || 2} Connections</span>
+                      <span className="text-muted-foreground font-semibold">{stats?.connections ?? 0} Connections</span>
                     </div>
 
                     <div className="flex items-center justify-between p-2 rounded-lg bg-muted/40">

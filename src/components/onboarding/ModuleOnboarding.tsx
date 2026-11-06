@@ -98,7 +98,7 @@ export const ModuleOnboarding: React.FC<ModuleOnboardingProps> = ({
       name: 'Refer & Earn',
       description: 'Invite friends and earn cash rewards while helping others advance their careers.',
       icon: <Gift className="w-8 h-8" />,
-      route: '/refer-and-earn',
+      route: '/network?tab=refer-and-earn',
       benefits: ['Cash rewards', 'Bonus points', 'Tracking dashboard', 'Social sharing'],
       color: 'text-pink-600',
       bgColor: 'bg-pink-100'

@@ -10,6 +10,8 @@ import { EnhancedCommentsSection } from "@/components/posts/EnhancedCommentsSect
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
 import { useResolvedMediaUrl } from "@/hooks/usePostMedia";
+import { UniversalPostContent } from './UniversalPostContent';
+import { UniversalPostMedia } from './UniversalPostMedia';
 
 interface NetworkPost {
   id: string;
@@ -291,8 +293,8 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
   };
 
   return (
-    <Card className="border border-slate-200/80 dark:border-border/60 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden">
-      <CardContent className="p-5 space-y-4">
+    <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs hover:shadow-sm transition-shadow bg-white dark:bg-card rounded-2xl sm:rounded-3xl overflow-hidden w-full max-w-[680px] mx-auto">
+      <CardContent className="p-3.5 sm:p-5 md:p-6 space-y-3.5 sm:space-y-4">
         
         {/* Post Header */}
         <div className="flex items-start justify-between gap-3">
@@ -381,14 +383,13 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
             )}
 
             {/* Featured Image if present */}
-            {(post.featured_image_url || (post.media_urls && post.media_urls[0])) && (
-              <Link to={`/network/articles/${post.id}`} className="block overflow-hidden rounded-2xl border border-slate-200 dark:border-border/60 group">
-                <img 
-                  src={resolvedMediaUrl || post.featured_image_url || post.media_urls?.[0]} 
-                  alt={post.headline || "Article cover"} 
-                  className="w-full max-h-[360px] object-cover group-hover:scale-[1.01] transition-transform duration-300"
-                />
-              </Link>
+            {(post.featured_image_url || (post.media_urls && post.media_urls.length > 0)) && (
+              <UniversalPostMedia 
+                mediaUrls={post.media_urls}
+                featuredImageUrl={post.featured_image_url}
+                headline={post.headline}
+                postType={post.post_type}
+              />
             )}
 
             {/* Summary or tagline */}
@@ -420,43 +421,21 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
           </div>
         ) : (
           <>
-            {/* Post Body Content */}
-            <div className="space-y-2 text-sm text-foreground leading-relaxed font-medium">
-              <p>{post.content}</p>
-              
-              {/* Hashtags */}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {post.tags.map((tag, idx) => (
-                    <span key={idx} className="text-xs font-bold text-blue-600 hover:underline cursor-pointer">
-                      #{tag.replace(/^#/, '')}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
+            {/* Post Body Content with clickable links, formatting & link previews */}
+            <UniversalPostContent 
+              content={post.content} 
+              tags={post.tags} 
+            />
 
-            {/* Media Images & Videos */}
-            {post.media_urls && post.media_urls.length > 0 && post.media_urls[0] && (
-              <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-border/60 bg-slate-950/5 dark:bg-muted/30">
-                {isVideoUrl(post.media_urls[0]) || post.post_type === 'video' ? (
-                  <video 
-                    src={resolvedMediaUrl || post.media_urls[0]} 
-                    controls 
-                    playsInline
-                    preload="metadata"
-                    className="w-full max-h-[480px] object-contain mx-auto bg-black rounded-2xl shadow-sm" 
-                  />
-                ) : (
-                  <img 
-                    src={resolvedMediaUrl || post.media_urls[0]} 
-                    alt="Post media" 
-                    className="w-full max-h-[500px] object-cover cursor-pointer hover:opacity-95 transition-opacity rounded-2xl"
-                    onClick={() => setSelectedMediaUrl(resolvedMediaUrl || post.media_urls[0])}
-                  />
-                )}
-              </div>
-            )}
+            {/* Media Images & Videos — Natural aspect ratio, never cropped, lightbox on click */}
+            {(post.media_urls?.length || post.featured_image_url) ? (
+              <UniversalPostMedia 
+                mediaUrls={post.media_urls} 
+                featuredImageUrl={post.featured_image_url} 
+                postType={post.post_type} 
+                headline={post.headline} 
+              />
+            ) : null}
           </>
         )}
 
