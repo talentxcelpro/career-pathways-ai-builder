@@ -83,7 +83,7 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
 
       // Automatically trigger welcome email for any new user (Google, LinkedIn, One Tap, Email)
       if (user.email) {
-        const welcomeKey = 	xc_welcomed_;
+        const welcomeKey = 'txc_welcomed_' + user.id;
         if (typeof window !== 'undefined' && !localStorage.getItem(welcomeKey)) {
           localStorage.setItem(welcomeKey, 'true');
           fetch('/api/email/send', {

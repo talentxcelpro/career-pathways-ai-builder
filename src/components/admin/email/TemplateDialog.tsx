@@ -25,12 +25,13 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
+    template_key: '',
     template_name: '',
     subject: '',
     html_content: '',
     text_content: '',
     is_active: true,
-    category: 'notification',
+    category: 'candidate_career_os',
   });
   const [showPreview, setShowPreview] = useState(false);
   const [previewHtml, setPreviewHtml] = useState('');
@@ -39,21 +40,23 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
   useEffect(() => {
     if (template) {
       setFormData({
+        template_key: template.template_key || '',
         template_name: template.template_name || '',
-        subject: template.subject || '',
-        html_content: template.html_content || '',
-        text_content: template.text_content || '',
+        subject: template.subject_template || template.subject || '',
+        html_content: template.html_template || template.html_content || '',
+        text_content: template.text_template || template.text_content || '',
         is_active: template.is_active ?? true,
-        category: template.category || 'notification',
+        category: template.category || 'candidate_career_os',
       });
     } else {
       setFormData({
+        template_key: '',
         template_name: '',
         subject: '',
         html_content: '',
         text_content: '',
         is_active: true,
-        category: 'notification',
+        category: 'candidate_career_os',
       });
     }
     setShowPreview(false);
@@ -63,25 +66,26 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
   useEffect(() => {
     if (showPreview && formData.html_content) {
       const sampleData = {
-        username: 'John Doe',
-        email: 'john@example.com',
-        first_name: 'John',
-        last_name: 'Doe',
-        company: 'TechCorp Inc.',
+        name: 'Aditi Sharma',
+        username: 'Aditi Sharma',
+        email: 'aditi@example.com',
+        first_name: 'Aditi',
+        last_name: 'Sharma',
+        company: 'TalentXcel Partner',
         job_title: 'Senior Software Engineer',
         link: 'https://talentxcel.in',
-        title: 'Welcome to TalentXcel',
+        title: formData.subject || 'Welcome to TalentXcel',
         description: 'Your career journey starts here',
         cta_text: 'Get Started',
         year: new Date().getFullYear().toString(),
-        logo_url: 'https://talentxcel.in/assets/talentxcel-logo.png',
+        logo_url: 'https://talentxcel.in/assets/talentxcel-brand-logo.png',
         location: 'Bangalore, India',
         device: 'Chrome on Windows',
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
       };
       setPreviewHtml(renderTemplate(formData.html_content, sampleData));
     }
-  }, [showPreview, formData.html_content]);
+  }, [showPreview, formData.html_content, formData.subject]);
 
   const handleInsertVariable = (variable: string) => {
     if (htmlTextareaRef.current) {
@@ -98,37 +102,45 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
           htmlTextareaRef.current.setSelectionRange(start + variable.length, start + variable.length);
         }
       }, 0);
-    } else {
-      setFormData({ ...formData, html_content: formData.html_content + variable });
     }
   };
 
-  const handleSelectBaseTemplate = (template: string, name: string) => {
+  const handleSelectBaseTemplate = (templateHtml: string, name: string) => {
     setFormData({
       ...formData,
-      html_content: template,
+      html_content: templateHtml,
       template_name: formData.template_name || name,
     });
   };
 
   const saveMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      if (template) {
+      const variables = extractVariables(data.html_content);
+      const computedKey = data.template_key || data.template_name.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+
+      const payload = {
+        template_key: computedKey,
+        template_name: data.template_name,
+        category: data.category,
+        subject_template: data.subject,
+        html_template: data.html_content,
+        text_template: data.text_content,
+        variables,
+        is_active: data.is_active,
+        version: (template?.version || 1) + 1,
+        updated_at: new Date().toISOString()
+      };
+
+      if (template?.id) {
         const { error } = await supabase
           .from('email_templates_v2')
-          .update({
-            ...data,
-            current_version: (template.current_version || 1) + 1,
-          })
+          .update(payload)
           .eq('id', template.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from('email_templates_v2')
-          .insert({
-            ...data,
-            current_version: 1,
-          });
+          .insert(payload);
         if (error) throw error;
       }
     },
@@ -158,40 +170,22 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{template ? 'Edit Template' : 'Create New Template'}</DialogTitle>
+          <DialogTitle>{template ? 'Edit Email Template' : 'Create Email Template'}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!template && (
-            <TemplateBaseSelector
-              onSelect={handleSelectBaseTemplate}
-              selectedTemplate={formData.html_content}
-            />
-          )}
 
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="template_name">Template Name *</Label>
+              <Label htmlFor="template_name">Template Name</Label>
               <Input
                 id="template_name"
                 value={formData.template_name}
                 onChange={(e) => setFormData({ ...formData, template_name: e.target.value })}
-                placeholder="e.g., Welcome Email Template"
+                placeholder="e.g., Welcome Candidate"
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="subject">Email Subject *</Label>
-              <Input
-                id="subject"
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                placeholder="e.g., Welcome to TalentXcel! {{username}}"
-                required
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <Select
@@ -199,7 +193,7 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
                 onValueChange={(value) => setFormData({ ...formData, category: value })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   {TEMPLATE_CATEGORIES.map((cat) => (
@@ -211,95 +205,104 @@ export const TemplateDialog = ({ open, onOpenChange, template }: TemplateDialogP
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center space-x-2 pt-8">
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="subject">Subject Line</Label>
+            <Input
+              id="subject"
+              value={formData.subject}
+              onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+              placeholder="e.g., Welcome to TalentXcel. Your next career chapter starts here."
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Email Content</Label>
+              <div className="flex gap-2">
+                <TemplateBaseSelector onSelectTemplate={handleSelectBaseTemplate} />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPreview(!showPreview)}
+                >
+                  {showPreview ? (
+                    <>
+                      <Code className="h-4 w-4 mr-2" />
+                      Show Editor
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="h-4 w-4 mr-2" />
+                      Live Preview
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <VariableInsertHelper onInsert={handleInsertVariable} />
+
+            {showPreview ? (
+              <div className="border rounded-lg p-4 bg-muted/30">
+                <iframe
+                  srcDoc={previewHtml}
+                  className="w-full h-[500px] border rounded bg-white"
+                  title="Template Preview"
+                />
+              </div>
+            ) : (
+              <Tabs defaultValue="html" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="html">HTML Version</TabsTrigger>
+                  <TabsTrigger value="text">Plain Text Version</TabsTrigger>
+                </TabsList>
+                <TabsContent value="html" className="space-y-2">
+                  <Textarea
+                    ref={htmlTextareaRef}
+                    id="html_content"
+                    value={formData.html_content}
+                    onChange={(e) => setFormData({ ...formData, html_content: e.target.value })}
+                    placeholder="Enter full responsive HTML code here..."
+                    className="font-mono text-xs min-h-[400px]"
+                    required
+                  />
+                </TabsContent>
+                <TabsContent value="text" className="space-y-2">
+                  <Textarea
+                    id="text_content"
+                    value={formData.text_content}
+                    onChange={(e) => setFormData({ ...formData, text_content: e.target.value })}
+                    placeholder="Enter fallback plain text version here..."
+                    className="font-mono text-xs min-h-[400px]"
+                  />
+                </TabsContent>
+              </Tabs>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between border-t pt-4">
+            <div className="flex items-center space-x-2">
               <Switch
                 id="is_active"
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label htmlFor="is_active">Active Template</Label>
+              <Label htmlFor="is_active">Set Template as Active</Label>
             </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={saveMutation.isPending} className="bg-blue-600 hover:bg-blue-500">
+                {saveMutation.isPending ? 'Saving...' : template ? 'Save Changes' : 'Create Template'}
+              </Button>
+            </DialogFooter>
           </div>
-
-          <Tabs defaultValue="html" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="html">
-                <Code className="h-4 w-4 mr-2" />
-                HTML Content
-              </TabsTrigger>
-              <TabsTrigger value="preview" onClick={() => setShowPreview(true)}>
-                <Eye className="h-4 w-4 mr-2" />
-                Live Preview
-              </TabsTrigger>
-              <TabsTrigger value="text">Text Content</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="html" className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="html_content">HTML Template *</Label>
-                <VariableInsertHelper onInsert={handleInsertVariable} />
-              </div>
-              <Textarea
-                ref={htmlTextareaRef}
-                id="html_content"
-                value={formData.html_content}
-                onChange={(e) => setFormData({ ...formData, html_content: e.target.value })}
-                placeholder="Enter HTML email content with variables like {{username}}, {{link}}"
-                className="min-h-[400px] font-mono text-sm"
-                required
-              />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>
-                  Variables found: {extractVariables(formData.html_content).join(', ') || 'None'}
-                </span>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="preview" className="space-y-2">
-              <div className="border rounded-lg bg-background">
-                <div className="bg-muted px-4 py-2 rounded-t-lg">
-                  <p className="text-sm font-medium">Email Preview (with sample data)</p>
-                </div>
-                <div className="p-4">
-                  {previewHtml ? (
-                    <iframe
-                      srcDoc={previewHtml}
-                      className="w-full min-h-[500px] border rounded-md"
-                      title="Template Preview"
-                      sandbox="allow-same-origin"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-[500px] text-muted-foreground">
-                      Add HTML content to see preview
-                    </div>
-                  )}
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="text" className="space-y-2">
-              <Label htmlFor="text_content">Plain Text Alternative</Label>
-              <Textarea
-                id="text_content"
-                value={formData.text_content}
-                onChange={(e) => setFormData({ ...formData, text_content: e.target.value })}
-                placeholder="Plain text version of the email (auto-generated from HTML if left empty)"
-                className="min-h-[400px] font-mono text-sm"
-              />
-              <p className="text-xs text-muted-foreground">
-                Plain text fallback for email clients that don't support HTML
-              </p>
-            </TabsContent>
-          </Tabs>
-
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={saveMutation.isPending}>
-              {saveMutation.isPending ? 'Saving...' : template ? 'Update Template' : 'Create Template'}
-            </Button>
-          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
