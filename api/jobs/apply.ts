@@ -268,7 +268,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (_) {}
 
     // ─────────────────────────────────────────────────────────────
-    // 5b. QUEUE IDEMPOTENT APPLICATION CONFIRMATION EMAIL
+    // 5b. QUEUE IDEMPOTENT APPLICATION CONFIRMATION EMAIL & DIRECT SES DISPATCH
     // ─────────────────────────────────────────────────────────────
     try {
       const emailIdempotencyKey = `app_conf_${authoritativeJobId}_${candidateId}`;
@@ -278,16 +278,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         p_recipient_name: cleanName,
         p_template_data: {
           candidateName: cleanName,
+          name: cleanName,
           jobTitle: authoritativeJobTitle,
           companyName: authoritativeCompanyName,
           applicationId: newApplication?.id || `app_${Date.now()}`,
           ctaUrl: 'https://talentxcel.in/jobs/applications'
         },
         p_category: 'transactional',
-        p_priority: 2, // HIGH
+        p_priority: 1, // CRITICAL IMMEDIATE
         p_idempotency_key: emailIdempotencyKey,
         p_user_id: candidateId
       });
+
+      // Direct SES dispatch for real-time delivery
+      fetch(`https://talentxcel.in/api/email/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: cleanEmail,
+          recipientName: cleanName,
+          template: 'application_confirmation',
+          priority: 1,
+          immediate: true,
+          variables: {
+            candidateName: cleanName,
+            name: cleanName,
+            jobTitle: authoritativeJobTitle,
+            companyName: authoritativeCompanyName,
+            applicationId: newApplication?.id || `app_${Date.now()}`,
+            ctaUrl: 'https://talentxcel.in/jobs/applications'
+          }
+        })
+      }).catch(e => console.warn('Direct application email dispatch warning:', e));
     } catch (emailErr) {
       console.warn('⚠️ Application confirmation email enqueue warning (non-fatal):', emailErr);
     }

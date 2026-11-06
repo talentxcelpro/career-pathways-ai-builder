@@ -176,6 +176,46 @@ const ModernMessenger: React.FC<ModernMessengerProps> = ({ isOpen, onClose }) =>
         });
 
       if (error) throw error;
+
+      // Automatically dispatch Direct Message notification email to recipient
+      supabase
+        .from('conversation_participants')
+        .select('user_id')
+        .eq('conversation_id', selectedConversationId)
+        .neq('user_id', user.id)
+        .maybeSingle()
+        .then(async ({ data: part }) => {
+          if (part?.user_id) {
+            const { data: recProfile } = await supabase
+              .from('profiles')
+              .select('email, full_name')
+              .eq('id', part.user_id)
+              .maybeSingle();
+
+            const myName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A connection';
+
+            if (recProfile?.email) {
+              fetch('/api/email/send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  to: recProfile.email,
+                  recipientName: recProfile.full_name || 'Member',
+                  template: 'direct_message',
+                  priority: 1,
+                  immediate: true,
+                  variables: {
+                    sender_name: myName,
+                    name: recProfile.full_name || 'Member',
+                    recipient_name: recProfile.full_name || 'Member',
+                    message_preview: content.length > 120 ? content.slice(0, 120) + '...' : content
+                  }
+                })
+              }).catch(() => {});
+            }
+          }
+        })
+        .catch(() => {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages', selectedConversationId] });
