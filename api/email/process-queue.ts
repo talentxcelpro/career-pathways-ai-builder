@@ -7,13 +7,16 @@ const SUPABASE_URL =
   process.env.SUPABASE_URL ||
   'https://dthlgsnakhoftinssokm.supabase.co';
 
-const FALLBACK_SERVICE_ROLE_KEY_B64 = 'c2Jfc2VjcmV0XzJ6cEd4LVdibGtXWGtEb2E2c0JRbkFfVHlUbmI4M0o=';
-
 const SUPABASE_KEY =
   process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_KEY ||
-  Buffer.from(FALLBACK_SERVICE_ROLE_KEY_B64, 'base64').toString('utf-8');
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
+  '';
 
 /**
  * Master Inlined 25-Template Platform Engine for TalentXcel Serverless Routes
@@ -1743,7 +1746,7 @@ export const baseEmailLayout = wrapInMasterLayout;
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'content-type, authorization');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, authorization, x-vercel-cron');
   res.setHeader('Content-Type', 'application/json');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -1753,18 +1756,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const emailMode = (process.env.EMAIL_MODE || 'console').toLowerCase();
     const hasAwsSdkKeys = !!((process.env.AWS_ACCESS_KEY_ID || process.env.AWS_SES_ACCESS_KEY_ID) && (process.env.AWS_SECRET_ACCESS_KEY || process.env.AWS_SES_SECRET_ACCESS_KEY));
     const hasSmtpKeys = !!((process.env.SMTP_PASS || process.env.SMTP_PASSWORD || process.env.AWS_SMTP_PASSWORD));
+    const hasServiceRoleKey = !!(process.env.TALENTXCEL_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY);
+    const hasCronSecret = !!process.env.CRON_SECRET;
     return res.status(200).json({
       status: 'healthy',
       service: 'TalentXcel Email Queue Worker',
       emailMode,
       hasAwsKeys: hasAwsSdkKeys || hasSmtpKeys,
+      hasServiceRoleKey,
+      hasCronSecret,
       region: process.env.AWS_REGION || DEFAULT_REGION,
       timestamp: new Date().toISOString()
     });
   }
 
-  // 1. Mandatory Authorization Check (Cron Secret, Vercel Cron, Service Role Key, or Admin Trigger)
-  const authHeader = req.headers.authorization;
+  // 1. Mandatory Authorization Check (Cron Secret Bearer, Vercel Cron, or Service Role Key)
+  const authHeader = req.headers.authorization || '';
   const isVercelCron = req.headers['x-vercel-cron'] === '1';
   const expectedSecret = process.env.CRON_SECRET;
   const serviceKey =
@@ -1772,21 +1779,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     SUPABASE_KEY;
 
+  const isBearerCronSecret = expectedSecret ? authHeader === `Bearer ${expectedSecret}` : false;
+  const isBearerServiceKey = serviceKey ? authHeader === `Bearer ${serviceKey}` : false;
+  const isVercelEdge = isVercelCron && (!expectedSecret || isBearerCronSecret);
   const origin = String(req.headers.origin || req.headers.referer || '');
   const isSameOrigin = origin.includes('talentxcel.in') || origin.includes('localhost') || origin.includes('127.0.0.1');
-  const isTriggerParam = req.query?.run === 'true' || req.query?.drain === 'true' || req.query?.auto === 'true';
   const isAuthorized =
+    isBearerCronSecret ||
+    isBearerServiceKey ||
+    isVercelEdge ||
     isSameOrigin ||
-    isVercelCron ||
-    isTriggerParam ||
-    (expectedSecret && authHeader === `Bearer ${expectedSecret}`) ||
-    (serviceKey && authHeader === `Bearer ${serviceKey}`) ||
     (process.env.NODE_ENV === 'test' && authHeader === 'Bearer test-secret-token');
 
   if (!isAuthorized) {
     return res.status(401).json({
       success: false,
-      error: 'Unauthorized: Missing or invalid queue processor authorization token'
+      error: 'Unauthorized: Missing or invalid CRON_SECRET bearer token or service role authorization'
     });
   }
 
@@ -1803,8 +1811,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       auth: { persistSession: false }
     });
 
+    // 2. Stuck-Job Recovery (Reclaim jobs left in 'processing' longer than 15 mins after worker crash/timeout)
+    const STUCK_TIMEOUT_MS = 15 * 60 * 1000;
+    const stuckThresholdIso = new Date(Date.now() - STUCK_TIMEOUT_MS).toISOString();
+    const { data: reclaimedJobs } = await supabase
+      .from('email_automation_queue')
+      .update({
+        status: 'pending',
+        error_message: 'Auto-reclaimed after worker timeout/crash',
+        updated_at: new Date().toISOString()
+      })
+      .eq('status', 'processing')
+      .lt('updated_at', stuckThresholdIso)
+      .select('id');
+
+    const reclaimedCount = reclaimedJobs ? reclaimedJobs.length : 0;
+
+    // 3. Query Candidate Jobs (pending, scheduled in past, under retry limit)
     const nowIso = new Date().toISOString();
-    const { data: pendingJobs, error } = await supabase
+    const { data: candidates, error } = await supabase
       .from('email_automation_queue')
       .select('*')
       .eq('status', 'pending')
@@ -1812,7 +1837,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       .lt('retry_count', 3)
       .order('priority', { ascending: true })
       .order('created_at', { ascending: true })
-      .limit(Math.min(batchSize, 100));
+      .limit(Math.min(batchSize, 50));
 
     if (error) {
       return res.status(500).json({
@@ -1822,23 +1847,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    if (!pendingJobs || pendingJobs.length === 0) {
+    if (!candidates || candidates.length === 0) {
       return res.status(200).json({
         success: true,
-        processed: 0,
-        sent: 0,
-        suppressed: 0,
-        preferenceBlocked: 0,
-        failed: 0,
-        durationMs: Date.now() - startTime,
+        metrics: {
+          reclaimedStuck: reclaimedCount,
+          claimed: 0,
+          sent: 0,
+          duplicateSuppressed: 0,
+          suppressed: 0,
+          preferenceBlocked: 0,
+          retried: 0,
+          deadLettered: 0,
+          failed: 0,
+          concurrencyCollisions: 0,
+          durationMs: Date.now() - startTime
+        },
         message: 'Queue is currently empty.'
       });
     }
 
-    let sent = 0;
+    let claimedCount = 0;
+    let sentCount = 0;
     let suppressedCount = 0;
     let preferenceBlockedCount = 0;
-    let failed = 0;
+    let duplicateSuppressedCount = 0;
+    let retriedCount = 0;
+    let deadLetterCount = 0;
+    let failedCount = 0;
+    let concurrencyCollisions = 0;
 
     let sesClient: any = null;
     let SendEmailCommand: any = null;
@@ -1875,23 +1912,62 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
-    for (let i = 0; i < pendingJobs.length; i++) {
-      const job = pendingJobs[i];
-      const cleanEmail = (job.recipient_email || '').toLowerCase().trim();
+    for (let i = 0; i < candidates.length; i++) {
+      const candidate = candidates[i];
+      const cleanEmail = (candidate.recipient_email || '').toLowerCase().trim();
 
       // Paced rate limiting: 125ms delay between consecutive requests (max 8/sec)
       if (i > 0) {
         await new Promise(resolve => setTimeout(resolve, 125));
       }
 
-      try {
-        // Mark as processing
-        await supabase
-          .from('email_automation_queue')
-          .update({ status: 'processing', updated_at: new Date().toISOString() })
-          .eq('id', job.id);
+      // 4. Atomic Queue Claiming: Update only if still 'pending'
+      const { data: claimedJob } = await supabase
+        .from('email_automation_queue')
+        .update({
+          status: 'processing',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', candidate.id)
+        .eq('status', 'pending')
+        .select('*')
+        .maybeSingle();
 
-        // Pre-send check 1: Active Suppression List
+      if (!claimedJob) {
+        // Concurrently claimed by another worker invocation
+        concurrencyCollisions++;
+        continue;
+      }
+
+      claimedCount++;
+
+      try {
+        // 5. Idempotency & Welcome Eligibility Check: Prevent duplicate welcome emails
+        if (claimedJob.trigger_type === 'welcome' || claimedJob.trigger_type === 'welcome_candidate') {
+          const { data: alreadyDelivered } = await supabase
+            .from('email_audit_ledger')
+            .select('id, created_at, status')
+            .eq('recipient_email', cleanEmail)
+            .in('template_name', ['welcome', 'welcome_candidate'])
+            .in('status', ['sent', 'delivered'])
+            .maybeSingle();
+
+          if (alreadyDelivered) {
+            await supabase
+              .from('email_automation_queue')
+              .update({
+                status: 'suppressed',
+                error_message: `Duplicate welcome email suppressed (already delivered at ${alreadyDelivered.created_at})`,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', claimedJob.id);
+
+            duplicateSuppressedCount++;
+            continue;
+          }
+        }
+
+        // 6. Pre-send check: Active Suppression List
         const { data: suppressed } = await supabase
           .from('email_suppression_list')
           .select('id, reason')
@@ -1907,20 +1983,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               error_message: `Recipient is in active suppression list (${suppressed.reason || 'bounce/complaint'})`,
               updated_at: new Date().toISOString()
             })
-            .eq('id', job.id);
+            .eq('id', claimedJob.id);
 
           try {
             await supabase.from('email_audit_ledger').insert({
               recipient_email: cleanEmail,
-              user_id: job.user_id,
-              category: job.category || 'transactional',
-              template_name: job.trigger_type,
-              subject: job.template_data?.subject || job.trigger_type,
-              priority: job.priority || 3,
+              user_id: claimedJob.user_id,
+              category: claimedJob.category || 'transactional',
+              template_name: claimedJob.trigger_type,
+              subject: claimedJob.template_data?.subject || claimedJob.trigger_type,
+              priority: claimedJob.priority || 3,
               status: 'suppressed',
               error_message: 'Recipient is in active suppression list',
-              idempotency_key: job.idempotency_key,
-              metadata: job.template_data || {}
+              idempotency_key: claimedJob.idempotency_key,
+              metadata: claimedJob.template_data || {}
             });
           } catch (_) {}
 
@@ -1928,8 +2004,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           continue;
         }
 
-        // Pre-send check 2: User Email Preferences for non-transactional emails
-        const category = job.category || 'transactional';
+        // 7. Pre-send check: User Email Preferences for non-transactional emails
+        const category = claimedJob.category || 'transactional';
         if (category !== 'transactional') {
           const { data: prefs } = await supabase
             .from('email_user_preferences')
@@ -1945,20 +2021,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                 error_message: 'Recipient opted out of non-essential communications',
                 updated_at: new Date().toISOString()
               })
-              .eq('id', job.id);
+              .eq('id', claimedJob.id);
 
             try {
               await supabase.from('email_audit_ledger').insert({
                 recipient_email: cleanEmail,
-                user_id: job.user_id,
+                user_id: claimedJob.user_id,
                 category,
-                template_name: job.trigger_type,
-                subject: job.template_data?.subject || job.trigger_type,
-                priority: job.priority || 3,
+                template_name: claimedJob.trigger_type,
+                subject: claimedJob.template_data?.subject || claimedJob.trigger_type,
+                priority: claimedJob.priority || 3,
                 status: 'preference_blocked',
                 error_message: 'Recipient preferences blocked dispatch',
-                idempotency_key: job.idempotency_key,
-                metadata: job.template_data || {}
+                idempotency_key: claimedJob.idempotency_key,
+                metadata: claimedJob.template_data || {}
               });
             } catch (_) {}
 
@@ -1967,10 +2043,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           }
         }
 
-        // Render full dynamic template
-        const rendered = renderTemplate(job.trigger_type, job.template_data || {}, cleanEmail);
+        // 8. Render Dynamic Template
+        const rendered = renderTemplate(claimedJob.trigger_type, claimedJob.template_data || {}, cleanEmail);
 
-        let messageId = `console_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+        let messageId: string | null = null;
 
         if (sesClient && SendEmailCommand && emailMode === 'ses') {
           const fromAddress = `TalentXcel <noreply@${DOMAIN}>`;
@@ -1989,7 +2065,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             },
             EmailTags: [
               { Name: 'Category', Value: rendered.category },
-              { Name: 'Template', Value: job.trigger_type },
+              { Name: 'Template', Value: claimedJob.trigger_type },
               { Name: 'Platform', Value: 'TalentXcel' }
             ]
           });
@@ -2005,13 +2081,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             text: rendered.plainText,
             headers: {
               'X-TalentXcel-Category': rendered.category,
-              'X-TalentXcel-Template': job.trigger_type
+              'X-TalentXcel-Template': claimedJob.trigger_type
             }
           });
           messageId = info.messageId;
+        } else {
+          // Dev / Console fallback mode
+          messageId = `console_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
         }
 
-        // Mark as sent
+        if (!messageId) {
+          throw new Error('Provider did not acknowledge email acceptance (empty MessageId)');
+        }
+
+        // 9. Delivery Verification: Mark as 'sent' ONLY after provider API acceptance
         await supabase
           .from('email_automation_queue')
           .update({
@@ -2020,20 +2103,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             sent_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
-          .eq('id', job.id);
+          .eq('id', claimedJob.id);
 
         // Record in ledger
         try {
           await supabase.from('email_audit_ledger').insert({
             recipient_email: cleanEmail,
-            user_id: job.user_id,
+            user_id: claimedJob.user_id,
             category: rendered.category,
-            template_name: job.trigger_type,
+            template_name: claimedJob.trigger_type,
             subject: rendered.subject,
-            priority: job.priority || 3,
+            priority: claimedJob.priority || 3,
             status: 'sent',
             provider_message_id: messageId,
-            idempotency_key: job.idempotency_key,
+            idempotency_key: claimedJob.idempotency_key,
             metadata: {
               mode: emailMode,
               processedAt: new Date().toISOString()
@@ -2041,36 +2124,79 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           });
         } catch (_) {}
 
-        sent++;
+        sentCount++;
       } catch (jobErr: any) {
-        failed++;
-        const nextRetry = (job.retry_count || 0) + 1;
-        const newStatus = nextRetry >= 3 ? 'failed' : 'pending';
-        // Exponential backoff delay for retries: 5 mins, 20 mins
-        const delayMinutes = nextRetry === 1 ? 5 : 20;
+        failedCount++;
+        // 10. Retry Policy: Exponential backoff (5m, 20m, 60m), max attempts, dead-letter state
+        const nextRetry = (claimedJob.retry_count || 0) + 1;
+        const maxRetries = claimedJob.max_retries || 3;
+        const isDeadLetter = nextRetry >= maxRetries;
+        const delayMinutes = nextRetry === 1 ? 5 : nextRetry === 2 ? 20 : 60;
 
         await supabase
           .from('email_automation_queue')
           .update({
-            status: newStatus,
-            last_error: jobErr?.message,
+            status: isDeadLetter ? 'failed' : 'pending',
+            last_error: jobErr?.message || 'SES Dispatch Failure',
+            error_message: isDeadLetter ? `Dead-letter: exceeded ${maxRetries} retries (${jobErr?.message})` : jobErr?.message,
             retry_count: nextRetry,
-            scheduled_at: new Date(Date.now() + delayMinutes * 60 * 1000).toISOString(),
+            scheduled_at: isDeadLetter ? null : new Date(Date.now() + delayMinutes * 60 * 1000).toISOString(),
             updated_at: new Date().toISOString()
           })
-          .eq('id', job.id);
+          .eq('id', claimedJob.id);
+
+        if (isDeadLetter) {
+          deadLetterCount++;
+          try {
+            await supabase.from('email_audit_ledger').insert({
+              recipient_email: cleanEmail,
+              user_id: claimedJob.user_id,
+              category: claimedJob.category || 'transactional',
+              template_name: claimedJob.trigger_type,
+              subject: claimedJob.template_data?.subject || claimedJob.trigger_type,
+              priority: claimedJob.priority || 3,
+              status: 'failed',
+              error_message: `Dead-letter: ${jobErr?.message}`,
+              metadata: { retryCount: nextRetry, failedAt: new Date().toISOString() }
+            });
+          } catch (_) {}
+        } else {
+          retriedCount++;
+        }
       }
     }
 
+    // Query remaining queue status for observability
+    const { count: remainingPending } = await supabase
+      .from('email_automation_queue')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'pending');
+
+    const { count: remainingProcessing } = await supabase
+      .from('email_automation_queue')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'processing');
+
     return res.status(200).json({
       success: true,
-      processed: pendingJobs.length,
-      sent,
-      suppressed: suppressedCount,
-      preferenceBlocked: preferenceBlockedCount,
-      failed,
+      metrics: {
+        reclaimedStuck: reclaimedCount,
+        claimed: claimedCount,
+        sent: sentCount,
+        duplicateSuppressed: duplicateSuppressedCount,
+        suppressed: suppressedCount,
+        preferenceBlocked: preferenceBlockedCount,
+        retried: retriedCount,
+        deadLettered: deadLetterCount,
+        failed: failedCount,
+        concurrencyCollisions,
+        durationMs: Date.now() - startTime
+      },
+      queueState: {
+        pendingRemaining: remainingPending || 0,
+        processingRemaining: remainingProcessing || 0
+      },
       emailMode,
-      durationMs: Date.now() - startTime,
       timestamp: new Date().toISOString()
     });
 

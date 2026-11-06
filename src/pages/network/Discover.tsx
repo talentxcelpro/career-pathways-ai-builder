@@ -286,6 +286,27 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     }
   };
 
+  const handleFollow = async (personId: string, personName: string) => {
+    if (!user) {
+      toast.error('Please sign in to follow professionals');
+      navigate('/login');
+      return;
+    }
+    if (user.id === personId) {
+      toast.info('This is your own profile');
+      return;
+    }
+    try {
+      await supabase.from('user_follows').upsert({
+        follower_id: user.id,
+        following_id: personId
+      });
+      toast.success(`You are now following ${personName}`);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to follow');
+    }
+  };
+
   const totalFilteredCount = categorizedSections.reduce((acc, s) => acc + s.people.length, 0);
 
   return (
@@ -553,10 +574,19 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="w-full text-[11px] h-7 rounded-lg font-bold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40 border-slate-200 dark:border-border cursor-pointer"
+                                  className="flex-1 text-[11px] h-7 px-2 rounded-lg font-bold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40 border-slate-200 dark:border-border cursor-pointer truncate"
                                   onClick={() => navigate(profileLink)}
                                 >
-                                  View Profile
+                                  View
+                                </Button>
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  className="text-[11px] h-7 px-2.5 rounded-lg font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 shrink-0 cursor-pointer"
+                                  onClick={() => handleFollow(person.id, person.full_name)}
+                                  title={`Follow ${person.full_name}`}
+                                >
+                                  Follow
                                 </Button>
                                 <Button
                                   size="sm"
@@ -565,7 +595,8 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                   disabled={sendConnectionRequest.isPending}
                                   title={`Connect with ${person.full_name}`}
                                 >
-                                  <UserPlus className="h-3 w-3" />
+                                  <UserPlus className="h-3 w-3 mr-1" />
+                                  Connect
                                 </Button>
                               </div>
                             </div>

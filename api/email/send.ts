@@ -1827,7 +1827,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
       process.env.SUPABASE_SERVICE_ROLE_KEY ||
       process.env.SUPABASE_SERVICE_KEY ||
-      Buffer.from('c2Jfc2VjcmV0XzJ6cEd4LVdibGtXWGtEb2E2c0JRbkFfVHlUbmI4M0o=', 'base64').toString('utf-8');
+      process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+      process.env.VITE_SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_ANON_KEY ||
+      '';
 
     let supabase: any = null;
     if (serviceKey) {
@@ -1837,6 +1841,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       } catch (err: any) {
         console.warn('⚠️ Supabase client init warning:', err?.message);
+      }
+    }
+
+    // Idempotency: For welcome emails, guarantee only ONE is ever delivered per account
+    if (supabase && (template === 'welcome' || template === 'welcome_candidate')) {
+      const { data: existingAudit } = await supabase
+        .from('email_audit_ledger')
+        .select('id, created_at, status')
+        .eq('recipient_email', cleanEmail)
+        .in('template_name', ['welcome', 'welcome_candidate'])
+        .in('status', ['sent', 'delivered'])
+        .maybeSingle();
+
+      if (existingAudit) {
+        return res.status(200).json({
+          success: true,
+          duplicateSuppressed: true,
+          message: 'Welcome email was already delivered to this recipient.',
+          deliveredAt: existingAudit.created_at
+        });
+      }
+
+      const { data: existingQueue } = await supabase
+        .from('email_automation_queue')
+        .select('id, status, created_at')
+        .eq('recipient_email', cleanEmail)
+        .in('trigger_type', ['welcome', 'welcome_candidate'])
+        .in('status', ['pending', 'processing', 'sent'])
+        .maybeSingle();
+
+      if (existingQueue) {
+        return res.status(200).json({
+          success: true,
+          duplicateSuppressed: true,
+          message: 'Welcome email is already pending or processed in queue.',
+          queueStatus: existingQueue.status
+        });
       }
     }
 

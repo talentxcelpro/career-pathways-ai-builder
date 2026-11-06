@@ -234,6 +234,7 @@ export const useOptimizedRegistration = () => {
               template: 'welcome',
               priority: 1,
               immediate: true,
+              idempotencyKey: 'welcome:' + data.email.toLowerCase().trim(),
               variables: {
                 first_name: data.fullName.split(' ')[0],
                 name: data.fullName,
@@ -253,6 +254,7 @@ export const useOptimizedRegistration = () => {
               trigger_type: 'welcome',
               recipient_email: data.email,
               recipient_name: data.fullName,
+              idempotency_key: 'welcome:' + data.email.toLowerCase().trim(),
               template_data: {
                 first_name: data.fullName.split(' ')[0],
                 name: data.fullName,

@@ -81,10 +81,11 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
         verification_status: 'unverified'
       }, { onConflict: 'id' });
 
-      // Automatically trigger welcome email for any new user (Google, LinkedIn, One Tap, Email)
+      // Welcome eligibility: Only trigger welcome email for genuine new accounts (created within last 15 mins)
       if (user.email) {
+        const isRecentRegistration = user.created_at && (Date.now() - new Date(user.created_at).getTime()) < 15 * 60 * 1000;
         const welcomeKey = 'txc_welcomed_' + user.id;
-        if (typeof window !== 'undefined' && !localStorage.getItem(welcomeKey)) {
+        if (isRecentRegistration && typeof window !== 'undefined' && !localStorage.getItem(welcomeKey)) {
           localStorage.setItem(welcomeKey, 'true');
           fetch('/api/email/send', {
             method: 'POST',
@@ -95,6 +96,7 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
               template: 'welcome',
               priority: 1,
               immediate: true,
+              idempotencyKey: 'welcome:' + user.email.toLowerCase().trim(),
               variables: {
                 first_name: fullName.split(' ')[0],
                 name: fullName,

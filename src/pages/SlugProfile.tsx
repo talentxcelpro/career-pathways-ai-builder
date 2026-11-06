@@ -57,6 +57,25 @@ const SlugProfile = () => {
   const { data: stats } = useAccurateProfileStats(profile?.id);
   const { sendConnectionRequest, isSending } = useConnectionRequests();
 
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
+
+  // Check if current user is following this profile
+  React.useEffect(() => {
+    if (!user?.id || !profile?.id) return;
+    const isProfileUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+    if (!isProfileUUID) return;
+    supabase
+      .from('user_follows')
+      .select('id')
+      .eq('follower_id', user.id)
+      .eq('following_id', profile.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setIsFollowing(Boolean(data));
+      });
+  }, [user?.id, profile?.id]);
+
   const isOwnProfile = Boolean((isAuthenticated || user?.id) && user?.id && profile?.id && user.id === profile.id);
 
   // Connection State Query
@@ -202,7 +221,47 @@ const SlugProfile = () => {
     }
   };
 
-  const handleMessage = async () => {
+    const handleToggleFollow = async () => {
+    const isAuthed = await checkIsAuthenticated('Follow');
+    if (!isAuthed) {
+      toast.info("Please log in to follow");
+      navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    if (!user?.id || !profile?.id) return;
+    setIsFollowLoading(true);
+    try {
+      const isProfileUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+      if (isFollowing) {
+        if (isProfileUUID) {
+          await supabase
+            .from('user_follows')
+            .delete()
+            .eq('follower_id', user.id)
+            .eq('following_id', profile.id);
+        }
+        setIsFollowing(false);
+        toast.success(`Unfollowed ${profile.full_name}`);
+      } else {
+        if (isProfileUUID) {
+          await supabase
+            .from('user_follows')
+            .insert({
+              follower_id: user.id,
+              following_id: profile.id
+            });
+        }
+        setIsFollowing(true);
+        toast.success(`Now following ${profile.full_name}`);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update follow');
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
+
+const handleMessage = async () => {
     const isAuthed = await checkIsAuthenticated('Message');
     if (!isAuthed) {
       toast.info("Please log in to send a message");
@@ -468,7 +527,23 @@ const SlugProfile = () => {
                     </Button>
                   )}
 
-                  {/* Dynamic Message Button */}
+                                    {/* Dynamic Follow Button */}
+                  {!isOwnProfile && (
+                    <Button
+                      onClick={handleToggleFollow}
+                      disabled={isFollowLoading}
+                      className={`rounded-full border h-8 px-4 text-xs font-semibold backdrop-blur-md transition-colors ${
+                        isFollowing
+                          ? 'bg-emerald-600/90 hover:bg-emerald-700 text-white border-emerald-500'
+                          : 'bg-white/10 hover:bg-white/20 text-white border-white/30'
+                      }`}
+                    >
+                      <UserCheck className="h-3.5 w-3.5 mr-1.5 text-emerald-300" />
+                      <span className="text-white font-semibold">{isFollowing ? 'Following' : 'Follow'}</span>
+                    </Button>
+                  )}
+
+{/* Dynamic Message Button */}
                   {!isOwnProfile && (
                     <Button onClick={handleMessage} className="rounded-full border border-white/30 bg-white/10 hover:bg-white/20 text-white font-semibold shadow-xs h-8 px-4 text-xs backdrop-blur-md">
                       <MessageSquare className="h-3.5 w-3.5 mr-1.5 text-cyan-300" />

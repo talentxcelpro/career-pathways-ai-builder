@@ -62,11 +62,12 @@ const OAuthCallback = () => {
             setStatus('success');
             toast.success('Signed in successfully!');
 
-            // Trigger Welcome email for new OAuth user
+            // Trigger Welcome email for new OAuth user only if recently registered (within last 15 mins)
             const oAuthUser = exchangeData.session.user;
             if (oAuthUser?.email) {
+              const isRecentRegistration = oAuthUser.created_at && (Date.now() - new Date(oAuthUser.created_at).getTime()) < 15 * 60 * 1000;
               const welcomeKey = 'txc_welcomed_' + oAuthUser.id;
-              if (!localStorage.getItem(welcomeKey)) {
+              if (isRecentRegistration && !localStorage.getItem(welcomeKey)) {
                 localStorage.setItem(welcomeKey, 'true');
                 const fullName = oAuthUser.user_metadata?.full_name || oAuthUser.user_metadata?.name || oAuthUser.email.split('@')[0];
                 fetch('/api/email/send', {
@@ -78,6 +79,7 @@ const OAuthCallback = () => {
                     template: 'welcome',
                     priority: 1,
                     immediate: true,
+                    idempotencyKey: 'welcome:' + oAuthUser.email.toLowerCase().trim(),
                     variables: {
                       first_name: fullName.split(' ')[0],
                       name: fullName,

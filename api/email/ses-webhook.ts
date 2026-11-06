@@ -113,12 +113,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               { onConflict: 'email_address' }
             );
 
-            // Update any pending queue jobs for this recipient to suppressed
+            // Update any pending or sent queue jobs for this recipient to suppressed / bounced
             await supabase
               .from('email_automation_queue')
-              .update({ status: 'suppressed', error_message: 'Hard bounce suppressed' })
+              .update({ status: 'bounced', error_message: `SES Hard Bounce: ${bounceSubtype || 'Permanent failure'}` })
               .eq('recipient_email', email)
-              .eq('status', 'pending');
+              .in('status', ['pending', 'sent']);
+
+            await supabase
+              .from('email_audit_ledger')
+              .update({ status: 'bounced', error_message: `SES Hard Bounce: ${bounceSubtype || 'Permanent failure'}` })
+              .eq('recipient_email', email)
+              .eq('status', 'sent');
           } catch (suppErr) {
             console.warn('⚠️ Could not update suppression list in DB:', suppErr);
           }
@@ -210,15 +216,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const processingTime = delivery?.processingTimeMillis;
 
       for (const email of recipients) {
+        const cleanEmail = email.toLowerCase().trim();
         try {
           await supabase.from('ses_delivery_logs').insert({
             message_id: messageId,
-            recipient_email: email.toLowerCase().trim(),
+            recipient_email: cleanEmail,
             event_type: 'delivery',
             status: 'delivered',
             processing_time_ms: processingTime,
             delivered_at: new Date().toISOString()
           });
+
+          // Delivery verification: record verification in audit ledger
+          await supabase
+            .from('email_audit_ledger')
+            .update({ metadata: { deliveredAt: new Date().toISOString(), providerVerified: true, messageId } })
+            .eq('recipient_email', cleanEmail)
+            .eq('status', 'sent');
         } catch (_) {}
       }
 

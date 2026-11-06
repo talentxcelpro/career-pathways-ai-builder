@@ -13,8 +13,17 @@ export const useConnectionRequests = () => {
       if (!user) throw new Error('Not authenticated');
 
       // Normalize string or object argument
-      const recipientId = typeof arg === 'string' ? arg : arg.recipientId;
-      const connectionMessage = typeof arg === 'string' ? null : (arg.message || null);
+      let recipientId = typeof arg === 'string' ? arg : arg.recipientId;
+      let connectionMessage = typeof arg === 'string' ? null : (arg.message || null);
+
+      // Handle accidental double-stringified JSON payload
+      if (typeof recipientId === 'string' && recipientId.trim().startsWith('{')) {
+        try {
+          const parsed = JSON.parse(recipientId);
+          recipientId = parsed.recipientId || parsed.id || recipientId;
+          if (parsed.message) connectionMessage = parsed.message;
+        } catch (_) {}
+      }
 
       if (!recipientId || typeof recipientId !== 'string') {
         throw new Error('Valid recipient UUID is required');
