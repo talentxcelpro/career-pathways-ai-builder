@@ -1,26 +1,13 @@
 import React from 'react';
-import { RichUrlPreview, useUrlDetection } from './RichUrlPreview';
+import { UniversalPostContent } from '@/components/network/UniversalPostContent';
 
-// Enhanced Post Content Component with URL Detection
+// Master Post Content Component with Safe Linkification, Markdown Bold & URL Previews
 const EnhancedPostContent: React.FC<{
   content: string;
   className?: string;
 }> = ({ content, className }) => {
-  const { urls, textWithoutUrls } = useUrlDetection(content);
-
-  return (
-    <div className={`space-y-3 ${className}`}>
-      {textWithoutUrls && (
-        <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-          {textWithoutUrls}
-        </p>
-      )}
-      
-      {urls.map((url, index) => (
-        <RichUrlPreview key={index} url={url} compact />
-      ))}
-    </div>
-  );
+  return <UniversalPostContent content={content} className={className} />;
 };
 
 export { EnhancedPostContent };
+export default EnhancedPostContent;

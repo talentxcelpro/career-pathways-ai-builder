@@ -27,6 +27,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { RichUrlPreview } from '@/components/social/RichUrlPreview';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQueryClient } from '@tanstack/react-query';
@@ -75,6 +76,10 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   
   // Media states
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const detectedUrl = React.useMemo(() => {
+    const match = content.match(/https?:\/\/[^\s<>'"]+/i);
+    return match ? match[0].replace(/[.,!?;:)\]>"]+$/, '') : null;
+  }, [content]);
   const [isUploading, setIsUploading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -488,7 +493,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
   // Compact collapsed state: keeps feed visible above the fold just like Smart Feed
   if (!isExpanded && !content.trim() && mediaItems.length === 0) {
     return (
-      <Card className="w-full border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-3 space-y-2.5">
+      <Card className="w-full max-w-[680px] mx-auto border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-3 sm:p-4 space-y-2.5">
         <div className="flex items-center gap-3">
           <Avatar className="w-9 h-9 border border-slate-200 dark:border-border shrink-0">
             <AvatarImage src={user?.user_metadata?.avatar_url} />
@@ -558,7 +563,7 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`w-full border transition-all duration-200 shadow-sm bg-white dark:bg-card rounded-3xl overflow-hidden p-5 space-y-4 ${
+      className={`w-full max-w-[680px] mx-auto border transition-all duration-200 shadow-sm bg-white dark:bg-card rounded-2xl sm:rounded-3xl overflow-hidden p-4 sm:p-5 md:p-6 space-y-4 ${
         isDragging ? 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/20 ring-2 ring-blue-400/30' : 'border-slate-200/80 dark:border-border/60'
       }`}
     >
@@ -743,6 +748,17 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
                 )}
               </div>
             ))}
+          </div>
+        )}
+
+                {/* Real-time Link Preview in Composer */}
+        {detectedUrl && mediaItems.length === 0 && (
+          <div className="pt-2 border-t border-slate-200/60 dark:border-border/40">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+              <Globe className="h-3 w-3 text-blue-500" />
+              Link Preview
+            </p>
+            <RichUrlPreview url={detectedUrl} compact />
           </div>
         )}
 

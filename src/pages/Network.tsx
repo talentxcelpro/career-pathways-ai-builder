@@ -127,7 +127,7 @@ const Network: React.FC = () => {
       </div>
 
       {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT (full-width on mobile, col-span-6 on lg) */}
-      <div className="col-span-12 md:col-span-8 lg:col-span-6 space-y-2.5">
+      <div className="col-span-12 md:col-span-8 lg:col-span-6 space-y-3 w-full max-w-[680px] mx-auto min-w-0">
         {middleContent}
       </div>
 
