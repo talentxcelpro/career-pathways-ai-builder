@@ -108,7 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ip_address: clientIp,
         user_agent: userAgent,
         metadata: { user_id: user.id, error: errorMsg },
-      }).catch(() => {});
+      }).then(null, () => {});
 
       return res.status(statusCode).json({
         success: false,

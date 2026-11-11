@@ -129,7 +129,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           let matched = false;
           while (!matched && page <= 10) {
             const { data: pageData } = await supabase.auth.admin.listUsers({ page, perPage: 100 });
-            const foundUser = pageData?.users?.find(u => u.email?.toLowerCase() === cleanEmail);
+            const foundUser = pageData?.users?.find((u: any) => u.email?.toLowerCase() === cleanEmail);
             if (foundUser) {
               candidateId = foundUser.id;
               matched = true;

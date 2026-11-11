@@ -1835,7 +1835,7 @@ export function renderEnterpriseTemplate(
     unsubscribeUrl
   });
 
-  return { subject, html, plainText, category };
+  return { subject, html, plainText, category, preheader };
 }
 
 

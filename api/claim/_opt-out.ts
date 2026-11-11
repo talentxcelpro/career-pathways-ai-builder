@@ -66,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       reason: reason || 'user_optout',
       is_active: true,
       notes: `Opted out via claim link on ${new Date().toISOString()}`,
-    }, { onConflict: 'email_address' }).catch(err => {
+    }, { onConflict: 'email_address' }).then(null, err => {
       console.warn('[claim/opt-out] Suppression list upsert warning:', err);
     });
 
@@ -104,7 +104,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ip_address: clientIp,
       user_agent: userAgent,
       metadata: { reason: reason || 'user_optout', deleteData: !!deleteData },
-    }).catch(() => {});
+    }).then(null, () => {});
 
     return res.status(200).json({
       success: true,

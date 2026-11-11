@@ -94,7 +94,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ip_address: clientIp,
         user_agent: userAgent,
         metadata: { reason: 'token_not_found' },
-      }).catch(() => {});
+      }).then(null, () => {});
 
       return res.status(404).json({
         valid: false,
@@ -115,7 +115,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ip_address: clientIp,
         user_agent: userAgent,
         metadata: { expires_at: record.claim_token_expires_at },
-      }).catch(() => {});
+      }).then(null, () => {});
 
       return res.status(410).json({
         valid: false,
@@ -132,7 +132,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         token_hash: tokenHash,
         ip_address: clientIp,
         user_agent: userAgent,
-      }).catch(() => {});
+      }).then(null, () => {});
 
       return res.status(409).json({
         valid: false,
@@ -156,7 +156,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       token_hash: tokenHash,
       ip_address: clientIp,
       user_agent: userAgent,
-    }).catch(() => {});
+    }).then(null, () => {});
 
     // Return safe, masked preview
     return res.status(200).json({
