@@ -21,6 +21,14 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+      // Google Consent Mode v2 (DPDP Act & GDPR compliant default state)
+      gtag('consent', 'default', {
+        'analytics_storage': 'granted',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500
+      });
       gtag('config', 'G-CMYNTTNT56');
       
       // Load GA script asynchronously after page load
@@ -36,7 +44,7 @@
     <!-- Optimal title tag (53 characters, within 50-60 char boundary) -->
     <title>TalentXcel — Global Career Platform, Jobs & Passport</title>
     <!-- Optimal meta description (154 characters, within 140-160 char boundary) -->
-    <meta name="description" content="Connect with tech and leadership talent worldwide. Verify skills with TalentScore, build your Career Passport, and explore verified jobs across 50+ hubs." />
+    <meta name="description" content="Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities." />
     <!-- Author, Publisher & Recency signals for E-E-A-T and LLM Agents -->
     <meta name="author" content="TalentXcel Intelligence Team" />
     <meta name="publisher" content="TalentXcel" />
@@ -72,7 +80,7 @@
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="TalentXcel — Global Career Platform, Jobs & Passport" />
-    <meta property="og:description" content="Connect with tech and leadership talent worldwide. Verify skills with TalentScore, build your Career Passport, and explore verified jobs across 50+ hubs." />
+    <meta property="og:description" content="Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://talentxcel.in/" />
     <meta property="og:image" content="https://talentxcel.in/assets/og/talentxcel-og-default.png" />
@@ -87,7 +95,7 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="TalentXcel — Global Career Platform, Jobs & Passport" />
-    <meta name="twitter:description" content="Connect with tech and leadership talent worldwide. Verify skills with TalentScore, build your Career Passport, and explore verified jobs across 50+ hubs." />
+    <meta name="twitter:description" content="Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities." />
     <meta name="twitter:image" content="https://talentxcel.in/assets/og/talentxcel-og-default.png" />
     <meta name="twitter:image:alt" content="TalentXcel — Global Career Platform, Jobs & Passport" />
 
@@ -151,7 +159,7 @@
         "height": "512"
       },
       "image": "https://talentxcel.in/assets/og/talentxcel-og-default.png",
-      "description": "TalentXcel is the global career intelligence and talent network connecting tech and leadership professionals worldwide with verified Career Passports, TalentScore, and Recruiter OS.",
+      "description": "TalentXcel is the global career intelligence and talent network connecting professionals, specialists, and leaders across all industries worldwide with verified Career Passports, TalentScore, and Recruiter OS.",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Noida",
@@ -200,7 +208,7 @@
           "name": "What is TalentXcel?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "TalentXcel is a global career intelligence platform that connects tech and leadership professionals with verified job openings, comprehensive salary percentiles, accredited college directories, and verified Career Passports."
+            "text": "TalentXcel is a global career intelligence platform that connects professionals, specialists, and leaders across all global industries with verified job openings, comprehensive salary percentiles, accredited college directories, and verified Career Passports."
           }
         },
         {
@@ -233,7 +241,7 @@
       "url": "https://talentxcel.in/",
       "datePublished": "2026-01-01",
       "dateModified": "2026-10-30",
-      "description": "Connect with tech and leadership talent worldwide. Verify skills with TalentScore, build your Career Passport, and explore verified jobs across 50+ hubs.",
+      "description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
       "speakable": {
         "@type": "SpeakableSpecification",
         "cssSelector": ["#tx-hero-title", "#tx-hero-description", ".tx-faq-answer"]

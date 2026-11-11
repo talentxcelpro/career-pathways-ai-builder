@@ -268,7 +268,7 @@ const PrivacyPolicy = () => {
 
               <div>
                 <h3 className="font-semibold text-gray-800 mb-2">Analytics Cookies</h3>
-                <p>Help us understand how you use our platform to improve performance and user experience.</p>
+                <p>Help us understand discovery pathways and measure conversion anonymously across our career subdomains. In compliance with India's Digital Personal Data Protection (DPDP) Act, 2023, we capture non-identifying UTM parameters and referrer origins in first-party storage without passing personally identifiable information (PII) such as names, emails, or phone numbers to third-party analytics engines.</p>
               </div>
 
               <div>

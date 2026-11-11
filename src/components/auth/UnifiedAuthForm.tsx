@@ -12,6 +12,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { PLATFORM_METRICS } from '@/config/platformMetrics';
+import { trackAuthSession } from '@/lib/analytics/conversionTracker';
 
 interface UnifiedAuthFormProps {
   onSuccess?: () => void;
@@ -85,6 +86,7 @@ export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps
         }
 
         if (data.user) {
+          trackAuthSession(data.user, 'email');
           // Guarantee instant auto-connection with talentxcelpro
           try {
             supabase.from('connections').insert({
@@ -127,6 +129,7 @@ export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps
         }
 
         if (data.user) {
+          trackAuthSession(data.user, 'email', true);
           if (accountType === 'employer') {
             localStorage.setItem('txc_active_workspace', 'employer');
           } else {

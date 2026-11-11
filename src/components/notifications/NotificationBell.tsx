@@ -59,7 +59,13 @@ export const NotificationBell: React.FC = () => {
 
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
-    const destination = notification.link || notification.action_url || notification.data?.url || '/notifications';
+    let destination = notification.link || notification.action_url || notification.data?.url || '/notifications';
+    if (destination.includes('feed?post=') || destination.startsWith('?post=')) {
+      const match = destination.match(/[?&]post=([^&]+)/);
+      if (match && match[1]) {
+        destination = `/posts/${match[1]}`;
+      }
+    }
     if (destination) {
       navigate(destination);
     }

@@ -18,7 +18,7 @@ const templates = [
   {
     id: 'modern-tech',
     name: 'Modern Tech',
-    description: 'Clean, modern design perfect for tech professionals',
+    description: 'Clean, modern design perfect for professionals across all industries',
     popular: true,
     color: 'from-blue-500 to-purple-500',
     preview: '/api/placeholder/200/280'

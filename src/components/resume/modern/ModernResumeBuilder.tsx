@@ -74,7 +74,7 @@ const modernTemplates: Template[] = [
   {
     id: 'minimal-tech',
     name: 'Tech Minimal',
-    description: 'Minimalist design perfect for tech professionals',
+    description: 'Minimalist design perfect for professionals across all industries',
     preview: '/api/placeholder/300/400',
     category: 'Tech'
   },

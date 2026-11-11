@@ -43,7 +43,7 @@ const KNOWN_STARTUP_METADATA: Record<string, Partial<UrlMetadata>> = {
   },
   'talentxcel.in': {
     title: 'TalentXcel — Global Career Intelligence & Verified Talent Network',
-    description: 'Connecting technology and leadership talent with verified jobs, career passports, and transparent compensation benchmarks.',
+    description: 'Connecting professionals, specialists, and leaders across all global industries with verified jobs, career passports, and transparent compensation benchmarks.',
     domain: 'talentxcel.in',
     image: 'https://talentxcel.in/assets/og-image.png',
   },

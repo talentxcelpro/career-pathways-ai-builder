@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { GOOGLE_CLIENT_ID, loadGoogleIdentityServices } from '@/config/googleAuth';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { trackAuthSession } from '@/lib/analytics/conversionTracker';
 
 interface SocialLoginProps {
   variant?: 'default' | 'prominent';
@@ -56,6 +57,7 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
 
       // Ensure user profile slug is properly set to first-middle-last or first-last
       if (data.user) {
+        trackAuthSession(data.user, 'google');
         try {
           const { ensureUserProfileSlug } = await import('@/utils/userProfileSlug');
           const metaName = data.user.user_metadata?.full_name || data.user.user_metadata?.name;

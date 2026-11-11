@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Check, X, Clock, UserPlus, ArrowLeft, Trash2, ExternalLink } from "lucide-react";
+import { Check, X, Clock, UserPlus, ArrowLeft, Trash2, ExternalLink, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -35,6 +35,10 @@ const Requests: React.FC = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Connection Requests | Professional Network | TalentXcel";
+  }, []);
 
   // 1. Fetch live connection requests
   const { data: requests = [], isLoading } = useQuery({
@@ -163,53 +167,57 @@ const Requests: React.FC = () => {
       .join('') || 'U';
 
     return (
-      <Card key={request.id} className="hover:shadow-sm border-slate-200 dark:border-border transition-shadow rounded-2xl overflow-hidden bg-white dark:bg-card">
+      <Card key={request.id} className="hover:shadow-sm border-slate-200/80 dark:border-border/60 transition-all rounded-2xl overflow-hidden bg-white dark:bg-card">
         <CardContent className="p-4 sm:p-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
             
-            <div className="flex items-center space-x-3.5">
+            {/* User Profile Info */}
+            <div className="flex items-center gap-3.5 min-w-0 flex-1">
               <Link to={profileUrl} className="shrink-0 group">
-                <Avatar className="h-13 w-13 border border-slate-200 dark:border-border group-hover:ring-2 group-hover:ring-blue-500 transition-all">
-                  <AvatarImage src={avatarUrl} alt={displayName} />
+                <Avatar className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-full border border-slate-200 dark:border-border group-hover:ring-2 group-hover:ring-blue-500 transition-all overflow-hidden bg-slate-100 dark:bg-muted">
+                  <AvatarImage src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
                   <AvatarFallback className="bg-blue-600 text-white font-bold text-sm">
                     {initials}
                   </AvatarFallback>
                 </Avatar>
               </Link>
 
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5">
-                  <Link to={profileUrl} className="font-bold text-sm text-foreground hover:text-blue-600 hover:underline transition-colors">
+              <div className="min-w-0 flex-1 space-y-0.5">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <Link to={profileUrl} className="font-bold text-sm sm:text-base text-foreground hover:text-blue-600 hover:underline transition-colors truncate">
                     {displayName}
                   </Link>
-                  <ExternalLink className="w-3 h-3 text-muted-foreground opacity-60" />
+                  <ExternalLink className="w-3 h-3 text-muted-foreground opacity-60 shrink-0" />
                 </div>
                 <p className="text-xs text-muted-foreground line-clamp-1">{displayTitle}</p>
                 {displayLocation && (
-                  <p className="text-[11px] text-muted-foreground">{displayLocation}</p>
+                  <p className="text-[11px] text-muted-foreground truncate">{displayLocation}</p>
                 )}
               </div>
             </div>
             
-            <div className="flex items-center space-x-2 shrink-0 self-end sm:self-center">
+            {/* Status & Actions */}
+            <div className="flex items-center gap-2 shrink-0 self-stretch sm:self-center pt-2.5 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-border/60 justify-between sm:justify-start">
               <Badge 
                 variant={
                   request.status === 'accepted' ? 'default' : 
                   request.status === 'pending' ? 'secondary' : 
                   'destructive'
                 }
-                className="text-xs capitalize font-semibold"
+                className={`text-xs capitalize font-bold px-2.5 py-0.5 ${
+                  request.status === 'accepted' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : ''
+                }`}
               >
                 {request.status}
               </Badge>
               
               {isReceived && request.status === 'pending' && (
-                <div className="flex space-x-2">
+                <div className="flex items-center gap-2">
                   <Button
                     size="sm"
                     onClick={() => updateRequestMutation.mutate({ requestId: request.id, status: 'accepted' })}
                     disabled={updateRequestMutation.isPending}
-                    className="h-8 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs"
+                    className="h-8.5 px-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-xs cursor-pointer"
                   >
                     <Check className="h-3.5 w-3.5 mr-1" />
                     Accept
@@ -219,7 +227,7 @@ const Requests: React.FC = () => {
                     variant="outline"
                     onClick={() => updateRequestMutation.mutate({ requestId: request.id, status: 'declined' })}
                     disabled={updateRequestMutation.isPending}
-                    className="h-8 px-3 rounded-xl text-xs font-semibold"
+                    className="h-8.5 px-3 rounded-xl text-xs font-semibold cursor-pointer border-slate-200 dark:border-border"
                   >
                     <X className="h-3.5 w-3.5 mr-1" />
                     Decline
@@ -233,7 +241,7 @@ const Requests: React.FC = () => {
                   variant="outline"
                   onClick={() => withdrawRequestMutation.mutate(request.id)}
                   disabled={withdrawRequestMutation.isPending}
-                  className="h-8 px-3 rounded-xl text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/20 border-rose-200"
+                  className="h-8.5 px-3 rounded-xl text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/20 border-rose-200 dark:border-rose-900/40 cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5 mr-1" />
                   Withdraw
@@ -258,34 +266,62 @@ const Requests: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background pb-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div className="max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 py-5 sm:py-6">
         
         {/* Navigation Breadcrumb */}
-        <div className="mb-6 flex items-center gap-3">
+        <div className="mb-4 sm:mb-6 flex items-center justify-between">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={() => navigate('/network')} 
-            className="rounded-xl h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground"
+            className="rounded-xl h-8 px-2.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
           >
             <ArrowLeft className="h-3.5 w-3.5 mr-1.5" />
             Back to Network
           </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate('/network/connections')}
+            className="rounded-xl h-8 px-3 text-xs font-semibold border-slate-200 dark:border-border cursor-pointer flex items-center gap-1.5"
+          >
+            <Users className="h-3.5 w-3.5 text-purple-600" />
+            My Connections
+          </Button>
         </div>
 
-        {/* Header */}
-        <div className="mb-6 space-y-1">
-          <h1 className="text-2xl font-black tracking-tight text-foreground">Connection Requests</h1>
-          <p className="text-xs text-muted-foreground font-medium">Manage incoming networking invitations and monitor pending outreach.</p>
+        {/* Header Title Card */}
+        <div className="mb-5 sm:mb-6 p-4 sm:p-5 bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-2xl shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">Connection Requests</h1>
+                <Badge variant="outline" className="text-[10px] font-bold border-blue-200 text-blue-600 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-800">
+                  Network
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground font-medium">Manage incoming networking invitations and monitor pending outreach.</p>
+            </div>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <Badge variant="secondary" className="text-xs font-bold px-2.5 py-1 rounded-lg">
+                {receivedRequests.length} Incoming
+              </Badge>
+              <Badge variant="secondary" className="text-xs font-bold px-2.5 py-1 rounded-lg">
+                {sentRequests.length} Sent
+              </Badge>
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="received" className="space-y-4">
           <TabsList className="grid w-full grid-cols-2 rounded-xl p-1 bg-white dark:bg-card border border-slate-200 dark:border-border">
-            <TabsTrigger value="received" className="flex items-center text-xs font-bold rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger value="received" className="flex items-center justify-center text-xs font-bold rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               <Clock className="h-3.5 w-3.5 mr-1.5" />
               Received ({receivedRequests.length})
             </TabsTrigger>
-            <TabsTrigger value="sent" className="flex items-center text-xs font-bold rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            <TabsTrigger value="sent" className="flex items-center justify-center text-xs font-bold rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white">
               <UserPlus className="h-3.5 w-3.5 mr-1.5" />
               Sent ({sentRequests.length})
             </TabsTrigger>
@@ -338,14 +374,14 @@ const Requests: React.FC = () => {
               sentRequests.map(request => renderRequestCard(request, false))
             ) : (
               <Card className="rounded-2xl border-slate-200 dark:border-border bg-white dark:bg-card">
-                <CardContent className="p-12 text-center space-y-2">
+                <CardContent className="p-12 text-center space-y-3">
                   <UserPlus className="h-10 w-10 text-muted-foreground mx-auto" />
                   <h3 className="text-sm font-bold text-foreground">No sent requests</h3>
                   <p className="text-xs text-muted-foreground">Discover verified professionals and send connection invitations from the directory or feed.</p>
                   <Button 
                     size="sm" 
                     onClick={() => navigate('/network/people')} 
-                    className="mt-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white"
+                    className="mt-2 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                   >
                     Browse Professionals Directory
                   </Button>

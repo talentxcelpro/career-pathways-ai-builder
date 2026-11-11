@@ -15,7 +15,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import { generateAndDownloadVCard } from "@/utils/vcardGenerator";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { useConnectionRequests } from "@/hooks/useConnectionRequests";
 import {
+  Loader2,
+  MessageSquare,
+  Clock,
   BadgeCheck,
   Briefcase,
   GraduationCap,
@@ -76,6 +81,10 @@ const PublicPassport: React.FC = () => {
   const [showEmbedModal, setShowEmbedModal] = useState(false);
   const [badgeCopiedFormat, setBadgeCopiedFormat] = useState<'markdown' | 'html' | null>(null);
   const [activeTab, setActiveTab] = useState<"about" | "experience" | "services" | "projects" | "achievements" | "credentials" | "reviews">("about");
+  const { user } = useAuth();
+  const { sendConnectionRequest, isSending } = useConnectionRequests();
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isFollowLoading, setIsFollowLoading] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["public-passport", identifier],
@@ -139,6 +148,48 @@ const PublicPassport: React.FC = () => {
       }),
     [data],
   );
+
+  const targetUserId = data?.profile?.id;
+  const isOwnProfile = Boolean(user?.id && targetUserId && user.id === targetUserId);
+
+  React.useEffect(() => {
+    if (!user?.id || !targetUserId) return;
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId);
+    if (!isUUID) return;
+    supabase
+      .from('user_follows')
+      .select('id')
+      .eq('follower_id', user.id)
+      .eq('following_id', targetUserId)
+      .maybeSingle()
+      .then(({ data }) => {
+        setIsFollowing(Boolean(data));
+      });
+  }, [user?.id, targetUserId]);
+
+  const { data: connectionState, refetch: refetchConnection } = useQuery({
+    queryKey: ['passport-connection-status', user?.id, targetUserId],
+    queryFn: async () => {
+      if (!user?.id || !targetUserId) return { status: 'none', id: null };
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId);
+      if (!isUUID) return { status: 'none', id: null };
+      const { data, error } = await supabase
+        .from('connections')
+        .select('id, status, requester_id, recipient_id')
+        .or(`and(requester_id.eq.${user.id},recipient_id.eq.${targetUserId}),and(requester_id.eq.${targetUserId},recipient_id.eq.${user.id})`)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error || !data || data.length === 0) return { status: 'none', id: null };
+      const match = data[0];
+      return { 
+        status: match.status, 
+        id: match.id,
+        isRequester: match.requester_id === user.id
+      };
+    },
+    enabled: Boolean(user?.id && targetUserId),
+  });
 
   if (isLoading) {
     return (
@@ -211,6 +262,91 @@ const PublicPassport: React.FC = () => {
     }
   };
 
+
+
+  const handleConnect = async () => {
+    if (!user?.id) {
+      toast.info("Please log in to connect");
+      navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    if (isOwnProfile) {
+      navigate('/profile/edit');
+      return;
+    }
+    if (targetUserId) {
+      try {
+        await sendConnectionRequest.mutateAsync(targetUserId);
+        refetchConnection();
+        toast.success(`Connection invitation sent to ${fullName}!`);
+      } catch (err: any) {
+        toast.error(err?.message || "Failed to send connection request");
+      }
+    }
+  };
+
+  const handleToggleFollow = async () => {
+    if (!user?.id) {
+      toast.info("Please log in to follow");
+      navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    if (!targetUserId) return;
+    setIsFollowLoading(true);
+    try {
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetUserId);
+      if (isFollowing) {
+        if (isUUID) {
+          await supabase
+            .from('user_follows')
+            .delete()
+            .eq('follower_id', user.id)
+            .eq('following_id', targetUserId);
+        }
+        setIsFollowing(false);
+        toast.success(`Unfollowed ${fullName}`);
+      } else {
+        if (isUUID) {
+          await supabase
+            .from('user_follows')
+            .insert({
+              follower_id: user.id,
+              following_id: targetUserId
+            });
+        }
+        setIsFollowing(true);
+        toast.success(`Now following ${fullName}`);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to update follow');
+    } finally {
+      setIsFollowLoading(false);
+    }
+  };
+
+  const handleMessage = () => {
+    if (!user?.id) {
+      toast.info("Please log in to send a message");
+      navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    if (isOwnProfile) {
+      navigate('/network/messages');
+      return;
+    }
+    toast.success(`Opening conversation with ${fullName}...`);
+    navigate(`/network/messages?recipientId=${targetUserId}`);
+  };
+
+  const handleWorkWithMe = () => {
+    if (!user?.id) {
+      toast.info("Please log in to collaborate");
+      navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+    navigate(`/marketplace?provider=${encodeURIComponent(fullName)}`);
+  };
+
   return (
     <PageShell width="xl" pad="md">
       <SocialMetaHead
@@ -280,6 +416,86 @@ const PublicPassport: React.FC = () => {
                 </div>
 
                 <p className="text-xs sm:text-sm font-semibold text-primary pt-1">{headline}</p>
+
+                {/* ACTION BUTTONS: Connect, Follow, Message, Work With Me (matching Image 2) */}
+                <div className="flex flex-wrap items-center gap-2.5 pt-3.5">
+                  {/* Dynamic Connect Button */}
+                  {isOwnProfile ? (
+                    <Button 
+                      onClick={() => navigate('/profile/edit')} 
+                      className="rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-md h-8.5 px-4 text-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <User className="h-3.5 w-3.5" />
+                      <span>Edit Profile</span>
+                    </Button>
+                  ) : connectionState?.status === 'accepted' ? (
+                    <Button 
+                      variant="secondary" 
+                      disabled 
+                      className="rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 h-8.5 px-4 text-xs font-bold flex items-center gap-1.5"
+                    >
+                      <UserCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Connected</span>
+                    </Button>
+                  ) : connectionState?.status === 'pending' ? (
+                    <Button 
+                      variant="secondary" 
+                      disabled 
+                      className="rounded-full bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 h-8.5 px-4 text-xs font-bold flex items-center gap-1.5"
+                    >
+                      <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                      <span>Request Sent</span>
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={handleConnect} 
+                      disabled={isSending} 
+                      className="rounded-full bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-md h-8.5 px-5 text-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {isSending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Users className="h-3.5 w-3.5" />}
+                      <span>Connect</span>
+                    </Button>
+                  )}
+
+                  {/* Dynamic Follow Button */}
+                  {!isOwnProfile && (
+                    <Button
+                      onClick={handleToggleFollow}
+                      disabled={isFollowLoading}
+                      variant="outline"
+                      className={`rounded-full h-8.5 px-4 text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors ${
+                        isFollowing
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600'
+                          : 'bg-white dark:bg-card hover:bg-slate-100 dark:hover:bg-muted text-foreground border-slate-200 dark:border-border'
+                      }`}
+                    >
+                      <UserCheck className={`h-3.5 w-3.5 ${isFollowing ? 'text-white' : 'text-emerald-600'}`} />
+                      <span>{isFollowing ? 'Following' : 'Follow'}</span>
+                    </Button>
+                  )}
+
+                  {/* Message Button */}
+                  {!isOwnProfile && (
+                    <Button 
+                      onClick={handleMessage} 
+                      variant="outline"
+                      className="rounded-full bg-white dark:bg-card hover:bg-slate-100 dark:hover:bg-muted text-foreground font-semibold border-slate-200 dark:border-border shadow-xs h-8.5 px-4 text-xs flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <MessageSquare className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />
+                      <span>Message</span>
+                    </Button>
+                  )}
+
+                  {/* Work With Me Button */}
+                  <Button 
+                    onClick={handleWorkWithMe} 
+                    variant="outline"
+                    className="rounded-full bg-white dark:bg-card hover:bg-slate-100 dark:hover:bg-muted text-foreground font-semibold border-slate-200 dark:border-border shadow-xs h-8.5 px-4 text-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Briefcase className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" />
+                    <span>Work With Me</span>
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -461,7 +677,7 @@ const PublicPassport: React.FC = () => {
                     <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 shrink-0"><Building2 className="h-3.5 w-3.5" /></div>
                     <div>
                       <div className="font-bold">Industry Focus</div>
-                      <div className="text-[11px] text-muted-foreground">Consulting, IT, SaaS</div>
+                      <div className="text-[11px] text-muted-foreground">{industry}</div>
                     </div>
                   </div>
 

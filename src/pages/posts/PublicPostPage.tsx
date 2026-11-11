@@ -27,6 +27,7 @@ import { buildPostSchema, buildBreadcrumbSchema, buildVideoObjectSchema } from '
 import { buildPostSeoData } from '@/lib/seo/postSeoModel';
 import { UniversalPostContent } from '@/components/network/UniversalPostContent';
 import { UniversalPostMedia } from '@/components/network/UniversalPostMedia';
+import { EnhancedCommentsSection } from '@/components/posts/EnhancedCommentsSection';
 
 function generateDeterministicTitle(content: string, authorName: string): string {
   if (!content) return `${authorName} on TalentXcel`;
@@ -321,6 +322,11 @@ Explore hiring velocity across key tech metro hubs, benchmark 25th, 50th, and 90
               </Link>
             </div>
           </article>
+
+          {/* Interactive Comments & Discussions */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+            <EnhancedCommentsSection postId={effectivePost.id} isOpen={true} />
+          </div>
         </div>
       </div>
     </>

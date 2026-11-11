@@ -35,6 +35,7 @@ import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
 import { createSafeHtml } from '@/utils/sanitize';
 import { getCompanyLogo } from '@/utils/companyLogos';
+import { trackApplyJobClick } from '@/lib/analytics/conversionTracker';
 
 const JobDetail = () => {
   const { slugOrId } = useParams<{ slugOrId: string }>();
@@ -364,9 +365,25 @@ const JobDetail = () => {
     }
   });
 
+  // Auto-resume application if redirected back from sign-in
+  useEffect(() => {
+    if (currentUser && job?.id) {
+      const pendingJobId = sessionStorage.getItem('txc_resume_apply_job_id');
+      if (pendingJobId === job.id) {
+        sessionStorage.removeItem('txc_resume_apply_job_id');
+        setShowApplicationForm(true);
+        toast.info('Signed in! Please complete your application below.');
+      }
+    }
+  }, [currentUser, job?.id]);
+
   const handleApply = () => {
+    trackApplyJobClick(job?.id, 'click');
     if (!currentUser) {
-      toast.error('Please login to apply for jobs');
+      if (job?.id) {
+        sessionStorage.setItem('txc_resume_apply_job_id', job.id);
+      }
+      navigate(`/auth/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     setShowApplicationForm(true);

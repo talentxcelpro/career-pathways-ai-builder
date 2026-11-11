@@ -50,6 +50,20 @@ import { Badge } from '@/components/ui/badge';
 const SlugProfile = () => {
   const { username } = useParams<{ username: string }>();
   const navigate = useNavigate();
+
+  const cleanUsername = username?.startsWith('@') ? username.slice(1).trim() : username?.trim();
+  const lowerUsername = cleanUsername?.toLowerCase() || '';
+
+  // Intercept reserved keywords if ever hit here
+  if (lowerUsername === 'feed') {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const postId = params.get('post') || params.get('id');
+    if (postId) {
+      return <Navigate to={'/posts/' + encodeURIComponent(postId)} replace />;
+    }
+    return <Navigate to="/network" replace />;
+  }
+
   const { user, session, loading: authLoading, isAuthenticated } = useOptimizedAuth();
   const [aboutExpanded, setAboutExpanded] = useState(false);
 

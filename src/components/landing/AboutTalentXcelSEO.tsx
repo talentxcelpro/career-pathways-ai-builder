@@ -5,7 +5,7 @@ export const AboutTalentXcelSEO = () => {
   const faqs = [
     {
       question: "What is TalentXcel?",
-      answer: "TalentXcel is a global professional talent network for Tech and Leadership Professionals. Members can build a Career Passport, connect with professionals, discover jobs, join communities, share professional content and showcase verified skills through TalentScore. Recruiters and hiring teams can discover and connect with talent through Recruiter OS."
+      answer: "TalentXcel is a global professional talent network across all industries, including Technology, Business, Healthcare, Finance, Operations, Engineering, Creative, and Leadership disciplines. Members can build a Career Passport, connect with professionals, discover jobs, join communities, share professional content and showcase verified skills through TalentScore. Recruiters and hiring teams can discover and connect with talent through Recruiter OS."
     },
     {
       question: "What is a TalentXcel Career Passport?",

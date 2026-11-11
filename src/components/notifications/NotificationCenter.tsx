@@ -110,7 +110,13 @@ export const NotificationCenter: React.FC = () => {
     if (!notif.is_read) {
       markAsRead(notif.id);
     }
-    const destination = notif.link || notif.action_url || notif.data?.url;
+    let destination = notif.link || notif.action_url || notif.data?.url;
+    if (destination && (destination.includes('feed?post=') || destination.startsWith('?post='))) {
+      const match = destination.match(/[?&]post=([^&]+)/);
+      if (match && match[1]) {
+        destination = `/posts/${match[1]}`;
+      }
+    }
     if (destination) {
       navigate(destination);
     }

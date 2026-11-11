@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   MessageSquare, 
   Sparkles, 
@@ -11,7 +11,13 @@ import {
   UserPlus, 
   TrendingUp, 
   Compass,
-  ChevronRight
+  ChevronRight,
+  ShieldCheck,
+  ArrowUpDown,
+  BookOpen,
+  Bookmark,
+  Clock,
+  Settings
 } from "lucide-react";
 
 interface NetworkSidebarNavProps {
@@ -20,6 +26,7 @@ interface NetworkSidebarNavProps {
   connectionCount?: number;
   articleCount?: number;
   pendingRequestsCount?: number;
+  onNavigate?: () => void;
 }
 
 export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
@@ -28,8 +35,10 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
   connectionCount = 0,
   articleCount = 35,
   pendingRequestsCount = 0,
+  onNavigate,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const navItems = [
     {
@@ -108,6 +117,58 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
     }
   ];
 
+  const navigationItems = [
+    {
+      to: '/network/verified',
+      label: 'Verified',
+      icon: ShieldCheck,
+      iconColor: 'text-blue-600',
+      bgColor: 'bg-blue-500/10 dark:bg-blue-950/50'
+    },
+    {
+      to: '/network/connections',
+      label: 'My Network',
+      icon: Users,
+      iconColor: 'text-purple-600',
+      bgColor: 'bg-purple-500/10 dark:bg-purple-950/50'
+    },
+    {
+      to: '/network/skill-swap',
+      label: 'Skill Swap',
+      icon: ArrowUpDown,
+      iconColor: 'text-emerald-600',
+      bgColor: 'bg-emerald-500/10 dark:bg-emerald-950/50'
+    },
+    {
+      to: '/network/articles',
+      label: 'Articles & Drafts',
+      icon: BookOpen,
+      iconColor: 'text-blue-600',
+      bgColor: 'bg-blue-500/10 dark:bg-blue-950/50'
+    },
+    {
+      to: '/saved-jobs',
+      label: 'Saved Items',
+      icon: Bookmark,
+      iconColor: 'text-amber-600',
+      bgColor: 'bg-amber-500/10 dark:bg-amber-950/50'
+    },
+    {
+      to: '/profile/analytics',
+      label: 'My Activities',
+      icon: Clock,
+      iconColor: 'text-indigo-600',
+      bgColor: 'bg-indigo-500/10 dark:bg-indigo-950/50'
+    },
+    {
+      to: '/profile/settings',
+      label: 'Settings',
+      icon: Settings,
+      iconColor: 'text-slate-600 dark:text-slate-400',
+      bgColor: 'bg-slate-500/10 dark:bg-slate-800/50'
+    }
+  ];
+
   return (
     <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-2 sm:p-2.5">
       <div className="flex items-center justify-between mb-2 px-1.5 pt-0.5">
@@ -128,6 +189,7 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
             <button
               key={item.id}
               onClick={() => {
+                onNavigate?.();
                 if (item.isLiveLink) {
                   navigate('/gamification');
                 } else {
@@ -193,6 +255,57 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
             </button>
           );
         })}
+      </div>
+
+      {/* 2. NAVIGATION SECTION */}
+      <div className="pt-2.5 mt-2.5 border-t border-slate-200/80 dark:border-border/60">
+        <div className="flex items-center justify-between mb-2 px-1.5 pt-0.5">
+          <h3 className="text-[11px] font-black uppercase tracking-wider text-muted-foreground">
+            Navigation
+          </h3>
+          <Badge variant="outline" className="text-[9px] font-bold py-0 h-4 border-slate-200 text-slate-500 dark:border-slate-700 dark:text-slate-400">
+            7 Links
+          </Badge>
+        </div>
+
+        <div className="space-y-1">
+          {navigationItems.map((item) => {
+            const Icon = item.icon;
+            const isCurrent = location.pathname === item.to;
+
+            return (
+              <button
+                key={item.to}
+                type="button"
+                onClick={() => {
+                  onNavigate?.();
+                  navigate(item.to);
+                }}
+                className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all group cursor-pointer ${
+                  isCurrent
+                    ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold shadow-2xs border border-blue-200/60 dark:border-blue-800/60'
+                    : 'hover:bg-slate-100/80 dark:hover:bg-muted/50 text-slate-700 dark:text-slate-200'
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className={`p-1.5 rounded-lg shrink-0 transition-transform group-hover:scale-105 ${
+                    isCurrent ? 'bg-blue-600 text-white' : item.bgColor + ' ' + item.iconColor
+                  }`}>
+                    <Icon className="h-3.5 w-3.5" />
+                  </div>
+                  <span className="text-xs font-bold truncate group-hover:text-blue-600 transition-colors">
+                    {item.label}
+                  </span>
+                </div>
+                <ChevronRight className={`h-3 w-3 transition-transform ${
+                  isCurrent 
+                    ? 'text-blue-600 dark:text-blue-400 translate-x-0.5' 
+                    : 'text-muted-foreground/60 group-hover:text-foreground group-hover:translate-x-0.5'
+                }`} />
+              </button>
+            );
+          })}
+        </div>
       </div>
     </Card>
   );

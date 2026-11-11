@@ -157,7 +157,7 @@ export const EnhancedSchemaMarkup: React.FC<EnhancedSchemaProps> = ({
         "@type": "WebSite",
         "name": "TalentXcel",
         "url": "https://talentxcel.in",
-        "description": "The Global Professional Talent Network connecting verified tech and leadership talent, recruiters, and companies worldwide across UAE, Europe, the Americas, and Asia.",
+        "description": "The Global Professional Talent Network connecting verified professionals, specialists, leaders, recruiters, and companies across all global industries worldwide.",
         "publisher": {
           "@type": "Organization",
           "name": "TalentXcel",

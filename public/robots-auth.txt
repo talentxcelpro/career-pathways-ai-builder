@@ -1,0 +1,7 @@
+# ==========================================================
+# TalentXcel Auth Subdomain robots.txt
+# Disallow all indexing for authentication infrastructure
+# ==========================================================
+
+User-agent: *
+Disallow: /

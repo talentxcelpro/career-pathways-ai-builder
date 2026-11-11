@@ -22,7 +22,7 @@ export function buildTalentXcelOrganizationSchema(canonicalUrl: string = `${BASE
       caption: 'TalentXcel Official Logo',
     },
     image: `${BASE_PRODUCTION_ORIGIN}/talentxcel-official-logo.png`,
-    description: 'TalentXcel is the Global Professional Talent Network connecting tech and leadership professionals worldwide across UAE, Europe, the Americas, and Asia with Career Passports, verified TalentScore, video Reels, and Recruiter OS.',
+    description: 'TalentXcel is the Global Professional Talent Network connecting professionals, specialists, and leaders across all global industries worldwide with Career Passports, verified TalentScore, video Reels, and Recruiter OS.',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Noida',

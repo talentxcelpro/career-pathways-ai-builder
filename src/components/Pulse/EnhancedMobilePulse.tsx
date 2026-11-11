@@ -74,8 +74,8 @@ export const EnhancedMobilePulse: React.FC<EnhancedMobilePulseProps> = ({ classN
   const mockVideos = [
     {
       id: 'video-1',
-      title: 'Top 10 Interview Tips for Tech Professionals',
-      description: 'Learn essential interview strategies that will help you land your dream tech job',
+      title: 'Top 10 Interview Tips for Global Professionals',
+      description: 'Learn essential interview strategies that will help you land your dream career across leading industries',
       thumbnailUrl: 'https://images.unsplash.com/photo-1551818255-e6e10975cd5d?w=500&h=300&fit=crop',
       videoUrl: 'https://youtube.com/watch?v=example1',
       duration: '8:45',
@@ -83,7 +83,7 @@ export const EnhancedMobilePulse: React.FC<EnhancedMobilePulseProps> = ({ classN
       likes: 892,
       comments: 156,
       channel: {
-        name: 'TechCareers Pro',
+        name: 'CareerXcel Global',
         avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
         verified: true
       },

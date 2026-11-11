@@ -36,6 +36,10 @@ export function useSlugProfile(slug?: string) {
       // Remove @ symbol if present
       const cleanSlug = slug.startsWith('@') ? slug.slice(1).trim() : slug.trim();
       if (!cleanSlug) return null;
+      if (['feed', 'network', 'jobs', 'posts', 'post', 'colleges', 'salary'].includes(cleanSlug.toLowerCase())) {
+        return null;
+      }
+
 
       // Fast-path for programmatic SEO specialist cohorts (e.g. software-engineer-specialist-1000)
       if (cleanSlug.includes('-specialist') || cleanSlug.includes('-expert') || cleanSlug.includes('specialist-') || /-\d{3,}/.test(cleanSlug)) {

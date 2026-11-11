@@ -12,6 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { trackAuthSession } from '@/lib/analytics/conversionTracker';
 import { getStoredReferral, clearStoredReferral } from '@/utils/referralTracker';
 
 interface AuthPageProps {
@@ -141,6 +142,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signup successful:', data);
+        if (data.user) {
+          trackAuthSession(data.user, 'email', true);
+        }
         if (data.user?.id) {
           try {
             supabase.from('connections').insert({
@@ -194,6 +198,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
         if (error) throw error;
         
         console.log('Signin successful:', data);
+        if (data.user) {
+          trackAuthSession(data.user, 'email');
+        }
         GrowthFunnelTracker.track('login', {
           role: userType,
           user_id: data.user?.id

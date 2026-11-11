@@ -46,8 +46,8 @@ export interface SocialShareProps {
 export const SocialShare: React.FC<SocialShareProps> = ({
   url,
   title = 'TalentXcel — Global Career Platform, Jobs & Career Passport',
-  description = 'Connect with tech and leadership talent worldwide. Explore verified opportunities on TalentXcel.',
-  hashtags = ['TalentXcel', 'CareerGrowth', 'JobSearch', 'TechCareers'],
+  description = 'Connect with professionals, specialists, and leaders across all global industries. Explore verified opportunities on TalentXcel.',
+  hashtags = ['TalentXcel', 'CareerGrowth', 'GlobalCareers', 'ProfessionalNetwork'],
   contentType = 'general',
   contentId,
   mode = 'popover',

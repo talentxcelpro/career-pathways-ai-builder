@@ -53,16 +53,28 @@ export const useConnectionRequests = () => {
 
       if (error) throw error;
 
-      // Automatically dispatch Connection Request email notification
+      // Automatically dispatch Connection Request email notification with real profile attributes
       if (data && recipientId) {
-        supabase
-          .from('profiles')
-          .select('email, full_name')
-          .eq('id', recipientId)
-          .maybeSingle()
-          .then(({ data: recProfile }) => {
+        Promise.all([
+          supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', recipientId)
+            .maybeSingle(),
+          supabase
+            .from('profiles')
+            .select('full_name, headline, current_job_title, current_company, location, profile_picture_url, avatar_url')
+            .eq('id', user.id)
+            .maybeSingle()
+        ])
+          .then(([{ data: recProfile }, { data: senderProfile }]) => {
             if (recProfile?.email) {
-              const myName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A professional';
+              const myName = senderProfile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A TalentXcel Member';
+              const myTitle = senderProfile?.headline || senderProfile?.current_job_title || '';
+              const myCompany = senderProfile?.current_company || '';
+              const myLocation = senderProfile?.location || '';
+              const myAvatar = senderProfile?.avatar_url || senderProfile?.profile_picture_url || user.user_metadata?.avatar_url || '';
+
               fetch('/api/email/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -73,7 +85,18 @@ export const useConnectionRequests = () => {
                   priority: 1,
                   immediate: true,
                   variables: {
+                    sender_name: myName,
+                    senderName: myName,
                     inviter_name: myName,
+                    sender_title: myTitle,
+                    senderTitle: myTitle,
+                    sender_company: myCompany,
+                    senderCompany: myCompany,
+                    sender_location: myLocation,
+                    senderLocation: myLocation,
+                    sender_avatar: myAvatar,
+                    senderAvatar: myAvatar,
+                    personal_note: message || '',
                     name: recProfile.full_name || 'Professional',
                     recipient_name: recProfile.full_name || 'Professional'
                   }
@@ -109,17 +132,28 @@ export const useConnectionRequests = () => {
 
       if (error) throw error;
 
-      // Automatically dispatch Connection Accepted email notification
+      // Automatically dispatch Connection Accepted email notification with real profile attributes
       if (data?.requester_id) {
-        supabase
-          .from('profiles')
-          .select('email, full_name')
-          .eq('id', data.requester_id)
-          .maybeSingle()
-          .then(async ({ data: reqProfile }) => {
-            if (reqProfile?.email) {
-              const { data: { user } } = await supabase.auth.getUser();
-              const myName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || 'A TalentXcel member';
+        Promise.all([
+          supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', data.requester_id)
+            .maybeSingle(),
+          supabase.auth.getUser()
+        ])
+          .then(async ([{ data: reqProfile }, { data: { user } }]) => {
+            if (reqProfile?.email && user) {
+              const { data: myProfile } = await supabase
+                .from('profiles')
+                .select('full_name, headline, current_job_title, current_company, location, profile_picture_url, avatar_url')
+                .eq('id', user.id)
+                .maybeSingle();
+
+              const myName = myProfile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A TalentXcel Member';
+              const myTitle = myProfile?.headline || myProfile?.current_job_title || '';
+              const myAvatar = myProfile?.avatar_url || myProfile?.profile_picture_url || user.user_metadata?.avatar_url || '';
+
               fetch('/api/email/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -130,6 +164,14 @@ export const useConnectionRequests = () => {
                   priority: 1,
                   immediate: true,
                   variables: {
+                    connection_name: myName,
+                    connectionName: myName,
+                    sender_name: myName,
+                    senderName: myName,
+                    connection_title: myTitle,
+                    connectionTitle: myTitle,
+                    connection_avatar: myAvatar,
+                    connectionAvatar: myAvatar,
                     name: myName,
                     recipient_name: reqProfile.full_name || 'Professional'
                   }

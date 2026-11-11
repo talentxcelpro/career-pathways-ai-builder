@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { trackResumeGenerated } from '@/lib/analytics/conversionTracker';
 
 export interface ExportSettings {
   format: 'pdf' | 'docx' | 'html';
@@ -102,6 +103,7 @@ export const useResumeExport = () => {
       setExportProgress(100);
 
       toast.success(`Resume exported as ${settings.format.toUpperCase()} successfully!`);
+      trackResumeGenerated(settings.template);
       
       return {
         success: true,

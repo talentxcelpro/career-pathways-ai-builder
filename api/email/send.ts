@@ -154,15 +154,46 @@ export function renderActionTiles(items: ActionTileItem[]): string {
 }
 
 /**
+ * Render a high-fidelity circular member avatar with fallback Apple-grade gradient initials monogram
+ */
+export function renderMemberAvatar(name: string, avatarUrl?: string, size = 76): string {
+  if (avatarUrl && typeof avatarUrl === 'string' && avatarUrl.startsWith('http')) {
+    return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}" width="${size}" height="${size}" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); display: inline-block;" />`;
+  }
+  const cleanName = (name || 'Member').trim();
+  const initials = cleanName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(w => w[0].toUpperCase())
+    .join('') || 'TX';
+  const fontSize = Math.round(size * 0.35);
+
+  return `
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; display: inline-block;">
+      <tr>
+        <td align="center" valign="middle" style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: #0071e3; background-image: linear-gradient(135deg, #0071e3 0%, #4f46e5 100%); color: #ffffff; font-size: ${fontSize}px; font-weight: 700; text-align: center; border: 3px solid #ffffff; box-shadow: 0 4px 16px rgba(0, 113, 227, 0.28); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;">
+          ${initials}
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
+/**
  * Render a software telemetry card with hairline dividers (Responsive Stacked on Mobile)
+ * Filters out empty or missing rows automatically.
  */
 export function renderDataCard(items: Array<{ label: string; value: string; icon?: string }>): string {
-  const rows = items.map((item, idx) => `
+  const validItems = items.filter(item => item && item.value && String(item.value).trim().length > 0);
+  if (validItems.length === 0) return '';
+
+  const rows = validItems.map((item, idx) => `
     <tr class="data-row">
-      <td class="data-cell-label" style="padding: 12px 16px; ${idx !== items.length - 1 ? 'border-bottom: 1px solid #f1f5f9;' : ''} font-size: 12.5px; color: #64748b; font-weight: 500; width: 42%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+      <td class="data-cell-label" style="padding: 12px 16px; ${idx !== validItems.length - 1 ? 'border-bottom: 1px solid #f1f5f9;' : ''} font-size: 12.5px; color: #64748b; font-weight: 500; width: 42%; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
         ${escapeHtml(item.label)}
       </td>
-      <td class="data-cell-value" style="padding: 12px 16px; ${idx !== items.length - 1 ? 'border-bottom: 1px solid #f1f5f9;' : ''} font-size: 13.5px; color: #0f172a; font-weight: 600; text-align: right; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+      <td class="data-cell-value" style="padding: 12px 16px; ${idx !== validItems.length - 1 ? 'border-bottom: 1px solid #f1f5f9;' : ''} font-size: 13.5px; color: #0f172a; font-weight: 600; text-align: right; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
         ${escapeHtml(item.value)}
       </td>
     </tr>
@@ -668,85 +699,157 @@ export function renderEnterpriseTemplate(
     case 'connection_request':
     case 'new_connection': {
       category = 'engagement';
-      const sender = escapeHtml(vars.senderName || vars.requester_name || 'Vikram Rao');
-      const senderTitle = escapeHtml(vars.senderTitle || vars.requester_title || 'Lead Architect at Razorpay');
+      const sender = escapeHtml(vars.sender_name || vars.senderName || vars.inviter_name || vars.requester_name || vars.from_name || vars.name || 'A TalentXcel Member');
+      const senderTitle = escapeHtml(vars.sender_title || vars.senderTitle || vars.sender_headline || vars.senderHeadline || vars.headline || vars.title || vars.current_job_title || vars.role || vars.requester_title || '');
+      const senderLocation = escapeHtml(vars.sender_location || vars.senderLocation || vars.location || '');
+      const senderCompany = escapeHtml(vars.sender_company || vars.senderCompany || vars.company || '');
+      const senderAvatar = vars.sender_avatar || vars.senderAvatar || vars.avatar_url || vars.avatarUrl || '';
+      const personalNote = escapeHtml(vars.personal_note || vars.personalNote || vars.message || vars.note || '');
+
       subject = `${sender} wants to connect with you on TalentXcel 🤝`;
-      preheader = `${sender} (${senderTitle}) sent you a connection request.`;
+      preheader = senderTitle ? `${sender} (${senderTitle}) sent you a connection request.` : `${sender} sent you a connection request on TalentXcel.`;
+
+      const avatarHtml = renderMemberAvatar(sender, senderAvatar, 76);
+
+      const metadataRows: Array<{ label: string; value: string }> = [];
+      if (senderTitle) metadataRows.push({ label: 'Current Role', value: senderTitle });
+      if (senderCompany) metadataRows.push({ label: 'Company / Organization', value: senderCompany });
+      if (senderLocation) metadataRows.push({ label: 'Location', value: senderLocation });
+      if (vars.mutual_connections || vars.mutualConnections) {
+        metadataRows.push({ label: 'Mutual Connections', value: `${escapeHtml(vars.mutual_connections || vars.mutualConnections)} Connections` });
+      }
+      if (vars.mutual_focus || vars.mutualFocus) {
+        metadataRows.push({ label: 'Shared Focus Area', value: escapeHtml(vars.mutual_focus || vars.mutualFocus) });
+      }
 
       contentHtml = `
         <div style="text-align: center; margin-bottom: 24px;">
-          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
-            New Connection Request
+          <div style="margin: 0 auto 16px auto; width: 76px; height: 76px; text-align: center;">
+            ${avatarHtml}
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px; line-height: 28px;">
+            ${sender}
           </h1>
-          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
-            <strong>${sender}</strong> would like to connect with you on the TalentXcel professional network.
+          ${senderTitle ? `
+            <div style="font-size: 14.5px; color: #475569; font-weight: 500; line-height: 20px; max-width: 440px; margin: 0 auto 6px auto; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+              ${senderTitle}
+            </div>
+          ` : ''}
+          ${senderLocation ? `
+            <div style="font-size: 13px; color: #64748b; font-weight: 400; margin: 0 auto 12px auto; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+              📍 ${senderLocation}
+            </div>
+          ` : ''}
+          <p style="margin: 12px 0 0 0; font-size: 14.5px; color: #334155; line-height: 22px;">
+            would like to connect with you on the TalentXcel professional network.
           </p>
         </div>
 
-        ${renderDataCard([
-          { label: 'Member', value: sender },
-          { label: 'Current Role', value: senderTitle },
-          { label: 'Mutual Tech Focus', value: 'Cloud Infrastructure & High-Scale APIs' },
-          { label: 'Network Location', value: 'Bengaluru, India' }
-        ])}
+        ${personalNote ? `
+          <div style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-left: 4px solid #0071e3; border-radius: 12px; padding: 16px 20px; margin: 20px 0; text-align: left;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0071e3; margin-bottom: 6px;">
+              Personal Invitation Note
+            </div>
+            <div style="font-size: 14px; line-height: 22px; color: #1e293b; font-style: italic;">
+              &ldquo;${personalNote}&rdquo;
+            </div>
+          </div>
+        ` : ''}
 
-        ${renderButton('View & Respond to Request', `${CANONICAL_URL}/network/requests`)}
+        ${metadataRows.length > 0 ? renderDataCard(metadataRows) : ''}
+
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 28px auto 12px auto; text-align: center;">
+          <tr>
+            <td align="center" style="border-radius: 980px; background-color: #0071e3; background-image: linear-gradient(180deg, #0077ed 0%, #0066cc 100%); border: 1px solid #005bb5; box-shadow: 0 4px 16px rgba(0, 113, 227, 0.32);">
+              <a href="${CANONICAL_URL}/network/requests" target="_blank" style="font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; padding: 13px 34px; border-radius: 980px; display: inline-block; letter-spacing: -0.2px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;">
+                Accept Invitation &rarr;
+              </a>
+            </td>
+          </tr>
+        </table>
       `;
 
-      plainText = `${sender} (${senderTitle}) wants to connect with you on TalentXcel: ${CANONICAL_URL}/network/requests`;
+      plainText = `${sender}${senderTitle ? ` (${senderTitle})` : ''} wants to connect with you on TalentXcel: ${CANONICAL_URL}/network/requests`;
       break;
     }
 
     case 'connection_accepted': {
       category = 'engagement';
-      const connectionName = escapeHtml(vars.connectionName || vars.name || 'Sneha Roy');
-      const connectionTitle = escapeHtml(vars.connectionTitle || 'Director of Commercial Growth & Operations');
+      const connectionName = escapeHtml(vars.connection_name || vars.connectionName || vars.name || vars.sender_name || vars.senderName || 'A TalentXcel Member');
+      const connectionTitle = escapeHtml(vars.connection_title || vars.connectionTitle || vars.sender_title || vars.senderTitle || vars.headline || vars.title || '');
+      const connectionAvatar = vars.connection_avatar || vars.connectionAvatar || vars.avatar_url || '';
       subject = `${connectionName} accepted your connection request! 🎉`;
       preheader = `You and ${connectionName} are now connected on TalentXcel. Start a conversation.`;
 
+      const avatarHtml = renderMemberAvatar(connectionName, connectionAvatar, 76);
+
+      const metadataRows: Array<{ label: string; value: string }> = [
+        { label: 'Connected With', value: connectionName }
+      ];
+      if (connectionTitle) metadataRows.push({ label: 'Headline / Role', value: connectionTitle });
+      metadataRows.push({ label: 'Network Access', value: 'Direct Messaging & Profile Collaboration' });
+
       contentHtml = `
         <div style="text-align: center; margin-bottom: 24px;">
-          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
-            Connection Request Accepted
+          <div style="margin: 0 auto 16px auto; width: 76px; height: 76px; text-align: center;">
+            ${avatarHtml}
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px;">
+            ${connectionName} accepted your connection request
           </h1>
-          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
-            <strong>${connectionName}</strong> has accepted your connection request. Your professional network just expanded.
+          ${connectionTitle ? `
+            <div style="font-size: 14.5px; color: #475569; font-weight: 500; line-height: 20px; max-width: 440px; margin: 0 auto 12px auto;">
+              ${connectionTitle}
+            </div>
+          ` : ''}
+          <p style="margin: 12px 0 0 0; font-size: 14.5px; color: #334155; line-height: 22px;">
+            You and <strong>${connectionName}</strong> are now connected. You can now exchange direct messages, view each other's full Career Passports, and collaborate on professional opportunities.
           </p>
         </div>
 
-        ${renderDataCard([
-          { label: 'Connected With', value: connectionName },
-          { label: 'Role', value: connectionTitle },
-          { label: 'Network Access', value: 'Direct Messaging & Profile Collaboration' }
-        ])}
+        ${renderDataCard(metadataRows)}
 
         ${renderButton('Send a Message', `${CANONICAL_URL}/network/messages`)}
       `;
 
-      plainText = `Hi ${name}, ${connectionName} accepted your connection request! Send a message: ${CANONICAL_URL}/network/messages`;
+      plainText = `${connectionName} accepted your connection request on TalentXcel! Send a message: ${CANONICAL_URL}/network/messages`;
       break;
     }
 
     case 'direct_message':
     case 'message_notification': {
       category = 'engagement';
-      const sender = escapeHtml(vars.senderName || 'Rahul Deshmukh');
-      const preview = escapeHtml(vars.messagePreview || 'Hi! Loved your recent insights on market expansion and leadership roadmaps. Would love to collaborate and exchange notes...');
+      const sender = escapeHtml(vars.sender_name || vars.senderName || vars.from_name || vars.fromName || vars.name || 'A TalentXcel Member');
+      const senderTitle = escapeHtml(vars.sender_title || vars.senderTitle || vars.headline || '');
+      const senderAvatar = vars.sender_avatar || vars.senderAvatar || vars.avatar_url || '';
+      const preview = escapeHtml(vars.message_preview || vars.messagePreview || vars.preview || vars.message || vars.content || 'You have received a new direct message on TalentXcel.');
       subject = `New message from ${sender} on TalentXcel 💬`;
       preheader = `"${preview.slice(0, 80)}..."`;
 
+      const avatarHtml = renderMemberAvatar(sender, senderAvatar, 68);
+
       contentHtml = `
-        <div style="text-align: center; margin-bottom: 24px;">
-          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
-            You have a new message
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="margin: 0 auto 14px auto; width: 68px; height: 68px; text-align: center;">
+            ${avatarHtml}
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px;">
+            New message from ${sender}
           </h1>
-          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
-            <strong>${sender}</strong> sent you a direct message on TalentXcel.
-          </p>
+          ${senderTitle ? `
+            <div style="font-size: 14px; color: #64748b; font-weight: 500; margin-bottom: 8px;">
+              ${senderTitle}
+            </div>
+          ` : ''}
         </div>
 
-        <div style="background-color: #f5f5f7; border-left: 4px solid #0071e3; border-radius: 8px; padding: 18px 20px; margin: 24px 0; font-size: 14px; line-height: 22px; color: #1d1d1f; font-style: italic;">
-          "${preview}"
+        <div style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-left: 4px solid #0071e3; border-radius: 12px; padding: 18px 22px; margin: 20px 0; text-align: left;">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 8px;">
+            Message Preview
+          </div>
+          <div style="font-size: 14.5px; line-height: 23px; color: #1e293b; font-style: italic;">
+            &ldquo;${preview}&rdquo;
+          </div>
         </div>
 
         ${renderButton('Reply to Message', `${CANONICAL_URL}/network/messages`)}
@@ -758,8 +861,8 @@ export function renderEnterpriseTemplate(
 
     case 'mention_notification': {
       category = 'engagement';
-      const author = escapeHtml(vars.authorName || 'Karthik Raja');
-      const postTitle = escapeHtml(vars.postTitle || 'Navigating Industry Transformations & High-Impact Execution');
+      const author = escapeHtml(vars.author_name || vars.authorName || vars.sender_name || vars.senderName || 'A member');
+      const postTitle = escapeHtml(vars.post_title || vars.postTitle || vars.title || 'a discussion post');
       subject = `${author} mentioned you in a discussion on TalentXcel 📣`;
       preheader = `${author} tagged you in "${postTitle}". Join the conversation.`;
 
@@ -776,7 +879,7 @@ export function renderEnterpriseTemplate(
         ${renderDataCard([
           { label: 'Post Discussion', value: postTitle },
           { label: 'Mentioned By', value: author },
-          { label: 'Channel', value: escapeHtml(vars.channel || 'Industry Leadership & Strategic Discussions') }
+          { label: 'Channel', value: escapeHtml(vars.channel || 'Industry Leadership & Discussions') }
         ])}
 
         ${renderButton('View Discussion & Reply', `${CANONICAL_URL}/network/posts`)}
@@ -851,9 +954,9 @@ export function renderEnterpriseTemplate(
 
     case 'skill_swap_request': {
       category = 'engagement';
-      const peerName = escapeHtml(vars.peerName || 'Ananya Sen');
-      const offeringSkill = escapeHtml(vars.offeringSkill || 'Brand Strategy & Commercial Growth');
-      const seekingSkill = escapeHtml(vars.seekingSkill || 'Executive Financial Modeling & Analytics');
+      const peerName = escapeHtml(vars.peer_name || vars.peerName || vars.sender_name || vars.senderName || vars.name || 'A TalentXcel Member');
+      const offeringSkill = escapeHtml(vars.offering_skill || vars.offeringSkill || vars.skill_offered || 'Domain Mentorship & Expertise');
+      const seekingSkill = escapeHtml(vars.seeking_skill || vars.seekingSkill || vars.skill_sought || 'Professional Collaboration');
       subject = `Skill Swap Request from ${peerName}: ${offeringSkill} ⇄ ${seekingSkill} 🔄`;
       preheader = `${peerName} wants to swap 1-on-1 professional knowledge sessions with you.`;
 
@@ -918,9 +1021,9 @@ export function renderEnterpriseTemplate(
 
     case 'reel_activity_alert': {
       category = 'engagement';
-      const company = escapeHtml(vars.companyName || 'Atlassian India');
-      const reelTitle = escapeHtml(vars.reelTitle || '30-Sec Pitch: Distributed Systems & Raft Consensus');
-      const watchTime = escapeHtml(vars.watchTime || '100% Full Watch');
+      const company = escapeHtml(vars.company_name || vars.companyName || vars.company || 'A verified hiring team');
+      const reelTitle = escapeHtml(vars.reel_title || vars.reelTitle || vars.title || 'Career Video Pitch');
+      const watchTime = escapeHtml(vars.watchTime || vars.watch_time || 'Full Watch');
       subject = `A recruiter from ${company} watched your Video Reel 🎬`;
       preheader = `${company} reviewed your 30-second elevator pitch on TalentXcel Reels.`;
 
@@ -1025,11 +1128,20 @@ export function renderEnterpriseTemplate(
     case 'resume_viewed':
     case 'resume_viewed_alert': {
       category = 'engagement';
-      const company = escapeHtml(vars.companyName || 'PhonePe');
-      const location = escapeHtml(vars.location || 'Bengaluru');
-      const targetDomain = escapeHtml(vars.targetDomain || 'leadership & specialist');
+      const company = escapeHtml(vars.companyName || vars.company || 'A Verified Employer');
+      const location = escapeHtml(vars.location || vars.city || '');
+      const targetDomain = escapeHtml(vars.targetDomain || vars.domain || 'professional');
       subject = `A recruiter from ${company} viewed your Career Profile 👀`;
-      preheader = `Your resume appeared in a recruiter candidate search for senior ${targetDomain} roles.`;
+      preheader = `Your profile appeared in candidate searches for ${targetDomain} roles.`;
+
+      const rows: Array<{ label: string; value: string }> = [
+        { label: 'Interested Organization', value: company }
+      ];
+      if (location) rows.push({ label: 'Location Corridor', value: location });
+      if (vars.matchDomain || vars.targetDomain) {
+        rows.push({ label: 'Primary Match Domain', value: escapeHtml(vars.matchDomain || vars.targetDomain) });
+      }
+      rows.push({ label: 'Activity Time', value: 'Recent' });
 
       contentHtml = `
         <div style="text-align: center; margin-bottom: 24px;">
@@ -1037,16 +1149,11 @@ export function renderEnterpriseTemplate(
             Recruiter Profile View
           </h1>
           <p style="margin: 0; font-size: 15px; color: #6e6e73;">
-            A verified hiring team member from <strong>${company}</strong> (${location}) inspected your Career Passport and resume.
+            A verified hiring team member from <strong>${company}</strong>${location ? ` (${location})` : ''} inspected your Career Passport and credentials.
           </p>
         </div>
 
-        ${renderDataCard([
-          { label: 'Interested Company', value: company },
-          { label: 'Search Corridor', value: location },
-          { label: 'Primary Match Domain', value: escapeHtml(vars.matchDomain || 'Commercial Growth & Operations Leadership') },
-          { label: 'Activity Time', value: 'Today' }
-        ])}
+        ${renderDataCard(rows)}
 
         ${renderButton('View Profile Insights & Analytics', `${CANONICAL_URL}/network/analytics`)}
       `;
@@ -1062,11 +1169,22 @@ export function renderEnterpriseTemplate(
     case 'job_match_alert':
     case 'job_opening': {
       category = 'engagement';
-      const role = escapeHtml(vars.role || 'Senior Growth & Commercial Director');
-      const company = escapeHtml(vars.company || 'Razorpay');
-      const salary = escapeHtml(vars.salary || '₹40L - ₹55L PA');
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || vars.title || 'Curated Career Opportunity');
+      const company = escapeHtml(vars.company || vars.company_name || vars.companyName || 'Verified Employer');
+      const salary = escapeHtml(vars.salary || vars.compensation || vars.salary_range || '');
+      const location = escapeHtml(vars.location || vars.job_location || vars.workplace_type || '');
+      const matchScore = escapeHtml(vars.match_score || vars.compatibility || '');
+
       subject = `New Job Match: ${role} at ${company} 💼`;
-      preheader = `Matches 92% of your verified skills. View verified compensation benchmarks.`;
+      preheader = matchScore ? `Matches ${matchScore} of your verified skills. View role details.` : `New opportunity at ${company} matching your profile.`;
+
+      const jobRows: Array<{ label: string; value: string }> = [
+        { label: 'Position', value: role },
+        { label: 'Employer', value: company }
+      ];
+      if (salary) jobRows.push({ label: 'Compensation Band', value: salary });
+      if (location) jobRows.push({ label: 'Location / Mode', value: location });
+      if (matchScore) jobRows.push({ label: 'Skill Match Score', value: `${matchScore} Compatibility` });
 
       contentHtml = `
         <div style="text-align: center; margin-bottom: 24px;">
@@ -1087,28 +1205,30 @@ export function renderEnterpriseTemplate(
           }
         ])}
 
-        ${renderDataCard([
-          { label: 'Company', value: company },
-          { label: 'Compensation Band', value: salary },
-          { label: 'Location', value: 'Bengaluru / Hybrid' },
-          { label: 'Skill Match Score', value: '92% Compatibility' }
-        ])}
+        ${renderDataCard(jobRows)}
 
         ${renderButton('View Job & Apply Directly', `${CANONICAL_URL}/jobs`)}
       `;
 
-      plainText = `Job Match: ${role} at ${company} (${salary}). View and apply: ${CANONICAL_URL}/jobs`;
+      plainText = `Job Match: ${role} at ${company}${salary ? ` (${salary})` : ''}. View and apply: ${CANONICAL_URL}/jobs`;
       break;
     }
 
     case 'gov_job_alert': {
       category = 'engagement';
-      const org = escapeHtml(vars.org || 'ISRO / Department of Space');
-      const post = escapeHtml(vars.post || 'Scientist / Engineer ‘SC’ (Computer Science)');
-      const payScale = escapeHtml(vars.payScale || 'Level 10 (₹56,100 - ₹1,77,500)');
-      const lastDate = escapeHtml(vars.lastDate || '28 Nov 2026');
+      const org = escapeHtml(vars.org || 'Official Technical Organization');
+      const post = escapeHtml(vars.post || 'Technical Recruitment Notification');
+      const payScale = escapeHtml(vars.payScale || '');
+      const lastDate = escapeHtml(vars.lastDate || 'Upcoming');
       subject = `Government Job Alert: ${post} at ${org} 🏛️`;
-      preheader = `New PSU / Central Technical notification released. Applications close ${lastDate}.`;
+      preheader = `New PSU / Central notification released. Applications close ${lastDate}.`;
+
+      const govRows: Array<{ label: string; value: string }> = [
+        { label: 'Organization', value: org },
+        { label: 'Cadre / Role', value: post }
+      ];
+      if (payScale) govRows.push({ label: 'Pay Band / Scale', value: payScale });
+      govRows.push({ label: 'Application Deadline', value: lastDate });
 
       contentHtml = `
         <div style="text-align: center; margin-bottom: 24px;">
@@ -1120,12 +1240,7 @@ export function renderEnterpriseTemplate(
           </p>
         </div>
 
-        ${renderDataCard([
-          { label: 'Organization', value: org },
-          { label: 'Cadre / Role', value: post },
-          { label: 'Pay Band / Scale', value: payScale },
-          { label: 'Application Deadline', value: lastDate }
-        ])}
+        ${renderDataCard(govRows)}
 
         ${renderButton('View Official Notification & Syllabus', `${CANONICAL_URL}/government-jobs`)}
       `;
@@ -1137,9 +1252,9 @@ export function renderEnterpriseTemplate(
     case 'application_confirmation':
     case 'application_received': {
       category = 'transactional';
-      const role = escapeHtml(vars.role || 'Lead Frontend Architect');
-      const company = escapeHtml(vars.company || 'CRED');
-      const appId = escapeHtml(vars.applicationId || 'TXC-APP-99412');
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || vars.title || 'Position Applied');
+      const company = escapeHtml(vars.company || vars.company_name || vars.companyName || 'Hiring Organization');
+      const appId = escapeHtml(vars.application_id || vars.applicationId || vars.app_id || vars.appId || 'TXC-APP-CONFIRMED');
       subject = `Application Submitted: ${role} at ${company} ✅`;
       preheader = `Application ID: ${appId}. Your profile has been sent to the hiring team.`;
 
@@ -1155,7 +1270,7 @@ export function renderEnterpriseTemplate(
 
         ${renderDataCard([
           { label: 'Role Applied', value: role },
-          { label: 'Company', value: company },
+          { label: 'Company / Organization', value: company },
           { label: 'Application ID', value: appId },
           { label: 'Status', value: 'Under Review by Hiring Team' }
         ])}
@@ -1163,16 +1278,16 @@ export function renderEnterpriseTemplate(
         ${renderButton('Track Your Applications', `${CANONICAL_URL}/jobs/my-applications`)}
       `;
 
-      plainText = `Your application for ${role} at ${company} was submitted. Application ID: ${appId}. Track: ${CANONICAL_URL}/jobs/my-applications`;
+      plainText = `Application Confirmed: ${role} at ${company} (ID: ${appId}). Track: ${CANONICAL_URL}/jobs/my-applications`;
       break;
     }
 
     case 'saved_job_reminder':
     case 'saved_job_closing_soon': {
       category = 'engagement';
-      const role = escapeHtml(vars.role || 'Senior Growth & Commercial Director');
-      const company = escapeHtml(vars.company || 'Groww');
-      const deadline = escapeHtml(vars.deadline || '48 Hours');
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || vars.title || 'Saved Opportunity');
+      const company = escapeHtml(vars.company || vars.company_name || vars.companyName || 'Hiring Organization');
+      const deadline = escapeHtml(vars.deadline || 'Soon');
       subject = `Saved Job Closing Soon: ${role} at ${company} ⏰`;
       preheader = `Applications close in ${deadline}. Don't miss this opportunity.`;
 
@@ -1251,9 +1366,9 @@ export function renderEnterpriseTemplate(
 
     case 'college_placement_alert': {
       category = 'engagement';
-      const driveRole = escapeHtml(vars.driveRole || 'Graduate Software Development Engineer');
-      const hiringCompany = escapeHtml(vars.hiringCompany || 'Cisco Systems');
-      const eligibility = escapeHtml(vars.eligibility || 'B.Tech / M.Tech 2026 Batch (CGPA 7.5+)');
+      const driveRole = escapeHtml(vars.drive_role || vars.driveRole || vars.role || vars.title || 'Campus Recruitment Drive');
+      const hiringCompany = escapeHtml(vars.hiring_company || vars.hiringCompany || vars.company || vars.company_name || 'Corporate Hiring Partner');
+      const eligibility = escapeHtml(vars.eligibility || 'Eligible Campus Candidates');
       subject = `Campus Placement Drive Alert: ${driveRole} at ${hiringCompany} 🎓`;
       preheader = `Exclusive drive open for verified college candidates. Eligible: ${eligibility}.`;
 
@@ -1392,9 +1507,9 @@ export function renderEnterpriseTemplate(
     case 'new_candidate_applied':
     case 'new_applicant': {
       category = 'transactional';
-      const candidate = escapeHtml(vars.candidateName || 'Arjun Mehta');
-      const role = escapeHtml(vars.role || 'Senior Growth & Commercial Director');
-      const talentScore = escapeHtml(vars.talentScore || '94/100');
+      const candidate = escapeHtml(vars.candidate_name || vars.candidateName || vars.applicant_name || vars.name || 'A qualified candidate');
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || 'Your Job Opening');
+      const talentScore = escapeHtml(vars.talentScore || vars.talent_score || vars.score || 'High Alignment');
       subject = `New Application: ${candidate} applied for ${role} 📥`;
       preheader = `TalentScore Match: ${talentScore}. View verified credentials, achievements and resume.`;
 
@@ -1579,8 +1694,8 @@ export function renderEnterpriseTemplate(
 
     case 'referral_reward_unlocked': {
       category = 'engagement';
-      const friendName = escapeHtml(vars.friendName || 'Rohan Verma');
-      const rewardTier = escapeHtml(vars.rewardTier || 'Tier 2: 1-Month Pro Membership Upgrade');
+      const friendName = escapeHtml(vars.friend_name || vars.friendName || vars.name || 'Your referral');
+      const rewardTier = escapeHtml(vars.reward_tier || vars.rewardTier || 'Pro Membership Upgrade');
       subject = `Reward Unlocked! ${friendName} joined TalentXcel via your invite 🎉`;
       preheader = `You unlocked ${rewardTier}. Your Pro superpowers are now active.`;
 

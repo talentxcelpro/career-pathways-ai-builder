@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { isAllowedAuthHostname } from '@/config/domainArchitecture';
 import { GOOGLE_CLIENT_ID, loadGoogleIdentityServices } from '@/config/googleAuth';
+import { trackAuthSession, trackOneTapShown, trackOneTapDismissed } from '@/lib/analytics/conversionTracker';
 
 declare global {
   interface Window {
@@ -118,6 +119,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
         
         // Ensure user profile slug is properly set to first-middle-last or first-last
         if (data.user) {
+          trackAuthSession(data.user, 'google');
           try {
             const { ensureUserProfileSlug } = await import('@/utils/userProfileSlug');
             const metaName = data.user.user_metadata?.full_name || data.user.user_metadata?.name;
@@ -185,15 +187,19 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
         if (notification.isNotDisplayed()) {
           console.log('[GoogleOneTap] Prompt not displayed:', notification.getNotDisplayedReason?.() || 'unknown');
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'not_displayed' });
+          trackOneTapDismissed('not_displayed');
         } else if (notification.isSkippedMoment()) {
           console.log('[GoogleOneTap] Prompt skipped:', notification.getSkippedReason?.() || 'skipped');
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'skipped' });
+          trackOneTapDismissed('skipped');
         } else if (notification.isDismissedMoment()) {
           console.log('[GoogleOneTap] Prompt dismissed by user');
           GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'dismissed' });
+          trackOneTapDismissed('dismissed');
         } else if (notification.isDisplayed()) {
           console.log('🚀 [GoogleOneTap] Prompt displayed to user');
           GrowthFunnelTracker.track('google_onetap_shown');
+          trackOneTapShown();
         }
       });
 

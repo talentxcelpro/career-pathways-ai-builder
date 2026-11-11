@@ -658,10 +658,19 @@ export function renderEnterpriseTemplate(
     case 'connection_request':
     case 'new_connection': {
       category = 'engagement';
-      const sender = escapeHtml(vars.senderName || vars.requester_name || 'Vikram Rao');
-      const senderTitle = escapeHtml(vars.senderTitle || vars.requester_title || 'Lead Architect at Razorpay');
+      const sender = escapeHtml(vars.sender_name || vars.senderName || vars.inviter_name || vars.requester_name || vars.from_name || vars.name || 'A TalentXcel Member');
+      const senderTitle = escapeHtml(vars.sender_title || vars.senderTitle || vars.sender_headline || vars.senderHeadline || vars.headline || vars.title || vars.current_job_title || vars.role || vars.requester_title || '');
+      const senderLocation = escapeHtml(vars.sender_location || vars.senderLocation || vars.location || '');
+      const senderCompany = escapeHtml(vars.sender_company || vars.senderCompany || vars.company || '');
       subject = `${sender} wants to connect with you on TalentXcel 🤝`;
-      preheader = `${sender} (${senderTitle}) sent you a connection request.`;
+      preheader = senderTitle ? `${sender} (${senderTitle}) sent you a connection request.` : `${sender} sent you a connection request on TalentXcel.`;
+
+      const metadataRows: Array<{ label: string; value: string }> = [
+        { label: 'Member', value: sender }
+      ];
+      if (senderTitle) metadataRows.push({ label: 'Current Role', value: senderTitle });
+      if (senderCompany) metadataRows.push({ label: 'Company / Organization', value: senderCompany });
+      if (senderLocation) metadataRows.push({ label: 'Network Location', value: senderLocation });
 
       contentHtml = `
         <div style="text-align: center; margin-bottom: 24px;">
@@ -673,12 +682,7 @@ export function renderEnterpriseTemplate(
           </p>
         </div>
 
-        ${renderDataCard([
-          { label: 'Member', value: sender },
-          { label: 'Current Role', value: senderTitle },
-          { label: 'Mutual Tech Focus', value: 'Cloud Infrastructure & High-Scale APIs' },
-          { label: 'Network Location', value: 'Bengaluru, India' }
-        ])}
+        ${renderDataCard(metadataRows)}
 
         ${renderButton('View & Respond to Request', `${CANONICAL_URL}/network/requests`)}
       `;
@@ -689,8 +693,8 @@ export function renderEnterpriseTemplate(
 
     case 'connection_accepted': {
       category = 'engagement';
-      const connectionName = escapeHtml(vars.connectionName || vars.name || 'Sneha Roy');
-      const connectionTitle = escapeHtml(vars.connectionTitle || 'Director of Commercial Growth & Operations');
+      const connectionName = escapeHtml(vars.connection_name || vars.connectionName || vars.name || vars.sender_name || vars.senderName || 'A TalentXcel Member');
+      const connectionTitle = escapeHtml(vars.connection_title || vars.connectionTitle || vars.sender_title || vars.senderTitle || vars.headline || vars.title || '');
       subject = `${connectionName} accepted your connection request! 🎉`;
       preheader = `You and ${connectionName} are now connected on TalentXcel. Start a conversation.`;
 

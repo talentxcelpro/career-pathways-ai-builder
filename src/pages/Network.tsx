@@ -222,7 +222,7 @@ const Network: React.FC = () => {
                       <SheetTitle className="text-xs font-extrabold flex items-center justify-between uppercase tracking-wider text-slate-800 dark:text-slate-100">
                         <div className="flex items-center gap-1.5">
                           <Layers className="h-3.5 w-3.5 text-blue-600" />
-                          <span>Network Modules</span>
+                          <span>Network Navigation</span>
                         </div>
                         <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200">
                           9 Hubs
@@ -235,6 +235,7 @@ const Network: React.FC = () => {
                         handleTabChange(tab);
                         setMobileDrawerOpen(false);
                       }} 
+                      onNavigate={() => setMobileDrawerOpen(false)}
                       connectionCount={connectionCount} 
                       articleCount={articleCount}
                       pendingRequestsCount={pendingRequestsCount}

@@ -15,6 +15,7 @@ import { useEmailAutomation } from '@/hooks/useEmailAutomation';
 import { ScrapedJobSuccessModal } from './application-form/ScrapedJobSuccessModal';
 import { useCreateJobApplication } from '@/hooks/useJobApplications';
 import { incrementJobApplications } from '@/utils/supabaseHelpers';
+import { trackApplyJobClick } from '@/lib/analytics/conversionTracker';
 
 interface ComprehensiveJobApplicationFormProps {
   open: boolean;
@@ -377,6 +378,7 @@ export default function ComprehensiveJobApplicationForm({ open, onOpenChange, jo
       });
 
       console.log('✅ Application submitted successfully:', applicationResult);
+      trackApplyJobClick(job.id, 'completed');
       
       // Update application count
       incrementJobApplications(job.id).catch(console.error);

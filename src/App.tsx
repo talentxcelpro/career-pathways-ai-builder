@@ -4,7 +4,7 @@ import { PageSpecificBottomNav } from '@/components/navigation/PageSpecificBotto
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useSearchParams, useParams } from "react-router-dom";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { navItems } from "./nav-items";
 import { NavItem } from "./types/nav-item";
@@ -258,6 +258,24 @@ const RedundantSuffixRedirect: React.FC<{ target: string }> = ({ target }) => {
   const location = useLocation();
   return <Navigate to={target + location.search} replace />;
 };
+
+const FeedRedirectHandler: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const postId = searchParams.get('post') || searchParams.get('id');
+  if (postId) {
+    return <Navigate to={'/posts/' + encodeURIComponent(postId)} replace />;
+  }
+  return <Navigate to="/network" replace />;
+};
+
+const FeedParamRedirect: React.FC = () => {
+  const { postId } = useParams<{ postId?: string }>();
+  if (postId) {
+    return <Navigate to={'/posts/' + encodeURIComponent(postId)} replace />;
+  }
+  return <Navigate to="/network" replace />;
+};
+
 
 import { getCurrentUniverse } from '@/config/domainArchitecture';
 
@@ -965,6 +983,10 @@ const App = () => {
                 <Route path="/jobs/top-companies/:company" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                 <Route path="/post/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
                 <Route path="/posts/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
+                <Route path="/feed" element={<FeedRedirectHandler />} />
+                <Route path="/feed/:postId" element={<FeedParamRedirect />} />
+                <Route path="/network/posts/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
+                <Route path="/network/post/:slugOrId" element={<Suspense fallback={null}><PublicPostPage /></Suspense>} />
                 <Route path="/topics/:slug" element={<Suspense fallback={null}><TopicHubPage /></Suspense>} />
                 <Route path="/topic/:slug" element={<Suspense fallback={null}><TopicHubPage /></Suspense>} />
                 <Route path="/services/:slug" element={<Suspense fallback={null}><ServiceLandingPage /></Suspense>} />

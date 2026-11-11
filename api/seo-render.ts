@@ -209,7 +209,9 @@ const CORE_STATIC_ROUTES = new Set([
   'resume/build', 'resume/ats-check', 'resume/cover-letter', 'resume/interview-prep', 'resume/templates',
   'tools/resume-checker', 'tools/ats-checker', 'tools/salary-analyzer',
   'salary/scenarios', 'salary/negotiation', 'salary/goals', 'salary/skills-gap', 'salary/jobs',
-  'colleges/global-programs', 'colleges/scholarships', 'colleges/career-pathway'
+  'colleges/global-programs', 'colleges/scholarships', 'colleges/career-pathway',
+  'network/verified', 'network/connections', 'network/skill-swap', 'network/articles', 'network/requests',
+  'saved-jobs', 'profile/analytics'
 ]);
 
 const PRIVATE_ROUTE_PREFIXES = [
@@ -337,6 +339,62 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   }
 }
 
+async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
+  try {
+    const cleaned = (slugOrId || '').trim().replace(/^@/, '');
+    if (!cleaned) return null;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleaned);
+    let filter = '';
+    if (isUuid) {
+      filter = `id=eq.${encodeURIComponent(cleaned)}`;
+    } else {
+      filter = `or=(username.ilike.${encodeURIComponent(cleaned)},custom_url_slug.ilike.${encodeURIComponent(cleaned)},slug.ilike.${encodeURIComponent(cleaned)})`;
+    }
+    const url = `${SUPABASE_REST_URL}/profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return data[0];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function lookupPostInSupabase(postId: string): Promise<{ post: any; author: any | null } | null> {
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(postId);
+    if (!isUuid) return null;
+    const url = `${SUPABASE_REST_URL}/posts?select=id,content,headline,media_urls,featured_image_url,created_at,author_id,user_id&id=eq.${encodeURIComponent(postId)}&limit=1`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+    const post = data[0];
+    const authorId = post.author_id || post.user_id;
+    let author: any = null;
+    if (authorId) {
+      author = await lookupProfileInSupabase(authorId);
+    }
+    return { post, author };
+  } catch {
+    return null;
+  }
+}
+
+
 export default async function handler(req: Request) {
   const url = new URL(req.url);
   const pathParam = url.searchParams.get('path') || url.pathname.replace(/^\/api\/seo-render\/?/, '') || '/';
@@ -344,6 +402,13 @@ export default async function handler(req: Request) {
   const isDebug = req?.headers?.get('x-seo-debug') === 'internal';
 
   if (isPrivateRoute(cleanPath)) return privateRouteResponse();
+  if (cleanPath === 'robots.txt' || cleanPath.endsWith('/robots.txt')) {
+    return new Response('User-agent: *\nAllow: /\n\nSitemap: https://talentxcel.in/sitemap-root.xml\n', {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
+
 
   if (cleanPath.endsWith('.xml') || cleanPath.includes('sitemap') || cleanPath.includes('feed')) {
     return new Response('<?xml version="1.0" encoding="UTF-8"?><error>XML route - not HTML</error>', {
@@ -398,6 +463,8 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   let bodyContent = '';
   let jsonLdSchema: any = null;
   let robotsDirective = 'index, follow';
+  let ogImage: string | null = null;
+  let ogType = 'website';
 
   // 1. Root Homepage
   if (!cleanPath || cleanPath === '') {
@@ -481,6 +548,378 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     `;
     robotsDirective = 'index, follow';
   }
+  // 1D. Public Career Passport (/passport/public/:id, /passport/:id)
+  else if (
+    cleanPath.startsWith('passport/public/') ||
+    cleanPath.startsWith('public/passport/') ||
+    (cleanPath.startsWith('passport/') && parts.length === 2 && !['dashboard', 'legacy', 'proof', 'section', 'user', 'settings'].includes(parts[1].toLowerCase()))
+  ) {
+    const rawIdentifier = cleanPath.startsWith('passport/public/')
+      ? cleanPath.replace(/^passport\/public\//, '')
+      : (cleanPath.startsWith('public/passport/') ? cleanPath.replace(/^public\/passport\//, '') : parts[1]);
+    const identifier = decodeURIComponent(rawIdentifier).trim();
+    const profile = await lookupProfileInSupabase(identifier);
+
+    if (profile) {
+      const fullName = profile.full_name || 'Verified Professional';
+      const headline = profile.headline || profile.title || 'Verified Career Passport on TalentXcel';
+      const location = profile.location ? ` in ${profile.location}` : '';
+      const avatar = profile.profile_photo_url || profile.profile_picture_url || 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+      
+      title = `${fullName} — Verified Career Passport | TalentXcel`;
+      description = `${fullName}'s verified skills, experience, and credentials${location} on TalentXcel. ${headline}`;
+      canonical = `https://talentxcel.in/passport/public/${encodeURIComponent(identifier)}`;
+      h1 = `${fullName} — Verified Career Passport`;
+      ogType = 'profile';
+      ogImage = avatar;
+      robotsDirective = 'index, follow';
+
+      const skillsList = Array.isArray(profile.skills) && profile.skills.length > 0
+        ? profile.skills.slice(0, 8).map((s: string) => `<span class="px-3 py-1 bg-slate-800 text-blue-300 rounded-lg text-xs font-medium border border-slate-700">${escapeHtml(s)}</span>`).join(' ')
+        : '<span class="text-slate-400 text-xs">Verified Competencies &amp; Industry Experience</span>';
+
+      bodyContent = `
+        <article class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-10 space-y-8 max-w-4xl mx-auto shadow-2xl">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 border-b border-slate-800 pb-8">
+            <img src="${escapeHtml(avatar)}" alt="${escapeHtml(fullName)}" class="w-24 h-24 rounded-full object-cover border-2 border-blue-500 shadow-lg bg-slate-800" />
+            <div class="text-center sm:text-left space-y-2 flex-1">
+              <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+                  ✓ Verified Career Passport
+                </span>
+                ${profile.location ? `<span class="text-xs text-slate-400">📍 ${escapeHtml(profile.location)}</span>` : ''}
+              </div>
+              <h2 class="text-2xl sm:text-3xl font-black text-white">${escapeHtml(fullName)}</h2>
+              <p class="text-slate-300 text-sm md:text-base leading-relaxed">${escapeHtml(headline)}</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Verified Skills &amp; Competencies</h3>
+            <div class="flex flex-wrap gap-2">
+              ${skillsList}
+            </div>
+          </div>
+
+          ${profile.about ? `
+          <div class="space-y-2">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Professional Summary</h3>
+            <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(profile.about)}</p>
+          </div>
+          ` : ''}
+
+          <div class="pt-4 border-t border-slate-800 flex flex-wrap gap-3 items-center justify-between">
+            <a href="/passport/public/${encodeURIComponent(identifier)}" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
+              View Full Interactive Career Passport &rarr;
+            </a>
+            <a href="/network" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">
+              Connect on TalentXcel
+            </a>
+          </div>
+        </article>
+      `;
+
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": fullName,
+        "jobTitle": headline,
+        "description": description,
+        "image": avatar,
+        "url": canonical
+      };
+    } else {
+      // Graceful fallback for social crawlers: 200 OK preview with noindex so Facebook/LinkedIn never show a 404
+      title = 'Verified Career Passport | TalentXcel';
+      description = 'Explore verified skills, career achievements, and portable digital credentials on TalentXcel.';
+      canonical = `https://talentxcel.in/passport/public/${encodeURIComponent(identifier)}`;
+      h1 = 'TalentXcel Verified Career Passport';
+      ogType = 'profile';
+      ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+      robotsDirective = 'noindex, follow';
+
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 text-center max-w-3xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Verified Credentials
+          </span>
+          <h2 class="text-2xl md:text-3xl font-black text-white">Digital Career Passport</h2>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            Portable, verified skills, compensation benchmarks, and career milestones powered by TalentXcel.
+          </p>
+          <div class="pt-4 flex flex-wrap gap-3 justify-center">
+            <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Explore Career Passport &rarr;</a>
+            <a href="/signup" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Create Your Passport Free</a>
+          </div>
+        </section>
+      `;
+    }
+  }
+  // 1E. Public Profiles & Candidates (/profile/:slug, /profile/public/:slug, /candidate/:id)
+  else if (
+    cleanPath.startsWith('profile/') ||
+    cleanPath.startsWith('candidate/') ||
+    cleanPath.startsWith('candidates/')
+  ) {
+    const rawIdentifier = cleanPath.replace(/^(profile\/public|profile|candidate|candidates)\//, '');
+    const identifier = decodeURIComponent(rawIdentifier).trim();
+    const profile = await lookupProfileInSupabase(identifier);
+
+    if (profile) {
+      const fullName = profile.full_name || 'TalentXcel Professional';
+      const headline = profile.headline || profile.title || 'Professional Profile on TalentXcel';
+      const location = profile.location ? ` in ${profile.location}` : '';
+      const avatar = profile.profile_photo_url || profile.profile_picture_url || 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+      
+      title = `${fullName} — Professional Profile | TalentXcel`;
+      description = `Connect with ${fullName}${location} on TalentXcel. ${headline}`;
+      canonical = `https://talentxcel.in/profile/${encodeURIComponent(identifier)}`;
+      h1 = `${fullName} — Professional Profile`;
+      ogType = 'profile';
+      ogImage = avatar;
+      robotsDirective = 'index, follow';
+
+      bodyContent = `
+        <article class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-10 space-y-6 max-w-4xl mx-auto shadow-2xl">
+          <div class="flex flex-col sm:flex-row items-center sm:items-start gap-6 border-b border-slate-800 pb-6">
+            <img src="${escapeHtml(avatar)}" alt="${escapeHtml(fullName)}" class="w-20 h-20 rounded-full object-cover border-2 border-blue-500 shadow-lg bg-slate-800" />
+            <div class="text-center sm:text-left space-y-1 flex-1">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold">
+                TalentXcel Member
+              </span>
+              <h2 class="text-2xl font-black text-white">${escapeHtml(fullName)}</h2>
+              <p class="text-slate-300 text-sm">${escapeHtml(headline)}</p>
+              ${profile.location ? `<p class="text-xs text-slate-400">📍 ${escapeHtml(profile.location)}</p>` : ''}
+            </div>
+          </div>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/passport/public/${encodeURIComponent(identifier)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">View Career Passport &rarr;</a>
+            <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Network Feed</a>
+          </div>
+        </article>
+      `;
+
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": fullName,
+        "jobTitle": headline,
+        "description": description,
+        "image": avatar,
+        "url": canonical
+      };
+    } else {
+      title = 'Professional Profile | TalentXcel';
+      description = 'Connect with verified professionals and leadership talent on TalentXcel.';
+      canonical = `https://talentxcel.in/profile/${encodeURIComponent(identifier)}`;
+      h1 = 'TalentXcel Professional Profile';
+      ogType = 'profile';
+      ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+      robotsDirective = 'noindex, follow';
+
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-4 text-center max-w-3xl mx-auto">
+          <h2 class="text-2xl font-black text-white">Professional Profile</h2>
+          <p class="text-slate-300 text-sm">Explore verified talent and connect with professionals across global industries.</p>
+          <div class="pt-4">
+            <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Explore Professional Network &rarr;</a>
+          </div>
+        </section>
+      `;
+    }
+  }
+  // 1F. Network Posts & Articles (/network/post/:id, /post/:id, /posts/:id)
+  else if (
+    cleanPath.startsWith('network/post/') ||
+    cleanPath.startsWith('network/posts/') ||
+    cleanPath.startsWith('post/') ||
+    cleanPath.startsWith('posts/')
+  ) {
+    const rawPostId = cleanPath.replace(/^(network\/post|network\/posts|post|posts)\//, '');
+    const postId = decodeURIComponent(rawPostId).trim();
+    const result = await lookupPostInSupabase(postId);
+
+    if (result && result.post) {
+      const { post, author } = result;
+      const authorName = author?.full_name || 'TalentXcel Member';
+      const snippet = (post.content || '').replace(/\s+/g, ' ').trim().slice(0, 160);
+      const postImage = post.featured_image_url || (Array.isArray(post.media_urls) && post.media_urls[0]) || author?.profile_photo_url || 'https://talentxcel.in/assets/og/talentxcel-og-article.png';
+
+      title = `${authorName} on TalentXcel: "${snippet.slice(0, 60)}..."`;
+      description = snippet || `Read the latest professional insights from ${authorName} on TalentXcel.`;
+      canonical = `https://talentxcel.in/posts/${encodeURIComponent(postId)}`;
+      h1 = `${authorName} on TalentXcel`;
+      ogType = 'article';
+      ogImage = postImage;
+      robotsDirective = 'index, follow';
+
+      bodyContent = `
+        <article class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-10 space-y-6 max-w-3xl mx-auto shadow-2xl">
+          <div class="flex items-center gap-4 border-b border-slate-800 pb-4">
+            ${author?.profile_photo_url ? `<img src="${escapeHtml(author.profile_photo_url)}" alt="${escapeHtml(authorName)}" class="w-12 h-12 rounded-full object-cover border border-blue-500" />` : ''}
+            <div>
+              <h2 class="text-base font-bold text-white">${escapeHtml(authorName)}</h2>
+              ${author?.headline ? `<p class="text-xs text-slate-400 line-clamp-1">${escapeHtml(author.headline)}</p>` : ''}
+              <time class="text-[11px] text-slate-500">${new Date(post.created_at).toLocaleDateString()}</time>
+            </div>
+          </div>
+          <div class="text-slate-200 text-sm md:text-base leading-relaxed whitespace-pre-wrap">${escapeHtml(post.content || '')}</div>
+          <div class="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
+            <a href="/network" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Join the Discussion &rarr;</a>
+          </div>
+        </article>
+      `;
+
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "SocialMediaPosting",
+        "headline": title,
+        "articleBody": post.content,
+        "author": {
+          "@type": "Person",
+          "name": authorName
+        },
+        "datePublished": post.created_at,
+        "image": postImage,
+        "url": canonical
+      };
+    } else {
+      title = 'Professional Discussion & Posts | TalentXcel Network';
+      description = 'Join career conversations, industry analysis, and professional discussions on TalentXcel Network.';
+      canonical = `https://talentxcel.in/${cleanPath}`;
+      h1 = 'TalentXcel Network Post';
+      ogType = 'article';
+      ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-article.png';
+      robotsDirective = 'noindex, follow';
+
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-4 text-center max-w-3xl mx-auto">
+          <h2 class="text-2xl font-black text-white">TalentXcel Network Feed</h2>
+          <p class="text-slate-300 text-sm">Connect with global peers and discover verified career discussions.</p>
+          <div class="pt-4">
+            <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Open Network Feed &rarr;</a>
+          </div>
+        </section>
+      `;
+    }
+  }
+  // 1G. Network Specialized Hubs & Sub-Pages
+  else if (cleanPath === 'network' || cleanPath.startsWith('network/')) {
+    const subRoute = cleanPath.replace(/^network\/?/, '');
+    if (subRoute === 'verified') {
+      title = 'Verified Professionals Network | TalentXcel';
+      description = 'Connect with verified engineering, tech, product, and leadership professionals on TalentXcel.';
+      canonical = 'https://talentxcel.in/network/verified';
+      h1 = 'Verified Professionals Network';
+    } else if (subRoute === 'skill-swap') {
+      title = 'Skill Swap & Peer Mentorship Marketplace | TalentXcel';
+      description = 'Exchange high-demand skills, architecture reviews, and career mentorship with global peers.';
+      canonical = 'https://talentxcel.in/network/skill-swap';
+      h1 = 'Skill Swap & Mentorship';
+    } else if (subRoute === 'articles') {
+      title = 'Articles, Insights & Thought Leadership | TalentXcel Network';
+      description = 'Explore tech architectures, industry analysis, and career insights from professionals worldwide.';
+      canonical = 'https://talentxcel.in/network/articles';
+      h1 = 'Articles & Professional Insights';
+    } else if (subRoute === 'connections') {
+      title = 'My Professional Network | TalentXcel';
+      description = 'Manage your verified connections and professional relationships on TalentXcel.';
+      canonical = 'https://talentxcel.in/network/connections';
+      h1 = 'My Professional Network';
+    } else if (subRoute === 'requests') {
+      title = 'Connection Requests & Inbound Invitations | TalentXcel';
+      description = 'Review incoming connection requests and expand your professional network on TalentXcel.';
+      canonical = 'https://talentxcel.in/network/requests';
+      h1 = 'Connection Requests';
+    } else {
+      title = 'Professional Network | Connect, Share & Advance | TalentXcel';
+      description = 'Discover industry updates, career opportunities, and verified discussions on TalentXcel Network.';
+      canonical = 'https://talentxcel.in/network';
+      h1 = 'TalentXcel Professional Network';
+    }
+    ogType = 'website';
+    ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
+    robotsDirective = 'index, follow';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+          TalentXcel Professional Network
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">${escapeHtml(h1)}</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          ${escapeHtml(description)}
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Enter Professional Network &rarr;</a>
+          <a href="/passport" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">View Career Passport</a>
+        </div>
+      </section>
+    `;
+  }
+  // 1H. Saved Jobs Hub
+  else if (cleanPath === 'saved-jobs') {
+    title = 'Saved Jobs & Opportunities | TalentXcel';
+    description = 'Manage your bookmarked job postings, track applications, and review compensation details on TalentXcel.';
+    canonical = 'https://talentxcel.in/saved-jobs';
+    h1 = 'Saved Jobs & Applications';
+    ogType = 'website';
+    ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-jobs.png';
+    robotsDirective = 'index, follow';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 text-center max-w-3xl mx-auto">
+        <h2 class="text-3xl font-black text-white">Saved Job Opportunities</h2>
+        <p class="text-slate-300 text-sm max-w-lg mx-auto">Access your bookmarked positions and track your application milestones.</p>
+        <div class="pt-4 flex justify-center gap-3">
+          <a href="/jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Browse Active Jobs &rarr;</a>
+        </div>
+      </section>
+    `;
+  }
+  // 1I. Profile Analytics
+  else if (cleanPath === 'profile/analytics') {
+    title = 'Profile Analytics & Reach Telemetry | TalentXcel';
+    description = 'Review your profile impressions, search appearances, and recruiter outreach analytics on TalentXcel.';
+    canonical = 'https://talentxcel.in/profile/analytics';
+    h1 = 'Profile Analytics & Insights';
+    ogType = 'website';
+    ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+    robotsDirective = 'index, follow';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-6 text-center max-w-3xl mx-auto">
+        <h2 class="text-3xl font-black text-white">Career Telemetry &amp; Profile Insights</h2>
+        <p class="text-slate-300 text-sm max-w-lg mx-auto">Monitor your visibility across global recruiters, companies, and professional peers.</p>
+        <div class="pt-4 flex justify-center gap-3">
+          <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Your Career Passport &rarr;</a>
+        </div>
+      </section>
+    `;
+  }
+  // 1J. Career Passport Root Hub
+  else if (cleanPath === 'passport' || cleanPath === 'career-passport') {
+    title = 'Career Passport — Verified Digital Career Identity | TalentXcel';
+    description = 'Create and share your portable, verified Career Passport. Showcase skills, verified credentials, and career readiness to global employers.';
+    canonical = 'https://talentxcel.in/passport';
+    h1 = 'TalentXcel Career Passport';
+    ogType = 'profile';
+    ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
+    robotsDirective = 'index, follow';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+          Portable Digital Credential
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Your Career. Verified. Ready for What\'s Next.</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          Share your verified competencies, verifiable credentials, and salary benchmarks with 500,000+ employers worldwide.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Open Career Passport &rarr;</a>
+          <a href="/signup" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Create Your Passport Free</a>
+        </div>
+      </section>
+    `;
+  }
+
   // 2. Reels
   else if (cleanPath === 'reels') {
     title = 'TalentXcel Reels — Global Tech, AI & Career Stories';
@@ -490,7 +929,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
         <h2 class="text-2xl font-bold text-white">Professional Career Content &amp; Architectural Breakdowns</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Short-form video content curated for technology and leadership professionals across AI, system design, salary negotiation, and career advancement.</p>
+        <p class="text-slate-300 text-sm leading-relaxed">Short-form video content curated for professionals and leaders across all industries, career growth, negotiation, and professional advancement.</p>
         <div class="pt-2">
           <a href="/reels" class="px-5 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl">Watch Reels in App &rarr;</a>
         </div>
@@ -1145,6 +1584,9 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     ? `<script type="application/ld+json">\n${JSON.stringify(jsonLdSchema, null, 2)}\n</script>`
     : '';
 
+  const resolvedOgImage = ogImage || resolveOgImageForRoute(cleanPath);
+  const resolvedOgType = ogType || (cleanPath.startsWith('jobs') ? 'article' : (cleanPath.startsWith('passport') || cleanPath.startsWith('profile') ? 'profile' : 'website'));
+
   const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1157,9 +1599,9 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   <meta property="og:title" content="${escapeHtml(title)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:url" content="${canonical}">
-  <meta property="og:type" content="${cleanPath.startsWith('jobs') ? 'article' : (cleanPath.startsWith('passport') ? 'profile' : 'website')}">
-  <meta property="og:image" content="${resolveOgImageForRoute(cleanPath)}">
-  <meta property="og:image:secure_url" content="${resolveOgImageForRoute(cleanPath)}">
+  <meta property="og:type" content="${escapeHtml(resolvedOgType)}">
+  <meta property="og:image" content="${escapeHtml(resolvedOgImage)}">
+  <meta property="og:image:secure_url" content="${escapeHtml(resolvedOgImage)}">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -1168,7 +1610,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   <meta name="twitter:site" content="@talentxcel">
   <meta name="twitter:title" content="${escapeHtml(title)}">
   <meta name="twitter:description" content="${escapeHtml(description)}">
-  <meta name="twitter:image" content="${resolveOgImageForRoute(cleanPath)}">
+  <meta name="twitter:image" content="${escapeHtml(resolvedOgImage)}">
   <meta name="twitter:image:alt" content="${escapeHtml(title)}">
   <meta name="robots" content="${robotsDirective}">
   <script src="https://cdn.tailwindcss.com" defer></script>

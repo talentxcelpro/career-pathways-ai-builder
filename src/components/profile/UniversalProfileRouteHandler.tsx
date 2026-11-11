@@ -23,6 +23,7 @@ export const RESERVED_ROUTES = new Set([
   'scenarios', 'negotiation', 'goals', 'skills-gap',
   'career-insights', 'market-insights', 'career-analytics', 'insights', 'career-paths',
   'pricing', 'subscription', 'plans', 'pro', 'upgrade', 'store', 'rewards', 'billing', 'checkout',
+  'feed', 'post', 'posts', 'notifications', 'messages', 'hire', 'reels', 'reel', 'search',
   '404', 'not-found'
 ]);
 
@@ -40,6 +41,20 @@ export const UniversalProfileRouteHandler: React.FC = () => {
   // If hitting CareerVerse / RPG directly, route to CareerVerse
   if (lowerClean === 'play' || lowerClean === 'careerverse' || lowerClean === 'rpg') {
     return <Navigate to={'/' + lowerClean} replace />;
+  }
+
+  // Handle feed routing specifically with post query parameters
+  if (lowerClean === 'feed') {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const postId = params.get('post') || params.get('id');
+    if (postId) {
+      return <Navigate to={`/posts/${encodeURIComponent(postId)}`} replace />;
+    }
+    return <Navigate to="/network" replace />;
+  }
+
+  if (lowerClean === 'post' || lowerClean === 'posts') {
+    return <Navigate to="/network" replace />;
   }
 
   // Check if reserved or static asset file extension (.xml, .json, .ico, .png, etc.)

@@ -1625,6 +1625,16 @@
       "destination": "/robots-employer-alias.txt"
     },
     {
+      "source": "/robots.txt",
+      "has": [
+        {
+          "type": "host",
+          "value": "auth.talentxcel.in"
+        }
+      ],
+      "destination": "/robots-auth.txt"
+    },
+    {
       "source": "/sitemap.xml",
       "has": [
         {

@@ -125,7 +125,7 @@ const templateCategories: TemplateCategory[] = [
         isPremium: false,
         isPopular: true,
         tags: ['Tech', 'Modern', 'Clean'],
-        description: 'Perfect for tech professionals and startups',
+        description: 'Perfect for professionals across technology, business, creative, and corporate domains',
         suitable_for: ['Software Engineering', 'Product Management', 'Data Science', 'DevOps']
       },
       {

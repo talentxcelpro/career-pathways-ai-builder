@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   MapPin, 
   Briefcase, 
   Users, 
-  MessageSquare, 
   Heart, 
   Search, 
   TrendingUp, 
@@ -20,20 +18,17 @@ import {
   Check, 
   Play, 
   Zap, 
-  Star, 
   ShieldCheck, 
   Award, 
   Share2, 
   Send, 
-  Navigation, 
   Globe2, 
-  Compass, 
-  SlidersHorizontal,
-  X,
-  ArrowUpRight,
+  X, 
+  ArrowUpRight, 
   ChevronRight,
-  ExternalLink,
-  Laptop
+  UserCheck,
+  Building2,
+  ArrowRight
 } from "lucide-react";
 import { useNavigate } from 'react-router-dom';
 import { useProfileViews } from '@/hooks/useProfileViews';
@@ -50,7 +45,7 @@ interface GlobalTalentProfile {
   title?: string;
   location: string;
   hub: 'dubai' | 'us' | 'europe' | 'india' | 'apac' | 'remote' | 'unknown';
-  domain: 'ai' | 'systems' | 'product' | 'design' | 'leadership' | 'security' | 'creators' | 'unknown';
+  domain: 'tech' | 'leadership' | 'product' | 'design' | 'finance' | 'marketing' | 'healthcare' | 'operations' | 'unknown';
   talent_score?: number;
   connections_count?: string;
   percentile?: string;
@@ -62,27 +57,28 @@ interface GlobalTalentProfile {
   activity_type?: 'reel' | 'post' | 'hiring' | 'achievement';
 }
 
-// Seed identities and performance claims are not presented as member data.
 const GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [];
 
 const GLOBAL_HUBS = [
-  { id: 'all', label: 'All Worldwide', icon: '🌍' },
-  { id: 'dubai', label: 'Dubai & MENA', icon: '🇦🇪' },
-  { id: 'us', label: 'Silicon Valley & US', icon: '🇺🇸' },
-  { id: 'europe', label: 'London & Europe', icon: '🇬🇧' },
-  { id: 'india', label: 'Bengaluru & India', icon: '🇮🇳' },
-  { id: 'apac', label: 'Singapore & APAC', icon: '🇸🇬' },
-  { id: 'remote', label: 'Global Remote', icon: '🌐' }
+  { id: 'all', label: 'Worldwide' },
+  { id: 'dubai', label: 'Dubai & MENA' },
+  { id: 'us', label: 'Silicon Valley & US' },
+  { id: 'europe', label: 'London & Europe' },
+  { id: 'india', label: 'Bengaluru & India' },
+  { id: 'apac', label: 'Singapore & APAC' },
+  { id: 'remote', label: 'Global Remote' }
 ];
 
 const DOMAIN_CATEGORIES = [
-  { id: 'all', label: 'All Domains' },
-  { id: 'ai', label: '⚡ AI & ML' },
-  { id: 'systems', label: '🏗️ Distributed Systems' },
-  { id: 'product', label: '🎯 Product' },
-  { id: 'design', label: '🎨 UI/UX Design' },
-  { id: 'leadership', label: '💼 Leadership & VP' },
-  { id: 'security', label: '🛡️ Security & DevOps' }
+  { id: 'all', label: 'All Industries' },
+  { id: 'tech', label: 'Technology & AI' },
+  { id: 'leadership', label: 'Executive & Leadership' },
+  { id: 'product', label: 'Product & Strategy' },
+  { id: 'design', label: 'Design & Creative' },
+  { id: 'finance', label: 'Finance & Banking' },
+  { id: 'marketing', label: 'Marketing & Sales' },
+  { id: 'healthcare', label: 'Healthcare & Life Sciences' },
+  { id: 'operations', label: 'Operations & HR' }
 ];
 
 const People: React.FC = () => {
@@ -95,6 +91,7 @@ const People: React.FC = () => {
   const [selectedHub, setSelectedHub] = useState<string>('all');
   const [selectedDomain, setSelectedDomain] = useState<string>('all');
   const [connectedIds, setConnectedIds] = useState<Set<string>>(new Set());
+  const [followingIds, setFollowingIds] = useState<Set<string>>(new Set());
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(new Set());
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -102,16 +99,19 @@ const People: React.FC = () => {
     const locationMatch = searchTerm.match(/\bin\s+(.+)$/i);
     return locationMatch ? { location: locationMatch[1].trim() } : null;
   }, [searchTerm]);
+
   const suggestions = useMemo(() => searchTerm.trim() ? [] : [
     'Senior AI Engineer in Dubai',
     'Product Designer in London',
-    'Cloud Engineer in Bengaluru',
+    'Cloud Architect in Bengaluru',
+    'Finance Director in Singapore'
   ], [searchTerm]);
+
   const selectSuggestion = useCallback((suggestion: string) => setSearchTerm(suggestion), []);
 
   const queryClient = useQueryClient();
 
-  // Fetch public profiles in newest-first order.
+  // Fetch public profiles in newest-first order
   const { data: dbProfiles } = useQuery({
     queryKey: ['global-talent-profiles'],
     queryFn: async () => {
@@ -133,7 +133,7 @@ const People: React.FC = () => {
     staleTime: 30 * 1000,
   });
 
-  // Dynamic Realtime subscription: When anyone joins or updates their profile, update immediately!
+  // Dynamic Realtime subscription
   useEffect(() => {
     const channel = supabase
       .channel('realtime:talent-profiles')
@@ -144,7 +144,7 @@ const People: React.FC = () => {
           queryClient.invalidateQueries({ queryKey: ['global-talent-profiles'] });
           const insertedProfile = payload.new as any;
           if (payload.eventType === 'INSERT' && insertedProfile?.profile_visibility === 'public' && insertedProfile?.full_name) {
-            toast.success(`${insertedProfile.full_name} joined the public TalentXcel directory.`);
+            toast.success(`${insertedProfile.full_name} joined the public directory.`);
           }
         }
       )
@@ -155,56 +155,68 @@ const People: React.FC = () => {
     };
   }, [queryClient]);
 
-  // Render only profile details that members supplied and explicitly made public.
+  // Map public member profiles
   const enrichedProfiles = useMemo(() => {
     const mappedDbProfiles: GlobalTalentProfile[] = (dbProfiles || [])
       .filter((db) => db.profile_visibility === 'public' && Boolean(db.full_name) && Boolean(db.headline || db.title))
       .map((db) => {
-      const name = db.full_name as string;
-      const cleanHeadline = db.headline || db.title;
-      const loc = db.location || '';
-      
-      let hub: GlobalTalentProfile['hub'] = 'unknown';
-      const lowerLoc = loc.toLowerCase();
-      if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha')) hub = 'dubai';
-      else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco')) hub = 'us';
-      else if (lowerLoc.includes('uk') || lowerLoc.includes('london') || lowerLoc.includes('berlin') || lowerLoc.includes('europe') || lowerLoc.includes('germany')) hub = 'europe';
-      else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi')) hub = 'india';
-      else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul')) hub = 'apac';
+        const name = db.full_name as string;
+        const cleanHeadline = db.headline || db.title;
+        const loc = db.location || '';
+        
+        let hub: GlobalTalentProfile['hub'] = 'unknown';
+        const lowerLoc = loc.toLowerCase();
+        if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha') || lowerLoc.includes('abu dhabi')) hub = 'dubai';
+        else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco') || lowerLoc.includes('seattle') || lowerLoc.includes('austin')) hub = 'us';
+        else if (lowerLoc.includes('uk') || lowerLoc.includes('london') || lowerLoc.includes('berlin') || lowerLoc.includes('europe') || lowerLoc.includes('germany') || lowerLoc.includes('paris')) hub = 'europe';
+        else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi') || lowerLoc.includes('hyderabad') || lowerLoc.includes('noida') || lowerLoc.includes('pune')) hub = 'india';
+        else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul') || lowerLoc.includes('sydney')) hub = 'apac';
+        else if (lowerLoc.includes('remote')) hub = 'remote';
 
-      let domain: GlobalTalentProfile['domain'] = 'unknown';
-      const lowerHead = cleanHeadline.toLowerCase();
-      if (lowerHead.includes('ai') || lowerHead.includes('ml') || lowerHead.includes('data')) domain = 'ai';
-      else if (lowerHead.includes('product') || lowerHead.includes('pm')) domain = 'product';
-      else if (lowerHead.includes('design') || lowerHead.includes('ux') || lowerHead.includes('ui')) domain = 'design';
-      else if (lowerHead.includes('vp') || lowerHead.includes('director') || lowerHead.includes('head') || lowerHead.includes('lead') || lowerHead.includes('manager')) domain = 'leadership';
-      else if (lowerHead.includes('security') || lowerHead.includes('devops') || lowerHead.includes('cloud')) domain = 'security';
+        const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
+          ? db.skills 
+          : [];
 
-      const photo = db.profile_photo_url || db.profile_picture_url || undefined;
+        let domain: GlobalTalentProfile['domain'] = 'unknown';
+        const lowerSearch = (cleanHeadline + ' ' + (db.title || '') + ' ' + rawSkills.join(' ')).toLowerCase();
+        if (lowerSearch.includes('ai') || lowerSearch.includes('ml') || lowerSearch.includes('software') || lowerSearch.includes('engineer') || lowerSearch.includes('developer') || lowerSearch.includes('cloud') || lowerSearch.includes('devops') || lowerSearch.includes('security') || lowerSearch.includes('data')) {
+          domain = 'tech';
+        } else if (lowerSearch.includes('vp') || lowerSearch.includes('director') || lowerSearch.includes('head') || lowerSearch.includes('chief') || lowerSearch.includes('founder') || lowerSearch.includes('ceo') || lowerSearch.includes('lead') || lowerSearch.includes('executive')) {
+          domain = 'leadership';
+        } else if (lowerSearch.includes('product') || lowerSearch.includes('pm')) {
+          domain = 'product';
+        } else if (lowerSearch.includes('design') || lowerSearch.includes('ux') || lowerSearch.includes('ui') || lowerSearch.includes('creative')) {
+          domain = 'design';
+        } else if (lowerSearch.includes('finance') || lowerSearch.includes('banking') || lowerSearch.includes('invest') || lowerSearch.includes('fintech') || lowerSearch.includes('accounting')) {
+          domain = 'finance';
+        } else if (lowerSearch.includes('market') || lowerSearch.includes('sales') || lowerSearch.includes('growth') || lowerSearch.includes('brand')) {
+          domain = 'marketing';
+        } else if (lowerSearch.includes('health') || lowerSearch.includes('med') || lowerSearch.includes('pharma') || lowerSearch.includes('bio')) {
+          domain = 'healthcare';
+        } else if (lowerSearch.includes('hr') || lowerSearch.includes('talent') || lowerSearch.includes('recruit') || lowerSearch.includes('people') || lowerSearch.includes('operat')) {
+          domain = 'operations';
+        }
 
-      const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
-        ? db.skills 
-        : [];
+        const photo = db.profile_photo_url || db.profile_picture_url || undefined;
 
-      return {
-        id: db.id,
-        full_name: name,
-        username: db.username,
-        headline: cleanHeadline,
-        title: db.title || cleanHeadline.split(/[•–-]/)[0].trim(),
-        location: loc,
-        hub,
-        domain,
-        skills: rawSkills.slice(0, 4),
-        profile_photo_url: photo,
-        is_verified: db.verification_status === 'verified',
-      };
-    });
+        return {
+          id: db.id,
+          full_name: name,
+          username: db.username,
+          headline: cleanHeadline,
+          title: db.title || cleanHeadline.split(/[•–-]/)[0].trim(),
+          location: loc,
+          hub,
+          domain,
+          skills: rawSkills.slice(0, 4),
+          profile_photo_url: photo,
+          is_verified: db.verification_status === 'verified',
+        };
+      });
 
     return mappedDbProfiles;
   }, [dbProfiles]);
 
-  // Show member activity only when an activity record is present.
   const spotlightLeaders = useMemo(() => {
     const realRecent = enrichedProfiles.filter(p => p.activity_snippet && p.activity_type).slice(0, 16);
     const globalCurated = GLOBAL_SPOTLIGHT_LEADERS.slice(0, 6);
@@ -233,7 +245,6 @@ const People: React.FC = () => {
     });
   }, [enrichedProfiles, selectedHub, selectedDomain, searchTerm, parsedQuery]);
 
-  // Paginate the currently returned public profiles.
   const [visibleCount, setVisibleCount] = useState(24);
 
   useEffect(() => {
@@ -275,14 +286,27 @@ const People: React.FC = () => {
         toast.success(`Connection request sent to ${userName}!`);
 
         // Automatically dispatch Connection Request email to recipient
-        supabase
-          .from('profiles')
-          .select('email, full_name')
-          .eq('id', userId)
-          .maybeSingle()
-          .then(({ data: recProfile }) => {
+        Promise.all([
+          supabase
+            .from('profiles')
+            .select('email, full_name')
+            .eq('id', userId)
+            .maybeSingle(),
+          supabase
+            .from('profiles')
+            .select('full_name, headline, current_job_title, current_company, location, profile_picture_url, avatar_url')
+            .eq('id', user.id)
+            .maybeSingle()
+        ])
+          .then(([{ data: recProfile }, { data: senderProfile }]) => {
             if (recProfile?.email) {
-              const myName = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A professional';
+              const myName = senderProfile?.full_name || user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split('@')[0] || 'A TalentXcel Member';
+              const myTitle = senderProfile?.headline || senderProfile?.current_job_title || '';
+              const myCompany = senderProfile?.current_company || '';
+              const myLocation = senderProfile?.location || '';
+              const myAvatar = senderProfile?.avatar_url || senderProfile?.profile_picture_url || user.user_metadata?.avatar_url || '';
+              const personalNote = `Hi ${userName}! I'd love to connect on the TalentXcel Professional Network.`;
+
               fetch('/api/email/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -293,14 +317,26 @@ const People: React.FC = () => {
                   priority: 1,
                   immediate: true,
                   variables: {
+                    sender_name: myName,
+                    senderName: myName,
                     inviter_name: myName,
+                    sender_title: myTitle,
+                    senderTitle: myTitle,
+                    sender_company: myCompany,
+                    senderCompany: myCompany,
+                    sender_location: myLocation,
+                    senderLocation: myLocation,
+                    sender_avatar: myAvatar,
+                    senderAvatar: myAvatar,
+                    personal_note: personalNote,
                     name: recProfile.full_name || userName,
                     recipient_name: recProfile.full_name || userName
                   }
                 })
               }).catch(() => {});
             }
-          });
+          })
+          .catch(() => {});
       }
 
       setConnectedIds(prev => new Set(prev).add(userId));
@@ -309,6 +345,42 @@ const People: React.FC = () => {
       toast.error(err.message || "Failed to send connection request. Please try again.");
     }
   }, [navigate]);
+
+  const handleFollow = useCallback(async (userId: string, userName: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.info("Please sign in to follow professionals.");
+        navigate(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+        return;
+      }
+      const isAlreadyFollowing = followingIds.has(userId);
+      if (isAlreadyFollowing) {
+        await supabase
+          .from('user_follows')
+          .delete()
+          .eq('follower_id', user.id)
+          .eq('following_id', userId);
+        setFollowingIds(prev => {
+          const next = new Set(prev);
+          next.delete(userId);
+          return next;
+        });
+        toast.info(`Unfollowed ${userName}`);
+      } else {
+        await supabase
+          .from('user_follows')
+          .insert({
+            follower_id: user.id,
+            following_id: userId
+          });
+        setFollowingIds(prev => new Set(prev).add(userId));
+        toast.success(`Now following ${userName}`);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to follow");
+    }
+  }, [followingIds, navigate]);
 
   const handleToggleBookmark = useCallback((userId: string) => {
     setBookmarkedIds(prev => {
@@ -333,19 +405,13 @@ const People: React.FC = () => {
     navigate(`/network/messages/new?userId=${person.id}&name=${encodeURIComponent(person.full_name)}`);
   }, [navigate]);
 
-  const handleHireCreator = useCallback((person: GlobalTalentProfile) => {
-    navigate(`/hire?creator=${encodeURIComponent(person.full_name)}&role=${encodeURIComponent(person.title || person.headline)}`);
-  }, [navigate]);
-
   const handleShareProfile = useCallback(async (person: GlobalTalentProfile) => {
     const profileUrl = `${window.location.origin}/profile/${person.username || person.id}`;
     if (navigator.share) {
       try {
         await navigator.share({
           title: `${person.full_name} on TalentXcel`,
-          text: person.talent_score
-            ? `Check out ${person.full_name}'s Career Passport on TalentXcel (TalentScore: ${person.talent_score})`
-            : `View ${person.full_name}'s public profile on TalentXcel`,
+          text: `View ${person.full_name}'s Career Passport on TalentXcel`,
           url: profileUrl
         });
         return;
@@ -364,188 +430,150 @@ const People: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 space-y-5 sm:space-y-6">
+    <div className="min-h-screen bg-[#fbfbfd] dark:bg-[#090a0f] text-slate-900 dark:text-slate-100 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        {/* ── Compact Global Positioning Hero ────────────────────────── */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-4 sm:py-5 px-5 sm:px-7 shadow-lg border border-indigo-900/40">
-          <div className="absolute top-0 right-0 -mt-8 -mr-8 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-          <div className="absolute bottom-0 left-1/3 -mb-8 w-60 h-60 bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        {/* ── Apple-Style Minimalist Slim Hero Header ─────────────────── */}
+        <div className="relative overflow-hidden rounded-2xl bg-white/70 dark:bg-slate-900/60 backdrop-blur-xl border border-slate-200/70 dark:border-slate-800/80 p-6 sm:p-7 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1.5 max-w-2xl">
-              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-400/30 text-blue-300 text-[11px] font-semibold tracking-wide uppercase backdrop-blur-md">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>The Global Professional Talent Network</span>
-                <span className="text-white/30">•</span>
-                <span className="text-emerald-300 font-bold">{enrichedProfiles.length} Public Profiles</span>
-                <span className="text-white/30">•</span>
-                <span className="text-blue-200">Member directory</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 text-[11px] font-medium tracking-tight">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Global Professional Directory</span>
+                <span className="text-slate-300 dark:text-slate-600">•</span>
+                <span className="text-blue-600 dark:text-blue-400 font-semibold">{enrichedProfiles.length} Verified Profiles</span>
               </div>
 
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-white leading-tight">
-                Discover <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">Global Talent</span> & Leaders
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.02em] text-slate-900 dark:text-white">
+                Discover Global Talent & Leaders
               </h1>
 
-              <p className="text-slate-300 text-xs sm:text-sm leading-normal line-clamp-2">
-                Search public member profiles by role, skills, and location. Profile details are supplied by members and may change.
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-normal leading-relaxed">
+                Connect with verified professionals across technology, leadership, finance, healthcare, and global industries.
               </p>
             </div>
 
-            {/* Quick KPI stats row */}
-            <div className="flex md:flex-col lg:flex-row flex-wrap items-start md:items-end lg:items-center gap-2.5 text-xs text-slate-300 font-medium shrink-0 pt-1 md:pt-0">
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <Users className="w-3.5 h-3.5 text-blue-400" />
-                <span className="text-[11px] font-semibold text-white">{enrichedProfiles.length} Public Profiles</span>
+            {/* Apple-style slim pill metrics */}
+            <div className="flex flex-wrap items-center gap-2 text-xs font-medium shrink-0">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/70 text-slate-700 dark:text-slate-300 shadow-xs">
+                <Users className="w-3.5 h-3.5 text-blue-500" />
+                <span>{enrichedProfiles.length} Public Profiles</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-[11px]">Member profile search</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/70 text-slate-700 dark:text-slate-300 shadow-xs">
+                <Globe2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Global Hubs</span>
               </div>
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <Globe2 className="w-3.5 h-3.5 text-blue-400" />
-                <span className="text-[11px]">Global Hubs & Remote</span>
-              </div>
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-xl">
-                <Briefcase className="w-3.5 h-3.5 text-purple-400" />
-                <span className="text-[11px]">Employer hiring tools</span>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/70 text-slate-700 dark:text-slate-300 shadow-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-purple-500" />
+                <span>Verified Passports</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ── Public Member Activity ─────────────────────────────────── */}
-        {spotlightLeaders.length > 0 && <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <h2 className="text-sm font-bold tracking-wide uppercase text-slate-700 dark:text-slate-300">
-                Public Member Activity
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                Member activity appears when available
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-4 overflow-x-auto pb-3 pt-1 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
-            {spotlightLeaders.map((leader) => (
-              <div
-                key={leader.id}
-                onClick={() => handleProfileView(leader)}
-                className="flex-shrink-0 flex flex-col items-center group cursor-pointer w-24 text-center transition-transform hover:-translate-y-1"
-              >
-                <div className="relative mb-2">
-                  {/* Glowing Story Gradient Ring */}
-                  <div className="w-16 h-16 rounded-full p-[2.5px] bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-500 shadow-md group-hover:shadow-indigo-500/30 transition-all duration-300">
-                    <Avatar className="w-full h-full border-2 border-white dark:border-slate-900 rounded-full overflow-hidden">
-                      <AvatarImage src={leader.profile_photo_url} alt={leader.full_name} className="object-cover" />
-                      <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-blue-200 text-indigo-800 font-bold">
-                        {generateInitials(leader.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  
-                  {/* Activity Indicator Badge */}
-                  <div className="absolute -bottom-1 -right-1 bg-white dark:bg-slate-900 rounded-full p-1 shadow-md border border-slate-200 dark:border-slate-700">
-                    {leader.activity_type === 'reel' ? (
-                      <Play className="w-3 h-3 text-purple-600 fill-purple-600" />
-                    ) : leader.activity_type === 'hiring' ? (
-                      <Briefcase className="w-3 h-3 text-emerald-600" />
-                    ) : (
-                      <Zap className="w-3 h-3 text-amber-500 fill-amber-500" />
-                    )}
-                  </div>
-                </div>
-
-                <div className="w-full">
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate group-hover:text-blue-600 transition-colors">
-                    {leader.full_name.split(' ')[0]}
-                  </p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {leader.location.split(',')[0]}
-                  </p>
-                  <div className="inline-block mt-0.5 px-1.5 py-0.2 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-bold text-[9px]">
-                    ⚡ {leader.talent_score}
-                  </div>
-                </div>
+        {/* ── Spotlight Member Activity (if available) ───────────────── */}
+        {spotlightLeaders.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                  Featured Leaders
+                </h2>
               </div>
-            ))}
-          </div>
-        </div>}
-
-        {/* ── Global Search & Multi-Filter Bar ──────────────────────── */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-800 space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 items-center">
-            {/* Search Input */}
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <Input
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search by role, skills, or global hub (e.g. 'Senior AI Engineer in Dubai', 'Staff Architect London')..."
-                className="pl-10 pr-9 h-11 bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-              />
-              {searchTerm && (
-                <button
-                  onClick={() => setSearchTerm('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
             </div>
 
-            {/* AI Match Button */}
-            <Button
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+              {spotlightLeaders.map((leader) => (
+                <div
+                  key={leader.id}
+                  onClick={() => handleProfileView(leader)}
+                  className="shrink-0 flex items-center gap-3 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 backdrop-blur-md hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer transition-all shadow-xs"
+                >
+                  <Avatar className="w-9 h-9 rounded-lg ring-1 ring-slate-200 dark:ring-slate-700">
+                    <AvatarImage src={leader.profile_photo_url} alt={leader.full_name} className="object-cover" />
+                    <AvatarFallback className="bg-slate-100 text-slate-800 text-xs font-bold">
+                      {generateInitials(leader.full_name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 pr-1">
+                    <p className="text-xs font-medium text-slate-900 dark:text-white truncate max-w-[120px]">
+                      {leader.full_name}
+                    </p>
+                    <p className="text-[10px] text-slate-400 truncate max-w-[120px]">
+                      {leader.location}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Apple-Style Unified Search & Multi-Industry Filter Bar ─── */}
+        <div className="bg-white/80 dark:bg-slate-900/70 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-200/70 dark:border-slate-800/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3.5">
+          {/* Sleek Search Pill */}
+          <div className="relative flex items-center w-full bg-slate-100/70 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full px-4 h-11 border border-transparent focus-within:border-slate-300 dark:focus-within:border-slate-600 focus-within:bg-white dark:focus-within:bg-slate-900 transition-all">
+            <Search className="w-4 h-4 text-slate-400 shrink-0 mr-2.5" />
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by role, skills, company, or hub (e.g. 'AI Engineer', 'Product Lead Dubai', 'Cardiologist')..."
+              className="w-full bg-transparent border-0 text-xs sm:text-sm focus:outline-none placeholder:text-slate-400 text-slate-900 dark:text-white"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 mr-1"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+            <button
               onClick={() => {
                 if (!searchTerm) setSearchTerm('Senior AI Engineer');
                 toast.success('Filtered public profiles using your search.');
               }}
-              className="w-full sm:w-auto h-11 px-5 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-md transition-all flex items-center justify-center gap-2"
+              className="h-8 px-4 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-medium shadow-xs shrink-0 transition-colors"
             >
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span>Search Profiles</span>
-            </Button>
+              Search
+            </button>
           </div>
 
-          {/* Global Hub Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex-shrink-0 mr-1">
-              Hubs:
+          {/* Global Hubs Carousel */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+            <span className="text-[11px] font-semibold text-slate-400 shrink-0 mr-1.5 uppercase tracking-wider">
+              Hub:
             </span>
             {GLOBAL_HUBS.map((hub) => (
               <button
                 key={hub.id}
                 onClick={() => setSelectedHub(hub.id)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 ${
+                className={`shrink-0 px-3 py-1 rounded-full text-xs transition-all ${
                   selectedHub === hub.id
-                    ? 'bg-blue-600 text-white shadow-sm font-semibold'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xs font-medium'
+                    : 'bg-slate-100/70 hover:bg-slate-200/70 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 text-slate-600 dark:text-slate-400 border border-slate-200/40 dark:border-slate-700/40'
                 }`}
               >
-                <span>{hub.icon}</span>
-                <span>{hub.label}</span>
+                {hub.label}
               </button>
             ))}
           </div>
 
-          {/* Domain Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none border-t border-slate-100 dark:border-slate-800/60 pt-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex-shrink-0 mr-1">
-              Domain:
+          {/* Cross-Industry Filter Pills */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs border-t border-slate-100 dark:border-slate-800/60 pt-3">
+            <span className="text-[11px] font-semibold text-slate-400 shrink-0 mr-1.5 uppercase tracking-wider">
+              Industry:
             </span>
             {DOMAIN_CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setSelectedDomain(cat.id)}
-                className={`flex-shrink-0 px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                className={`shrink-0 px-3 py-1 rounded-full text-xs transition-all ${
                   selectedDomain === cat.id
-                    ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold'
-                    : 'bg-slate-100/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                    ? 'bg-blue-600 text-white shadow-xs font-medium'
+                    : 'bg-slate-100/70 hover:bg-slate-200/70 dark:bg-slate-800/60 dark:hover:bg-slate-700/60 text-slate-600 dark:text-slate-400 border border-slate-200/40 dark:border-slate-700/40'
                 }`}
               >
                 {cat.label}
@@ -553,15 +581,15 @@ const People: React.FC = () => {
             ))}
           </div>
 
-          {/* Smart suggestions bar */}
+          {/* Popular Search Suggestions */}
           {suggestions.length > 0 && !searchTerm && (
-            <div className="flex items-center gap-2 pt-1 flex-wrap text-xs text-slate-500">
-              <span className="font-semibold text-slate-400">Popular:</span>
+            <div className="flex items-center gap-1.5 pt-0.5 flex-wrap text-[11px] text-slate-400">
+              <span className="font-medium text-slate-400">Popular:</span>
               {suggestions.map((sug, i) => (
                 <button
                   key={i}
                   onClick={() => selectSuggestion(sug)}
-                  className="px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40 text-slate-600 dark:text-slate-400 transition-colors"
+                  className="px-2.5 py-0.5 rounded-full bg-slate-100/60 dark:bg-slate-800/60 hover:bg-slate-200/80 text-slate-600 dark:text-slate-400 transition-colors"
                 >
                   {sug}
                 </button>
@@ -569,191 +597,204 @@ const People: React.FC = () => {
             </div>
           )}
 
-          {/* Active search filter badge */}
+          {/* Active Search Badge */}
           {searchTerm && (
-            <div className="flex items-center justify-between text-xs bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 px-3 py-2 rounded-lg text-blue-800 dark:text-blue-300">
+            <div className="flex items-center justify-between text-xs bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 px-3 py-1.5 rounded-xl text-slate-700 dark:text-slate-300">
               <div className="flex items-center gap-2">
-                <Search className="w-3.5 h-3.5" />
+                <Search className="w-3.5 h-3.5 text-blue-500" />
                 <span>
-                  Showing {filteredProfiles.length} public profile results for <strong>"{searchTerm}"</strong>
+                  Showing {filteredProfiles.length} results for <strong>"{searchTerm}"</strong>
                 </span>
-                {parsedQuery?.location && (
-                  <span className="bg-blue-100 dark:bg-blue-900 px-2 py-0.5 rounded text-[11px]">
-                    📍 {parsedQuery.location}
-                  </span>
-                )}
               </div>
               <button
                 onClick={() => setSearchTerm('')}
-                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium text-xs"
               >
-                Clear Search
+                Clear
               </button>
             </div>
           )}
         </div>
 
-        {/* ── Main Content Grid & Sidebar Layout ────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* ── Main Layout: 3 Columns Grid + 1 Column Sidebar ─────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-          {/* Left / Center Main Directory (3 Cols) */}
+          {/* Directory Content (3 Cols) */}
           <div className="lg:col-span-3 space-y-6">
 
-            {/* Navigation Tabs */}
+            {/* Apple Segmented Tabs */}
             <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="w-full">
-              <TabsList className="w-full grid grid-cols-4 h-12 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800">
-                <TabsTrigger value="verified" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
-                  <ShieldCheck className="w-4 h-4 mr-1.5 text-blue-500" />
-                  Member Profiles
-                </TabsTrigger>
-                <TabsTrigger value="trending" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
-                  <TrendingUp className="w-4 h-4 mr-1.5 text-emerald-500" />
-                  Recently Joined
-                </TabsTrigger>
-                <TabsTrigger value="creators" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
-                  <Play className="w-4 h-4 mr-1.5 text-purple-500 fill-purple-500" />
-                  Video Creators
-                </TabsTrigger>
-                <TabsTrigger value="hubs" className="rounded-lg text-xs sm:text-sm font-semibold data-[state=active]:bg-slate-900 data-[state=active]:text-white dark:data-[state=active]:bg-slate-100 dark:data-[state=active]:text-slate-900 transition-all">
-                  <Globe2 className="w-4 h-4 mr-1.5 text-amber-500" />
-                  Hub Discovery
-                </TabsTrigger>
-              </TabsList>
+              <div className="flex items-center justify-between pb-1">
+                <TabsList className="h-9 p-0.5 rounded-full bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 inline-flex">
+                  <TabsTrigger 
+                    value="verified" 
+                    className="rounded-full text-xs font-medium px-4 h-8 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-xs transition-all"
+                  >
+                    Member Profiles
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="trending" 
+                    className="rounded-full text-xs font-medium px-4 h-8 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-xs transition-all"
+                  >
+                    Recently Joined
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="creators" 
+                    className="rounded-full text-xs font-medium px-4 h-8 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-xs transition-all"
+                  >
+                    Video Creators
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="hubs" 
+                    className="rounded-full text-xs font-medium px-4 h-8 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:text-slate-900 dark:data-[state=active]:text-white data-[state=active]:shadow-xs transition-all"
+                  >
+                    Hubs
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               {/* Verified Profiles Content */}
-              <TabsContent value="verified" className="mt-6 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+              <TabsContent value="verified" className="mt-4 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
                   {paginatedProfiles.map((person) => {
                     const isConnected = connectedIds.has(person.id);
+                    const isFollowing = followingIds.has(person.id);
                     const isBookmarked = bookmarkedIds.has(person.id);
 
                     return (
                       <Card
                         key={person.id}
-                        className="group flex flex-col justify-between rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl hover:border-blue-400/60 dark:hover:border-blue-600/60 transition-all duration-300 overflow-hidden"
+                        className="group flex flex-col justify-between rounded-2xl border border-slate-200/70 dark:border-slate-800/80 bg-white dark:bg-slate-900/90 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 p-5 overflow-hidden"
                       >
-                        <div>
-                          {/* Card Sleek Mesh Header Banner */}
-                          <div className="h-16 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 relative p-3 flex items-start justify-between">
-                            {/* Show a score badge only when a score is available. */}
-                            {person.talent_score != null && <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-900/80 backdrop-blur-md border border-amber-400/40 text-amber-300 text-xs font-bold shadow">
-                              <Zap className="w-3 h-3 text-amber-400 fill-amber-400" />
-                              <span>{person.talent_score} TalentScore</span>
-                            </div>}
+                        <div className="space-y-4">
+                          {/* Card Top: Avatar + Micro Badges + Bookmark */}
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="relative">
+                              <Avatar 
+                                onClick={() => handleProfileView(person)}
+                                className="w-13 h-13 rounded-2xl ring-1 ring-slate-200/80 dark:ring-slate-700 shadow-xs cursor-pointer group-hover:scale-102 transition-transform"
+                              >
+                                <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
+                                <AvatarFallback className="bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-semibold text-sm">
+                                  {generateInitials(person.full_name)}
+                                </AvatarFallback>
+                              </Avatar>
+                              <RealTimePresence userId={person.id} variant="dot" />
+                            </div>
 
-                            {/* Availability Pill */}
-                            {person.availability && <Badge
-                              variant="outline"
-                              className={`text-[10px] px-2 py-0.5 rounded-full font-semibold border ${
-                                person.availability === 'Hiring Team'
-                                  ? 'bg-purple-950/80 text-purple-300 border-purple-500/40'
-                                  : person.availability === 'Open to Advisory'
-                                  ? 'bg-blue-950/80 text-blue-300 border-blue-500/40'
-                                  : 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40'
-                              }`}
-                            >
-                              {person.availability}
-                            </Badge>}
-                          </div>
-
-                          {/* Profile Body */}
-                          <div className="px-5 pt-0 pb-4">
-                            {/* Avatar & Action Row */}
-                            <div className="flex items-end justify-between -mt-8 mb-3">
-                              <div className="relative">
-                                <Avatar 
-                                  onClick={() => handleProfileView(person)}
-                                  className="w-16 h-16 rounded-2xl ring-4 ring-white dark:ring-slate-900 shadow-lg cursor-pointer transition-transform group-hover:scale-105"
-                                >
-                                  <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
-                                  <AvatarFallback className="bg-gradient-to-br from-indigo-100 to-blue-200 text-indigo-900 font-bold text-lg">
-                                    {generateInitials(person.full_name)}
-                                  </AvatarFallback>
-                                </Avatar>
-                                <RealTimePresence userId={person.id} variant="dot" />
-                              </div>
-
+                            <div className="flex items-center gap-1.5">
+                              {person.availability && (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200/50">
+                                  {person.availability}
+                                </span>
+                              )}
+                              {person.talent_score != null && (
+                                <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/50 flex items-center gap-1">
+                                  <Zap className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
+                                  {person.talent_score}
+                                </span>
+                              )}
                               <button
                                 onClick={() => handleToggleBookmark(person.id)}
-                                className={`p-2 rounded-xl border transition-all ${
+                                className={`p-1.5 rounded-full transition-colors ${
                                   isBookmarked
-                                    ? 'bg-rose-50 border-rose-200 text-rose-600'
-                                    : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:text-rose-500 hover:bg-rose-50/50'
+                                    ? 'bg-rose-50 text-rose-500'
+                                    : 'text-slate-300 dark:text-slate-600 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-slate-800'
                                 }`}
                                 title="Save Profile"
                               >
-                                <Heart className={`w-4 h-4 ${isBookmarked ? 'fill-rose-500' : ''}`} />
+                                <Heart className={`w-3.5 h-3.5 ${isBookmarked ? 'fill-rose-500' : ''}`} />
                               </button>
                             </div>
+                          </div>
 
-                            {/* Name & Headline */}
-                            <div className="space-y-1 mb-3">
-                              <div className="flex items-center gap-1.5">
-                                <h3
-                                  onClick={() => handleProfileView(person)}
-                                  className="font-bold text-base text-slate-900 dark:text-slate-100 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors"
-                                >
-                                  {person.full_name}
-                                </h3>
-                                {person.is_verified && (
-                                  <ShieldCheck className="w-4 h-4 text-blue-500 flex-shrink-0" title="Verified Profile" />
-                                )}
-                              </div>
-
-                              <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
-                                {person.headline}
-                              </p>
-
-                              {person.location && <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 pt-1">
-                                <MapPin className="w-3 h-3 text-slate-400 flex-shrink-0" />
-                                <span className="truncate">{person.location}</span>
-                              </div>}
+                          {/* Identity & Headline */}
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5">
+                              <h3
+                                onClick={() => handleProfileView(person)}
+                                className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-colors tracking-tight truncate"
+                              >
+                                {person.full_name}
+                              </h3>
+                              {person.is_verified && (
+                                <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" title="Verified Professional" />
+                              )}
                             </div>
 
-                            {/* Social Proof & Metrics */}
-                            {(person.connections_count || person.percentile) && <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800/60 text-[11px] font-medium text-slate-600 dark:text-slate-300 mb-3">
-                              {person.connections_count && <span>👥 {person.connections_count} Network</span>}
-                              {person.percentile && <span className="text-emerald-600 dark:text-emerald-400 font-bold">⭐ {person.percentile}</span>}
-                            </div>}
+                            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed font-normal">
+                              {person.headline}
+                            </p>
 
-                            {/* Skills Pills */}
-                            <div className="flex flex-wrap gap-1.5 mb-4">
+                            {person.location && (
+                              <div className="flex items-center gap-1 text-[11px] text-slate-400 pt-1">
+                                <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
+                                <span className="truncate">{person.location}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Skills Pills */}
+                          {person.skills.length > 0 && (
+                            <div className="flex flex-wrap gap-1.5 pt-1">
                               {person.skills.map((skill, sIdx) => (
                                 <span
                                   key={sIdx}
-                                  className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium"
+                                  className="text-[11px] px-2.5 py-0.5 rounded-md bg-slate-100/80 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-normal"
                                 >
                                   {skill}
                                 </span>
                               ))}
                             </div>
-                          </div>
+                          )}
                         </div>
 
-                        {/* Card Bottom Actions */}
-                        <div className="px-5 pb-5 pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+                        {/* Card Bottom: Slim Apple Action Row */}
+                        <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2.5">
+                          {/* Connect, Follow, Passport Row */}
                           <div className="flex items-center gap-2">
                             {/* Connect Button */}
                             <Button
                               size="sm"
                               onClick={() => handleConnect(person.id, person.full_name)}
                               disabled={isConnected}
-                              className={`flex-1 h-9 rounded-xl text-xs font-bold transition-all shadow-sm ${
+                              className={`flex-1 h-8 rounded-full text-xs font-medium transition-all shadow-xs ${
                                 isConnected
-                                  ? 'bg-emerald-600 text-white'
-                                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                  : 'bg-blue-600 hover:bg-blue-500 text-white'
                               }`}
                             >
                               {isConnected ? (
                                 <>
-                                  <Check className="w-3.5 h-3.5 mr-1" />
+                                  <Check className="w-3 h-3 mr-1" />
                                   Connected
                                 </>
                               ) : (
                                 <>
-                                  <UserPlus className="w-3.5 h-3.5 mr-1" />
+                                  <UserPlus className="w-3 h-3 mr-1" />
                                   Connect
                                 </>
+                              )}
+                            </Button>
+
+                            {/* Follow Button */}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleFollow(person.id, person.full_name)}
+                              className={`h-8 px-3 rounded-full text-xs font-medium border-slate-200 dark:border-slate-700 transition-colors ${
+                                isFollowing
+                                  ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                              }`}
+                            >
+                              {isFollowing ? (
+                                <>
+                                  <UserCheck className="w-3 h-3 mr-1 text-blue-600" />
+                                  Following
+                                </>
+                              ) : (
+                                'Follow'
                               )}
                             </Button>
 
@@ -762,34 +803,26 @@ const People: React.FC = () => {
                               size="sm"
                               variant="outline"
                               onClick={() => handleProfileView(person)}
-                              className="h-9 px-3 rounded-xl border-slate-200 dark:border-slate-700 hover:border-blue-300 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600"
+                              className="h-8 px-3 rounded-full text-xs font-medium border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                             >
                               Passport
-                              <ArrowUpRight className="w-3.5 h-3.5 ml-1" />
+                              <ArrowUpRight className="w-3 h-3 ml-1 text-slate-400" />
                             </Button>
                           </div>
 
                           {/* Quick Message & Share */}
-                          <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1">
+                          <div className="flex items-center justify-between text-[11px] text-slate-400 pt-0.5 px-0.5">
                             <button
                               onClick={() => handleMessage(person)}
-                              className="flex items-center gap-1 hover:text-blue-600 font-medium transition-colors"
+                              className="flex items-center gap-1.5 hover:text-blue-600 text-slate-500 dark:text-slate-400 font-medium transition-colors"
                             >
                               <Send className="w-3 h-3" />
                               <span>Message</span>
                             </button>
 
                             <button
-                              onClick={() => handleHireCreator(person)}
-                              className="flex items-center gap-1 text-purple-600 hover:text-purple-700 font-bold transition-colors"
-                            >
-                              <Briefcase className="w-3 h-3" />
-                              <span>Hire Creator</span>
-                            </button>
-
-                            <button
                               onClick={() => handleShareProfile(person)}
-                              className="flex items-center gap-1 hover:text-slate-700 font-medium transition-colors"
+                              className="flex items-center gap-1.5 hover:text-slate-700 dark:hover:text-slate-200 text-slate-400 transition-colors"
                             >
                               <Share2 className="w-3 h-3" />
                               <span>Share</span>
@@ -801,45 +834,43 @@ const People: React.FC = () => {
                   })}
                 </div>
 
-                {/* Load more results when additional public profiles match. */}
+                {/* Load More Button */}
                 {visibleCount < filteredProfiles.length && (
-                  <div className="pt-6 pb-2 flex flex-col items-center justify-center gap-2">
+                  <div className="pt-6 pb-4 flex flex-col items-center justify-center gap-2">
                     <Button
                       onClick={() => setVisibleCount(prev => prev + 24)}
-                      size="lg"
-                      className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold text-xs sm:text-sm px-8 py-3 rounded-2xl shadow-lg transition-all flex items-center gap-2"
+                      size="sm"
+                      className="bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-medium text-xs px-6 h-9 rounded-full shadow-xs transition-all"
                     >
-                      <Users className="w-4 h-4" />
-                      <span>Load More Professionals ({filteredProfiles.length - visibleCount} remaining)</span>
+                      Load More Professionals ({filteredProfiles.length - visibleCount} remaining)
                     </Button>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Showing {Math.min(visibleCount, filteredProfiles.length)} of {filteredProfiles.length} public profiles
+                    <p className="text-[11px] text-slate-400">
+                      Showing {Math.min(visibleCount, filteredProfiles.length)} of {filteredProfiles.length} profiles
                     </p>
                   </div>
                 )}
               </TabsContent>
 
-              {/* Trending Tab */}
-              <TabsContent value="trending" className="mt-6 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {enrichedProfiles.slice(0, 6).map((person) => (
+              {/* Recently Joined Tab */}
+              <TabsContent value="trending" className="mt-4 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {enrichedProfiles.slice(0, 8).map((person) => (
                     <Card
                       key={person.id}
                       onClick={() => handleProfileView(person)}
-                      className="p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-md cursor-pointer transition-all flex items-center justify-between"
+                      className="p-3.5 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs hover:shadow-md cursor-pointer transition-all flex items-center justify-between"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="relative">
-                          <Avatar className="w-12 h-12 rounded-xl">
-                            <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
-                            <AvatarFallback>{generateInitials(person.full_name)}</AvatarFallback>
-                          </Avatar>
-                        </div>
-                        <div>
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Avatar className="w-10 h-10 rounded-xl ring-1 ring-slate-200 dark:ring-slate-700 shrink-0">
+                          <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
+                          <AvatarFallback className="text-xs font-bold">{generateInitials(person.full_name)}</AvatarFallback>
+                        </Avatar>
+                        <div className="min-w-0">
                           <div className="flex items-center gap-1">
-                            <h4 className="font-bold text-sm text-slate-900 dark:text-slate-100">{person.full_name}</h4>
+                            <h4 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white truncate">{person.full_name}</h4>
+                            {person.is_verified && <ShieldCheck className="w-3.5 h-3.5 text-blue-500 shrink-0" />}
                           </div>
-                          <p className="text-xs text-slate-500 truncate max-w-xs">{person.headline}</p>
+                          <p className="text-[11px] text-slate-400 truncate max-w-xs">{person.headline}</p>
                         </div>
                       </div>
 
@@ -849,7 +880,7 @@ const People: React.FC = () => {
                           e.stopPropagation();
                           handleConnect(person.id, person.full_name);
                         }}
-                        className="h-8 px-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold"
+                        className="h-7 px-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-medium shrink-0 ml-2"
                       >
                         Connect
                       </Button>
@@ -859,58 +890,55 @@ const People: React.FC = () => {
               </TabsContent>
 
               {/* Video Creators Tab */}
-              <TabsContent value="creators" className="mt-6 space-y-4">
-                <div className="p-4 rounded-2xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200 dark:border-purple-900 flex items-center justify-between">
+              <TabsContent value="creators" className="mt-4 space-y-4">
+                <div className="p-4 rounded-2xl bg-purple-50/50 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-900/50 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Play className="w-5 h-5 text-purple-600 fill-purple-600" />
                     <div>
-                      <h4 className="font-bold text-sm text-purple-900 dark:text-purple-200">
+                      <h4 className="font-semibold text-xs sm:text-sm text-purple-900 dark:text-purple-200">
                         Technical Creators on TalentXcel Reels
                       </h4>
-                      <p className="text-xs text-purple-700 dark:text-purple-300">
-                        Watch engineering breakdowns, system design deep dives, and salary insights.
+                      <p className="text-xs text-purple-700 dark:text-purple-400 font-normal">
+                        Engineering breakdowns, system architecture deep-dives, and salary benchmarks.
                       </p>
                     </div>
                   </div>
                   <Button
                     onClick={() => navigate('/reels')}
-                    className="h-9 px-4 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
+                    size="sm"
+                    className="h-8 px-4 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium shrink-0"
                   >
-                    Open Reels Feed →
+                    Open Reels
                   </Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {enrichedProfiles.filter(p => p.activity_type === 'reel').map((person) => (
                     <Card
                       key={person.id}
                       onClick={() => navigate(`/reels`)}
-                      className="group rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl cursor-pointer transition-all overflow-hidden"
+                      className="group rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs hover:shadow-lg cursor-pointer transition-all overflow-hidden"
                     >
-                      <div className="h-28 bg-gradient-to-br from-indigo-900 to-purple-950 p-3 relative flex flex-col justify-between">
-                        <Badge className="w-fit bg-purple-600/90 text-white text-[10px] font-bold">
-                          🎥 Video Creator
+                      <div className="h-24 bg-gradient-to-br from-slate-900 to-indigo-950 p-3 relative flex flex-col justify-between text-white">
+                        <Badge className="w-fit bg-purple-600 text-white text-[10px] font-medium border-0">
+                          Video Creator
                         </Badge>
-                        <div className="flex items-center gap-1.5 text-white/90 text-xs font-semibold">
-                          <Play className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                        <div className="flex items-center gap-1.5 text-xs text-slate-200 font-medium">
+                          <Play className="w-3 h-3 text-amber-400 fill-amber-400" />
                           <span className="truncate">{person.activity_snippet}</span>
                         </div>
                       </div>
-                      <div className="p-4 flex items-center justify-between">
+                      <div className="p-3.5 flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
-                          <Avatar className="w-10 h-10 rounded-xl">
+                          <Avatar className="w-9 h-9 rounded-xl">
                             <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
                             <AvatarFallback>{generateInitials(person.full_name)}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-bold text-xs text-slate-900 dark:text-slate-100">{person.full_name}</p>
-                            <p className="text-[11px] text-slate-500 truncate max-w-[140px]">{person.location}</p>
+                            <p className="font-semibold text-xs text-slate-900 dark:text-white">{person.full_name}</p>
+                            <p className="text-[10px] text-slate-400 truncate max-w-[120px]">{person.location}</p>
                           </div>
                         </div>
-                        {person.talent_score != null && <div className="text-right">
-                          <span className="text-xs font-bold text-amber-500">⚡ {person.talent_score}</span>
-                          <p className="text-[10px] text-slate-400">TalentScore</p>
-                        </div>}
                       </div>
                     </Card>
                   ))}
@@ -918,15 +946,15 @@ const People: React.FC = () => {
               </TabsContent>
 
               {/* Hub Discovery Tab */}
-              <TabsContent value="hubs" className="mt-6 space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <TabsContent value="hubs" className="mt-4 space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {[
-                    { hub: 'Dubai & MENA', flag: '🇦🇪', desc: 'Browse public profiles in this region', id: 'dubai' },
-                    { hub: 'Silicon Valley & US', flag: '🇺🇸', desc: 'Browse public profiles in this region', id: 'us' },
-                    { hub: 'London & Europe', flag: '🇬🇧', desc: 'Browse public profiles in this region', id: 'europe' },
-                    { hub: 'Bengaluru & India', flag: '🇮🇳', desc: 'Browse public profiles in this region', id: 'india' },
-                    { hub: 'Singapore & APAC', flag: '🇸🇬', desc: 'Browse public profiles in this region', id: 'apac' },
-                    { hub: 'Global Remote', flag: '🌐', desc: 'Browse public profiles in this region', id: 'remote' }
+                    { hub: 'Dubai & MENA', desc: 'Browse verified profiles in Dubai, UAE & Middle East', id: 'dubai' },
+                    { hub: 'Silicon Valley & US', desc: 'Browse verified profiles in SF, NY, Seattle & Remote', id: 'us' },
+                    { hub: 'London & Europe', desc: 'Browse verified profiles in London, Berlin & Paris', id: 'europe' },
+                    { hub: 'Bengaluru & India', desc: 'Browse verified profiles in Bengaluru, Mumbai & Delhi', id: 'india' },
+                    { hub: 'Singapore & APAC', desc: 'Browse verified profiles in Singapore, Tokyo & Sydney', id: 'apac' },
+                    { hub: 'Global Remote', desc: 'Browse distributed professionals worldwide', id: 'remote' }
                   ].map((item, idx) => (
                     <Card
                       key={idx}
@@ -934,16 +962,15 @@ const People: React.FC = () => {
                         setSelectedHub(item.id);
                         setActiveTab('verified');
                       }}
-                      className="p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-lg hover:border-blue-500/50 cursor-pointer transition-all group"
+                      className="p-4 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs hover:shadow-md hover:border-blue-500/50 cursor-pointer transition-all group"
                     >
-                      <div className="text-3xl mb-2">{item.flag}</div>
-                      <h4 className="font-bold text-base text-slate-900 dark:text-slate-100 group-hover:text-blue-600 transition-colors">
+                      <h4 className="font-semibold text-sm text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
                         {item.hub}
                       </h4>
-                      <p className="text-xs text-slate-500 mt-1 mb-3">{item.desc}</p>
-                      <div className="flex items-center justify-between text-xs font-semibold text-blue-600">
-                        <span>Explore profiles</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      <p className="text-xs text-slate-400 mt-1 mb-3">{item.desc}</p>
+                      <div className="flex items-center justify-between text-xs font-medium text-blue-600">
+                        <span>Explore hub</span>
+                        <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </Card>
                   ))}
@@ -952,138 +979,76 @@ const People: React.FC = () => {
             </Tabs>
           </div>
 
-          {/* Right Sidebar (1 Col) ─────────────────────────────────── */}
-          <div className="space-y-6">
+          {/* ── Apple-Style Slim Right Sidebar (1 Col) ───────────────── */}
+          <div className="space-y-4">
 
-            {/* Development-only sample leaderboard; production has no seeded profiles. */}
-            {GLOBAL_SPOTLIGHT_LEADERS.length > 0 && <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
-              <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-amber-500" />
-                  <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                    Weekly Top Talent
-                  </h3>
-                </div>
-                <Badge variant="secondary" className="text-[10px] bg-amber-50 text-amber-700 border-amber-200">
-                  Global
-                </Badge>
+            {/* Recruiter OS Widget */}
+            <Card className="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs space-y-3">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-semibold tracking-wide uppercase">
+                <Briefcase className="w-3 h-3 text-blue-500" />
+                Recruiter OS
               </div>
 
-              <div className="p-4 space-y-3.5">
-                {GLOBAL_SPOTLIGHT_LEADERS.slice(0, 5).map((person, idx) => (
-                  <div
-                    key={person.id}
-                    onClick={() => handleProfileView(person)}
-                    className="flex items-center justify-between gap-3 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 p-2 rounded-xl transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="relative flex-shrink-0">
-                        <Avatar className="w-10 h-10 rounded-xl">
-                          <AvatarImage src={person.profile_photo_url} alt={person.full_name} className="object-cover" />
-                          <AvatarFallback>{generateInitials(person.full_name)}</AvatarFallback>
-                        </Avatar>
-                        <div className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-slate-900 text-white font-bold text-[9px] flex items-center justify-center">
-                          {idx + 1}
-                        </div>
-                      </div>
-
-                      <div className="min-w-0">
-                        <p className="font-bold text-xs text-slate-900 dark:text-slate-100 truncate group-hover:text-blue-600 transition-colors">
-                          {person.full_name}
-                        </p>
-                        <p className="text-[11px] text-slate-500 truncate">
-                          {person.title || person.headline}
-                        </p>
-                        <p className="text-[10px] text-slate-400 truncate">
-                          📍 {person.location}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="text-right flex-shrink-0">
-                      <span className="text-xs font-bold text-amber-500">⚡ {person.talent_score}</span>
-                      <p className="text-[9px] text-slate-400">Score</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>}
-
-            {/* Recruiter OS Promo Widget */}
-            <Card className="rounded-2xl border-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 text-white p-5 shadow-xl relative overflow-hidden">
-              <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-purple-500/20 rounded-full blur-2xl" />
-              
-              <div className="relative z-10 space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold uppercase tracking-wider">
-                  <Briefcase className="w-3 h-3 text-purple-400" />
-                  Recruiter OS
-                </div>
-
-                <h3 className="font-extrabold text-base leading-tight text-white">
-                  Looking for candidates?
+              <div>
+                <h3 className="font-semibold text-sm text-slate-900 dark:text-white tracking-tight">
+                  Hiring top candidates?
                 </h3>
-
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Explore public member profiles and use TalentXcel recruiter tools to manage hiring workflows.
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                  Search verified talent and manage candidate pipelines with integrated recruiter workflows.
                 </p>
-
-                <Button
-                  onClick={() => navigate('/recruiters')}
-                  className="w-full h-9 bg-white text-slate-900 hover:bg-slate-100 font-bold text-xs rounded-xl shadow-md transition-all"
-                >
-                  Launch Recruiter OS →
-                </Button>
               </div>
+
+              <Button
+                onClick={() => navigate('/recruiters')}
+                className="w-full h-8 rounded-full bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-medium shadow-xs transition-colors"
+              >
+                Launch Recruiter OS
+              </Button>
             </Card>
 
-            {/* Career Passport Verification Widget */}
-            <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-3">
+            {/* Career Passport Widget */}
+            <Card className="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs space-y-3">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600">
-                  <ShieldCheck className="w-5 h-5" />
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600">
+                  <ShieldCheck className="w-4 h-4" />
                 </div>
-                <div>
-                  <h4 className="font-bold text-xs text-slate-900 dark:text-slate-100">
-                    Build a Career Passport
-                  </h4>
-                  <p className="text-[11px] text-slate-500">
-                    Add career information to your profile
-                  </p>
-                </div>
+                <h4 className="font-semibold text-xs text-slate-900 dark:text-white">
+                  Career Passport
+                </h4>
               </div>
 
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Use the Career Passport to organize career details and share them with recruiters.
+              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
+                Organize your verified skills, projects, and benchmarks into a shareable professional credential.
               </p>
 
               <Button
                 variant="outline"
                 onClick={() => navigate('/passport')}
-                className="w-full h-9 rounded-xl border-slate-200 dark:border-slate-700 text-xs font-semibold hover:border-blue-500 hover:text-blue-600"
+                className="w-full h-8 rounded-full border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
               >
-                Build My Career Passport
+                Build My Passport
               </Button>
             </Card>
 
             {/* Global In-Demand Radar */}
-            <Card className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-3">
+            <Card className="rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xs space-y-3">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                <h4 className="font-semibold text-[11px] text-slate-400 uppercase tracking-wider">
                   Global Hiring Radar
                 </h4>
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               </div>
 
               <div className="space-y-2 text-xs">
                 {[
-                  { skill: 'Artificial intelligence', color: 'text-purple-600' },
-                  { skill: 'Software engineering', color: 'text-blue-600' },
-                  { skill: 'Cloud and security', color: 'text-emerald-600' },
-                  { skill: 'Product and design', color: 'text-amber-600' }
+                  { skill: 'Artificial Intelligence & ML', count: 'High Demand' },
+                  { skill: 'Full-Stack & Cloud Systems', count: 'Active' },
+                  { skill: 'Product & Systems Design', count: 'Trending' },
+                  { skill: 'Executive & Technical Leadership', count: 'Active' }
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800 last:border-0">
-                    <span className="font-medium text-slate-700 dark:text-slate-300">{item.skill}</span>
-                    <span className={`font-bold ${item.color}`}>Browse</span>
+                  <div key={idx} className="flex items-center justify-between py-1 border-b border-slate-100 dark:border-slate-800/80 last:border-0">
+                    <span className="text-slate-600 dark:text-slate-300 font-normal">{item.skill}</span>
+                    <span className="text-[11px] font-medium text-blue-600 dark:text-blue-400">{item.count}</span>
                   </div>
                 ))}
               </div>

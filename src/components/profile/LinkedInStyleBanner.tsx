@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface LinkedInStyleBannerProps {
   profile?: any;
   isOwnProfile?: boolean;
+  showNavigation?: boolean;
   stats?: {
     connections: number;
     profileViews: number;
@@ -24,6 +25,7 @@ interface LinkedInStyleBannerProps {
 export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   profile: propProfile,
   isOwnProfile = true,
+  showNavigation = false,
   stats
 }) => {
   const navigate = useNavigate();
@@ -189,69 +191,70 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
 
       </Card>
 
-      {/* 2. NAVIGATION MENU CARD MATCHING MOCKUP 1:1 */}
-      <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-2.5">
-        <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground mb-1.5 px-1">Navigation</h3>
-        
-        <div className="space-y-0.5">
-          <Link to="/network/verified" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600"><ShieldCheck className="h-3.5 w-3.5" /></div>
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Verified</span>
-            </div>
-            <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+      {/* 2. NAVIGATION MENU CARD (Rendered conditionally when not hosted in NetworkSidebarNav) */}
+      {showNavigation && (
+        <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-2.5">
+          <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground mb-1.5 px-1">Navigation</h3>
+          
+          <div className="space-y-0.5">
+            <Link to="/network/verified" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600"><ShieldCheck className="h-3.5 w-3.5" /></div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Verified</span>
+              </div>
+              <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
-          <Link to="/network/connections" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600"><Users className="h-3.5 w-3.5" /></div>
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">My Network</span>
-            </div>
-            <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+            <Link to="/network/connections" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600"><Users className="h-3.5 w-3.5" /></div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">My Network</span>
+              </div>
+              <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
-          <Link to="/network/skill-swap" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600"><ArrowUpDown className="h-3.5 w-3.5" /></div>
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Skill Swap</span>
-            </div>
-            <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+            <Link to="/network/skill-swap" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600"><ArrowUpDown className="h-3.5 w-3.5" /></div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Skill Swap</span>
+              </div>
+              <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
-          <Link to="/network/articles" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600"><BookOpen className="h-3.5 w-3.5" /></div>
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Articles &amp; Drafts</span>
-            </div>
-            <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+            <Link to="/network/articles" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-600"><BookOpen className="h-3.5 w-3.5" /></div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 group-hover:text-primary">Articles &amp; Drafts</span>
+              </div>
+              <ChevronRight className="h-3 w-3 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
-          <Link to="/saved-jobs" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-2">
-              <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600"><Bookmark className="h-4 w-4" /></div>
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Saved Items</span>
-            </div>
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+            <Link to="/saved-jobs" className="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600"><Bookmark className="h-4 w-4" /></div>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Saved Items</span>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
-          <Link to="/profile/analytics" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600"><Clock className="h-4 w-4" /></div>
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">My Activities</span>
-            </div>
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
+            <Link to="/profile/analytics" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600"><Clock className="h-4 w-4" /></div>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">My Activities</span>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
 
-          <Link to="/profile/settings" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-slate-500/10 text-slate-600 dark:text-slate-400"><Settings className="h-4 w-4" /></div>
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Settings</span>
-            </div>
-            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </div>
-
-      </Card>
+            <Link to="/profile/settings" className="flex items-center justify-between p-2.5 rounded-2xl hover:bg-slate-100/80 dark:hover:bg-muted/50 transition-colors group">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-slate-500/10 text-slate-600 dark:text-slate-400"><Settings className="h-4 w-4" /></div>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-200 group-hover:text-primary">Settings</span>
+              </div>
+              <ChevronRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-primary transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
