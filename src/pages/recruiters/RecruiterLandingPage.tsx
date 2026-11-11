@@ -259,7 +259,7 @@ export default function RecruiterLandingPage() {
 
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-slate-950 text-slate-100 font-sans selection:bg-blue-600 selection:text-white">
-      <SEOHead title="Recruiter OS | Discover & Hire Talent | TalentXcel" description="Search talent, discover candidates and manage hiring with TalentXcel Recruiter OS." canonical="https://talentxcel.in/recruiters" type="website" />
+      <SEOHead title="Recruiter OS | Discover & Hire Talent | TalentXcel" description="Search talent, discover candidates and manage hiring with TalentXcel Recruiter OS." canonical="https://employers.talentxcel.in/" type="website" />
 
       {/* TOP RECRUITER SUB-NAV */}
       <div className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur px-4 py-2.5">

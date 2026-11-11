@@ -30,7 +30,7 @@ export const PassportAcquisitionLanding: React.FC = () => {
       <SEOHead 
         title="Career Passport | Your Universal Proof of Talent | TalentXcel" 
         description="Build your verified Career Passport. Showcase cryptographically verified skills, proof-of-work, and credentials to global employers." 
-        canonical="https://talentxcel.in/passport" 
+        canonical="https://passport.talentxcel.in/" 
         type="website" 
       />
 

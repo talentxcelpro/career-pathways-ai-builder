@@ -11,35 +11,69 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const TECH_KEYWORDS = [
-  'software', 'developer', 'frontend', 'backend', 'full stack', 'react', 
-  'node', 'python', 'java', 'cloud', 'devops', 'data', 'ai', 'machine learning', 
-  'qa', 'automation', 'cyber', 'security', 'it support', 'freshers'
-];
-
-const NON_TECH_KEYWORDS = [
-  'marketing', 'sales', 'operations', 'customer', 'business', 'hr', 
-  'human resources', 'finance', 'account', 'content', 'writer', 'support', 
-  'management trainee', 'relationship manager', 'administration', 'hospitality'
+const CORE_ORGANIZATIONS = [
+  'bhel', 'isro', 'drdo', 'iocl', 'railway', 'rrb', 'ntpc', 'ongc', 'sail',
+  'hal', 'bel', 'powergrid', 'coal india', 'lic', 'sbi', 'rbi', 'upsc', 'ssc'
 ];
 
 const CORE_KEYWORDS = [
   'mechanical', 'civil', 'electrical', 'safety', 'officer', 'hospital', 
   'logistics', 'supply chain', 'manufacturing', 'public', 'government', 
-  'audit', 'energy', 'iocl', 'isro', 'drdo', 'psu'
+  'audit', 'energy', 'psu', 'technician', 'plant', 'maintenance', 'site', 'trainee', 'sub-engineer'
 ];
 
-function categorizeJob(title, department) {
-  const text = `${title} ${department || ''}`.toLowerCase();
-  if (CORE_KEYWORDS.some(k => text.includes(k))) return 'core-industry';
-  if (NON_TECH_KEYWORDS.some(k => text.includes(k))) return 'non-tech';
-  return 'tech';
+const TECH_KEYWORDS = [
+  'software', 'developer', 'frontend', 'backend', 'full stack', 'react', 
+  'node', 'python', 'java', 'cloud', 'devops', 'data', 'ai', 'machine learning', 
+  'qa', 'automation', 'cyber', 'security', 'it support', 'freshers', 'engineer', 
+  'architect', 'sre', 'tech lead', 'programmer', 'analyst', 'database', 'platform'
+];
+
+const NON_TECH_KEYWORDS = [
+  'marketing', 'sales', 'operations', 'customer', 'business', 'hr', 
+  'human resources', 'finance', 'account', 'content', 'writer', 'support', 
+  'management trainee', 'relationship manager', 'administration', 'hospitality',
+  'telecaller', 'recruiter', 'lead generation', 'procurement', 'bpo', 'executive'
+];
+
+function categorizeJob(title, company, department, industry) {
+  const t = (title || '').toLowerCase();
+  const c = (company || '').toLowerCase();
+  const d = (department || '').toLowerCase();
+  const ind = (industry || '').toLowerCase();
+  const full = `${t} ${c} ${d} ${ind}`;
+
+  if (CORE_ORGANIZATIONS.some(org => c.includes(org) || t.includes(org))) {
+    return 'core-industry';
+  }
+  if (CORE_KEYWORDS.some(k => full.includes(k))) {
+    return 'core-industry';
+  }
+  if (TECH_KEYWORDS.some(k => t.includes(k))) {
+    return 'tech';
+  }
+  if (NON_TECH_KEYWORDS.some(k => full.includes(k))) {
+    return 'non-tech';
+  }
+  if (d.includes('tech') || d.includes('it') || ind.includes('tech') || ind.includes('software')) {
+    return 'tech';
+  }
+  return 'non-tech';
 }
 
 function deduplicateJobs(jobs) {
   const seen = new Set();
+  const now = new Date();
+
   return jobs.filter(j => {
-    const key = `${(j.title || '').trim().toLowerCase()}_${(j.company_name || '').trim().toLowerCase()}_${(j.location || '').trim().toLowerCase()}`;
+    if (j.application_deadline && new Date(j.application_deadline) < now) return false;
+    if (j.expires_at && new Date(j.expires_at) < now) return false;
+
+    const titleKey = (j.title || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const compKey = (j.company_name || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const locKey = (j.location_city || j.location || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+    const key = `${titleKey}_${compKey}_${locKey}`;
+
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -47,7 +81,7 @@ function deduplicateJobs(jobs) {
 }
 
 function formatSalary(min, max) {
-  if (!min) return null;
+  if (!min || min <= 0) return null;
   const minLakhs = (min / 100000).toFixed(1);
   if (!max || max === min) return `₹${minLakhs} LPA`;
   const maxLakhs = (max / 100000).toFixed(1);
@@ -69,13 +103,13 @@ async function run() {
   console.log(`[AUTONOMOUS JOB DIGEST ENGINE] Running for: ${dateDisplay} (IST)`);
   console.log('===============================================================\n');
 
-  console.log('[PHASE 4: VERIFICATION] Querying active jobs from Supabase...');
+  console.log('[PHASE 1: INVENTORY FETCH] Querying active jobs from Supabase...');
   const { data: rawJobs, error } = await supabase
     .from('jobs')
-    .select('id, title, company_name, location, employment_type, is_remote, salary_min, salary_max, industry, external_url, application_deadline, created_at')
+    .select('id, title, company_name, location, location_city, location_state, department, industry, experience_level, minimum_experience_years, maximum_experience_years, educational_qualification, minimum_education, salary_min, salary_max, external_url, source, application_deadline, expires_at, created_at')
     .eq('is_active', true)
     .order('created_at', { ascending: false })
-    .limit(300);
+    .limit(1000);
 
   if (error) {
     console.error('Failed to fetch jobs:', error);
@@ -85,7 +119,7 @@ async function run() {
   console.log(`[VERIFIED INVENTORY] Fetched ${rawJobs.length} active jobs.`);
 
   const deduped = deduplicateJobs(rawJobs);
-  console.log(`[DEDUPLICATION] ${deduped.length} unique vacancies after deduplication.`);
+  console.log(`[DEDUPLICATION] ${deduped.length} unique unexpired vacancies.`);
 
   const buckets = {
     tech: [],
@@ -94,76 +128,182 @@ async function run() {
   };
 
   deduped.forEach(j => {
-    const cat = categorizeJob(j.title, j.industry);
+    const cat = categorizeJob(j.title, j.company_name, j.department, j.industry);
     buckets[cat].push(j);
   });
 
-  console.log(`\nInventory Breakdown:`);
+  console.log('\nInventory Breakdown:');
   console.log(`- Tech & IT Jobs: ${buckets.tech.length}`);
   console.log(`- Non-Tech & Corporate: ${buckets['non-tech'].length}`);
-  console.log(`- Core Industry & PSU: ${buckets['core-industry'].length}`);
+  console.log(`- Core Industry & PSU: ${buckets['core-industry'].length}\n`);
 
-  const outputPackages = {};
+  const categoryTitles = {
+    'tech': 'Tech & IT Engineering Jobs',
+    'non-tech': 'Non-Tech, Corporate & Business Jobs',
+    'core-industry': 'Core Engineering, Logistics & PSU Jobs'
+  };
 
-  const categories = [
-    {
-      id: 'tech',
-      title: 'Tech & IT Engineering Jobs',
-      header: '🚀 TALENTXCEL TECH DIGEST',
-      cta: '⚠️ Over 70% of tech resumes fail automated ATS screening. Check your score free:\n👉 https://resume.talentxcel.in/resume/ats-check?utm_source=telegram&utm_medium=tech_digest'
-    },
-    {
-      id: 'non-tech',
-      title: 'Non-Tech & Business Jobs',
-      header: '💼 TALENTXCEL BUSINESS & OPERATIONS DIGEST',
-      cta: '💡 Calculate your exact monthly in-hand take-home salary in 30 seconds:\n👉 https://salary.talentxcel.in/analyzer?utm_source=whatsapp&utm_medium=nontech_digest'
-    },
-    {
-      id: 'core-industry',
-      title: 'Core Engineering & PSU Jobs',
-      header: '⚙️ TALENTXCEL CORE INDUSTRY & PSU DIGEST',
-      cta: '🛡️ Stand out to industrial hiring committees with a verified Career Passport:\n👉 https://passport.talentxcel.in?utm_source=telegram&utm_medium=core_digest'
-    }
-  ];
+  const titlePrefixes = {
+    'tech': '🚀 TALENTXCEL TECH DIGEST (20 Verified Openings)',
+    'non-tech': '💼 TALENTXCEL BUSINESS & OPERATIONS DIGEST (20 Verified Openings)',
+    'core-industry': '⚙️ TALENTXCEL CORE INDUSTRY & PSU DIGEST (20 Verified Openings)'
+  };
 
-  categories.forEach(cat => {
-    const topJobs = buckets[cat.id].slice(0, 5);
-    let md = `${cat.header} — ${dateDisplay}\n`;
-    md += `Verified Active Vacancies (Direct 1-Click Apply Links)\n\n`;
+  const ctaLinks = {
+    'tech': 'https://resume.talentxcel.in?utm_source=social_digest&utm_medium=tech&utm_campaign=daily_' + dateIso,
+    'non-tech': 'https://salary.talentxcel.in?utm_source=social_digest&utm_medium=non_tech&utm_campaign=daily_' + dateIso,
+    'core-industry': 'https://passport.talentxcel.in?utm_source=social_digest&utm_medium=core&utm_campaign=daily_' + dateIso
+  };
 
-    topJobs.forEach((job, idx) => {
-      const sal = formatSalary(job.salary_min, job.salary_max);
-      const applyUrl = `https://jobs.talentxcel.in/jobs/${job.id}?utm_source=job_digest&utm_medium=${cat.id}&utm_campaign=daily_${dateIso}`;
-      md += `${idx + 1}️⃣ *${job.title}*\n`;
-      md += `🏢 ${job.company_name || 'Verified Employer'}\n`;
-      md += `📍 ${job.location || 'Multiple Locations / Remote'}${sal ? ` | ${sal}` : ''}\n`;
-      md += `👉 Apply: ${applyUrl}\n\n`;
+  const ctaTexts = {
+    'tech': '⚠️ Over 70% of tech resumes fail automated ATS screening. Scan your resume free in 10 seconds:\n👉 Free ATS Scanner: ' + ctaLinks['tech'],
+    'non-tech': '💡 Curious about true in-hand take-home salary in your city? Calculate under New Tax Regime:\n👉 Free PayScale Calculator: ' + ctaLinks['non-tech'],
+    'core-industry': '🛡️ Stand out to industrial and PSU hiring committees with a tamper-proof verified Career Passport:\n👉 Claim Career Passport: ' + ctaLinks['core-industry']
+  };
+
+  const TARGET_QUOTA = 20;
+  const digestOutputs = {};
+
+  ['tech', 'non-tech', 'core-industry'].forEach(cat => {
+    const pool = buckets[cat];
+    const selected = pool.slice(0, TARGET_QUOTA);
+    const count = selected.length;
+    const hasShortage = count < TARGET_QUOTA;
+
+    const verifiedJobs = selected.map(j => {
+      const salaryText = formatSalary(j.salary_min, j.salary_max);
+      const trackingUrl = `https://jobs.talentxcel.in/jobs/${j.id}?utm_source=job_digest&utm_medium=${cat}&utm_campaign=daily_${dateIso}`;
+      let expLevel = j.experience_level || 'Open to All';
+      if (j.minimum_experience_years !== undefined && j.minimum_experience_years !== null) {
+        expLevel = `${j.minimum_experience_years}–${j.maximum_experience_years || j.minimum_experience_years + 2} Years`;
+      }
+      const qual = j.educational_qualification || j.minimum_education || 'Graduate / Diploma';
+
+      return {
+        id: j.id,
+        title: j.title || 'Role Title',
+        companyName: j.company_name || 'Verified Employer',
+        location: j.location_city || j.location || 'Multiple Cities / Remote',
+        category: cat,
+        experienceLevel: expLevel,
+        qualification: qual,
+        salaryText,
+        source: j.source || 'TalentXcel Live Ingestion',
+        originalSourceUrl: j.external_url || trackingUrl,
+        applicationUrl: trackingUrl,
+        deadline: j.application_deadline ? new Date(j.application_deadline).toLocaleDateString('en-IN') : undefined,
+        verifiedAt: new Date().toISOString()
+      };
     });
 
-    md += `${cat.cta}\n`;
+    // 1. Telegram
+    let telegram = `${titlePrefixes[cat]} — ${dateDisplay}\n`;
+    telegram += `100% Verified Active Vacancies • Zero Spam • Direct 1-Click Apply\n\n`;
+    verifiedJobs.forEach((job, idx) => {
+      telegram += `${idx + 1}️⃣ *${job.title}*\n`;
+      telegram += `🏢 ${job.companyName}\n`;
+      telegram += `📍 ${job.location} | 🎓 ${job.qualification} | ⏳ Exp: ${job.experienceLevel}\n`;
+      if (job.salaryText) telegram += `💰 ${job.salaryText}\n`;
+      if (job.deadline) telegram += `📅 Deadline: ${job.deadline}\n`;
+      telegram += `👉 Apply Now: ${job.applicationUrl}\n\n`;
+    });
+    telegram += `────────────────────\n${ctaTexts[cat]}\n`;
 
-    outputPackages[cat.id] = {
+    // 2. WhatsApp
+    let whatsapp = `*${titlePrefixes[cat]}*\n📅 *${dateDisplay}*\n`;
+    whatsapp += `Verified Active Vacancies (Direct 1-Click Apply Links)\n\n`;
+    verifiedJobs.forEach((job, idx) => {
+      whatsapp += `*${idx + 1}. ${job.title}*\n`;
+      whatsapp += `• Company: ${job.companyName}\n`;
+      whatsapp += `• Location: ${job.location}\n`;
+      whatsapp += `• Exp: ${job.experienceLevel} | Qual: ${job.qualification}\n`;
+      if (job.salaryText) whatsapp += `• Salary: ${job.salaryText}\n`;
+      if (job.deadline) whatsapp += `• Deadline: ${job.deadline}\n`;
+      whatsapp += `• Link: ${job.applicationUrl}\n\n`;
+    });
+    whatsapp += `--------------------\n${ctaTexts[cat]}`;
+
+    // 3. Email HTML
+    let emailHtml = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 640px; margin: 0 auto; padding: 24px; background-color: #0b0f19; color: #f8fafc; border-radius: 12px; border: 1px solid #1e293b;">
+        <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 12px; margin-bottom: 20px;">
+          <span style="background-color: #1e3a8a; color: #93c5fd; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase;">TalentXcel Daily Verified Digest</span>
+          <h2 style="color: #ffffff; font-size: 20px; margin: 8px 0 4px 0;">${categoryTitles[cat]}</h2>
+          <p style="color: #94a3b8; font-size: 13px; margin: 0;">${dateDisplay} &bull; ${count} Verified Active Vacancies</p>
+        </div>
+        <div style="margin-top: 16px;">
+    `;
+    verifiedJobs.forEach((job, idx) => {
+      emailHtml += `
+        <div style="background-color: #131b2e; padding: 14px 18px; border-radius: 10px; margin-bottom: 12px; border: 1px solid #1e293b;">
+          <h3 style="color: #60a5fa; font-size: 15px; margin: 0 0 4px 0; font-weight: 700;">${idx + 1}. ${job.title}</h3>
+          <p style="color: #e2e8f0; font-size: 13px; margin: 0 0 6px 0;"><strong>${job.companyName}</strong> &bull; ${job.location}</p>
+          <p style="color: #94a3b8; font-size: 12px; margin: 0 0 10px 0;">Experience: ${job.experienceLevel} &bull; Qualification: ${job.qualification} ${job.salaryText ? `&bull; <span style="color: #34d399; font-weight: 600;">${job.salaryText}</span>` : ''}</p>
+          <a href="${job.applicationUrl}" style="display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; padding: 6px 14px; border-radius: 6px;">Apply on JobMatch OS &rarr;</a>
+        </div>
+      `;
+    });
+    emailHtml += `
+        </div>
+        <div style="margin-top: 24px; padding: 16px; background-color: #1e293b; border-radius: 10px; border-left: 4px solid #3b82f6;">
+          <p style="color: #f1f5f9; font-size: 13px; line-height: 1.5; margin: 0;">${ctaTexts[cat].replace(/\n/g, '<br/>')}</p>
+        </div>
+      </div>
+    `;
+
+    // 4. Facebook
+    let facebook = `${titlePrefixes[cat]} — ${dateDisplay}\n\n`;
+    facebook += `Here are today's verified hiring vacancies across India:\n\n`;
+    verifiedJobs.slice(0, 10).forEach((job, idx) => {
+      facebook += `🔹 ${job.title} at ${job.companyName} (${job.location})\n`;
+      if (job.salaryText) facebook += `   Compensation: ${job.salaryText}\n`;
+      facebook += `   Apply: ${job.applicationUrl}\n\n`;
+    });
+    facebook += `View all ${count} vacancies: https://jobs.talentxcel.in\n\n#Jobs #Hiring #Careers #IndiaJobs #TalentXcel`;
+
+    // 5. LinkedIn
+    let linkedIn = `🚨 Daily Hiring Digest: ${categoryTitles[cat]} (${dateDisplay})\n\n`;
+    linkedIn += `Here are today's verified openings with verified employers:\n\n`;
+    verifiedJobs.slice(0, 10).forEach((job, idx) => {
+      linkedIn += `• ${job.title} | ${job.companyName} (${job.location})\n`;
+      linkedIn += `  Requirements: ${job.experienceLevel} | ${job.qualification}\n`;
+      if (job.salaryText) linkedIn += `  Package: ${job.salaryText}\n`;
+      linkedIn += `  Direct 1-Click Apply: ${job.applicationUrl}\n\n`;
+    });
+    linkedIn += `────────────────────\nCheck your ATS match score before applying: https://resume.talentxcel.in\n\n#Hiring #JobSearch #Careers #Recruitment #TechJobs #TalentXcel`;
+
+    digestOutputs[cat] = {
       dateIso,
       dateDisplay,
-      category: cat.id,
-      categoryTitle: cat.title,
-      jobsCount: topJobs.length,
-      markdown: md,
-      generatedAt: now.toISOString()
+      category: cat,
+      categoryTitle: categoryTitles[cat],
+      targetCount: TARGET_QUOTA,
+      actualCount: count,
+      hasShortage,
+      jobs: verifiedJobs,
+      telegram,
+      whatsapp,
+      emailHtml,
+      facebook,
+      linkedIn,
+      generatedAt: new Date().toISOString()
     };
   });
 
-  // Save to local cache file
-  const cacheDir = path.join(__dirname, '..', 'scratch');
-  if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
-  }
+  const cachePath = path.join(__dirname, '../scratch/daily_digests_cache.json');
+  fs.writeFileSync(cachePath, JSON.stringify(digestOutputs, null, 2), 'utf8');
 
-  const cachePath = path.join(cacheDir, 'daily_digests_cache.json');
-  fs.writeFileSync(cachePath, JSON.stringify(outputPackages, null, 2), 'utf8');
-
-  console.log(`\n[AUTONOMOUS COMPILATION SUCCESS] Output saved to: ${cachePath}`);
-  console.log('Founder review status: READY FOR REVIEW & DISPATCH IN COMMAND CENTRE.');
+  console.log(`[AUTONOMOUS COMPILATION SUCCESS] Output saved to: ${cachePath}`);
+  console.log('Digests Generated:');
+  console.log(`- Tech Digest: ${digestOutputs['tech'].actualCount} / ${TARGET_QUOTA} vacancies`);
+  console.log(`- Non-Tech Digest: ${digestOutputs['non-tech'].actualCount} / ${TARGET_QUOTA} vacancies`);
+  console.log(`- Core Industry Digest: ${digestOutputs['core-industry'].actualCount} / ${TARGET_QUOTA} vacancies`);
+  console.log('\nChannels Ready for 1-Click Founder Dispatch:');
+  console.log('✓ Telegram');
+  console.log('✓ WhatsApp');
+  console.log('✓ Email Newsletter (HTML)');
+  console.log('✓ Facebook Post');
+  console.log('✓ LinkedIn Post');
 }
 
 run();

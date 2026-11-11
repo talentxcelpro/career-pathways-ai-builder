@@ -135,6 +135,8 @@ const CampusOSProduct                 = lazy(() => import('@/components/products
 const SarkariHubProduct               = lazy(() => import('@/components/products/SarkariHubProduct').then(m => ({ default: m.SarkariHubProduct })));
 const SoloFounderCommandCenter        = lazy(() => import('@/pages/admin/SoloFounderCommandCenter'));
 const PassportAcquisitionLanding     = lazy(() => import('@/pages/passport/components/PassportAcquisitionLanding').then(m => ({ default: m.PassportAcquisitionLanding })));
+const SkillPodsProduct                 = lazy(() => import('@/components/products/SkillPodsProduct').then(m => ({ default: m.SkillPodsProduct })));
+const CareerPathfinderProduct          = lazy(() => import('@/components/products/CareerPathfinderProduct').then(m => ({ default: m.CareerPathfinderProduct })));
 const TalentDatabase                  = lazy(() => import('@/pages/admin/TalentDatabase'));
 const SecurityCenter                  = lazy(() => import('@/pages/admin/SecurityCenter'));
 const ProductRequirementDocument      = lazy(() => import('@/pages/admin/ProductRequirementDocument'));
@@ -452,7 +454,7 @@ const App = () => {
 
                                   {currentUniverse === 'LEARNING' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Learning Hub...</div>}><SubdomainLandingPage universe="LEARNING" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading SkillPods...</div>}><SkillPodsProduct /></Suspense>} />
                                       <Route path="/learning" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/hub" element={<Suspense fallback={null}><LearningHub /></Suspense>} />
                                       <Route path="/courses" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
@@ -556,7 +558,7 @@ const App = () => {
 
                                   {currentUniverse === 'CAREERS' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Career Pathfinder...</div>}><AICareerHub /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Career Pathfinder...</div>}><CareerPathfinderProduct /></Suspense>} />
                                       <Route path="/careers" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/career-map" element={<AICareerHub />} />
                                       <Route path="/careers/:role" element={<CareerRoadmapGenerator />} />

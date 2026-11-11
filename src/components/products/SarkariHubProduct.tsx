@@ -38,6 +38,18 @@ export const SarkariHubProduct: React.FC = () => {
 
   const verifiedGovtJobs: GovtJobItem[] = [
     {
+      id: 'bhel-et-2026',
+      title: 'Engineer Trainee (Mechanical / Electrical / Civil)',
+      organization: 'Bharat Heavy Electricals Limited (BHEL)',
+      category: 'PSU',
+      vacancies: '150 Posts',
+      qualification: 'Full-time Bachelor Degree in Engineering (Mech/Elec/Civil) with 65%+',
+      location: 'Bhopal / Haridwar / Trichy / Hyderabad / Jhansi',
+      deadline: 'Dec 20, 2026',
+      officialGazetteUrl: 'https://careers.bhel.in',
+      isVerified: true
+    },
+    {
       id: 'iocl-gh-2026',
       title: 'General Manager — Green Hydrogen & Process Engineering',
       organization: 'Indian Oil Corporation Ltd (IOCL)',
