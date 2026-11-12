@@ -159,6 +159,21 @@ function migrate(db) {
       observed_at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_auto_verify_opp ON autonomous_verification_observations(opportunity_id);
+
+    CREATE TABLE IF NOT EXISTS autonomous_live_pilot_evaluations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      opportunity_id INTEGER REFERENCES autonomous_opportunities(id),
+      candidate_key TEXT NOT NULL UNIQUE,
+      platform_name TEXT NOT NULL,
+      root_domain TEXT NOT NULL,
+      submission_url TEXT,
+      selection_rank INTEGER NOT NULL,
+      eligibility TEXT NOT NULL,
+      failure_class TEXT,
+      evidence_json TEXT NOT NULL,
+      evaluated_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_auto_pilot_eligibility ON autonomous_live_pilot_evaluations(eligibility);
   `);
 }
 
