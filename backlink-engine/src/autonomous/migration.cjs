@@ -174,6 +174,33 @@ function migrate(db) {
       evaluated_at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS idx_auto_pilot_eligibility ON autonomous_live_pilot_evaluations(eligibility);
+
+    CREATE TABLE IF NOT EXISTS autonomous_account_authorizations (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      opportunity_id INTEGER NOT NULL REFERENCES autonomous_opportunities(id),
+      account_label TEXT NOT NULL,
+      authorization_state TEXT NOT NULL DEFAULT 'PENDING_OWNER_AUTHORIZATION',
+      required_scope TEXT NOT NULL,
+      credential_source TEXT NOT NULL DEFAULT 'ENVIRONMENT_OR_SECURE_MANAGER',
+      evidence_json TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(opportunity_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_auto_account_auth_state ON autonomous_account_authorizations(authorization_state);
+
+    CREATE TABLE IF NOT EXISTS autonomous_reconciliation_runs (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      qualified_count INTEGER NOT NULL,
+      public_permitted_count INTEGER NOT NULL,
+      account_required_count INTEGER NOT NULL,
+      editorial_count INTEGER NOT NULL,
+      paid_count INTEGER NOT NULL,
+      restricted_count INTEGER NOT NULL,
+      unknown_count INTEGER NOT NULL,
+      report_json TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
   `);
 }
 

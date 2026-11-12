@@ -1,6 +1,6 @@
 # TalentXcel Phase 3 Controlled Live Pilot — Execution Report
 
-Generated: 2026-11-12T08:42:28.415Z
+Generated: 2026-11-12T08:51:37.016Z
 
 ## A–I. Summary
 
@@ -16,7 +16,7 @@ Generated: 2026-11-12T08:42:28.415Z
 - uniqueReferringRootDomains: 0
 - follow: 0
 - nofollow: 0
-- remainingQualified: 11663
+- remainingQualified: 11653
 - timeSpentSeconds: 0
 
 ## J–K. Candidate submission URLs, destination, and outcome
@@ -62,7 +62,7 @@ Generated: 2026-11-12T08:42:28.415Z
 
 ## N. Remaining qualified opportunities
 
-- 11663 autonomous opportunities remain in QUALIFIED or READY state. They require capability evidence and the same policy gate before transmission.
+- 11653 autonomous opportunities remain in QUALIFIED or READY state. They require capability evidence and the same policy gate before transmission.
 
 ## O. Next-cycle recommendations
 

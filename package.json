@@ -44,7 +44,9 @@
     "backlink:simulate-phase2": "node backlink-engine/src/autonomous/run-phase2-simulation.cjs",
     "backlink:test-phase2": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs"
     ,"backlink:run-phase3-pilot": "node backlink-engine/src/autonomous/run-phase3-pilot.cjs"
-    ,"backlink:test-phase3": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs"
+    ,"backlink:test-phase3": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs",
+    "backlink:reconcile-phase4": "node backlink-engine/src/autonomous/run-phase4-reconciliation.cjs"
+    ,"backlink:test-phase4": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs backlink-engine/test/phase4.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",
