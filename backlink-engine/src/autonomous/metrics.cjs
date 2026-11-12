@@ -8,7 +8,10 @@ function dashboard(db) {
     pendingEditorialApprovals: count("SELECT count(*) n FROM autonomous_opportunities WHERE status='PENDING_APPROVAL'"),
     verifiedLiveBacklinks: count("SELECT count(*) n FROM backlinks WHERE status='LIVE' AND is_external=1"),
     lostBacklinks: count("SELECT count(*) n FROM backlinks WHERE status='LOST'"),
-    uniqueReferringRootDomains: count("SELECT count(DISTINCT referring_domain) n FROM backlinks WHERE status='LIVE' AND is_external=1")
+    uniqueReferringRootDomains: count("SELECT count(DISTINCT referring_domain) n FROM backlinks WHERE status='LIVE' AND is_external=1"),
+    approvalQueue: count("SELECT count(*) n FROM autonomous_approval_queue WHERE state='PENDING_APPROVAL'"),
+    capabilityDiscoveryQueued: count("SELECT count(*) n FROM autonomous_jobs WHERE job_type='CAPABILITY_DISCOVERY' AND status='QUEUED'"),
+    simulationSubmissions: count("SELECT count(*) n FROM autonomous_submissions WHERE receipt_json LIKE '%\"simulated\":true%'")
   };
 }
 module.exports = { dashboard };

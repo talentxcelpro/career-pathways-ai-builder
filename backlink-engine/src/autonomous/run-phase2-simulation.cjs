@@ -1,0 +1,17 @@
+const { DatabaseSync } = require('node:sqlite');
+const config = require('../config.cjs');
+const { migrate } = require('./migration.cjs');
+const { recordCapability } = require('./intelligence.cjs');
+const { generate, store } = require('./content-factory.cjs');
+const { simulateSubmission } = require('./lifecycle.cjs');
+const { queueForApproval } = require('./approval-queue.cjs');
+const { analyze, record } = require('./verification-v2.cjs');
+const db = new DatabaseSync(config.PATHS.DB); migrate(db); const time = new Date().toISOString();
+db.prepare(`INSERT OR IGNORE INTO autonomous_opportunities(root_domain,source_url,target_url,category,status,created_at,updated_at) VALUES(?,?,?,?,?,?,?)`).run('phase2-simulation.invalid','https://phase2-simulation.invalid/submit','https://talentxcel.in','HR_RECRUITMENT','DISCOVERED',time,time);
+const opportunity = db.prepare('SELECT * FROM autonomous_opportunities WHERE root_domain=?').get('phase2-simulation.invalid');
+const intelligence = recordCapability(db, opportunity, { url: opportunity.source_url, html: '<form><input name="company"></form>', automationPolicy: true });
+const asset = store(db, opportunity.id, generate('CAREER_PLATFORM', { companyName:'TalentXcel', productName:'career platform', focus:'career discovery and recruitment resources' }));
+const simulation = simulateSubmission(db,{opportunityId:opportunity.id,method:'HTTP_FORM',endpoint:opportunity.source_url,payload:{description:asset.body}});
+const approval = queueForApproval(db,opportunity.id);
+const observation = analyze({sourceUrl:opportunity.source_url,httpStatus:200,html:'<html><body>Submission receipt pending review</body></html>'}); record(db,observation,{opportunityId:opportunity.id,simulation:true});
+console.log(JSON.stringify({ opportunityId: opportunity.id, intelligence, simulation, approvalState:approval.state, observation:observation.outcome, integrity:db.prepare('PRAGMA integrity_check').get() },null,2)); db.close();
