@@ -767,8 +767,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .from('email_automation_queue')
           .update({
             status: isDeadLetter ? 'failed' : 'pending',
-            last_error: jobErr?.message || 'SES Dispatch Failure',
-            error_message: isDeadLetter ? `Dead-letter: exceeded ${maxRetries} retries (${jobErr?.message})` : jobErr?.message,
+            error_message: isDeadLetter ? `Dead-letter: exceeded ${maxRetries} retries (${jobErr?.message})` : (jobErr?.message || 'SES Dispatch Failure'),
             retry_count: nextRetry,
             scheduled_at: isDeadLetter ? null : new Date(Date.now() + delayMinutes * 60 * 1000).toISOString(),
             updated_at: new Date().toISOString()
