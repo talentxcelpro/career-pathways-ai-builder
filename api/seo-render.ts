@@ -1,4 +1,74 @@
 
+const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string; country: string; countryCode: string; flag: string; currency: string; metaTitle: string; metaDescription: string; canonicalUrl: string; visaNote: string }> = {
+  'data-analyst-dubai-uae': {
+    roleTitle: 'Data Analyst & Analytics Engineer',
+    city: 'Dubai',
+    country: 'United Arab Emirates',
+    countryCode: 'AE',
+    flag: '🇦🇪',
+    currency: 'AED',
+    metaTitle: 'Data Analyst Jobs in Dubai, UAE (2026) — Verified Vacancies in AED | TalentXcel Jobs',
+    metaDescription: 'Explore verified Data Analyst and Analytics Engineer jobs in Dubai, UAE. Direct employer routing to Tabby FinTech, Careem, and Dubai tech firms with verified AED compensation and UAE visa sponsorship.',
+    canonicalUrl: 'https://jobs.talentxcel.in/jobs/data-analyst-dubai-uae',
+    visaNote: 'UAE Labour Law requires employers to sponsor international hires with an entry permit and 2-year renewable employment residence visa upon signed offer acceptance.'
+  },
+  'software-engineer-abu-dhabi-uae': {
+    roleTitle: 'Software Engineer & Systems Specialist',
+    city: 'Abu Dhabi',
+    country: 'United Arab Emirates',
+    countryCode: 'AE',
+    flag: '🇦🇪',
+    currency: 'AED',
+    metaTitle: 'Software Engineer Jobs in Abu Dhabi, UAE (2026) — Verified Vacancies in AED | TalentXcel Jobs',
+    metaDescription: 'Apply for verified Software Engineer and Systems Analyst roles in Abu Dhabi, UAE. Official vacancies at First Abu Dhabi Bank (FAB), ADNOC, and Cleveland Clinic Abu Dhabi with verified AED salaries.',
+    canonicalUrl: 'https://jobs.talentxcel.in/jobs/software-engineer-abu-dhabi-uae',
+    visaNote: 'Sovereign entities and multinational institutions in Abu Dhabi process full UAE Ministry of Human Resources & Emiratisation (MOHRE) employment residency permits.'
+  },
+  'cloud-engineer-riyadh-saudi-arabia': {
+    roleTitle: 'Cloud Engineer & Infrastructure Architect',
+    city: 'Riyadh',
+    country: 'Saudi Arabia',
+    countryCode: 'SA',
+    flag: '🇸🇦',
+    currency: 'SAR',
+    metaTitle: 'Cloud Engineer Jobs in Riyadh, Saudi Arabia (2026) — Verified SAR Vacancies | TalentXcel Jobs',
+    metaDescription: 'Discover verified Cloud Engineer and Sovereign Cloud Architect positions in Riyadh, Saudi Arabia. Explore tier-1 openings at Aramco Digital and Saudi enterprise hubs with verified SAR compensation.',
+    canonicalUrl: 'https://jobs.talentxcel.in/jobs/cloud-engineer-riyadh-saudi-arabia',
+    visaNote: 'International hires in Riyadh receive full Iqama sponsorship and relocation logistics support under the Saudi Ministry of Human Resources regulations.'
+  },
+  'data-analyst-remote-usa': {
+    roleTitle: 'Data Analyst & Quantitative Specialist',
+    city: 'Remote USA',
+    country: 'United States',
+    countryCode: 'US',
+    flag: '🇺🇸',
+    currency: 'USD',
+    metaTitle: 'Data Analyst Remote Jobs in USA (2026) — Verified USD Compensation | TalentXcel Jobs',
+    metaDescription: 'Browse verified remote Data Analyst jobs based in the United States. Direct applications to JPMorgan Chase, Capital One, and US employers. Verified USD salary benchmarks and clear US work authorization terms.',
+    canonicalUrl: 'https://jobs.talentxcel.in/jobs/data-analyst-remote-usa',
+    visaNote: 'US domestic remote positions require valid United States work authorization. Employer sponsorship is explicitly noted where available.'
+  },
+  'software-engineer-remote-us': {
+    roleTitle: 'Software Engineer',
+    city: 'Remote USA & Global',
+    country: 'United States & Worldwide',
+    countryCode: 'US',
+    flag: '🇺🇸',
+    currency: 'USD',
+    metaTitle: 'Remote Software Engineer Jobs USA & Global (2026) — Verified USD Salaries | TalentXcel Jobs',
+    metaDescription: 'Verified remote Software Engineer openings with top US and global all-remote employers including Microsoft, AWS, Snowflake, GitLab, and Automattic. Filter by US-only and international remote eligibility.',
+    canonicalUrl: 'https://jobs.talentxcel.in/jobs/software-engineer-remote-us',
+    visaNote: 'Worldwide Remote listings are open to candidates residing in India and internationally without US visa requirements. US-based roles specify US work authorization requirements.'
+  }
+};
+
+
+function formatJobDescriptionHtml(desc: string): string {
+  if (!desc) return '';
+  return escapeHtml(desc).replace(/\n/g, '<br/>');
+}
+
+
 export function resolveOgImageForRoute(cleanPath: string): string {
   const lower = (cleanPath || '').toLowerCase();
   if (lower.startsWith('jobs') || lower.startsWith('job/')) {
@@ -447,7 +517,7 @@ function escapeHtml(str: string): string {
 
 interface SeoRenderResult {
   html: string;
-  status: 200 | 404;
+  status: 200 | 404 | 410;
   robotsDirective: string;
 }
 
@@ -1217,8 +1287,10 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
 
       if (isInactive) {
         // Return HTTP 410 Gone with clean notice for Googlebot & users (Eliminates Soft-404)
-        return new Response(
-          `<!DOCTYPE html>
+        return {
+          status: 410,
+          robotsDirective: 'noindex, follow',
+          html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -1234,15 +1306,8 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     <a href="https://talentxcel.in/jobs" class="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">Explore Active Jobs &rarr;</a>
   </div>
 </body>
-</html>`,
-          {
-            status: 410,
-            headers: {
-              'Content-Type': 'text/html; charset=utf-8',
-              'X-Robots-Tag': 'noindex, follow',
-            },
-          }
-        );
+</html>`
+        };
       }
 
       const jobTitle = (job.title || formatTitle(secondary)).trim();
