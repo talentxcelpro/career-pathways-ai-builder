@@ -1,0 +1,191 @@
+{
+  "timestamp": "2026-11-13T05:28:28.844Z",
+  "totalAudited": 2259,
+  "activeCount": 2253,
+  "expiredCount": 6,
+  "countryCounts": {
+    "India": 2119,
+    "United Kingdom": 7,
+    "Australia": 9,
+    "United Arab Emirates": 7,
+    "Singapore": 9,
+    "Worldwide Remote": 66,
+    "United States": 16,
+    "Canada": 5,
+    "Germany": 6,
+    "Belgium": 2,
+    "India (Domestic / Unspecified)": 1,
+    "Kenya": 2,
+    "Nigeria": 1,
+    "South Africa": 2,
+    "Egypt": 1,
+    "Rwanda": 1,
+    "Qatar": 1,
+    "Saudi Arabia": 2,
+    "Netherlands": 1,
+    "Ireland": 1
+  },
+  "countryCities": {
+    "India": {
+      "Agra": 28,
+      "Bangalore": 29,
+      "Noida": 53,
+      "Gurugram": 46,
+      "Kolkata": 44,
+      "New Delhi": 22,
+      "Varanasi": 16,
+      "Pune": 48,
+      "Mumbai": 53,
+      "Hyderabad": 51,
+      "Bhubaneswar": 44,
+      "Patna": 43,
+      "Visakhapatnam": 43,
+      "Bengaluru": 24,
+      "Bhopal": 45,
+      "Kochi": 44,
+      "Nashik": 28,
+      "Surat": 44,
+      "Coimbatore": 44,
+      "Nagpur": 43,
+      "Jaipur": 45,
+      "Ahmedabad": 16,
+      "Lucknow": 16,
+      "Chandigarh": 45,
+      "Chennai": 45,
+      "Vadodara": 43,
+      "Amravati": 28,
+      "mumbai": 1,
+      "Kota": 28,
+      "Jammu": 28,
+      "Guwahati": 28,
+      "Delhi": 28,
+      "Indore": 44,
+      "Jamshedpur": 28,
+      "Hubli": 28,
+      "Dehradun": 28,
+      "Srinagar": 28,
+      "Kanpur": 28,
+      "Dhanbad": 28,
+      "Mysuru": 28,
+      "Bilaspur": 28,
+      "Aurangabad": 28,
+      "Solapur": 28,
+      "Kolhapur": 28,
+      "Gwalior": 28,
+      "Tirunelveli": 28,
+      "Jabalpur": 28,
+      "Ujjain": 28,
+      "Jodhpur": 28,
+      "Udaipur": 28,
+      "Haridwar": 28,
+      "Calicut": 28,
+      "Ranchi": 28,
+      "Aligarh": 28,
+      "Raipur": 28,
+      "Mangalore": 28,
+      "Belgaum": 28,
+      "Tiruchirappalli": 28,
+      "Salem": 28,
+      "Vellore": 28,
+      "Vijayawada": 28,
+      "Guntur": 28,
+      "Warangal": 28,
+      "Thrissur": 28,
+      "Kollam": 28,
+      "Moradabad": 28,
+      "PAN India": 8
+    },
+    "United Kingdom": {
+      "London": 7
+    },
+    "Australia": {
+      "Canberra": 4,
+      "Sydney": 5
+    },
+    "United Arab Emirates": {
+      "Dubai": 7
+    },
+    "Singapore": {
+      "Singapore": 9
+    },
+    "Worldwide Remote": {
+      "Remote": 66
+    },
+    "United States": {
+      "Atlanta": 4,
+      "Washington": 7,
+      "Austin": 3,
+      "Seattle": 1,
+      "New York": 1
+    },
+    "Canada": {
+      "Ottawa": 4,
+      "Toronto": 1
+    },
+    "Germany": {
+      "Darmstadt": 4,
+      "Munich": 1,
+      "Berlin": 1
+    },
+    "Belgium": {
+      "Brussels": 2
+    },
+    "India (Domestic / Unspecified)": {
+      "thane": 1
+    },
+    "Kenya": {
+      "Nairobi": 2
+    },
+    "Nigeria": {
+      "Lagos": 1
+    },
+    "South Africa": {
+      "Cape Town": 1,
+      "Johannesburg": 1
+    },
+    "Egypt": {
+      "Cairo": 1
+    },
+    "Rwanda": {
+      "Kigali": 1
+    },
+    "Qatar": {
+      "Doha": 1
+    },
+    "Saudi Arabia": {
+      "Riyadh": 2
+    },
+    "Netherlands": {
+      "Amsterdam": 1
+    },
+    "Ireland": {
+      "Dublin": 1
+    }
+  },
+  "uniqueEmployers": 317,
+  "jobsWithSalary": 2259,
+  "jobsWithoutSalary": 0,
+  "salaryCurrencies": {
+    "INR": 2258,
+    "USD": 1
+  },
+  "validUrlCount": 1797,
+  "missingUrlCount": 462,
+  "invalidUrlCount": 0,
+  "workModeCounts": {
+    "unspecified": 2142,
+    "remote": 90,
+    "onsite": 7,
+    "hybrid": 17,
+    "on-site": 3
+  },
+  "remoteCount": 95,
+  "visaSponsoredCount": 0,
+  "relocationCount": 0,
+  "duplicateCount": 60,
+  "descriptionStats": {
+    "descAbove500": 2144,
+    "desc50to500": 115,
+    "descUnder50": 0
+  }
+}

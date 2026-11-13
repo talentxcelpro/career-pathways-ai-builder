@@ -148,11 +148,10 @@ Allow: /*.svg$
 # PARAMETER URL CONTROL (Prevent Crawl-Budget Exhaustion)
 # ==========================================================
 
-# Allow /jobs?search= explicitly (used in SearchAction schema and user-facing URL)
-Allow: /jobs?search=
-Allow: /colleges?search=
-
-# Block search/filter parameters on all other pages
+# Block internal search/filter parameter URLs to protect crawl budget
+Disallow: /*?*search=
+Disallow: /*?*query=
+Disallow: /*?*q=
 Disallow: /*?*filter=
 Disallow: /*?*sort=
 Disallow: /*?*page=
@@ -167,3 +166,4 @@ Disallow: /*?*fbclid=
 # ==========================================================
 
 Sitemap: https://talentxcel.in/sitemap.xml
+Sitemap: https://jobs.talentxcel.in/sitemap-jobs.xml

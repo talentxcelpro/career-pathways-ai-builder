@@ -17,7 +17,10 @@ export function buildJobPostingSchema(job: RawJobData): Record<string, any> | nu
 
   const cleanTitle = (job.title || job.job_title || '').trim();
   const canonicalUrl = getPublicJobUrl(job.seo_slug || job.id);
-  const companyName = job.companies?.name || job.company_name || 'TalentXcel Services';
+  let companyName = job.companies?.name || job.company_name || 'TalentXcel Services';
+  if ((companyName === 'TalentXcel Services' || companyName === 'TalentXcel') && cleanTitle.includes('Chatr')) {
+    companyName = 'Chatr';
+  }
 
   // 2. Normalized Employment Type
   const empRaw = (job.employment_type || '').toLowerCase();
@@ -104,7 +107,7 @@ export function buildJobPostingSchema(job: RawJobData): Record<string, any> | nu
         '@type': 'QuantitativeValue',
         minValue: minSal,
         maxValue: maxSal,
-        unitText: 'YEAR',
+        unitText: (currency === 'INR' && minSal < 150000) ? 'MONTH' : 'YEAR',
       },
     };
   }

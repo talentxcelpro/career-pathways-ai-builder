@@ -88,3 +88,5 @@ ios/App/App/capacitor.config.json
 # Supabase CLI temporary files
 supabase/.temp/
 claude-seo/
+*.db-shm
+*.db-wal

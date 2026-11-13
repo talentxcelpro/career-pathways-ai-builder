@@ -1855,9 +1855,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  const rawBody = req.body;
-  const payload = typeof rawBody === 'string' ? JSON.parse(rawBody) : (rawBody || {});
-
   // Diagnostic GET for health monitoring
   if (req.method === 'GET') {
     let awsSdkAvailable = false;
@@ -1886,6 +1883,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       region: process.env.AWS_REGION || DEFAULT_REGION,
       timestamp: new Date().toISOString()
     });
+  }
+
+  let payload: any = {};
+  if (req.body) {
+    if (typeof req.body === 'string' && req.body.trim().length > 0) {
+      try {
+        payload = JSON.parse(req.body);
+      } catch (_) {
+        payload = {};
+      }
+    } else if (typeof req.body === 'object') {
+      payload = req.body;
+    }
   }
 
   if (req.method !== 'POST') {

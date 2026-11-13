@@ -1,22 +1,22 @@
 # TalentXcel Phase 4 Opportunity Reconciliation
 
-Generated: 2026-11-12T08:53:21.396Z
+Generated: 2026-11-12T09:51:21.159Z
 
-- generatedAt: 2026-11-12T08:53:21.396Z
+- generatedAt: 2026-11-12T09:51:21.159Z
 - accountLabel: talentxcelpro@gmail.com
-- qualified: 11663
-- activeQualified: 11653
+- qualified: 0
+- activeQualified: 1
 - publicPermitted: 0
-- accountRequired: 10
+- accountRequired: 1
 - editorial: 0
 - paid: 0
-- restricted: 10
-- unknown: 11653
+- restricted: 1
+- unknown: 1
 - actualSubmissionAttempts: 0
-- verifiedLive: 122
-- uniqueReferringDomains: 3
+- verifiedLive: 0
+- uniqueReferringDomains: 0
 - costPerVerifiedBacklink: null
-- accountAuthorizationQueue: 10
+- accountAuthorizationQueue: 1
 
 ## Policy
 

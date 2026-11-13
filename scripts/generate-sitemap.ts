@@ -8,7 +8,8 @@ import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
 import { INDIAN_INSTITUTIONS_CATALOG } from '../src/data/indianInstitutionsCatalog';
 import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducationService';
-import { CANONICAL_ROLES } from '../src/lib/seo/pseoTaxonomy';
+import { CANONICAL_ROLES, CANONICAL_CITIES } from '../src/lib/seo/pseoTaxonomy';
+import { CAREER_TRANSITIONS_CATALOG } from '../src/data/careerPathwaysCatalog';
 
 const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -45,6 +46,7 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
   { path: '/resume/cover-letter', changefreq: 'daily', priority: '0.9' },
   { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
+  { path: '/mcp', changefreq: 'daily', priority: '0.9' },
   { path: '/about', changefreq: 'monthly', priority: '0.6' },
   { path: '/contact', changefreq: 'monthly', priority: '0.5' },
   { path: '/faq', changefreq: 'monthly', priority: '0.5' },
@@ -166,7 +168,7 @@ export async function generateProductionSitemaps() {
       const to = from + pageSize - 1;
       const { data: chunk, error } = await supabase
         .from('jobs')
-        .select('id, seo_slug, created_at, posted_at')
+        .select('id, seo_slug, created_at, posted_at, expires_at, job_status')
         .eq('is_active', true)
         .range(from, to);
 
@@ -185,7 +187,14 @@ export async function generateProductionSitemaps() {
     if (allDbJobs.length > 0) {
       allDbJobs.forEach(j => {
         const slug = j.seo_slug || j.id;
-        if (slug === 'senior-devops-architect-acme-corp-bengaluru' || slug.includes('acme')) return;
+        if (!slug || slug === 'senior-devops-architect-acme-corp-bengaluru' || slug.includes('acme')) return;
+        
+        // Quality Gate: Exclude closed or expired jobs from XML sitemap
+        if (j.job_status === 'closed' || j.job_status === 'expired') return;
+        if (j.expires_at && !isNaN(new Date(j.expires_at).getTime()) && new Date(j.expires_at) < new Date()) {
+          return;
+        }
+
         activeJobEntriesList.push({
           path: `/jobs/${slug}`,
           changefreq: 'daily',
@@ -194,6 +203,24 @@ export async function generateProductionSitemaps() {
         });
       });
     }
+    // Add 5 Verified International Landing Page Hubs
+    const internationalHubSlugs = [
+      'data-analyst-dubai-uae',
+      'software-engineer-abu-dhabi-uae',
+      'cloud-engineer-riyadh-saudi-arabia',
+      'data-analyst-remote-usa',
+      'software-engineer-remote-us'
+    ];
+    internationalHubSlugs.forEach(slug => {
+      activeJobEntriesList.push({
+        path: `/jobs/${slug}`,
+        changefreq: 'daily',
+        priority: '0.9',
+        lastmod: new Date().toISOString().split('T')[0]
+      });
+    });
+
+
     console.log(`✓ Fetched ${allDbJobs.length} active jobs from database for sitemap-jobs.xml`);
   } catch (e) {
     console.error('Error fetching active jobs for sitemap:', e);
@@ -213,11 +240,13 @@ export async function generateProductionSitemaps() {
   } catch (e) {}
 
   if (allColleges.length === 0) {
-    allColleges = INDIAN_INSTITUTIONS_CATALOG.map(c => ({
-      slug: c.slug,
-      state: c.state,
-      city: c.city
-    }));
+    allColleges = INDIAN_INSTITUTIONS_CATALOG
+      .filter((c: any) => c.accreditation?.nirfRank || c.nirfRank2024 || c.accreditation?.isInstituteOfEminence || c.isIndexable)
+      .map((c: any) => ({
+        slug: c.slug,
+        state: c.state,
+        city: c.city
+      }));
   }
 
   const collegeOverview: SitemapEntry[] = [
@@ -231,11 +260,18 @@ export async function generateProductionSitemaps() {
   const collegeOverviewEntries = deduplicate(collegeOverview);
 
   // 4. Career Pathways (85 canonical roles)
-  const pathwayEntries = deduplicate(CANONICAL_ROLES.map(r => ({
-    path: `/colleges/career-pathway/${r}`,
-    changefreq: 'daily',
-    priority: '0.85'
-  })));
+  const pathwayEntries = deduplicate([
+    ...CANONICAL_ROLES.map(r => ({
+      path: `/colleges/career-pathway/${r}`,
+      changefreq: 'daily' as const,
+      priority: '0.85',
+    })),
+    ...CAREER_TRANSITIONS_CATALOG.map(t => ({
+      path: `/career-pathway/${t.id}`,
+      changefreq: 'daily' as const,
+      priority: '0.85',
+    })),
+  ]);
 
   // 6. Posts & Articles (Verified editorial & community data)
   let postEntriesList: SitemapEntry[] = [];
@@ -326,10 +362,39 @@ export async function generateProductionSitemaps() {
     })),
   ]);
 
+  const salaryRoleEntries = CANONICAL_ROLES.map(role => ({
+    path: `/salary/${role}-salary`,
+    changefreq: 'daily' as const,
+    priority: '0.85',
+  }));
+
+  const topCities = CANONICAL_CITIES.slice(0, 8);
+  const salaryCityEntries: SitemapEntry[] = [];
+  for (const role of CANONICAL_ROLES.slice(0, 20)) {
+    for (const city of topCities) {
+      salaryCityEntries.push({
+        path: `/salary/${role}-salary-in-${city.slug}`,
+        changefreq: 'daily' as const,
+        priority: '0.8',
+      });
+    }
+  }
+
   const salaryEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/salary', changefreq: 'daily', priority: '1.0' },
     { path: '/tools/salary-analyzer', changefreq: 'daily', priority: '0.9' },
+    { path: '/tools/salary-benchmark-tool', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/calculator', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/tax-planning', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/benchmark', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/compensation', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/negotiation', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/wealth', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/payslip', changefreq: 'daily', priority: '0.9' },
+    { path: '/salary/employer', changefreq: 'daily', priority: '0.9' },
+    ...salaryRoleEntries,
+    ...salaryCityEntries,
   ]);
 
   const careersEntries = deduplicate([
@@ -338,11 +403,20 @@ export async function generateProductionSitemaps() {
     { path: '/ai-career-hub', changefreq: 'daily', priority: '0.9' },
     { path: '/career-intelligence', changefreq: 'daily', priority: '0.9' },
     { path: '/career-platform', changefreq: 'weekly', priority: '0.8' },
+    { path: '/tools/career-pathfinder', changefreq: 'daily', priority: '0.9' },
+    { path: '/tools/career-growth-score', changefreq: 'daily', priority: '0.9' },
+    { path: '/tools/career-swot-analysis', changefreq: 'daily', priority: '0.9' },
+    { path: '/tools/role-fit-evaluator', changefreq: 'daily', priority: '0.9' },
     { path: '/how-to-become/cloud-architect', changefreq: 'weekly', priority: '0.8' },
     { path: '/how-to-become/product-manager', changefreq: 'weekly', priority: '0.8' },
     ...CANONICAL_ROLES.map((role) => ({
       path: `/career-map/${role}`,
       changefreq: 'weekly' as const,
+      priority: '0.85',
+    })),
+    ...CAREER_TRANSITIONS_CATALOG.map((t) => ({
+      path: `/career-map/${t.id}`,
+      changefreq: 'daily' as const,
       priority: '0.85',
     })),
   ]);
@@ -378,11 +452,16 @@ export async function generateProductionSitemaps() {
   const passportEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/passport', changefreq: 'weekly', priority: '1.0' },
+    { path: '/pricing', changefreq: 'daily', priority: '0.95' },
+    { path: '/verify', changefreq: 'daily', priority: '0.95' },
     { path: '/passport/section/skills', changefreq: 'weekly', priority: '0.9' },
     { path: '/passport/section/experience', changefreq: 'weekly', priority: '0.9' },
     { path: '/passport/section/credentials', changefreq: 'weekly', priority: '0.9' },
     { path: '/passport/section/verifications', changefreq: 'weekly', priority: '0.9' },
     { path: '/passport/section/achievements', changefreq: 'weekly', priority: '0.9' },
+    { path: '/passport/enterprise', changefreq: 'weekly', priority: '0.85' },
+    { path: '/passport/institutions', changefreq: 'weekly', priority: '0.85' },
+    { path: '/passport/faq', changefreq: 'monthly', priority: '0.7' },
   ]);
 
   // Master segmented configuration array (All 10 Dedicated Production Domains + Supplemental Hubs)

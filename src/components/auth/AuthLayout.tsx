@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { GoogleOneTapLogin } from './GoogleOneTapLogin';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -20,8 +19,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, descrip
       </div>
       
       <div className="w-full max-w-md relative z-10 my-auto py-2">
-        <GoogleOneTapLogin autoSelect />
-        {/* Compact Brand Header */}
+                {/* Compact Brand Header */}
         <div className="text-center mb-3">
           <div className="mx-auto w-10 h-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center mb-1.5 shadow-md relative">
             <img 

@@ -52,6 +52,13 @@ export const Navbar = () => {
   const { isMobile } = useMobileDetection();
   const currentUniverse = getCurrentUniverse();
   const isJobsUniverse = currentUniverse === 'JOBS' || location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
+
+  // JobMatch OS has its own dedicated single-tier header (JobPortalHeader)
+  // Part 1 directive: Remove duplicate global header from jobs subdomain
+  if (currentUniverse === 'JOBS') {
+    return null;
+  }
+
   const universeBadges: Record<string, string> = {
     JOBS: 'JobMatch OS',
     LEARNING: 'SkillPods',

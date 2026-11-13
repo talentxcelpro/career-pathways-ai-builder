@@ -1,0 +1,19 @@
+# Phase 4.1 Repaired Execution Report
+
+Root cause: finalize-phase4-1.cjs called classify(db,{limit:0}), selecting zero rows while global aggregation counted existing classifications.
+
+- generatedAt: "2026-11-12T09:26:52.673Z"
+- sourceActiveQualified: 11653
+- evaluated: 11653
+- processed: 11653
+- skipped: 0
+- failed: 0
+- classified: 51
+- unknown: 11602
+- historicalBacklinksExcluded: true
+- externalSubmissions: 0
+
+Classification counts: {"public_permitted":0,"account_required":16,"editorial":0,"paid":1,"restricted":34,"unknown":11602}
+Invariants: {"evaluated_equals_processed_plus_skipped":true,"nonnegative":true,"classified_plus_unknown_equals_evaluated":true,"unique_snapshot_records":true}
+
+No external submissions or account actions occurred.

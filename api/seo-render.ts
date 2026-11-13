@@ -34,6 +34,7 @@ export function resolveOgImageForRoute(cleanPath: string): string {
 // Unit 3: CTR_METADATA_OPTIMIZATION (SEO-007) - Data-grounded search titles and descriptions
 
 import collegeSlugsList from './_college-slugs.json';
+import collegeTierASlugsList from './_college-tier-a-slugs.json';
 
 export const config = {
   runtime: 'edge',
@@ -199,6 +200,7 @@ const VALID_COURSE_SUBJECTS = new Set([
 ]);
 
 const COLLEGE_SLUGS_SET = new Set(collegeSlugsList);
+const TIER_A_COLLEGE_SLUGS_SET = new Set(collegeTierASlugsList);
 
 const CORE_STATIC_ROUTES = new Set([
   '', 'reels', 'jobs', 'colleges', 'learning', 'resume', 'passport', 'network',
@@ -321,7 +323,7 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
     const filter = isUuid ? `id=eq.${encodeURIComponent(slugOrId)}` : `seo_slug=eq.${encodeURIComponent(slugOrId)}`;
-    const url = `${SUPABASE_REST_URL}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,expires_at,employment_type,salary_min,salary_max,salary_currency&${filter}&is_active=eq.true&limit=1`;
+    const url = `${SUPABASE_REST_URL}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -1162,65 +1164,208 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         </section>
       `;
     }
+    // 5E-2: Verified International Employment Hubs
+    else if (INTERNATIONAL_HUB_SLUGS[secondary]) {
+      const hub = INTERNATIONAL_HUB_SLUGS[secondary];
+      title = hub.metaTitle;
+      description = hub.metaDescription;
+      canonical = hub.canonicalUrl;
+      h1 = `${hub.roleTitle} in ${hub.city}, ${hub.country}`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">${hub.flag}</span>
+            <span class="text-xs font-semibold text-blue-400 bg-blue-950/80 border border-blue-800/60 px-2.5 py-1 rounded">Verified Regional Market Hub &middot; ${hub.currency}</span>
+          </div>
+          <h2 class="text-xl font-bold text-white">${escapeHtml(hub.roleTitle)} Opportunities in ${escapeHtml(hub.city)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(hub.metaDescription)}</p>
+          <div class="p-4 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Visa &amp; Work Authorization Terms</h3>
+            <p class="text-slate-300 text-xs">${escapeHtml(hub.visaNote)}</p>
+          </div>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(hub.roleTitle)} Listings &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Occupation",
+        "name": hub.roleTitle,
+        "occupationLocation": {
+          "@type": "City",
+          "name": hub.city,
+          "address": {
+            "@type": "PostalAddress",
+            "addressCountry": hub.countryCode
+          }
+        },
+        "description": hub.metaDescription
+      };
+    }
     // 5F: Single job posting lookup
     else {
       const job = await lookupJobInSupabase(secondary);
       if (!job) {
         return null; // Genuine 404 for non-existent job posting (Soft-404 eliminated!)
       }
-      const jobTitle = job.title || formatTitle(secondary);
-      const company = job.company_name || 'TalentXcel Services';
-      const loc = job.location || 'India';
-      title = `${jobTitle} at ${company} in ${loc} | TalentXcel Jobs`;
-      description = `Apply for ${jobTitle} at ${company} in ${loc}. Verified job opening on TalentXcel.`;
+
+      // Check if job is closed or expired
+      const isPastExpiry = job.expires_at && !isNaN(new Date(job.expires_at).getTime()) && new Date(job.expires_at) < new Date();
+      const isInactive = job.is_active === false || isPastExpiry;
+
+      if (isInactive) {
+        // Return HTTP 410 Gone with clean notice for Googlebot & users (Eliminates Soft-404)
+        return new Response(
+          `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Job Vacancy Closed | TalentXcel</title>
+  <meta name="robots" content="noindex, follow">
+  <script src="https://cdn.tailwindcss.com" defer></script>
+</head>
+<body class="bg-slate-950 text-slate-100 p-8 font-sans antialiased min-h-screen flex items-center justify-center">
+  <div class="max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-4">
+    <span class="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold rounded-full">Position Closed</span>
+    <h1 class="text-2xl font-bold text-white">This Job Opening is Closed</h1>
+    <p class="text-slate-400 text-sm">The vacancy you are looking for has expired or been filled. Explore active jobs on TalentXcel.</p>
+    <a href="https://talentxcel.in/jobs" class="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition">Explore Active Jobs &rarr;</a>
+  </div>
+</body>
+</html>`,
+          {
+            status: 410,
+            headers: {
+              'Content-Type': 'text/html; charset=utf-8',
+              'X-Robots-Tag': 'noindex, follow',
+            },
+          }
+        );
+      }
+
+      const jobTitle = (job.title || formatTitle(secondary)).trim();
+      let company = (job.company_name || 'TalentXcel Services').trim();
+      if ((company === 'TalentXcel Services' || company === 'TalentXcel') && jobTitle.includes('Chatr')) {
+        company = 'Chatr';
+      }
+      const loc = (job.location || 'India').trim();
+      const locParts = loc.split(',').map((p: string) => p.trim());
+      const cityLoc = locParts[0] || loc;
+      const stateLoc = locParts[1] || undefined;
+
+      // Base Salary resolution & formatted CTC
+      let baseSalarySchema: any = undefined;
+      let salaryDisplay = '';
+      if (typeof job.salary_min === 'number' && job.salary_min > 0) {
+        const minSal = job.salary_min;
+        const maxSal = (typeof job.salary_max === 'number' && job.salary_max >= minSal) ? job.salary_max : minSal;
+        const currency = (job.salary_currency && job.salary_currency.length === 3) ? job.salary_currency.toUpperCase() : 'INR';
+        const isMonthly = currency === 'INR' && minSal < 150000;
+        const unitText = isMonthly ? 'MONTH' : 'YEAR';
+
+        baseSalarySchema = {
+          '@type': 'MonetaryAmount',
+          currency,
+          value: {
+            '@type': 'QuantitativeValue',
+            minValue: minSal,
+            maxValue: maxSal,
+            unitText,
+          },
+        };
+
+        if (currency === 'INR') {
+          if (isMonthly) {
+            salaryDisplay = `₹${(minSal / 1000).toFixed(0)}k–₹${(maxSal / 1000).toFixed(0)}k/mo`;
+          } else {
+            salaryDisplay = `₹${(minSal / 100000).toFixed(1)}L–₹${(maxSal / 100000).toFixed(1)}L PA`;
+          }
+        } else {
+          salaryDisplay = `${currency} ${minSal}–${maxSal}`;
+        }
+      }
+
+      const salarySuffix = salaryDisplay ? ` (${salaryDisplay})` : '';
+      const remoteBadge = job.is_remote ? ' (Remote)' : '';
+      title = `${jobTitle}${remoteBadge} at ${company} in ${loc}${salarySuffix} | TalentXcel Jobs`;
+      description = `Apply for ${jobTitle} at ${company} in ${loc}.${salaryDisplay ? ' Annual CTC: ' + salaryDisplay + '.' : ''} Verified vacancy with direct application on TalentXcel.`;
       canonical = `https://talentxcel.in/jobs/${job.seo_slug || job.id}`;
       h1 = `${jobTitle} — ${company}`;
+
+      const fullHtmlDesc = formatJobDescriptionHtml(job.description || `${jobTitle} at ${company}`);
+
       bodyContent = `
         <article class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <div class="flex items-center justify-between border-b border-slate-800 pb-4">
             <div>
-              <span class="text-xs font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2.5 py-1 rounded">Verified Vacancy</span>
-              <h2 class="text-xl font-bold text-white mt-2">${escapeHtml(jobTitle)}</h2>
-              <p class="text-slate-400 text-sm">${escapeHtml(company)} &middot; ${escapeHtml(loc)}</p>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800/60 px-2.5 py-0.5 rounded">Verified Vacancy</span>
+                ${job.is_remote ? '<span class="text-xs font-semibold text-blue-400 bg-blue-950/80 border border-blue-800/60 px-2.5 py-0.5 rounded">100% Remote</span>' : ''}
+                ${salaryDisplay ? `<span class="text-xs font-semibold text-purple-400 bg-purple-950/80 border border-purple-800/60 px-2.5 py-0.5 rounded">${escapeHtml(salaryDisplay)}</span>` : ''}
+              </div>
+              <h2 class="text-xl md:text-2xl font-bold text-white mt-1">${escapeHtml(jobTitle)}</h2>
+              <p class="text-slate-400 text-sm mt-1">${escapeHtml(company)} &middot; ${escapeHtml(loc)}</p>
             </div>
           </div>
           <div class="text-slate-300 text-sm leading-relaxed space-y-4">
-            <p>${escapeHtml((job.description || '').substring(0, 500))}...</p>
+            ${fullHtmlDesc}
           </div>
-          <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View Details &amp; Apply &rarr;</a>
+          <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Apply on TalentXcel &rarr;</a>
+            <a href="/company/${encodeURIComponent(company.toLowerCase().replace(/\s+/g, '-'))}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">More from ${escapeHtml(company)} &rarr;</a>
           </div>
         </article>
       `;
-      // SEO-006: Emit valid JobPosting schema omitting validThrough if not in data
+
+      const resolvedDatePosted = (job.posted_at || job.date_posted || job.created_at || '2026-10-01').split('T')[0];
+      const hasExternalUrl = !!(job.external_url && job.external_url.trim().length > 0);
+      const isDirectApply = !hasExternalUrl;
+
+      // Google-compliant JobPosting JSON-LD
       jsonLdSchema = {
         "@context": "https://schema.org/",
         "@type": "JobPosting",
         "title": jobTitle,
-        "description": job.description || `${jobTitle} at ${company}`,
+        "description": fullHtmlDesc || `${jobTitle} at ${company}`,
         "identifier": {
           "@type": "PropertyValue",
           "name": "TalentXcel",
           "value": job.id
         },
-        "datePosted": (job.posted_at || job.date_posted || new Date().toISOString()).split('T')[0],
+        "datePosted": resolvedDatePosted,
         ...(job.expires_at && !isNaN(new Date(job.expires_at).getTime()) && new Date(job.expires_at) > new Date()
           ? { "validThrough": new Date(job.expires_at).toISOString() }
           : {}),
-        "employmentType": job.employment_type?.toUpperCase().replace('-', '_') || 'FULL_TIME',
+        "employmentType": (job.employment_type || 'FULL_TIME').toUpperCase().replace('-', '_').replace(' ', '_'),
         "hiringOrganization": {
           "@type": "Organization",
           "name": company,
-          "sameAs": "https://talentxcel.in"
+          "sameAs": "https://talentxcel.in",
+          "logo": "https://talentxcel.in/assets/og/talentxcel-og-default.png"
         },
-        "jobLocation": {
-          "@type": "Place",
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": loc,
-            "addressCountry": "IN"
-          }
-        }
+        ...(isDirectApply ? { "directApply": true } : {}),
+        ...(baseSalarySchema ? { "baseSalary": baseSalarySchema } : {}),
+        ...(job.is_remote
+          ? {
+              "jobLocationType": "TELECOMMUTE",
+              "applicantLocationRequirements": {
+                "@type": "Country",
+                "name": "India"
+              }
+            }
+          : {
+              "jobLocation": {
+                "@type": "Place",
+                "address": {
+                  "@type": "PostalAddress",
+                  "addressLocality": cityLoc,
+                  ...(stateLoc ? { "addressRegion": stateLoc } : {}),
+                  "addressCountry": "IN"
+                }
+              }
+            })
       };
     }
   }
@@ -1291,10 +1436,12 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         return null; // Genuine 404 for non-existent college (Soft 404 eliminated!)
       }
       const collegeName = formatTitle(slug.replace(/-campus.*/, ''));
-      title = `${collegeName} Admissions, Placements, Fees & Cutoffs (2026) | TalentXcel`;
-      description = `Browse verified admissions, fee, ranking, and placement information for ${collegeName} on TalentXcel.`;
+      title = `${collegeName} Career Pathways & Campus Placements | TalentXcel`;
+      description = `Explore career outcomes and placement preparation resources for students and alumni of ${collegeName} on TalentXcel.`;
       canonical = `https://talentxcel.in/colleges/${slug}`;
       h1 = `${collegeName} Institutional Overview`;
+      // Protect domain crawl quality: noindex thin programmatic college shells until primary data ingested
+      robotsDirective = 'noindex, follow';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Academic &amp; Placement Profile: ${escapeHtml(collegeName)}</h2>

@@ -90,6 +90,7 @@ import {
   setEmergencyKillSwitch
 } from '../src/lib/admin/emergencyControls.js';
 import { validateJobPosting, hasValidApplicationMethod } from '../src/lib/seo/jobPostingValidator.js';
+import { runJobPostingJsonLdTests } from './test-jobposting-jsonld.js';
 import { JOB_LOCATIONS, INDIAN_LOCATIONS_COUNT } from '../src/config/jobs/locations.js';
 import { JOB_ROLES, TOTAL_ROLES_COUNT } from '../src/config/jobs/roles.js';
 import { JOB_EXPERIENCES } from '../src/config/jobs/experiences.js';

@@ -116,11 +116,6 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
       (el as HTMLLinkElement).href = officialFavicon;
     });
 
-    // 8. Track SEO landing view
-    GrowthFunnelTracker.track('seo_landing_view', {
-      landing_page: window.location.pathname,
-      page_title: title,
-    });
   }, [
     title,
     description,
@@ -136,6 +131,21 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
     isNoIndexEffective,
     nofollow,
   ]);
+
+
+  // Track SEO landing view deduplicated per path
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const currentPath = window.location.pathname;
+    const sessionKey = 'tx_seo_view_' + currentPath;
+    if (!sessionStorage.getItem(sessionKey)) {
+      try { sessionStorage.setItem(sessionKey, '1'); } catch (_) {}
+      GrowthFunnelTracker.track('seo_landing_view', {
+        landing_page: currentPath,
+        page_title: title,
+      });
+    }
+  }, [title]);
 
   return null;
 };

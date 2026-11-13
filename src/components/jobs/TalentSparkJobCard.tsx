@@ -7,17 +7,21 @@ import {
   Heart, Bookmark, Share2, MapPin, DollarSign, Banknote, Clock, 
   Users, Building2, Zap, Brain, Star, Award, ChevronRight,
   Eye, MessageCircle, TrendingUp, Shield, Target, Sparkles,
-  Send
+  Send,
+  Linkedin
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getJobDetailUrl } from '@/utils/seoUrls';
 import { JobApplicationDialog } from '@/components/jobs/JobApplicationDialog';
 import { getCompanyLogo, generateCompanyMonogram } from '@/utils/companyLogos';
+import { toast } from 'sonner';
 
 interface TalentSparkJobCardProps {
   job: any;
   onSave: (jobId: string) => void;
   onQuickApply: (jobId: string) => void;
+  onApplyClick?: (job: any) => void;
+  onViewDetails?: (job: any) => void;
   onCompare?: (job: any) => void;
   isSaved: boolean;
   isInComparison?: boolean;
@@ -29,6 +33,8 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   job,
   onSave,
   onQuickApply,
+  onApplyClick,
+  onViewDetails,
   onCompare,
   isSaved,
   isInComparison = false,
@@ -54,9 +60,92 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   
   const companyName = job.companies?.name || job.company_name || 'TalentXcel Services';
   const logoUrl = getCompanyLogo(companyName, job.companies?.logo_url || job.organization_logo_url);
+
+  // Verified International Mobility Badges (Strict: Never fabricate)
+  const eligLower = ((job.applicant_location_requirements || '') + ' ' + (job.description || '')).toLowerCase();
+  const isVisaSponsored = Boolean(
+    job.visa_sponsored === true ||
+    job.structured_data?.visa_sponsored === true ||
+    (job.applicant_location_requirements && job.applicant_location_requirements.toLowerCase().includes('visa sponsored')) ||
+    (eligLower.includes('visa sponsorship') && !eligLower.includes('no visa sponsorship'))
+  );
+  const isRelocationProvided = Boolean(
+    job.relocation_provided === true ||
+    job.structured_data?.relocation_provided === true ||
+    eligLower.includes('relocation flight') ||
+    eligLower.includes('relocation support') ||
+    eligLower.includes('relocation package')
+  );
+  const applicantReqBadge = (() => {
+    const req = (job.applicant_location_requirements || '').toLowerCase();
+    if (req.includes('worldwide') || req.includes('anywhere')) {
+      return { label: '🌐 Worldwide Remote', className: 'bg-purple-50 text-purple-700 border-purple-200' };
+    }
+    if (req.includes('india') && (job.location || '').toLowerCase().includes('remote')) {
+      return { label: '🇮🇳 Open to India', className: 'bg-indigo-50 text-indigo-700 border-indigo-200' };
+    }
+    if (req.includes('united states') || req.includes('us work') || req.includes('us citizenship') || ((job.location || '').toLowerCase().includes('united states') && req.includes('us only'))) {
+      return { label: '🇺🇸 US Auth Required', className: 'bg-amber-50 text-amber-700 border-amber-200' };
+    }
+    return null;
+  })();
   
   const formatSalary = (min?: number, max?: number) => {
-    if (!min && !max) return 'Undisclosed';
+    if (!min && !max) return 'Competitive Pay';
+    const curr = ((job as any)?.salary_currency || '').toUpperCase();
+    const loc = (job.location || '').toLowerCase();
+    
+    if (curr === 'AED' || loc.includes('dubai') || loc.includes('abu dhabi') || loc.includes('sharjah') || loc.includes('uae')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `AED ${minK}k - ${maxK}k / yr` : `AED ${minK}k / yr`;
+    }
+    if (curr === 'USD' || loc.includes('usa') || loc.includes('united states') || loc.includes('austin') || loc.includes('seattle') || loc.includes('san francisco') || loc.includes('new york') || loc.includes('san mateo')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `$${minK}k - $${maxK}k / yr` : `$${minK}k / yr`;
+    }
+    if (curr === 'SAR' || loc.includes('riyadh') || loc.includes('saudi')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `SAR ${minK}k - ${maxK}k / yr` : `SAR ${minK}k / yr`;
+    }
+    if (curr === 'QAR' || loc.includes('doha') || loc.includes('qatar')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `QAR ${minK}k - ${maxK}k / yr` : `QAR ${minK}k / yr`;
+    }
+    if (curr === 'OMR' || loc.includes('muscat') || loc.includes('oman')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `OMR ${minK}k - ${maxK}k / yr` : `OMR ${minK}k / yr`;
+    }
+    if (curr === 'GBP' || loc.includes('london') || loc.includes('united kingdom') || loc.includes('uk')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `£${minK}k - £${maxK}k / yr` : `£${minK}k / yr`;
+    }
+    if (curr === 'SGD' || loc.includes('singapore')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `S$${minK}k - S$${maxK}k / yr` : `S$${minK}k / yr`;
+    }
+    if (curr === 'AUD' || loc.includes('sydney') || loc.includes('canberra') || loc.includes('australia')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `A$${minK}k - A$${maxK}k / yr` : `A$${minK}k / yr`;
+    }
+    if (curr === 'EUR' || loc.includes('germany') || loc.includes('berlin') || loc.includes('munich') || loc.includes('belgium') || loc.includes('brussels')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `€${minK}k - €${maxK}k / yr` : `€${minK}k / yr`;
+    }
+    if (curr === 'CAD' || loc.includes('canada') || loc.includes('toronto') || loc.includes('ottawa')) {
+      const minK = Math.round((min || 0) / 1000);
+      const maxK = max ? Math.round(max / 1000) : null;
+      return maxK && maxK !== minK ? `C$${minK}k - C$${maxK}k / yr` : `C$${minK}k / yr`;
+    }
+
     if (min && max) {
       if (max < 100000) {
         return `₹${Math.round(min / 1000)}k - ₹${Math.round(max / 1000)}k`;
@@ -81,8 +170,19 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   };
 
   const handleViewJob = () => {
-    // Always navigate to TalentXcel detail page
+    if (onViewDetails) {
+      onViewDetails(job);
+      return;
+    }
     navigate(getJobDetailUrl(job));
+  };
+
+  const handleShareLinkedIn = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}${getJobDetailUrl(job)}`;
+    const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+    window.open(shareUrl, '_blank', 'noopener,noreferrer');
+    toast.success('Opening LinkedIn to share job...');
   };
 
   const handleShare = async () => {
@@ -208,7 +308,11 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               className="flex-1 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 group"
               onClick={(e) => {
                 e.stopPropagation();
-                setShowApplicationDialog(true);
+                if (onApplyClick) {
+                  onApplyClick(job);
+                } else {
+                  setShowApplicationDialog(true);
+                }
               }}
             >
               <Send className="h-4 w-4 mr-2 group-hover:animate-pulse" />
@@ -283,6 +387,21 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
                   <Clock className="h-4 w-4" />
                   <span>{getTimeAgo(job.posted_at || job.created_at)}</span>
                 </div>
+                {isVisaSponsored && (
+                  <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold px-1.5 py-0">
+                    🛂 Visa Sponsored
+                  </Badge>
+                )}
+                {isRelocationProvided && (
+                  <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-700 border-blue-200 font-semibold px-1.5 py-0">
+                    ✈ Relocation
+                  </Badge>
+                )}
+                {applicantReqBadge && (
+                  <Badge variant="outline" className={`text-[10px] font-medium px-1.5 py-0 ${applicantReqBadge.className}`}>
+                    {applicantReqBadge.label}
+                  </Badge>
+                )}
               </div>
             </div>
             
@@ -409,7 +528,11 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               className="flex-[2] h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-sm font-semibold"
               onClick={(e) => {
                 e.stopPropagation();
-                setShowApplicationDialog(true);
+                if (onApplyClick) {
+                  onApplyClick(job);
+                } else {
+                  setShowApplicationDialog(true);
+                }
               }}
             >
               <Send className="h-4 w-4 mr-2" />
@@ -498,9 +621,13 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
                 size="sm"
                 className="h-6 sm:h-8 px-2 sm:px-3 text-xs"
                 onClick={(e) => {
-                  e.stopPropagation();
+                e.stopPropagation();
+                if (onApplyClick) {
+                  onApplyClick(job);
+                } else {
                   setShowApplicationDialog(true);
-                }}
+                }
+              }}
               >
                 <span className="hidden sm:inline">Apply</span>
                 <span className="sm:hidden">🚀</span>
@@ -539,9 +666,22 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               <h3 className="text-sm sm:text-base font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2">
                 {job.title}
               </h3>
-              <p className="text-xs sm:text-sm text-primary font-semibold truncate mt-0.5">
-                {job.companies?.name || job.company_name}
-              </p>
+              <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                <span className="text-xs sm:text-sm text-primary font-semibold truncate">
+                  {job.companies?.name || job.company_name}
+                </span>
+                <a
+                  href={`https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(companyName)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="inline-flex items-center text-[#0A66C2] hover:text-[#004182] hover:underline text-[11px] font-medium"
+                  title={`Find ${companyName} on LinkedIn`}
+                >
+                  <Linkedin className="h-3 w-3 inline mr-0.5" />
+                  <span className="hidden sm:inline">LinkedIn</span>
+                </a>
+              </div>
               <div className="flex items-center gap-2.5 mt-1.5 text-xs text-muted-foreground flex-wrap">
                 <div className="flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 shrink-0" />
@@ -648,6 +788,15 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             <Button
               variant="ghost"
               size="sm"
+              onClick={handleShareLinkedIn}
+              className="h-8 w-8 p-0 rounded-lg text-[#0A66C2] hover:text-[#004182] hover:bg-blue-50"
+              title="Share on LinkedIn"
+            >
+              <Linkedin className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={(e) => {
                 e.stopPropagation();
                 handleShare();
@@ -678,7 +827,11 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               className="h-8 px-3 text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs shrink-0 flex items-center gap-1"
               onClick={(e) => {
                 e.stopPropagation();
-                setShowApplicationDialog(true);
+                if (onApplyClick) {
+                  onApplyClick(job);
+                } else {
+                  setShowApplicationDialog(true);
+                }
               }}
             >
               <Send className="h-3.5 w-3.5 shrink-0" />

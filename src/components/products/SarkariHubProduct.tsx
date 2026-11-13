@@ -1,3 +1,7 @@
+// src/components/products/SarkariHubProduct.tsx
+// Independent Standalone Product for government.talentxcel.in (SarkariHub)
+// Master Light SaaS Design System (#FFFFFF, #F4F7FC, #2563EB, #7138E8, #111827, #E2E8F0)
+
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
@@ -9,15 +13,20 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Search, 
-  ArrowRight,
-  ShieldCheck,
-  FileText,
-  BadgeAlert
+  ArrowRight, 
+  ShieldCheck, 
+  FileText, 
+  BadgeAlert,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { ProductHeader } from '@/components/products/common/ProductHeader';
+import { ProductFooter } from '@/components/products/common/ProductFooter';
+import { useCentralEntitlements } from '@/hooks/useCentralEntitlements';
+import { UpgradeModal } from '@/components/billing/UpgradeModal';
 
 interface GovtJobItem {
   id: string;
@@ -33,6 +42,14 @@ interface GovtJobItem {
 }
 
 export const SarkariHubProduct: React.FC = () => {
+  const { 
+    subscription, 
+    checkEntitlement, 
+    isUpgradeModalOpen, 
+    openUpgradeModal, 
+    closeUpgradeModal,
+    refreshEntitlements 
+  } = useCentralEntitlements();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
 
@@ -118,137 +135,168 @@ export const SarkariHubProduct: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#F4F7FC] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white">
       <Helmet>
         <title>SarkariHub by TalentXcel — 100% Verified PSU, Defense & Govt Vacancies</title>
         <meta name="description" content="Discover authentic PSU, central government, and defense research job notifications with direct official gazette links. Zero ads, zero scam alerts." />
         <link rel="canonical" href="https://government.talentxcel.in/" />
       </Helmet>
 
-      {/* Product Banner */}
-      <div className="bg-gradient-to-r from-amber-900/40 via-blue-900/30 to-slate-900 border-b border-amber-500/20 px-4 py-2">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <span className="flex h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="font-semibold text-amber-300">SarkariHub 2026</span>
-            <span className="text-slate-400 hidden sm:inline">• Sourced Exclusively from Official Gazettes & Board Bulletins</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Link to="/vacancies" className="text-slate-300 hover:text-white text-xs font-medium">
-              View All Vacancies →
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* Shared Global Product Header */}
+      <ProductHeader 
+        productName="SarkariHub" 
+        activeNav="government"
+        badgeLabel="100% Official Gazettes"
+        topBannerText="Direct PSU, Central Govt & Defense Research Vacancy Intelligence • Zero Spam Popups"
+        primaryActionLabel="View All Vacancies"
+        primaryActionTo="/vacancies"
+      />
 
-      {/* Hero */}
-      <section className="px-4 pt-8 pb-8 max-w-5xl mx-auto text-center">
-        <Badge className="bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs px-3 py-1 mb-3">
-          100% Authentic • Zero Scam Popups • Direct Gazette URLs
-        </Badge>
-        <h1 className="text-3xl sm:text-5xl font-black text-white mb-3">
-          Verified <span className="bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">PSU & Government</span> Recruitment
-        </h1>
-        <p className="text-slate-400 text-sm max-w-xl mx-auto mb-6">
-          Every posting is linked directly to the official recruitment notification PDF. No third-party spam.
-        </p>
+      {/* Main Content Area */}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-b from-white via-white to-[#F4F7FC] border-b border-[#E2E8F0] px-4 pt-10 pb-12">
+          <div className="max-w-5xl mx-auto text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#2563EB] text-xs font-bold shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
+              <span>100% Authentic • Zero Scam Popups • Direct Gazette URLs</span>
+            </div>
 
-        {/* Search & Filter */}
-        <div className="max-w-2xl mx-auto flex gap-2 mb-6">
-          <div className="flex-1 flex items-center gap-2 px-3 bg-slate-900 rounded-xl border border-slate-800">
-            <Search className="w-4 h-4 text-slate-400" />
-            <Input 
-              type="text" 
-              placeholder="Search PSU, defense, or bank (e.g. ISRO, IOCL, RBI)..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border-0 bg-transparent text-sm focus-visible:ring-0 text-white placeholder:text-slate-500"
-            />
-          </div>
-        </div>
+            <h1 className="text-3xl sm:text-5xl font-black text-[#111827] tracking-tight leading-tight">
+              Verified <span className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] bg-clip-text text-transparent">PSU & Government</span> Recruitment
+            </h1>
 
-        {/* Category Pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {['ALL', 'PSU', 'Defense / Research', 'Banking & Insurance'].map(cat => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all ${
-                selectedCategory === cat
-                  ? 'bg-amber-600 border-amber-500 text-white'
-                  : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+            <p className="text-[#64748B] text-sm sm:text-base max-w-2xl mx-auto">
+              Every posting is linked directly to the official recruitment notification PDF and portal. No spam, no misleading third-party ads.
+            </p>
 
-        {/* Vacancy Feed */}
-        <div className="space-y-4 text-left">
-          {filteredJobs.map(job => (
-            <div 
-              key={job.id}
-              className="bg-slate-900/80 border border-slate-800 hover:border-amber-500/40 rounded-2xl p-5 transition-all shadow-md"
-            >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-bold text-amber-400">{job.organization}</span>
-                    <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
-                      {job.category}
-                    </Badge>
-                    <Badge className="bg-emerald-950/40 text-emerald-400 border border-emerald-500/30 text-[10px] flex items-center gap-1">
-                      <ShieldCheck className="w-3 h-3" />
-                      <span>Verified</span>
-                    </Badge>
-                  </div>
-                  <h3 className="text-base font-bold text-white">{job.title}</h3>
-                </div>
-
-                <div className="text-right sm:shrink-0">
-                  <div className="text-xs text-slate-400">Application Deadline:</div>
-                  <div className="text-xs font-bold text-rose-400">{job.deadline}</div>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300 py-2 border-t border-slate-800/80 mt-2">
-                <div><strong>Qualification:</strong> {job.qualification}</div>
-                <div><strong>Vacancies:</strong> {job.vacancies} • <strong>Location:</strong> {job.location}</div>
-              </div>
-
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                  <FileText className="w-3.5 h-3.5" />
-                  <span>Official Gazette Notice Verified</span>
-                </span>
-                <a 
-                  href={job.officialGazetteUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs px-4 py-1.5 rounded-lg inline-flex items-center gap-1.5 transition-colors"
-                >
-                  <span>Apply on Official Portal</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
+            {/* Search Input */}
+            <div className="max-w-2xl mx-auto flex gap-2 pt-2">
+              <div className="flex-1 flex items-center gap-2.5 px-3 py-1 bg-white rounded-xl border border-[#E2E8F0] shadow-sm focus-within:border-[#2563EB] transition-colors">
+                <Search className="w-4 h-4 text-[#64748B]" />
+                <Input 
+                  type="text" 
+                  placeholder="Search PSU, defense, or bank (e.g. ISRO, IOCL, RBI)..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border-0 bg-transparent text-sm focus-visible:ring-0 text-[#111827] placeholder:text-[#64748B] h-10 p-0"
+                />
               </div>
             </div>
-          ))}
-        </div>
-      </section>
 
-      {/* Sourced Data Disclosure */}
-      <footer className="border-t border-slate-900 bg-slate-950 px-4 py-8 text-xs text-slate-500">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="font-semibold text-slate-400">SarkariHub</span> is an independent public sector discovery product of TalentXcel.
+            {/* Category Pills */}
+            <div className="flex flex-wrap justify-center gap-2 pt-2">
+              {['ALL', 'PSU', 'Defense / Research', 'Banking & Insurance'].map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                    selectedCategory === cat
+                      ? 'bg-gradient-to-r from-[#2563EB] to-[#7138E8] border-transparent text-white shadow-xs'
+                      : 'bg-white border-[#E2E8F0] text-[#64748B] hover:text-[#111827] hover:border-[#2563EB]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex gap-4">
-            <Link to="https://jobs.talentxcel.in" className="hover:text-slate-300">Jobs</Link>
-            <Link to="https://resume.talentxcel.in" className="hover:text-slate-300">Resume</Link>
+        </section>
+
+        {/* Vacancy Feed */}
+        <section className="px-4 py-10 max-w-5xl mx-auto">
+          <div className="space-y-4 text-left">
+            {filteredJobs.map(job => (
+              <div 
+                key={job.id}
+                className="bg-white border border-[#E2E8F0] hover:border-[#2563EB] rounded-2xl p-6 transition-all shadow-xs hover:shadow-md"
+              >
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <span className="text-xs font-bold text-[#2563EB]">{job.organization}</span>
+                      <Badge variant="outline" className="text-[10px] border-[#E2E8F0] text-[#64748B]">
+                        {job.category}
+                      </Badge>
+                      <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] flex items-center gap-1 font-bold">
+                        <ShieldCheck className="w-3 h-3 text-emerald-600" />
+                        <span>Verified</span>
+                      </Badge>
+                    </div>
+                    <h3 className="text-base font-bold text-[#111827]">{job.title}</h3>
+                  </div>
+
+                  <div className="text-right sm:shrink-0">
+                    <div className="text-xs text-[#64748B]">Application Deadline:</div>
+                    <div className="text-xs font-bold text-rose-600">{job.deadline}</div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#64748B] py-3 border-t border-[#E2E8F0] mt-2 font-medium">
+                  <div><strong className="text-[#111827]">Qualification:</strong> {job.qualification}</div>
+                  <div><strong className="text-[#111827]">Vacancies:</strong> {job.vacancies} • <strong className="text-[#111827]">Location:</strong> {job.location}</div>
+                </div>
+
+                <div className="pt-4 border-t border-[#E2E8F0] flex items-center justify-between">
+                  <span className="text-[11px] text-[#64748B] flex items-center gap-1.5 font-medium">
+                    <FileText className="w-3.5 h-3.5 text-[#2563EB]" />
+                    <span>Official Gazette Notice Authenticated</span>
+                  </span>
+                  <a 
+                    href={job.officialGazetteUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] hover:opacity-95 text-white font-bold text-xs px-5 py-2.5 rounded-xl inline-flex items-center gap-1.5 transition-all shadow-xs"
+                  >
+                    <span>Apply on Official Portal</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
-      </footer>
+
+          {/* SarkariHub Pro Upsell Card */}
+          <div className="mt-8 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                <Sparkles className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-sm">
+                  Supercharge your Sarkari Exam Prep with AI Mock Tests & Instant WhatsApp Alerts
+                </h4>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Public notices are 100% free forever. Upgrade to Pro for full syllabus mock tests and instant notifications.
+                </p>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              onClick={() => openUpgradeModal('sarkari_mock_test_packs')}
+              className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] text-white font-bold text-xs px-5 py-2.5 rounded-xl shrink-0 shadow-xs"
+            >
+              <span>Explore Pro Exam Packs</span>
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+            </Button>
+          </div>
+        </section>
+      </main>
+
+      {/* Shared Global Product Footer */}
+      <ProductFooter currentProduct="SarkariHub" />
+
+      {/* Central Revenue Pro Upgrade Modal */}
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={closeUpgradeModal}
+        currentPlanId={subscription.planId}
+        targetFeatureName="Sarkari AI Exam Mock Test Packs & WhatsApp Alerts"
+        onSuccess={() => {
+          refreshEntitlements();
+        }}
+      />
     </div>
   );
 };

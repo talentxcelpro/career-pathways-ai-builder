@@ -26,19 +26,19 @@ export const PopularRoleCityLinks: React.FC<PopularRoleCityLinksProps> = ({
   const roleTitle = formatTitle(cleanRole);
   const cityTitle = formatTitle(cleanCity);
 
-  // Top 8 Cities for Current Role
+  // Verified Regional Hiring Hubs (points to canonical /locations/:slug)
   const roleInCities = CANONICAL_CITIES.slice(0, 10).map((city) => ({
-    name: `${roleTitle} Jobs in ${city.name}`,
-    path: `/jobs/${cleanRole}-in-${city.slug}`,
+    name: `Tech Jobs in ${city.name}`,
+    path: `/locations/${city.slug}`,
     location: city.name,
   }));
 
-  // Top 8 Roles for Current City
+  // In-Demand Tech Roles (points to verified career pathway hubs)
   const rolesInCity = CANONICAL_ROLES.slice(0, 10).map((role) => {
     const title = formatTitle(role);
     return {
-      name: `${title} Jobs in ${cityTitle}`,
-      path: `/jobs/${role}-in-${cleanCity}`,
+      name: `${title} Career Pathway`,
+      path: `/colleges/career-pathway/${role}`,
       role: title,
     };
   });

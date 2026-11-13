@@ -1,5 +1,6 @@
 // src/components/products/SkillPodsProduct.tsx
 // Independent Standalone Product for learning.talentxcel.in (SkillPods)
+// Master Light SaaS Design System (#FFFFFF, #F4F7FC, #2563EB, #7138E8, #111827, #E2E8F0)
 
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -33,6 +34,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+import { ProductHeader } from '@/components/products/common/ProductHeader';
+import { ProductFooter } from '@/components/products/common/ProductFooter';
+import { useCentralEntitlements } from '@/hooks/useCentralEntitlements';
+import { UpgradeModal } from '@/components/billing/UpgradeModal';
 
 interface Question {
   id: number;
@@ -98,35 +103,35 @@ const ASSESSMENT_TRACKS: Record<string, {
     questions: [
       {
         id: 1,
-        prompt: 'In Retrieval-Augmented Generation (RAG), what is the function of vector embeddings?',
+        prompt: 'When building a Retrieval-Augmented Generation (RAG) system, why is semantic chunking preferred over fixed-character chunking?',
         options: [
-          'Encrypting user prompts before sending to the model API',
-          'Representing chunks of text as high-dimensional coordinates to enable semantic search',
-          'Compressing token size to reduce API costs',
-          'Fine-tuning model weights dynamically during inference'
+          'It guarantees zero token consumption on the embedding model',
+          'It preserves grammatical and conceptual context boundaries, reducing hallucination in retrieved context',
+          'It removes the need for vector databases completely',
+          'It encrypts chunks before saving to disk'
         ],
         correctIndex: 1,
-        explanation: 'Embeddings map text to coordinate vectors where semantic similarity corresponds to geometric proximity (cosine distance).'
+        explanation: 'Semantic chunking divides documents based on logical meaning rather than arbitrary character counts, ensuring embeddings capture complete thoughts.'
       },
       {
         id: 2,
-        prompt: 'What does temperature parameter control in LLM inference?',
+        prompt: 'In transformer architectures, what is the core purpose of Scaled Dot-Product Attention?',
         options: [
-          'The GPU cooling fan speed during decoding',
-          'The randomness and entropy of token probability distribution',
-          'The strict timeout for generation in milliseconds',
-          'The context window capacity limit'
+          'To compress the input tokens into an image tensor',
+          'To compute weighted relevance between all tokens in a sequence simultaneously',
+          'To eliminate backward propagation passes during training',
+          'To generate audio spectrograms directly'
         ],
         correctIndex: 1,
-        explanation: 'Lower temperature sharpens probability around high-likelihood tokens (deterministic); higher temperature increases diversity.'
+        explanation: 'Attention allows each token to attend to every other token, weighting relevant semantic associations across long distances.'
       },
       {
         id: 3,
-        prompt: 'When fine-tuning using LoRA (Low-Rank Adaptation), what is optimized?',
+        prompt: 'What does LoRA (Low-Rank Adaptation) freeze during fine-tuning of large models?',
         options: [
-          'All full-rank weight matrices of the base transformer',
-          'Small trainable rank-decomposition matrices injected into transformer layers',
-          'Only the token embedding lookup table',
+          'The entire tokenizer vocabulary',
+          'The pre-trained model weights, injecting small rank-decomposition matrices into attention layers',
+          'The temperature and top-p sampling parameters',
           'The system prompt hyperparameter weights'
         ],
         correctIndex: 1,
@@ -228,6 +233,14 @@ const FEATURED_COURSES = [
 
 export const SkillPodsProduct: React.FC = () => {
   const navigate = useNavigate();
+  const { 
+    subscription, 
+    checkEntitlement, 
+    isUpgradeModalOpen, 
+    openUpgradeModal, 
+    closeUpgradeModal,
+    refreshEntitlements 
+  } = useCentralEntitlements();
   const [selectedTrack, setSelectedTrack] = useState<'react' | 'ai' | 'cloud'>('react');
   const [currentQIndex, setCurrentQIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
@@ -245,21 +258,16 @@ export const SkillPodsProduct: React.FC = () => {
   };
 
   const handleSubmitQuestion = () => {
-    if (selectedAnswer === null) {
-      toast.error('Please select an answer first.');
-      return;
-    }
+    if (selectedAnswer === null) return;
     setSubmitted(true);
+    setUserAnswers(prev => [...prev, selectedAnswer]);
   };
 
   const handleNextQuestion = () => {
-    const updatedAnswers = [...userAnswers, selectedAnswer!];
-    setUserAnswers(updatedAnswers);
-    setSelectedAnswer(null);
-    setSubmitted(false);
-
     if (currentQIndex + 1 < activeTrack.questions.length) {
-      setCurrentQIndex(currentQIndex + 1);
+      setCurrentQIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setSubmitted(false);
     } else {
       setIsAssessmentComplete(true);
     }
@@ -273,10 +281,10 @@ export const SkillPodsProduct: React.FC = () => {
     setIsAssessmentComplete(false);
   };
 
-  // Calculate score
   const correctCount = userAnswers.reduce((acc, ans, idx) => {
-    return ans === activeTrack.questions[idx].correctIndex ? acc + 1 : acc;
+    return ans === activeTrack.questions[idx]?.correctIndex ? acc + 1 : acc;
   }, 0);
+
   const scorePercent = Math.round((correctCount / activeTrack.questions.length) * 100);
 
   const filteredCourses = FEATURED_COURSES.filter(c => 
@@ -285,7 +293,7 @@ export const SkillPodsProduct: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-purple-600 selection:text-white">
+    <div className="min-h-screen bg-[#F4F7FC] text-[#111827] flex flex-col font-sans selection:bg-[#2563EB] selection:text-white">
       <Helmet>
         <title>SkillPods — Practical Skill Diagnostics & Peer Learning Hub | TalentXcel</title>
         <meta 
@@ -293,335 +301,319 @@ export const SkillPodsProduct: React.FC = () => {
           content="Test your engineering skills with instant interactive technical assessments. Earn verified credentials, join learning pods, and bridge straight to job interviews." 
         />
         <link rel="canonical" href="https://learning.talentxcel.in/" />
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "EducationalOrganization",
-            "name": "TalentXcel SkillPods",
-            "url": "https://learning.talentxcel.in/",
-            "description": "Practical technical assessments, peer learning pods, and verifiable skills credentials."
-          })}
-        </script>
       </Helmet>
 
-      {/* TOP ANNOUNCEMENT BAR */}
-      <div className="border-b border-purple-900/40 bg-purple-950/30 backdrop-blur px-4 py-2">
-        <div className="max-w-7xl mx-auto flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <Badge className="bg-purple-600/30 text-purple-300 border border-purple-500/40 text-[10px] uppercase font-bold tracking-wider">
-              SkillPods Engine
-            </Badge>
-            <span className="text-slate-400 hidden sm:inline">• Free practical technical assessments & direct bridge to Career Passport</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              size="sm"
-              onClick={() => navigate('/auth/register?intent=learning')}
-              className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg px-3 py-1 h-7"
-            >
-              Claim Learning Profile →
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* Shared Global Product Header */}
+      <ProductHeader 
+        productName="SkillPods" 
+        activeNav="learning"
+        badgeLabel="Technical Skill Diagnostics"
+        topBannerText="Free Practical Technical Assessments & Direct Bridge to Career Passport"
+        primaryActionLabel="Claim Learning Profile"
+        primaryActionTo="/auth/register?intent=learning"
+      />
 
-      {/* HERO SECTION */}
-      <section className="relative pt-12 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-950/60 border border-purple-800/60 text-purple-300 text-xs font-semibold">
-            <Sparkles className="h-4 w-4" />
-            <span>Interactive Technical Skill Diagnostics</span>
-          </div>
+      {/* Main Content Area */}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="bg-gradient-to-b from-white via-white to-[#F4F7FC] border-b border-[#E2E8F0] px-4 pt-10 pb-16">
+          <div className="max-w-5xl mx-auto text-center space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-[#2563EB] text-xs font-bold shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5 text-[#2563EB]" />
+              <span>Interactive Technical Skill Diagnostics</span>
+            </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            Prove Your Skills in 5 Minutes. <br />
-            <span className="bg-gradient-to-r from-purple-400 via-indigo-400 to-pink-400 bg-clip-text text-transparent">
-              Skip The Resume Queue.
-            </span>
-          </h1>
+            <h1 className="text-3xl sm:text-5xl font-black text-[#111827] tracking-tight leading-tight">
+              Prove Your Skills in 5 Minutes. <br />
+              <span className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] bg-clip-text text-transparent">
+                Skip The Resume Queue.
+              </span>
+            </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Take verified practical assessments designed by lead architects. Pass with &gt;80% to earn a cryptographic badge on your <strong className="text-white">Career Passport</strong> that verified recruiters inspect directly.
-          </p>
-        </div>
+            <p className="text-[#64748B] text-sm sm:text-base max-w-2xl mx-auto">
+              Take verified practical assessments designed by lead architects. Pass with &gt;70% to earn a verified credential on your <strong className="text-[#111827]">Career Passport</strong> that recruiters inspect directly.
+            </p>
 
-        {/* INTERACTIVE ASSESSMENT TOOL */}
-        <div className="mt-10 max-w-4xl mx-auto">
-          <Card className="bg-slate-900/90 border-slate-800 text-slate-100 shadow-2xl backdrop-blur">
-            <CardHeader className="border-b border-slate-800/80 pb-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <CardTitle className="text-lg font-bold text-white flex items-center gap-2">
-                    <Zap className="h-5 w-5 text-purple-400" />
-                    Live Technical Diagnostic
-                  </CardTitle>
-                  <CardDescription className="text-xs text-slate-400">
-                    Interactive engineering questions with weighted category evaluation
-                  </CardDescription>
-                </div>
+            {/* Interactive Assessment Tool */}
+            <div className="mt-8 max-w-3xl mx-auto text-left">
+              <Card className="bg-white border-[#E2E8F0] text-[#111827] shadow-lg shadow-blue-900/5 rounded-3xl p-4 sm:p-6">
+                <CardHeader className="border-b border-[#E2E8F0] pb-4 px-0 pt-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <CardTitle className="text-lg font-bold text-[#111827] flex items-center gap-2">
+                        <Zap className="h-5 w-5 text-[#2563EB]" />
+                        Live Technical Diagnostic
+                      </CardTitle>
+                      <CardDescription className="text-xs text-[#64748B]">
+                        Interactive engineering questions with weighted category evaluation
+                      </CardDescription>
+                    </div>
 
-                {/* Track Selector Tabs */}
-                <div className="flex items-center gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
-                  {(['react', 'ai', 'cloud'] as const).map(trackKey => {
-                    const track = ASSESSMENT_TRACKS[trackKey];
-                    const Icon = track.icon;
-                    const isActive = selectedTrack === trackKey;
-                    return (
-                      <button
-                        key={trackKey}
-                        onClick={() => {
-                          setSelectedTrack(trackKey);
-                          handleResetAssessment();
-                        }}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-                          isActive
-                            ? 'bg-purple-600 text-white shadow-sm'
-                            : 'text-slate-400 hover:text-white'
-                        }`}
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        <span>{track.name.split(' ')[0]}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </CardHeader>
-
-            <CardContent className="pt-6 space-y-6">
-              {!isAssessmentComplete ? (
-                <>
-                  {/* Progress & Meta */}
-                  <div className="flex items-center justify-between text-xs text-slate-400">
-                    <span>Question {currentQIndex + 1} of {activeTrack.questions.length}</span>
-                    <Badge variant="outline" className="text-purple-400 border-purple-800/60 text-[10px]">
-                      {activeTrack.level} Track
-                    </Badge>
-                  </div>
-                  <Progress value={((currentQIndex) / activeTrack.questions.length) * 100} className="h-1.5 bg-slate-800" />
-
-                  {/* Question Prompt */}
-                  <div className="space-y-4">
-                    <h3 className="text-base sm:text-lg font-bold text-white leading-relaxed">
-                      {currentQuestion.prompt}
-                    </h3>
-
-                    {/* Options */}
-                    <div className="space-y-2.5">
-                      {currentQuestion.options.map((option, idx) => {
-                        const isChosen = selectedAnswer === idx;
-                        const isCorrect = currentQuestion.correctIndex === idx;
-
-                        let style = 'bg-slate-950/60 border-slate-800 text-slate-200 hover:border-slate-700';
-                        if (isChosen && !submitted) {
-                          style = 'bg-purple-950/40 border-purple-500 text-white shadow-xs';
-                        } else if (submitted) {
-                          if (isCorrect) {
-                            style = 'bg-emerald-950/40 border-emerald-500 text-emerald-200';
-                          } else if (isChosen && !isCorrect) {
-                            style = 'bg-rose-950/40 border-rose-500 text-rose-200';
-                          }
-                        }
-
+                    {/* Track Selector Tabs */}
+                    <div className="flex items-center gap-1.5 bg-[#F4F7FC] p-1.5 rounded-2xl border border-[#E2E8F0] text-xs">
+                      {(['react', 'ai', 'cloud'] as const).map(trackKey => {
+                        const track = ASSESSMENT_TRACKS[trackKey];
+                        const Icon = track.icon;
+                        const isActive = selectedTrack === trackKey;
                         return (
                           <button
-                            key={idx}
-                            onClick={() => handleSelectOption(idx)}
-                            className={`w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm font-medium transition-all flex items-start gap-3 ${style}`}
+                            key={trackKey}
+                            onClick={() => {
+                              setSelectedTrack(trackKey);
+                              handleResetAssessment();
+                            }}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold transition-all cursor-pointer ${
+                              isActive
+                                ? 'bg-gradient-to-r from-[#2563EB] to-[#7138E8] text-white shadow-xs'
+                                : 'text-[#64748B] hover:text-[#111827]'
+                            }`}
                           >
-                            <span className="h-5 w-5 rounded-full border border-slate-700 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
-                              {String.fromCharCode(65 + idx)}
-                            </span>
-                            <span className="flex-1 leading-snug">{option}</span>
-                            {submitted && isCorrect && (
-                              <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-                            )}
+                            <Icon className="h-3.5 w-3.5" />
+                            <span>{track.name.split(' ')[0]}</span>
                           </button>
                         );
                       })}
                     </div>
                   </div>
+                </CardHeader>
 
-                  {/* Explanation feedback */}
-                  {submitted && (
-                    <div className="p-3.5 rounded-xl bg-purple-950/40 border border-purple-800/50 text-xs text-purple-200 space-y-1 animate-fadeIn">
-                      <p className="font-bold flex items-center gap-1.5">
-                        <Brain className="h-4 w-4 text-purple-400" />
-                        Architect Explanation:
-                      </p>
-                      <p className="text-slate-300">{currentQuestion.explanation}</p>
+                <CardContent className="pt-6 space-y-6 px-0 pb-0">
+                  {!isAssessmentComplete ? (
+                    <>
+                      {/* Progress & Meta */}
+                      <div className="flex items-center justify-between text-xs text-[#64748B] font-medium">
+                        <span>Question {currentQIndex + 1} of {activeTrack.questions.length}</span>
+                        <Badge variant="outline" className="text-[#2563EB] border-blue-200 bg-blue-50 text-[10px] font-bold">
+                          {activeTrack.level} Track
+                        </Badge>
+                      </div>
+                      <Progress value={((currentQIndex) / activeTrack.questions.length) * 100} className="h-2 bg-[#F4F7FC]" />
+
+                      {/* Question Prompt */}
+                      <div className="space-y-4">
+                        <h3 className="text-base sm:text-lg font-bold text-[#111827] leading-relaxed">
+                          {currentQuestion.prompt}
+                        </h3>
+
+                        {/* Options */}
+                        <div className="space-y-2.5">
+                          {currentQuestion.options.map((option, idx) => {
+                            const isChosen = selectedAnswer === idx;
+                            const isCorrect = currentQuestion.correctIndex === idx;
+
+                            let style = 'bg-[#F4F7FC] border-[#E2E8F0] text-[#111827] hover:border-[#2563EB]';
+                            if (isChosen && !submitted) {
+                              style = 'bg-blue-50 border-[#2563EB] text-[#2563EB] font-bold shadow-2xs';
+                            } else if (submitted) {
+                              if (isCorrect) {
+                                style = 'bg-emerald-50 border-emerald-500 text-emerald-800 font-bold';
+                              } else if (isChosen && !isCorrect) {
+                                style = 'bg-rose-50 border-rose-500 text-rose-800 font-bold';
+                              }
+                            }
+
+                            return (
+                              <button
+                                key={idx}
+                                onClick={() => handleSelectOption(idx)}
+                                className={`w-full text-left p-3.5 rounded-2xl border text-xs sm:text-sm transition-all flex items-start gap-3 cursor-pointer ${style}`}
+                              >
+                                <span className="h-5 w-5 rounded-full border border-slate-300 flex items-center justify-center shrink-0 text-xs font-bold mt-0.5">
+                                  {String.fromCharCode(65 + idx)}
+                                </span>
+                                <span className="flex-1 leading-snug">{option}</span>
+                                {submitted && isCorrect && (
+                                  <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Explanation feedback */}
+                      {submitted && (
+                        <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-[#111827] space-y-1">
+                          <p className="font-bold text-[#2563EB] flex items-center gap-1.5">
+                            <Brain className="h-4 w-4 text-[#2563EB]" />
+                            Architect Explanation:
+                          </p>
+                          <p className="text-[#64748B]">{currentQuestion.explanation}</p>
+                        </div>
+                      )}
+
+                      {/* Action Controls */}
+                      <div className="flex items-center justify-between pt-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleResetAssessment}
+                          className="text-xs text-[#64748B] hover:text-[#111827]"
+                        >
+                          Reset Test
+                        </Button>
+
+                        {!submitted ? (
+                          <Button
+                            size="sm"
+                            onClick={handleSubmitQuestion}
+                            disabled={selectedAnswer === null}
+                            className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] hover:opacity-95 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-xs"
+                          >
+                            Submit Answer
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={handleNextQuestion}
+                            className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] hover:opacity-95 text-white font-bold text-xs px-6 py-2.5 rounded-xl flex items-center gap-1.5 shadow-xs"
+                          >
+                            {currentQIndex + 1 < activeTrack.questions.length ? 'Next Question' : 'View Full Diagnostic'}
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </Button>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    /* Assessment Completed Summary */
+                    <div className="py-6 text-center space-y-6">
+                      <div className="h-16 w-16 mx-auto rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#2563EB]">
+                        <Award className="h-8 w-8" />
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <h3 className="text-2xl font-black text-[#111827]">Diagnostic Completed!</h3>
+                        <p className="text-xs text-[#64748B]">
+                          Track: <strong className="text-[#111827]">{activeTrack.name}</strong> • Level: <strong className="text-[#2563EB]">{activeTrack.level}</strong>
+                        </p>
+                      </div>
+
+                      <div className="max-w-xs mx-auto p-5 rounded-2xl bg-[#F4F7FC] border border-[#E2E8F0] space-y-3">
+                        <div className="text-4xl font-black text-[#111827]">{scorePercent}%</div>
+                        <p className="text-xs text-[#64748B]">
+                          {scorePercent >= 70 
+                            ? '🔥 Qualified! Your score is in the top 15th percentile of applicants.'
+                            : 'Review recommendations below to strengthen core architecture concepts.'}
+                        </p>
+                        <Progress value={scorePercent} className="h-2 bg-slate-200" />
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                        <Button
+                          size="sm"
+                          onClick={() => navigate('/auth/register?intent=learning_score')}
+                          className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] hover:opacity-95 text-white font-bold text-xs px-6 py-2.5 rounded-xl shadow-xs"
+                        >
+                          Sync Badge to Career Passport →
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleResetAssessment}
+                          className="border-[#E2E8F0] text-[#64748B] hover:text-[#111827] text-xs rounded-xl"
+                        >
+                          Retake Assessment
+                        </Button>
+                      </div>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </section>
 
-                  {/* Action Controls */}
-                  <div className="flex items-center justify-between pt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleResetAssessment}
-                      className="text-xs text-slate-400 hover:text-white"
-                    >
-                      Reset Test
-                    </Button>
+        {/* Practical Courses Directory */}
+        <section className="py-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#111827] flex items-center gap-2">
+                <BookOpen className="h-6 w-6 text-[#2563EB]" />
+                Practical Course Tracks & Skill Pods
+              </h2>
+              <p className="text-xs text-[#64748B] mt-1 font-medium">
+                Architect-reviewed pathways with real GitHub repositories and zero fluff.
+              </p>
+            </div>
 
-                    {!submitted ? (
-                      <Button
-                        size="sm"
-                        onClick={handleSubmitQuestion}
-                        disabled={selectedAnswer === null}
-                        className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-5 rounded-xl"
-                      >
-                        Submit Answer
-                      </Button>
-                    ) : (
-                      <Button
-                        size="sm"
-                        onClick={handleNextQuestion}
-                        className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-5 rounded-xl flex items-center gap-1.5"
-                      >
-                        {currentQIndex + 1 < activeTrack.questions.length ? 'Next Question' : 'View Full Diagnostic'}
-                        <ArrowRight className="h-3.5 w-3.5" />
-                      </Button>
-                    )}
-                  </div>
-                </>
-              ) : (
-                /* Assessment Completed Summary */
-                <div className="py-6 text-center space-y-6">
-                  <div className="h-16 w-16 mx-auto rounded-2xl bg-purple-600/20 border border-purple-500/40 flex items-center justify-center text-purple-400">
-                    <Award className="h-8 w-8" />
-                  </div>
-
-                  <div className="space-y-2">
-                    <h3 className="text-2xl font-black text-white">Diagnostic Completed!</h3>
-                    <p className="text-xs text-slate-300">
-                      Track: <strong className="text-white">{activeTrack.name}</strong> • Level: <strong className="text-purple-400">{activeTrack.level}</strong>
-                    </p>
-                  </div>
-
-                  <div className="max-w-xs mx-auto p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
-                    <div className="text-4xl font-black text-white">{scorePercent}%</div>
-                    <p className="text-xs text-slate-400">
-                      {scorePercent >= 70 
-                        ? '🔥 Qualified! Your score is in the top 15th percentile of applicants.'
-                        : 'Review recommendations below to strengthen core architecture concepts.'}
-                    </p>
-                    <Progress value={scorePercent} className="h-2 bg-slate-800" />
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                    <Button
-                      size="sm"
-                      onClick={() => navigate('/auth/register?intent=learning_score')}
-                      className="bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-6 py-2 rounded-xl"
-                    >
-                      Sync Badge to Career Passport →
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={handleResetAssessment}
-                      className="border-slate-800 text-slate-300 hover:text-white text-xs"
-                    >
-                      Retake Assessment
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* PRACTICAL COURSES DIRECTORY */}
-      <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-900">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <div>
-            <h2 className="text-2xl font-black text-white flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-purple-400" />
-              Practical Course Tracks & Skill Pods
-            </h2>
-            <p className="text-xs text-slate-400 mt-1">
-              Architect-reviewed pathways with real GitHub repositories and zero fluff.
-            </p>
+            <div className="relative max-w-xs w-full">
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-[#64748B]" />
+              <Input
+                type="text"
+                placeholder="Search skills, Docker, RAG..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 bg-white border-[#E2E8F0] text-xs text-[#111827] placeholder:text-[#64748B] rounded-xl h-10 shadow-xs"
+              />
+            </div>
           </div>
 
-          <div className="relative max-w-xs w-full">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-            <Input
-              type="text"
-              placeholder="Search skills, Docker, RAG..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-slate-900 border-slate-800 text-xs text-white placeholder:text-slate-500 rounded-xl"
-            />
-          </div>
-        </div>
-
-        {/* Grid of Courses */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredCourses.map(course => (
-            <Card key={course.id} className="bg-slate-900/60 border-slate-800 text-slate-100 hover:border-purple-500/40 transition-all">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <Badge variant="outline" className="text-[10px] text-purple-300 border-purple-800/60">
-                    {course.track}
-                  </Badge>
-                  <span className="text-[11px] text-emerald-400 font-bold bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-800/40">
-                    Free Access
-                  </span>
-                </div>
-                <CardTitle className="text-base font-bold text-white hover:text-purple-300 transition-colors cursor-pointer">
-                  {course.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex flex-wrap gap-1.5">
-                  {course.skills.map((skill, i) => (
-                    <span key={i} className="text-[10px] px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 font-mono">
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-800/80">
-                  <div className="flex items-center gap-3">
-                    <span className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5 text-slate-500" />
-                      {course.duration}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users className="h-3.5 w-3.5 text-slate-500" />
-                      {course.learners} learners
+          {/* Grid of Courses */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredCourses.map(course => (
+              <Card key={course.id} className="bg-white border-[#E2E8F0] hover:border-[#2563EB] rounded-2xl shadow-xs hover:shadow-md transition-all">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <Badge variant="outline" className="text-[10px] text-[#2563EB] border-blue-200 bg-blue-50 font-bold">
+                      {course.track}
+                    </Badge>
+                    <span className="text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      Free Access
                     </span>
                   </div>
+                  <CardTitle className="text-base font-bold text-[#111827] hover:text-[#2563EB] transition-colors cursor-pointer">
+                    {course.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex flex-wrap gap-1.5">
+                    {course.skills.map((skill, i) => (
+                      <span key={i} className="text-[10px] px-2.5 py-0.5 rounded-md bg-[#F4F7FC] text-[#64748B] font-mono border border-[#E2E8F0]">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
 
-                  <Button
-                    size="sm"
-                    onClick={() => navigate('/auth/register?intent=course_enroll')}
-                    className="bg-slate-800 hover:bg-purple-600 text-white font-bold text-xs h-7 rounded-lg"
-                  >
-                    Start Track →
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+                  <div className="flex items-center justify-between text-xs text-[#64748B] pt-3 border-t border-[#E2E8F0] font-medium">
+                    <div className="flex items-center gap-3">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5 text-[#64748B]" />
+                        {course.duration}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5 text-[#64748B]" />
+                        {course.learners} learners
+                      </span>
+                    </div>
 
-      {/* SIBLING ECOSYSTEM STRIP */}
-      <section className="py-8 bg-slate-950 border-t border-slate-900 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© 2026 TalentXcel SkillPods. Part of the TalentXcel Career Ecosystem.</p>
-          <div className="flex flex-wrap gap-4 font-semibold text-slate-300">
-            <a href="https://jobs.talentxcel.in" className="hover:text-white">JobMatch OS</a>
-            <a href="https://resume.talentxcel.in" className="hover:text-white">ResumeStudio</a>
-            <a href="https://salary.talentxcel.in" className="hover:text-white">PayScale</a>
-            <a href="https://passport.talentxcel.in" className="hover:text-white">Career Passport</a>
+                    <Button
+                      size="sm"
+                      onClick={() => navigate('/auth/register?intent=course_enroll')}
+                      className="bg-gradient-to-r from-[#2563EB] to-[#7138E8] hover:opacity-95 text-white font-bold text-xs h-8 px-4 rounded-xl shadow-xs"
+                    >
+                      Start Track →
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
+
+      {/* Shared Global Product Footer */}
+      <ProductFooter currentProduct="SkillPods" />
+
+      {/* Central Revenue Pro Upgrade Modal */}
+      <UpgradeModal
+        isOpen={isUpgradeModalOpen}
+        onClose={closeUpgradeModal}
+        currentPlanId={subscription.planId}
+        targetFeatureName="Verifiable Skill Credentials & Pro Learning Tracks"
+        onSuccess={() => {
+          refreshEntitlements();
+        }}
+      />
     </div>
   );
 };

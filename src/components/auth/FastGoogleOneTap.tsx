@@ -81,6 +81,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
   const { user } = useAuth();
   const initializedRef = useRef(false);
   const rawNonceRef = useRef<string | null>(null);
+  const prevUserRef = useRef(user);
 
   const handleCredentialResponse = useCallback(async (response: any) => {
     try {
@@ -139,7 +140,8 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
   }, [onSuccess]);
 
   const initializeGoogleOneTap = useCallback(async () => {
-    if (disabled || user || hasActiveAuthSession() || initializedRef.current) {
+    const isDismissedInSession = typeof window !== 'undefined' && sessionStorage.getItem('tx_onetap_dismissed');
+    if (disabled || user || hasActiveAuthSession() || initializedRef.current || isDismissedInSession) {
       if (user && window.google?.accounts?.id?.cancel) {
         window.google.accounts.id.cancel();
       }
@@ -182,23 +184,24 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
         itp_support: true,
       });
 
-      // Show the One Tap prompt immediately
+      // Show the One Tap prompt once per session
       window.google.accounts.id.prompt((notification: any) => {
         if (notification.isNotDisplayed()) {
-          console.log('[GoogleOneTap] Prompt not displayed:', notification.getNotDisplayedReason?.() || 'unknown');
-          GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'not_displayed' });
-          trackOneTapDismissed('not_displayed');
+          const reason = notification.getNotDisplayedReason?.() || 'not_displayed';
+          console.log('[GoogleOneTap] Prompt not displayed:', reason);
+          try { sessionStorage.setItem('tx_onetap_dismissed', reason); } catch (_) {}
+          trackOneTapDismissed(reason);
         } else if (notification.isSkippedMoment()) {
-          console.log('[GoogleOneTap] Prompt skipped:', notification.getSkippedReason?.() || 'skipped');
-          GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'skipped' });
-          trackOneTapDismissed('skipped');
+          const reason = notification.getSkippedReason?.() || 'skipped';
+          console.log('[GoogleOneTap] Prompt skipped:', reason);
+          try { sessionStorage.setItem('tx_onetap_dismissed', reason); } catch (_) {}
+          trackOneTapDismissed(reason);
         } else if (notification.isDismissedMoment()) {
           console.log('[GoogleOneTap] Prompt dismissed by user');
-          GrowthFunnelTracker.track('google_onetap_dismissed', { reason: 'dismissed' });
+          try { sessionStorage.setItem('tx_onetap_dismissed', 'dismissed'); } catch (_) {}
           trackOneTapDismissed('dismissed');
         } else if (notification.isDisplayed()) {
           console.log('🚀 [GoogleOneTap] Prompt displayed to user');
-          GrowthFunnelTracker.track('google_onetap_shown');
           trackOneTapShown();
         }
       });
@@ -231,11 +234,13 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
     };
   }, [initializeGoogleOneTap, disabled, user]);
 
-  // Reset initialization only when user explicitly logs out
+  // Reset initialization ONLY on explicit logout (transition from authenticated -> null)
   useEffect(() => {
-    if (!user && !hasActiveAuthSession()) {
+    if (prevUserRef.current && !user && !hasActiveAuthSession()) {
       initializedRef.current = false;
+      try { sessionStorage.removeItem('tx_onetap_dismissed'); } catch (_) {}
     }
+    prevUserRef.current = user;
   }, [user]);
 
   return null;

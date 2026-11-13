@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "talentxcel_universal_mcp",
+  "name_for_human": "TalentXcel Career & Hiring Intelligence",
+  "description_for_model": "Access real-time verified jobs, market salary benchmarks, skill gap analytics, career transition roadmaps, and Career Passport identity across India and global markets.",
+  "description_for_human": "Search jobs, benchmark salaries, evaluate resume fit, and explore 150+ career paths with TalentXcel.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://talentxcel.in/openapi-mcp.json"
+  },
+  "logo_url": "https://talentxcel.in/talentxcel-official-logo.png",
+  "contact_email": "support@talentxcel.in",
+  "legal_info_url": "https://talentxcel.in/terms"
+}

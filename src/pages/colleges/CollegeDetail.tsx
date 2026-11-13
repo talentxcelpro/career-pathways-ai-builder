@@ -41,7 +41,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { indianEducationService } from '@/services/indianEducationService';
+import { indianEducationService, isCollegeIndexable } from '@/services/indianEducationService';
 import type { IndianInstitution } from '@/types/indianEducation';
 import { CollegeRoiCalculatorWidget } from '@/components/colleges/CollegeRoiCalculatorWidget';
 import { CollegeEmbedBadgeGenerator } from '@/components/colleges/CollegeEmbedBadgeGenerator';
@@ -151,6 +151,7 @@ export default function CollegeDetail() {
 
   const canonicalCollegeSlug = catalogInstitution?.slug || dbCollege?.slug || id;
   const canonicalUrl = `https://talentxcel.in/colleges/${canonicalCollegeSlug}`;
+  const isIndexable = isCollegeIndexable(catalogInstitution || dbCollege);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-20 text-slate-900 dark:text-slate-100">
@@ -160,6 +161,8 @@ export default function CollegeDetail() {
         canonicalUrl={canonicalUrl}
         category="colleges"
         ogType="article"
+        noindex={!isIndexable}
+        robotsDirective={isIndexable ? 'index, follow' : 'noindex, follow'}
       />
       {/* ───────────────────────────────────────────────────────────────────────── */}
       {/* 1. SUB-HEADER PILL NAVIGATION BAR                                         */}

@@ -201,6 +201,105 @@ function migrate(db) {
       report_json TEXT NOT NULL,
       created_at TEXT NOT NULL
     );
+
+    CREATE TABLE IF NOT EXISTS autonomous_classifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      opportunity_id INTEGER NOT NULL REFERENCES autonomous_opportunities(id),
+      classification TEXT NOT NULL CHECK(classification IN ('public_permitted','account_required','editorial','paid','restricted','unknown')),
+      evidence_url TEXT,
+      discovered_at TEXT NOT NULL,
+      http_status INTEGER,
+      confidence REAL NOT NULL DEFAULT 0,
+      reason TEXT NOT NULL,
+      submission_url TEXT,
+      registrable_root_domain TEXT NOT NULL,
+      cohort TEXT,
+      relevance_score INTEGER NOT NULL DEFAULT 0,
+      quality_score INTEGER NOT NULL DEFAULT 0,
+      evidence_json TEXT NOT NULL DEFAULT '{}',
+      UNIQUE(opportunity_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_auto_classification_kind ON autonomous_classifications(classification);
+    CREATE INDEX IF NOT EXISTS idx_auto_classification_root ON autonomous_classifications(registrable_root_domain);
+
+    CREATE TABLE IF NOT EXISTS autonomous_duplicate_domains (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      registrable_root_domain TEXT NOT NULL UNIQUE,
+      canonical_opportunity_id INTEGER REFERENCES autonomous_opportunities(id),
+      duplicate_count INTEGER NOT NULL,
+      duplicate_opportunity_ids_json TEXT NOT NULL,
+      evidence_json TEXT NOT NULL DEFAULT '{}',
+      detected_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS autonomous_opportunity_rankings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      opportunity_id INTEGER NOT NULL REFERENCES autonomous_opportunities(id),
+      cohort TEXT NOT NULL,
+      rank INTEGER NOT NULL,
+      score REAL NOT NULL,
+      rationale_json TEXT NOT NULL DEFAULT '{}',
+      created_at TEXT NOT NULL,
+      UNIQUE(opportunity_id)
+    );
+
+    CREATE TABLE IF NOT EXISTS autonomous_discovered_opportunities (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      registrable_root_domain TEXT NOT NULL UNIQUE,
+      source_url TEXT NOT NULL,
+      discovery_source TEXT NOT NULL,
+      classification TEXT NOT NULL DEFAULT 'unknown',
+      evidence_json TEXT NOT NULL DEFAULT '{}',
+      discovered_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS autonomous_acquisition_campaigns (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      campaign_key TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      target_published_count INTEGER NOT NULL,
+      status TEXT NOT NULL DEFAULT 'PLANNING',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS autonomous_acquisition_targets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      campaign_id INTEGER NOT NULL REFERENCES autonomous_acquisition_campaigns(id),
+      opportunity_id INTEGER REFERENCES autonomous_opportunities(id),
+      root_domain TEXT NOT NULL,
+      submission_url TEXT,
+      category TEXT,
+      relevance_score INTEGER NOT NULL DEFAULT 0,
+      quality_score INTEGER NOT NULL DEFAULT 0,
+      http_status INTEGER,
+      payment_status TEXT NOT NULL DEFAULT 'UNKNOWN',
+      account_requirement TEXT NOT NULL DEFAULT 'UNKNOWN',
+      editorial_requirement TEXT NOT NULL DEFAULT 'UNKNOWN',
+      instructions TEXT,
+      destination_url TEXT NOT NULL,
+      proposed_anchor TEXT NOT NULL,
+      evidence_json TEXT NOT NULL DEFAULT '{}',
+      confidence REAL NOT NULL DEFAULT 0,
+      priority_score REAL NOT NULL DEFAULT 0,
+      status TEXT NOT NULL DEFAULT 'DISCOVERED',
+      owner_action TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      UNIQUE(campaign_id, root_domain)
+    );
+    CREATE INDEX IF NOT EXISTS idx_acq_target_status ON autonomous_acquisition_targets(campaign_id,status);
+    CREATE TABLE IF NOT EXISTS autonomous_acquisition_assets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      campaign_id INTEGER NOT NULL REFERENCES autonomous_acquisition_campaigns(id),
+      asset_key TEXT NOT NULL,
+      asset_type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      body TEXT NOT NULL,
+      facts_json TEXT NOT NULL,
+      content_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      UNIQUE(campaign_id,asset_key)
+    );
   `);
 }
 
