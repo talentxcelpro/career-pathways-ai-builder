@@ -26,6 +26,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { CompanyLogoAvatar } from './CompanyLogoAvatar';
+import { JobDescriptionRenderer } from '@/components/jobs/JobDescriptionRenderer';
 import { toast } from 'sonner';
 
 export interface JobDetailItem {
@@ -298,17 +299,6 @@ export const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
               <Zap className="w-3.5 h-3.5" />
               <span>1-Click Direct Apply</span>
             </Button>
-            {job.external_url && (
-              <a
-                href={job.external_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-bold text-[#2563EB] hover:text-[#7138E8] px-3 py-2 border border-[#E2E8F0] hover:border-[#2563EB] rounded-xl transition-colors bg-white"
-              >
-                <span>Apply on Employer Site</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -396,12 +386,13 @@ export const JobDetailDrawer: React.FC<JobDetailDrawerProps> = ({
             </div>
           )}
 
-          {/* Role Summary */}
+          {/* Role Summary & Description */}
           <div className="space-y-2">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Role Overview</h3>
-            <p className="text-xs sm:text-sm text-[#475569] leading-relaxed whitespace-pre-line">
-              {job.job_summary || 'Detailed role requirements and qualifications are provided on the employer application page.'}
-            </p>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#64748B]">Role Overview & Details</h3>
+            <JobDescriptionRenderer 
+              content={job.description || job.job_summary || 'Detailed role requirements and qualifications are provided on the employer application page.'}
+              className="text-[#475569]"
+            />
           </div>
 
           {/* Key Responsibilities (Only shown when available) */}

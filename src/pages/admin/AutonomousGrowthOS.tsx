@@ -39,6 +39,7 @@ import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { GrowthFunnelDashboard } from '@/components/admin/GrowthFunnelDashboard';
+import { AdminCareerCorridorsManager } from '@/components/admin/seo/AdminCareerCorridorsManager';
 import { 
   runAutonomousGrowthCycle, 
   AutonomousOsState, 
@@ -274,7 +275,7 @@ const AutonomousGrowthOS: React.FC = () => {
         })()}
 
         {/* 1. NORTH STAR HEADER - 100% REAL TELEMETRY & LIVE SUPABASE DATA */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
           <Card className="bg-white border-slate-200 shadow-sm p-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Registered Users</p>
             <p className="text-2xl font-black text-slate-900 mt-1">{totalUsers.toLocaleString()}</p>
@@ -394,6 +395,9 @@ const AutonomousGrowthOS: React.FC = () => {
             </TabsTrigger>
             <TabsTrigger value="command" className="rounded-xl data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold text-xs py-2.5">
               <Brain className="h-4 w-4 mr-1.5" /> Command Center
+            </TabsTrigger>
+            <TabsTrigger value="career_corridors" className="rounded-xl data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm font-bold text-xs py-2.5">
+              <Globe className="h-4 w-4 mr-1.5 text-indigo-600" /> Career Corridors
             </TabsTrigger>
           </TabsList>
 
@@ -1406,6 +1410,11 @@ const AutonomousGrowthOS: React.FC = () => {
             </div>
           </TabsContent>
 
+
+          {/* TAB 8: PROGRAMMATIC CAREER CORRIDORS & SEO COMMAND (ADMIN GROWTH OS) */}
+          <TabsContent value="career_corridors" className="space-y-6">
+            <AdminCareerCorridorsManager />
+          </TabsContent>
         </Tabs>
 
       </div>

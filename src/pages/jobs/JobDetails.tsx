@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,10 +25,13 @@ import {
   TrendingUp,
   FileCheck2,
   Banknote,
-  AlertCircle
+  AlertCircle,
+  Bookmark,
+  Send
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
+import { JobDescriptionRenderer } from '@/components/jobs/JobDescriptionRenderer';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
@@ -36,8 +39,6 @@ import { SocialShare } from '@/components/social/SocialShare';
 import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
-import { EmployerHiringBadgeGenerator } from '@/components/employer/EmployerHiringBadgeGenerator';
-import { PopularRoleCityLinks } from '@/components/seo/PopularRoleCityLinks';
 import { FALLBACK_JOBS } from '@/hooks/useJobsCriticalPath';
 
 const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'));
@@ -45,6 +46,28 @@ const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'
 export default function JobDetails() {
   const { slugOrId = '' } = useParams<{ slugOrId: string }>();
   const navigate = useNavigate();
+
+  const [isSaved, setIsSaved] = useState<boolean>(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('txc_saved_jobs') || '[]');
+      return saved.includes(slugOrId);
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSave = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('txc_saved_jobs') || '[]');
+      const targetId = slugOrId;
+      const next = saved.includes(targetId) ? saved.filter((id: string) => id !== targetId) : [...saved, targetId];
+      localStorage.setItem('txc_saved_jobs', JSON.stringify(next));
+      setIsSaved(!isSaved);
+      toast.success(!isSaved ? 'Job saved to your bookmarks' : 'Job removed from bookmarks');
+    } catch {
+      toast.success('Bookmark updated');
+    }
+  };
 
   // Fetch job details with reliable fallback
   const { data: job, isLoading, error } = useQuery({
@@ -160,6 +183,38 @@ export default function JobDetails() {
       return data || [];
     },
     enabled: !isLoading && !job,
+  });
+
+  // Fetch candidate-facing related verified opportunities (Part 5: Final Structure)
+  const { data: relatedJobs = [] } = useQuery({
+    queryKey: ['job-details-related-jobs', job?.id, job?.category, job?.location],
+    queryFn: async () => {
+      if (!job?.id) return [];
+      let query = supabase
+        .from('jobs')
+        .select('id, title, company_name, location, salary_min, salary_max, salary_currency, employment_type, created_at, seo_slug')
+        .eq('is_active', true)
+        .neq('id', job.id)
+        .limit(4);
+
+      if (job.category) {
+        query = query.eq('category', job.category);
+      }
+      const { data } = await query;
+      if (data && data.length > 0) return data;
+
+      // Fallback to latest active jobs if category has fewer listings
+      const { data: fallback } = await supabase
+        .from('jobs')
+        .select('id, title, company_name, location, salary_min, salary_max, salary_currency, employment_type, created_at, seo_slug')
+        .eq('is_active', true)
+        .neq('id', job.id)
+        .order('created_at', { ascending: false })
+        .limit(4);
+      return fallback || [];
+    },
+    enabled: !!job?.id,
+    staleTime: 5 * 60 * 1000,
   });
 
   if (isLoading) {
@@ -404,8 +459,9 @@ export default function JobDetails() {
     );
   }
 
-  const companyName = job.company_name || 'TalentXcel Services';
-  const companySlug = 'talentxcel';
+  const companyName = job.company_name || job.companies?.name || 'TalentXcel Services';
+  const companySlug = (job.companies?.slug) ||
+    (companyName ? companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'talentxcel');
 
   const isExpired = Boolean(
     job.is_active === false ||
@@ -530,7 +586,14 @@ export default function JobDetails() {
               </div>
 
               {/* Primary Unified Hero CTA */}
-              <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
+              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto shrink-0">
+                <PublicJobApplyButton
+                  jobId={job.id}
+                  job={job}
+                  jobTitle={job.title}
+                  companyName={companyName}
+                  className="px-6 py-2.5 h-auto font-bold text-xs shadow-lg shadow-blue-600/25"
+                />
                 <Button
                   onClick={() => {
                     const matchSection = document.getElementById('interactive-match-section');
@@ -538,11 +601,11 @@ export default function JobDetails() {
                       matchSection.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm px-5 py-2.5 h-auto rounded-xl shadow-lg shadow-blue-600/30 flex items-center gap-2"
+                  variant="outline"
+                  className="border-slate-700 hover:bg-slate-800 text-slate-300 font-bold text-xs px-4 py-2.5 h-auto rounded-xl flex items-center gap-1.5"
                 >
-                  <Sparkles className="w-4 h-4 text-amber-300" />
-                  Check My Match &amp; Apply Free
-                  <ArrowRight className="w-4 h-4" />
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+                  Check Match
                 </Button>
                 <SocialShare
                   contentType="job"
@@ -558,14 +621,49 @@ export default function JobDetails() {
           </header>
 
           {/* Job Description & Details */}
-          <main className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-6">
               <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
                 <h2 className="text-lg font-bold text-white flex items-center gap-2">
                   <Briefcase className="w-5 h-5 text-blue-400" /> Job Description & Requirements
                 </h2>
-                <div className="text-slate-200 text-sm leading-relaxed whitespace-pre-line">
-                  {job.description}
+                <JobDescriptionRenderer content={job.description} className="text-slate-200" theme="dark" />
+              </section>
+
+              {/* Native TalentXcel Application Section (Part 1.2) */}
+              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold">
+                    <Send className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-white">Apply for This Position</h2>
+                    <p className="text-xs text-slate-400">Direct candidate application to {companyName} hiring team</p>
+                  </div>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                  Interested in this opportunity? Submit your application through TalentXcel. Upload your latest CV and share your details. Your application will be securely recorded and made available to the hiring team.
+                </p>
+
+                <div className="flex flex-wrap items-center gap-3 pt-2">
+                  <PublicJobApplyButton
+                    jobId={job.id}
+                    job={job}
+                    jobTitle={job.title}
+                    companyName={companyName}
+                    className="px-6 py-2.5 h-10 font-bold text-xs"
+                  />
+                  <Button
+                    variant="outline"
+                    onClick={toggleSave}
+                    className={`h-10 px-4 rounded-xl text-xs font-semibold border-slate-700 hover:bg-slate-800 ${
+                      isSaved ? 'text-amber-400 border-amber-400/40 bg-amber-400/10' : 'text-slate-300'
+                    }`}
+                  >
+                    <Bookmark className={`w-4 h-4 mr-1.5 ${isSaved ? 'fill-amber-400' : ''}`} />
+                    {isSaved ? 'Job Saved' : 'Save Job'}
+                  </Button>
                 </div>
               </section>
 
@@ -582,17 +680,11 @@ export default function JobDetails() {
                 </Link>
               </section>
 
-              {/* Employer Embed Badge Generator */}
-              <EmployerHiringBadgeGenerator
-                companyName={companyName}
-                companySlug={companySlug}
-                openRolesCount={1}
-                className="mt-6"
-              />
+
             </div>
 
             {/* Right Column: Key Summary */}
-            <div className="space-y-6">
+            <div className="space-y-6 lg:sticky lg:top-6">
               <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
                 <h3 className="text-base font-bold text-white">Role Summary</h3>
                 <div className="space-y-3 text-xs">
@@ -650,13 +742,80 @@ export default function JobDetails() {
             </div>
           </main>
 
-          {/* Programmatic SEO Internal Linking Mesh (Anti-Orphan & Crawl Budget Multiplier) */}
-          <div className="mt-12">
-            <PopularRoleCityLinks
-              currentRole={job.title}
-              currentCity={job.location}
-            />
-          </div>
+          {/* Candidate-Facing Related Jobs (Part 5: Final Structure) */}
+          {relatedJobs.length > 0 && (
+            <section className="pt-8 border-t border-slate-800/80 space-y-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-blue-400" />
+                    <span>Similar Opportunities</span>
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Explore more verified positions matching your professional background
+                  </p>
+                </div>
+                <Link
+                  to="/jobs"
+                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
+                >
+                  <span>View All Jobs</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {relatedJobs.map((item: any) => (
+                  <Card
+                    key={item.id}
+                    className="bg-slate-900/60 border border-slate-800/80 hover:border-blue-500/40 rounded-2xl p-5 flex flex-col justify-between transition-all group"
+                  >
+                    <div className="space-y-2.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                            {item.title}
+                          </h3>
+                          <p className="text-xs text-slate-400 font-medium mt-0.5">
+                            {item.company_name || 'Verified Employer'}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="border-blue-500/30 text-blue-300 bg-blue-500/10 text-[10px] shrink-0">
+                          {item.employment_type || 'Full-time'}
+                        </Badge>
+                      </div>
+
+                      <div className="flex items-center gap-3 text-xs text-slate-400 flex-wrap pt-1">
+                        {item.location && (
+                          <span className="flex items-center gap-1">
+                            <MapPin className="w-3.5 h-3.5 text-slate-500" /> {item.location}
+                          </span>
+                        )}
+                        {(item.salary_min || item.salary_max) && (
+                          <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                            <IndianRupee className="w-3.5 h-3.5" /> {formatSalaryRange(item.salary_min, item.salary_max, item.salary_currency)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 mt-3 border-t border-slate-800/60 flex items-center justify-between">
+                      <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Direct TalentXcel Application
+                      </span>
+                      <Button
+                        size="sm"
+                        onClick={() => navigate(`/jobs/${item.seo_slug || item.id}`)}
+                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold h-8 px-3.5 rounded-xl transition-all"
+                      >
+                        View &amp; Apply
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       </div>
     </>

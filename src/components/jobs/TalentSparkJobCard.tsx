@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getJobDetailUrl } from '@/utils/seoUrls';
+import { navigateToJobDetail, getCanonicalJobUrl } from '@/utils/crossDomainJobRouting';
 import { JobApplicationDialog } from '@/components/jobs/JobApplicationDialog';
 import { getCompanyLogo, generateCompanyMonogram } from '@/utils/companyLogos';
 import { toast } from 'sonner';
@@ -170,23 +171,19 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   };
 
   const handleViewJob = () => {
-    if (onViewDetails) {
-      onViewDetails(job);
-      return;
-    }
-    navigate(getJobDetailUrl(job));
+    navigateToJobDetail(job, navigate);
   };
 
   const handleShareLinkedIn = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const url = `${window.location.origin}${getJobDetailUrl(job)}`;
+    const url = getCanonicalJobUrl(job);
     const shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
     toast.success('Opening LinkedIn to share job...');
   };
 
   const handleShare = async () => {
-    const url = `${window.location.origin}${getJobDetailUrl(job)}`;
+    const url = getCanonicalJobUrl(job);
     if (navigator.share) {
       try {
         await navigator.share({
@@ -316,7 +313,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               }}
             >
               <Send className="h-4 w-4 mr-2 group-hover:animate-pulse" />
-              Apply Now (+{txcReward} TXC)
+              Apply Now
             </Button>
             
             <Button
@@ -536,7 +533,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
               }}
             >
               <Send className="h-4 w-4 mr-2" />
-              Apply Now (+{txcReward} TXC)
+              Apply Now
             </Button>
           </div>
         </div>
@@ -642,12 +639,12 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
   // Default card view
   return (
     <Card 
-      className="group relative overflow-hidden bg-card hover:bg-card/90 hover:shadow-xl transition-all duration-300 cursor-pointer border border-border/40 hover:border-primary/40 rounded-xl"
+      className="group relative overflow-hidden bg-card hover:bg-card/90 hover:shadow-xl transition-all duration-300 cursor-pointer border border-border/40 hover:border-primary/40 rounded-xl flex flex-col justify-between h-full w-full min-w-0 box-border"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleViewJob}
     >
-      <div className="p-4 sm:p-5">
+      <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0 justify-between">
         {/* Header */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -769,8 +766,8 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
           </div>
         </div>
 
-        {/* Action Buttons: Sleek, Responsive, Never Cut Off */}
-        <div className="flex items-center justify-between gap-2 pt-2.5 border-t border-border/20 mt-3">
+        {/* Action Buttons: Responsive, Never Cut Off */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-border/20 mt-auto w-full min-w-0">
           <div className="flex items-center gap-1 shrink-0">
             <Button
               variant="ghost"
@@ -808,7 +805,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-1.5 shrink-0 ml-auto">
             <Button 
               variant="outline"
               size="sm"
@@ -824,7 +821,7 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             
             <Button 
               size="sm"
-              className="h-8 px-3 text-xs font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs shrink-0 flex items-center gap-1"
+              className="h-8 px-3.5 text-xs font-bold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-xs shrink-0 flex items-center gap-1.5 whitespace-nowrap"
               onClick={(e) => {
                 e.stopPropagation();
                 if (onApplyClick) {
@@ -836,7 +833,6 @@ export const TalentSparkJobCard: React.FC<TalentSparkJobCardProps> = ({
             >
               <Send className="h-3.5 w-3.5 shrink-0" />
               <span>Apply Now</span>
-              <span className="hidden sm:inline font-normal opacity-90 text-[10px]">(+{txcReward} TXC)</span>
             </Button>
           </div>
         </div>

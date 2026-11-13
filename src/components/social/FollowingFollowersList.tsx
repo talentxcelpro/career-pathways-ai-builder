@@ -49,7 +49,7 @@ export function FollowingFollowersList() {
     loadUserData();
 
     const channel = supabase
-      .channel('connections-realtime-sync-' + Date.now())
+      .channel('connections-realtime-sync')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
         loadUserData();
       })

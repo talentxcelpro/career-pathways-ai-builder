@@ -35,6 +35,7 @@ import { toast } from 'sonner';
 import { JobPortalHeader } from './JobPortalHeader';
 import { JobPortalFooter } from './JobPortalFooter';
 import { GuestJobApplyModal } from '@/components/jobs/GuestJobApplyModal';
+import { JobDescriptionRenderer } from '@/components/jobs/JobDescriptionRenderer';
 import { JobDetailItem } from './JobDetailDrawer';
 import { CompanyLogoAvatar } from './CompanyLogoAvatar';
 
@@ -610,12 +611,11 @@ export const JobDetailPage: React.FC = () => {
 
               {/* Job Description & Summary */}
               <div className="space-y-3">
-                <h3 className="font-bold text-sm text-[#111827]">Job Overview</h3>
-                <div className="text-xs sm:text-sm text-[#475569] leading-relaxed space-y-3">
-                  <p>
-                    {job.job_summary || `Opportunity for an experienced ${job.title} to join ${job.company_name}. In this role, you will collaborate with cross-functional stakeholders, solve complex domain problems, and contribute directly to production deliverables.`}
-                  </p>
-                </div>
+                <h3 className="font-bold text-sm text-[#111827]">Job Details & Responsibilities</h3>
+                <JobDescriptionRenderer 
+                  content={(job as any).description || job.job_summary || `Opportunity for an experienced ${job.title} to join ${job.company_name}. In this role, you will collaborate with cross-functional stakeholders, solve complex domain problems, and contribute directly to production deliverables.`}
+                  className="text-slate-700"
+                />
               </div>
 
               {/* Responsibilities & Qualifications */}
@@ -655,17 +655,6 @@ export const JobDetailPage: React.FC = () => {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {job.external_url && (
-                    <a
-                      href={job.external_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-semibold text-[#475569] hover:text-[#111827] flex items-center gap-1 hover:underline"
-                    >
-                      <span>Employer Career Portal</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
 
                   {!isExpired && (
                     <Button

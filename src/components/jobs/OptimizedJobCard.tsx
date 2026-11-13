@@ -226,14 +226,7 @@ const OptimizedJobCard: React.FC<OptimizedJobCardProps> = memo(({
           size="sm"
           disabled={!job.id}
         >
-          {job.external_url ? (
-            <>
-              <ExternalLink className="h-4 w-4 mr-1" />
-              Apply on Site
-            </>
-          ) : (
-            'Apply Now'
-          )}
+          Apply Now
         </Button>
       </CardContent>
     </Card>

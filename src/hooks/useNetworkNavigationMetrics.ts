@@ -136,7 +136,7 @@ export function useNetworkNavigationMetrics(): NetworkNavigationMetrics {
   useEffect(() => {
     if (!user?.id) return;
 
-    const channelName = `network-nav-live-${user.id}-${Date.now()}`;
+    const channelName = `network-nav-live-${user.id}`;
     const channel = supabase
       .channel(channelName)
       // Listen to connections changes for this user

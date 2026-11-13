@@ -247,7 +247,7 @@ export const InteractiveJobMatchWidget: React.FC<InteractiveJobMatchWidgetProps>
   };
 
   return (
-    <Card className="bg-gradient-to-br from-slate-900 via-blue-950/40 to-slate-900 border border-blue-500/30 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden space-y-6 text-slate-100">
+    <Card className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 shadow-xl relative overflow-hidden space-y-6 text-slate-100">
       {/* Decorative accent glow */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 

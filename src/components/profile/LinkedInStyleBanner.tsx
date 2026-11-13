@@ -53,7 +53,7 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
     if (!user?.id) return;
 
     const channel = supabase
-      .channel(`profile-card-realtime-${user.id}-${Date.now()}`)
+      .channel(`profile-card-realtime-${user.id}`)
       .on(
         'postgres_changes',
         {

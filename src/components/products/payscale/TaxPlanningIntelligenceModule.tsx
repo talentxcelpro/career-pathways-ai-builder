@@ -238,11 +238,11 @@ export const TaxPlanningIntelligenceModule: React.FC = () => {
             Net Tax Savings
           </div>
           <div className="text-2xl font-black text-emerald-600">
-            ₹{annualSavings.toLocaleString('en-IN')}
+            ₹{(Number(annualSavings) || 0).toLocaleString('en-IN')}
             <span className="text-xs font-semibold text-slate-500"> /year</span>
           </div>
           <div className="text-[11px] font-bold text-slate-600">
-            +₹{monthlySavings.toLocaleString('en-IN')} in-hand /mo
+            +₹{(Number(monthlySavings) || 0).toLocaleString('en-IN')} in-hand /mo
           </div>
         </div>
       </div>

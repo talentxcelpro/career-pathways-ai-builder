@@ -61,10 +61,17 @@ export function useUserPresence() {
     // Initialize presence tracking via real-time WebSocket channel
     setupPresenceChannel();
 
-    // Handle page visibility changes
+    // Handle page visibility changes with 45s debounce to eliminate rapid DB writes
+    let visibilityTimeout: NodeJS.Timeout | null = null;
     const handleVisibilityChange = () => {
+      if (visibilityTimeout) {
+        clearTimeout(visibilityTimeout);
+        visibilityTimeout = null;
+      }
       if (document.hidden) {
-        setOnlineStatus(false);
+        visibilityTimeout = setTimeout(() => {
+          setOnlineStatus(false);
+        }, 45000);
       } else {
         setOnlineStatus(true);
       }

@@ -85,7 +85,7 @@ class ConsolidatedRealtimeManager {
     console.log(`🔗 [ConsolidatedRealtime] Subscribing to ${table}`);
     
     // Create unique channel name to avoid conflicts
-    const channelName = `consolidated-${table}-${Date.now()}`;
+    const channelName = `consolidated-${table}`;
     const channel = supabase.channel(channelName);
 
     // Set up postgres changes listener

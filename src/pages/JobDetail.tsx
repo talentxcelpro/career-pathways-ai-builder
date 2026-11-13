@@ -33,6 +33,7 @@ import { BrandedFooter } from '@/components/branded/BrandedFooter';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 import { buildJobPostingSchema } from '@/lib/seo/jobPostingSchema';
 import ComprehensiveJobApplicationForm from '@/components/jobs/ComprehensiveJobApplicationForm';
+import { JobDescriptionRenderer } from '@/components/jobs/JobDescriptionRenderer';
 import { createSafeHtml } from '@/utils/sanitize';
 import { getCompanyLogo } from '@/utils/companyLogos';
 import { trackApplyJobClick } from '@/lib/analytics/conversionTracker';
@@ -221,27 +222,34 @@ const JobDetail = () => {
     }
   }, [job, slugOrId, navigate]);
 
-  // Track job view
+  // Track job view (session deduplicated to prevent excessive DB writes)
   useEffect(() => {
-    if (job && currentUser) {
-      const trackView = async () => {
-        await supabase
-          .from('job_views')
-          .insert({
-            job_id: job.id,
-            user_id: currentUser.id,
-            viewed_at: new Date().toISOString()
-          });
+    if (job?.id && currentUser?.id) {
+      const viewedKey = `viewed_job_${job.id}_${currentUser.id}`;
+      if (typeof sessionStorage !== 'undefined' && sessionStorage.getItem(viewedKey)) return;
+      if (typeof sessionStorage !== 'undefined') sessionStorage.setItem(viewedKey, '1');
 
-        // Update job views count
-        await supabase
-          .from('jobs')
-          .update({ views_count: (job.views_count || 0) + 1 })
-          .eq('id', job.id);
+      const trackView = async () => {
+        try {
+          await supabase
+            .from('job_views')
+            .insert({
+              job_id: job.id,
+              user_id: currentUser.id,
+              viewed_at: new Date().toISOString()
+            });
+
+          await supabase
+            .from('jobs')
+            .update({ views_count: (job.views_count || 0) + 1 })
+            .eq('id', job.id);
+        } catch (e) {
+          console.warn('View tracking non-fatal error:', e);
+        }
       };
       trackView();
     }
-  }, [job, currentUser]);
+  }, [job?.id, currentUser?.id]);
 
   // Check if user has applied or saved this job
   useEffect(() => {
@@ -559,12 +567,8 @@ const JobDetail = () => {
               <CardHeader>
                 <CardTitle>Job Description</CardTitle>
               </CardHeader>
-              <CardContent className="prose prose-sm max-w-none">
-                <div 
-                  dangerouslySetInnerHTML={createSafeHtml(
-                    job.description?.replace(/\n/g, '<br>') || 'No description available'
-                  )} 
-                />
+              <CardContent className="pt-2">
+                <JobDescriptionRenderer content={job.description} />
               </CardContent>
             </Card>
 
@@ -574,12 +578,8 @@ const JobDetail = () => {
                 <CardHeader>
                   <CardTitle>Requirements</CardTitle>
                 </CardHeader>
-                <CardContent className="prose prose-sm max-w-none">
-                  <div 
-                    dangerouslySetInnerHTML={createSafeHtml(
-                      job.requirements.replace(/\n/g, '<br>')
-                    )} 
-                  />
+                <CardContent className="pt-2">
+                  <JobDescriptionRenderer content={job.requirements} />
                 </CardContent>
               </Card>
             )}
@@ -639,16 +639,6 @@ const JobDetail = () => {
                     )}
                   </Button>
                   
-                  {job.external_url && (
-                    <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => window.open(job.external_url, '_blank')}
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Apply on Company Site
-                    </Button>
-                  )}
                 </div>
 
                 {hasApplied && (

@@ -96,13 +96,13 @@ const SUMMARY_PRESETS = [
 
 export const ResumeStudioProduct: React.FC = () => {
   // Resume Personal Info
-  const [fullName, setFullName] = useState('Arshid Wani');
+  const [fullName, setFullName] = useState('Alex Morgan');
   const [headline, setHeadline] = useState('Senior Full-Stack Engineer • React / Node / Cloud Systems');
-  const [email, setEmail] = useState('arshid.wani@example.com');
-  const [phone, setPhone] = useState('+91 98765 43210');
-  const [location, setLocation] = useState('Bengaluru, Karnataka, India');
-  const [linkedin, setLinkedin] = useState('linkedin.com/in/arshid-wani');
-  const [github, setGithub] = useState('github.com/arshidwani');
+  const [email, setEmail] = useState('alex.morgan@example.com');
+  const [phone, setPhone] = useState('+1 202-555-0148');
+  const [location, setLocation] = useState('New York, NY, USA');
+  const [linkedin, setLinkedin] = useState('linkedin.com/in/alex-morgan');
+  const [github, setGithub] = useState('github.com/alexmorgan');
   const [summary, setSummary] = useState(SUMMARY_PRESETS[0].text);
 
   // Experience Entries

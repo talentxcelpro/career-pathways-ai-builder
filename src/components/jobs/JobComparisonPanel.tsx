@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { X, ArrowRight, Building, MapPin, Clock, DollarSign, Users, Star, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
+import { navigateToJobDetail } from '@/utils/crossDomainJobRouting';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -34,6 +36,7 @@ interface JobComparisonPanelProps {
 }
 
 export const JobComparisonPanel: React.FC<JobComparisonPanelProps> = ({
+  const navigate = useNavigate();
   jobs,
   onRemoveJob,
   onClearAll,

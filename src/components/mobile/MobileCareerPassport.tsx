@@ -333,7 +333,7 @@ export const MobileCareerPassport: React.FC = () => {
               {/* Name and Details */}
               <div className="mb-6">
                 <h2 className="text-3xl font-bold text-white mb-2">
-                  {getDisplayName() || "Arshid Wani"}
+                  {getDisplayName() || "Alex Morgan"}
                 </h2>
                 <p className="text-gray-300 text-lg mb-2">
                   {displayData.profile?.headline || "Business Strategist & Growth Specialist"}

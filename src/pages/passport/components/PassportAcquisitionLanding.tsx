@@ -383,7 +383,7 @@ export const PassportAcquisitionLanding: React.FC = () => {
               <div>
                 <div className="h-36 sm:h-40 bg-gradient-to-tr from-blue-100 via-indigo-50 to-purple-100 flex items-center justify-center p-4">
                   <img 
-                    src="/hero-female-jobseeker.jpg" 
+                    src="/passport-professionals-woman.jpg" 
                     alt="For Professionals" 
                     className="w-full h-full object-cover object-top rounded-xl"
                   />
@@ -428,7 +428,7 @@ export const PassportAcquisitionLanding: React.FC = () => {
               <div>
                 <div className="h-36 sm:h-40 bg-gradient-to-tr from-slate-100 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
                   <img 
-                    src={employerHeroImg} 
+                    src="/passport-employers-man.jpg" 
                     alt="For Employers" 
                     className="w-full h-full object-cover object-top rounded-xl"
                   />
@@ -473,7 +473,7 @@ export const PassportAcquisitionLanding: React.FC = () => {
               <div>
                 <div className="h-36 sm:h-40 bg-gradient-to-tr from-indigo-50 via-purple-50 to-blue-50 flex items-center justify-center p-4">
                   <img 
-                    src={universityLearningImg} 
+                    src="/passport-institutions-building.jpg" 
                     alt="For Institutions & Partners" 
                     className="w-full h-full object-cover rounded-xl"
                   />

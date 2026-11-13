@@ -17,6 +17,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { formatSalaryRange } from "@/utils/currencyUtils";
 import { useNavigate } from "react-router-dom";
+import { navigateToJobDetail } from "@/utils/crossDomainJobRouting";
 import { toast } from "sonner";
 
 interface CleanJobCardProps {
@@ -89,12 +90,7 @@ export const CleanJobCard: React.FC<CleanJobCardProps> = ({
 
   const handleCardClick = () => {
     // Check if this is an external job
-    if ((job as any).external_url) {
-      console.log('🔗 External job detected, redirecting to:', (job as any).external_url);
-      window.open((job as any).external_url, '_blank', 'noopener,noreferrer');
-      return;
-    }
-    
+                navigate(`/jobs/${(job as any).seo_slug || job.id}`);
     // Internal job - navigate to detail page
     navigate(`/jobs/${(job as any).seo_slug || job.id}`);
   };
@@ -283,15 +279,10 @@ export const CleanJobCard: React.FC<CleanJobCardProps> = ({
               className="text-xs"
               onClick={(e) => {
                 e.stopPropagation();
-                if ((job as any).external_url) {
-                  console.log('🔗 External job detected, redirecting to:', (job as any).external_url);
-                  window.open((job as any).external_url, '_blank', 'noopener,noreferrer');
-                } else {
-                  navigate(`/jobs/${(job as any).seo_slug || job.id}/apply`);
-                }
+                navigate(`/jobs/${(job as any).seo_slug || job.id}`);
               }}
             >
-              {(job as any).external_url ? 'Apply on Site' : 'Apply Now'}
+              Apply Now
             </Button>
           </div>
         </div>

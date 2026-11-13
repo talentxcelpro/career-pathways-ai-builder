@@ -30,8 +30,10 @@ import {
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 interface GuestJobApplyModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
   job: {
     id: string;
     title: string;
@@ -46,10 +48,13 @@ interface GuestJobApplyModalProps {
 
 export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
   open,
+  isOpen,
   onOpenChange,
+  onClose,
   job,
   onSuccess,
 }) => {
+  const isModalOpen = Boolean(open ?? isOpen);
   const { user } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -58,6 +63,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
   const [currentLocation, setCurrentLocation] = useState('');
   const [linkedinUrl, setLinkedinUrl] = useState('');
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [existingResumeUrl, setExistingResumeUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedResult, setSubmittedResult] = useState<any>(null);
 
@@ -65,7 +71,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
 
   // Instrumentation: track guest apply opened
   useEffect(() => {
-    if (open) {
+    if (isModalOpen) {
       GrowthFunnelTracker.track('guest_apply_opened', {
         job_id: job.id,
         job_title: job.title,
@@ -77,7 +83,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
         setEmail(user.email || '');
         supabase
           .from('profiles')
-          .select('full_name, phone, location, linkedin_url')
+          .select('full_name, phone, location, linkedin_url, resume_url')
           .eq('id', user.id)
           .single()
           .then(({ data }) => {
@@ -86,18 +92,20 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
               if (data.phone) setPhone(data.phone);
               if (data.location) setCurrentLocation(data.location);
               if ((data as any).linkedin_url) setLinkedinUrl((data as any).linkedin_url);
+              if ((data as any).resume_url) setExistingResumeUrl((data as any).resume_url);
             }
           });
       }
     }
-  }, [open, user, job]);
+  }, [isModalOpen, user, job]);
 
-  const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
       setSubmittedResult(null);
       setIsSubmitting(false);
+      onClose?.();
     }
-    onOpenChange(isOpen);
+    onOpenChange?.(nextOpen);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,6 +176,27 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
       return;
     }
 
+    if (!resumeFile && !existingResumeUrl) {
+      toast.error('Please upload your resume/CV (PDF or Word document)');
+      return;
+    }
+
+    // Prevent duplicate applications
+    try {
+      const { data: existingApp } = await supabase
+        .from('job_applications')
+        .select('id, status')
+        .eq('job_id', job.id)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (existingApp) {
+        toast.info(`You have already submitted an application for this vacancy (Status: ${existingApp.status || 'Applied'}). Your application is active with the hiring coordinator.`, { id: 'guest-apply' });
+        setIsSubmitting(false);
+        return;
+      }
+    } catch {}
+
     setIsSubmitting(true);
     GrowthFunnelTracker.track('application_started', {
       job_id: job.id,
@@ -236,7 +265,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
           job_id: job.id,
           status: 'applied',
           applied_at: new Date().toISOString(),
-          resume_url: uploadedResumeUrl,
+          resume_url: uploadedResumeUrl || existingResumeUrl,
           cover_letter: `Applicant: ${effectiveName} | Email: ${effectiveEmail} | Phone: ${phone.trim()} | LinkedIn: ${linkedinUrl.trim() || 'N/A'} | Exp: ${experience} | Loc: ${currentLocation}`
         };
         if (candidateId) {
@@ -367,7 +396,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[92vh] overflow-y-auto bg-slate-950 border border-slate-800 text-white p-6 md:p-8">
         {!submittedResult ? (
           <>
@@ -527,6 +556,14 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
                       <span className="text-xs text-slate-500">
                         ({(resumeFile.size / 1024).toFixed(0)} KB)
                       </span>
+                    </div>
+                  ) : existingResumeUrl ? (
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-400">
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Profile CV Selected (Verified on TalentXcel)</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400">Drop a new PDF or DOCX file to replace with updated CV</p>
                     </div>
                   ) : (
                     <div className="space-y-1">

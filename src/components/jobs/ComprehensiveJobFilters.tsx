@@ -96,18 +96,19 @@ const CheckboxFilter: React.FC<{
   };
 
   return (
-    <div className="space-y-1.5 max-h-48 overflow-y-auto">
+    <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1.5 [scrollbar-width:thin] [scrollbar-color:#cbd5e1_transparent] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full">
       {options.map((option) => (
-        <div key={option.value} className="flex items-center space-x-1.5">
+        <div key={option.value} className="flex items-center space-x-1.5 min-w-0">
           <Checkbox
             id={option.value}
             checked={selected.includes(option.value)}
             onCheckedChange={(checked) => handleChange(option.value, checked as boolean)}
+            className="shrink-0"
           />
-          <label htmlFor={option.value} className="text-xs cursor-pointer flex-1 flex items-center justify-between">
-            <span className="text-xs">{option.label}</span>
-            {showCount && option.count && (
-              <span className="text-xs text-muted-foreground">({option.count})</span>
+          <label htmlFor={option.value} className="text-xs cursor-pointer flex-1 min-w-0 flex items-center justify-between gap-1">
+            <span className="text-xs truncate" title={option.label}>{option.label}</span>
+            {showCount && option.count !== undefined && (
+              <span className="text-[11px] text-muted-foreground shrink-0 font-mono">({option.count})</span>
             )}
           </label>
         </div>

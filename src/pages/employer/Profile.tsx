@@ -1,7 +1,10 @@
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Building2, Users, Settings, Globe } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Building2, Users, Settings, Globe, Code2, Sparkles, CheckCircle2 } from "lucide-react";
+import { EmployerHiringBadgeGenerator } from "@/components/employer/EmployerHiringBadgeGenerator";
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,6 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const EmployerProfile = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'profile' | 'widget'>('profile');
 
   // Get the company associated with the current user
   // Get the company associated with the current user
@@ -98,12 +102,16 @@ const EmployerProfile = () => {
     }
   };
 
+  const companyData = Array.isArray(company) ? company[0] : company;
+  const companyName = companyData?.name || 'TalentXcel Partner';
+  const companySlug = companyData?.slug || (companyName ? companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'talentxcel');
+
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Company Profile</h1>
-          <p className="text-gray-600 mt-1">Manage your company information and public profile</p>
+          <p className="text-gray-600 mt-1">Manage your company information, public profile, and embeddable hiring widgets</p>
         </div>
         <Button onClick={() => navigate('/employer/profile/edit')} variant="outline">
           <Settings className="h-4 w-4 mr-2" />
@@ -111,6 +119,17 @@ const EmployerProfile = () => {
         </Button>
       </div>
 
+      <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="space-y-6">
+        <TabsList className="bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <TabsTrigger value="profile" className="rounded-lg text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-xs">
+            <Building2 className="w-3.5 h-3.5 mr-1.5" /> Company Overview
+          </TabsTrigger>
+          <TabsTrigger value="widget" className="rounded-lg text-xs font-semibold data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-xs">
+            <Code2 className="w-3.5 h-3.5 mr-1.5 text-blue-600" /> Hiring Widget
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-6">
       {/* Company Overview Card */}
       <Card>
         <CardHeader>
@@ -202,37 +221,78 @@ const EmployerProfile = () => {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="cursor-pointer hover:shadow-md transition-all hover:border-blue-200" onClick={() => navigate('/employer/team')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <Users className="h-5 w-5 text-blue-600" />
+          <CardHeader className="p-4">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold">
+              <Users className="h-4 w-4 text-blue-600" />
               Team Management
             </CardTitle>
-            <CardDescription className="text-xs">Invite recruiters and hiring managers</CardDescription>
+            <CardDescription className="text-[11px] mt-1">Invite recruiters and hiring managers</CardDescription>
           </CardHeader>
         </Card>
 
         <Card className="cursor-pointer hover:shadow-md transition-all hover:border-blue-200" onClick={() => navigate('/employer/applications')}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <Building2 className="h-5 w-5 text-purple-600" />
+          <CardHeader className="p-4">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold">
+              <Building2 className="h-4 w-4 text-purple-600" />
               Job Applications
             </CardTitle>
-            <CardDescription className="text-xs">Review candidates across all your positions</CardDescription>
+            <CardDescription className="text-[11px] mt-1">Review candidates across your positions</CardDescription>
           </CardHeader>
         </Card>
 
         <Card className="cursor-pointer hover:shadow-md transition-all hover:border-blue-200" onClick={handleViewPublicProfile}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <Globe className="h-5 w-5 text-emerald-600" />
-              Public Careers Page
+          <CardHeader className="p-4">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold">
+              <Globe className="h-4 w-4 text-emerald-600" />
+              Public Page
             </CardTitle>
-            <CardDescription className="text-xs">View how applicants see your organization</CardDescription>
+            <CardDescription className="text-[11px] mt-1">View how applicants see your organization</CardDescription>
+          </CardHeader>
+        </Card>
+
+        <Card className="cursor-pointer hover:shadow-md transition-all hover:border-blue-200" onClick={() => setActiveTab('widget')}>
+          <CardHeader className="p-4">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold">
+              <Code2 className="h-4 w-4 text-blue-600" />
+              Hiring Widget
+            </CardTitle>
+            <CardDescription className="text-[11px] mt-1">Embed live badge on careers site &amp; GitHub</CardDescription>
           </CardHeader>
         </Card>
       </div>
+        </TabsContent>
+
+        {/* TAB: HIRING WIDGET GENERATOR */}
+        <TabsContent value="widget" className="space-y-6">
+          <div className="p-5 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <Code2 className="w-5 h-5 text-blue-600" />
+                <span>Employer Hiring Widget Studio</span>
+              </h2>
+              <p className="text-xs text-slate-600 mt-1 max-w-xl">
+                Add an official TalentXcel hiring badge to your company website, documentation, or engineering GitHub repo. Candidates who click the badge are seamlessly routed directly to your verified jobs hub on TalentXcel.
+              </p>
+            </div>
+            <Button
+              onClick={() => setActiveTab('profile')}
+              variant="outline"
+              size="sm"
+              className="bg-white text-xs font-semibold self-start sm:self-auto"
+            >
+              Back to Overview
+            </Button>
+          </div>
+
+          <EmployerHiringBadgeGenerator
+            companyName={companyName}
+            companySlug={companySlug}
+            openRolesCount={profileStats?.jobsCount || 1}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

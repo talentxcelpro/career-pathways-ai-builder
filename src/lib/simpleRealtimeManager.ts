@@ -30,7 +30,7 @@ export class SimpleRealtimeManager {
     callback: (payload: any) => void,
     filter?: string
   ): () => void {
-    const channelName = `simple-${table}-${Date.now()}`;
+    const channelName = `simple-${table}`;
     
     if (this.config.enableLogging) {
       console.log(`🔗 [SimpleRealtime] Subscribing to ${table}`);

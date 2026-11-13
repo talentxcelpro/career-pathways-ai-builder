@@ -53,7 +53,8 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
 
   if (loading) {
     return (
-      <Button disabled className={className}>
+      <Button 
+        data-testid="public-job-apply" disabled className={className}>
         <Briefcase className="h-4 w-4 mr-2" />
         Loading...
       </Button>
@@ -63,6 +64,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
   return (
     <>
       <Button 
+        data-testid="public-job-apply" 
         onClick={handleApplyClick}
         className={`bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 ${className}`}
       >

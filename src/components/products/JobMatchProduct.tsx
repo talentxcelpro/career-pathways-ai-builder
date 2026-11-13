@@ -72,6 +72,7 @@ import { JobPortalDiscoveryGrid } from './jobmatch/JobPortalDiscoveryGrid';
 import { CareerResourcesSection } from './jobmatch/CareerResourcesSection';
 import { JobPortalFooter } from './jobmatch/JobPortalFooter';
 import { TalentSparkJobCard } from '@/components/jobs/TalentSparkJobCard';
+import { navigateToJobDetail } from '@/utils/crossDomainJobRouting';
 import { ComprehensiveJobFilters } from '@/components/jobs/ComprehensiveJobFilters';
 import { CompanyLogoAvatar } from './jobmatch/CompanyLogoAvatar';
 import { PlatformEcosystemSidebar } from './jobmatch/PlatformEcosystemSidebar';
@@ -1492,11 +1493,11 @@ export const JobMatchProduct: React.FC = () => {
             </section>
 
             {/* 2-COLUMN MARKETPLACE SECTION: LATEST JOBS & SIDEBAR */}
-            <section id="latest-jobs-section" className="max-w-[1440px] mx-auto px-4 pb-16">
-              <div className="flex gap-6 items-start">
+            <section id="latest-jobs-section" className="max-w-[1680px] w-full min-w-0 mx-auto px-3 sm:px-4 lg:px-6 pb-16">
+              <div className="flex gap-4 xl:gap-5 items-start w-full min-w-0">
                 
                 {/* LEFT SIDEBAR: ComprehensiveJobFilters (Sticky, matching screenshot) */}
-                <aside className="w-72 flex-shrink-0 hidden lg:block" aria-label="Job Filters">
+                <aside className="w-60 xl:w-64 flex-shrink-0 hidden lg:block" aria-label="Job Filters">
                   <ComprehensiveJobFilters
                     filters={sidebarFilters}
                     onFiltersChange={setSidebarFilters}
@@ -1585,7 +1586,7 @@ export const JobMatchProduct: React.FC = () => {
                         <h2 className="text-sm sm:text-base font-bold text-[#111827]">Featured Opportunities</h2>
                         <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-[10px] px-1.5 py-0 font-semibold">Premium</Badge>
                       </div>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0">
                         {featuredJobs.slice(0, 4).map((job) => (
                           <TalentSparkJobCard
                             key={job.id}
@@ -1593,7 +1594,7 @@ export const JobMatchProduct: React.FC = () => {
                             onSave={(id) => toggleSaveJob(id)}
                             onQuickApply={(id) => handleApplyClick(jobs.find(j => j.id === id) || job)}
                             onApplyClick={(j) => handleApplyClick(j)}
-                            onViewDetails={(j) => setSelectedJobForDetail(j)}
+                            onViewDetails={(j) => navigateToJobDetail(j, navigate)}
                             isSaved={savedJobIds.includes(job.id)}
                             txcReward={15}
                             viewMode="card"
@@ -1692,7 +1693,7 @@ export const JobMatchProduct: React.FC = () => {
                         </Button>
                       </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4 w-full min-w-0">
                         {paginatedJobs.map((job) => (
                           <TalentSparkJobCard
                             key={job.id}
@@ -1700,7 +1701,7 @@ export const JobMatchProduct: React.FC = () => {
                             onSave={(id) => toggleSaveJob(id)}
                             onQuickApply={(id) => handleApplyClick(jobs.find(j => j.id === id) || job)}
                             onApplyClick={(j) => handleApplyClick(j)}
-                            onViewDetails={(j) => setSelectedJobForDetail(j)}
+                            onViewDetails={(j) => navigateToJobDetail(j, navigate)}
                             isSaved={savedJobIds.includes(job.id)}
                             txcReward={15}
                             viewMode="card"
@@ -1779,7 +1780,7 @@ export const JobMatchProduct: React.FC = () => {
                 </div>
               
                 {/* RIGHT SIDEBAR: AI Career Tools & Category Hub (Sticky beside jobs) */}
-                <aside className="w-80 flex-shrink-0 hidden xl:block space-y-4" aria-label="AI Career Hub & Categories">
+                <aside className="w-72 2xl:w-80 flex-shrink-0 hidden xl:block space-y-4" aria-label="AI Career Hub & Categories">
                   
                   {/* Block 1: AI Career Tools & Quality */}
                   <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-xs space-y-3">
@@ -1973,7 +1974,7 @@ export const JobMatchProduct: React.FC = () => {
             <AIMatchWorkspace
               jobs={jobs}
               onApplyJob={handleApplyClick}
-              onOpenJobDetail={(j) => setSelectedJobForDetail(j)}
+              onOpenJobDetail={(j) => navigateToJobDetail(j, navigate)}
               isSavedJob={(id) => savedJobIds.includes(id)}
               onToggleSaveJob={(id) => toggleSaveJob(id)}
             />
@@ -2026,7 +2027,7 @@ export const JobMatchProduct: React.FC = () => {
                 {jobs.filter(j => savedJobIds.includes(j.id)).map(job => (
                   <div
                     key={job.id}
-                    onClick={() => setSelectedJobForDetail(job)}
+                    onClick={() => navigateToJobDetail(job, navigate)}
                     className="bg-white border border-[#E2E8F0] hover:border-[#2563EB]/60 rounded-2xl p-4 sm:p-5 shadow-2xs hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 cursor-pointer text-left"
                   >
                     <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
@@ -2254,7 +2255,9 @@ export const JobMatchProduct: React.FC = () => {
       {selectedJobForApply && (
         <GuestJobApplyModal
           job={selectedJobForApply}
+          open={Boolean(selectedJobForApply)}
           isOpen={true}
+          onOpenChange={(isOpen) => !isOpen && setSelectedJobForApply(null)}
           onClose={() => setSelectedJobForApply(null)}
           onSuccess={() => {
             setTrackedApplicationsCount(prev => prev + 1);
@@ -2348,7 +2351,7 @@ export const JobMatchProduct: React.FC = () => {
               }}
               onOpenJobDetail={(j) => {
                 setAiMatchModalOpen(false);
-                setSelectedJobForDetail(j);
+                navigateToJobDetail(j, navigate);
               }}
               isSavedJob={(id) => savedJobIds.includes(id)}
               onToggleSaveJob={(id) => toggleSaveJob(id)}

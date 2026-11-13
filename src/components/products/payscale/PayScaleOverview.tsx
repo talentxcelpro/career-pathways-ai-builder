@@ -68,8 +68,8 @@ export const PayScaleOverview: React.FC<PayScaleOverviewProps> = ({
   const livePayroll = useMemo(() => {
     return calculateIndianPayroll({
       annualCtc: preset.ctc * 100000,
-      basicPercentageOfCtc: 50,
-      professionalTaxState: 'karnataka',
+      basicSalaryPercentage: 50,
+      stateForProfessionalTax: 'Karnataka',
       regime: 'new',
       financialYear: selectedFy,
       isMetroCity: true
@@ -93,9 +93,9 @@ export const PayScaleOverview: React.FC<PayScaleOverviewProps> = ({
   return (
     <div className="space-y-10 animate-in fade-in duration-200">
       
-      {/* ─────────────────────────────────────────────────────────────
+      {/* -------------------------------------------------------------
           1. HERO SECTION (APPLE UI MINIMALIST & REFINED TYPOGRAPHY)
-         ───────────────────────────────────────────────────────────── */}
+         ------------------------------------------------------------- */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center pt-3 pb-2">
         
         {/* Left Column: Apple-style Typography, Subtitle & Actions */}
@@ -110,11 +110,11 @@ export const PayScaleOverview: React.FC<PayScaleOverviewProps> = ({
           </div>
 
           {/* Headline — Refined Apple Typography (Smaller, Elegant & Balanced) */}
-          <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl lg:text-[32px] font-bold text-[#1D1D1F] tracking-tight leading-snug">
+          <div className="space-y-0.5">
+            <h1 className="text-lg sm:text-xl lg:text-[24px] font-bold text-[#1D1D1F] tracking-tight leading-snug">
               Know Your Worth. <span className="text-slate-500 font-medium">Understand Your Salary.</span>
             </h1>
-            <div className="text-2xl sm:text-3xl lg:text-[32px] font-bold tracking-tight leading-snug bg-gradient-to-r from-[#0071E3] via-[#2563EB] to-[#7138E8] bg-clip-text text-transparent">
+            <div className="text-lg sm:text-xl lg:text-[24px] font-bold tracking-tight leading-snug bg-gradient-to-r from-[#0071E3] via-[#2563EB] to-[#7138E8] bg-clip-text text-transparent">
               Plan Your Financial Future.
             </div>
           </div>
@@ -406,9 +406,9 @@ export const PayScaleOverview: React.FC<PayScaleOverviewProps> = ({
         </div>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* -------------------------------------------------------------
           2. FEATURE QUICK STRIP (7 HORIZONTAL CARDS MATCHING MOCKUP)
-         ───────────────────────────────────────────────────────────── */}
+         ------------------------------------------------------------- */}
       <div className="bg-white rounded-2xl border border-[#E2E8F0] p-2.5 sm:p-3 shadow-xs">
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
           
@@ -520,9 +520,9 @@ export const PayScaleOverview: React.FC<PayScaleOverviewProps> = ({
         </div>
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* -------------------------------------------------------------
           3. THE 3 PRIMARY JOURNEY CARDS (APPLE BENTO STYLE)
-         ───────────────────────────────────────────────────────────── */}
+         ------------------------------------------------------------- */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         {/* JOURNEY 1: Calculate My Salary */}
@@ -677,9 +677,9 @@ export const PayScaleOverview: React.FC<PayScaleOverviewProps> = ({
 
       </div>
 
-      {/* ─────────────────────────────────────────────────────────────
+      {/* -------------------------------------------------------------
           4. BOTTOM ENTERPRISE & METRIC RIBBON (#0B0F19 APPLE PRO DARK)
-         ───────────────────────────────────────────────────────────── */}
+         ------------------------------------------------------------- */}
       <div className="bg-[#0B0F19] text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-slate-800 flex flex-col lg:flex-row items-center justify-between gap-6">
         
         {/* Left: Employer CTA */}

@@ -54,15 +54,7 @@ const SlugProfile = () => {
   const cleanUsername = username?.startsWith('@') ? username.slice(1).trim() : username?.trim();
   const lowerUsername = cleanUsername?.toLowerCase() || '';
 
-  // Intercept reserved keywords if ever hit here
-  if (lowerUsername === 'feed') {
-    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-    const postId = params.get('post') || params.get('id');
-    if (postId) {
-      return <Navigate to={'/posts/' + encodeURIComponent(postId)} replace />;
-    }
-    return <Navigate to="/network" replace />;
-  }
+  const isFeedKeyword = lowerUsername === 'feed';
 
   const { user, session, loading: authLoading, isAuthenticated } = useOptimizedAuth();
   const [aboutExpanded, setAboutExpanded] = useState(false);
@@ -323,6 +315,15 @@ const handleMessage = async () => {
       toast.error("Failed to generate contact card");
     }
   };
+
+  if (isFeedKeyword) {
+    const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+    const postId = params.get('post') || params.get('id');
+    if (postId) {
+      return <Navigate to={'/posts/' + encodeURIComponent(postId)} replace />;
+    }
+    return <Navigate to="/network" replace />;
+  }
 
   if (isLoading) {
     return (

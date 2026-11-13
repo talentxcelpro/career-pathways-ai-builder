@@ -126,11 +126,13 @@ const UnifiedDashboard                = lazy(() => import('./pages/UnifiedDashbo
 const MobileReelsPage                 = lazy(() => import('./pages/MobileReelsPage'));
 const MobilePassport                  = lazy(() => import('./pages/mobile/MobilePassport').then(m => ({ default: m.MobilePassport })));
 const MobileJobs                      = lazy(() => import('./pages/mobile/MobileJobs'));
+const Index                           = lazy(() => import('@/pages/Index'));
 const RegionalMarketHub               = lazy(() => import('./pages/RegionalMarketHub'));
 const UserManagement                  = lazy(() => import('@/pages/admin/UserManagement'));
 const ResumeStudioProduct             = lazy(() => import('@/components/products/ResumeStudioProduct').then(m => ({ default: m.ResumeStudioProduct })));
 const JobMatchProduct                 = lazy(() => import('@/components/products/JobMatchProduct').then(m => ({ default: m.JobMatchProduct })));
 const JobDetailPage                   = lazy(() => import('@/components/products/jobmatch/JobDetailPage').then(m => ({ default: m.JobDetailPage })));
+const JobSubdomainRedirect            = lazy(() => import('@/components/jobs/JobSubdomainRedirect'));
 const InternationalJobLandingPage     = lazy(() => import('@/components/products/jobmatch/InternationalJobLandingPage').then(m => ({ default: m.InternationalJobLandingPage })));
 const PayScaleProduct                 = lazy(() => import('@/components/products/PayScaleProduct').then(m => ({ default: m.PayScaleProduct })));
 const CampusOSProduct                 = lazy(() => import('@/components/products/CampusOSProduct').then(m => ({ default: m.CampusOSProduct })));
@@ -352,7 +354,7 @@ const App = () => {
         const idleCallback = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
         idleCallback(() => {
           initializePerformanceOptimizations();
-          initializeJobsOptimizations(queryClient).catch(console.error);
+          // Optimized: Deferred jobs prefetching from global root to /jobs route to conserve Disk I/O budget
           
           import('@/utils/routePreloader').then(({ enableRoutePreloading }) => {
             enableRoutePreloading();
@@ -390,7 +392,7 @@ const App = () => {
                         <TooltipProvider>
                           <PhaseInitializer />
                          <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
-                        {currentUniverse !== 'JOBS' && currentUniverse !== 'CAREERS' && currentUniverse !== 'SALARY' && <Navbar />}
+                        {currentUniverse === 'CORE' && <Navbar />}
                         <main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">
                           <Suspense fallback={<PageFallbackSkeleton />}>
                             <RouteTransition>
@@ -406,7 +408,13 @@ const App = () => {
                                   </ProtectedRoute>
                                 } />
                                 
-                                 {/* ── Multi-Domain Universe Entry Routes (Active when visited via dedicated product subdomain) ── */}
+                                  {/* ── Multi-Domain Universe Entry Routes (Active when visited via dedicated product subdomain or Core) ── */}
+                                  {currentUniverse === 'CORE' && (
+                                    <>
+                                      <Route path="/" element={<Suspense fallback={<PageFallbackSkeleton />}><Index /></Suspense>} />
+                                    </>
+                                  )}
+
                                   {currentUniverse === 'JOBS' && (
                                     <>
                                       <Route path="/" element={<Suspense fallback={<div>Loading JobMatch OS...</div>}><JobMatchProduct /></Suspense>} />
@@ -474,9 +482,9 @@ const App = () => {
                                       <Route path="/jobs/data-analyst-remote-usa" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="data-analyst-remote-usa" /></Suspense>} />
                                       <Route path="/jobs/software-engineer-remote-us" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="software-engineer-remote-us" /></Suspense>} />
 
-                                      <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobDetailPage /></Suspense>} />
-                                      <Route path="/job/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobDetailPage /></Suspense>} />
-                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobDetailPage /></Suspense>} />
+                                      <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobSubdomainRedirect /></Suspense>} />
+                                      <Route path="/job/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobSubdomainRedirect /></Suspense>} />
+                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobSubdomainRedirect /></Suspense>} />
                                     </>
                                   )}
 

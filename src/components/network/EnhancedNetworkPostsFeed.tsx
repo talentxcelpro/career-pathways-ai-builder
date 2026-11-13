@@ -42,7 +42,7 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
   useEffect(() => {
     try {
       const channel = supabase
-        .channel(`feed-posts-realtime-sync-${Date.now()}`)
+        .channel('feed-posts-realtime-sync')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
           refetch();
         })

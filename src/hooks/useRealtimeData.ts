@@ -37,7 +37,7 @@ export function useRealtimeSubscriptions(subscriptions: RealtimeSubscription[]) 
     // Create new subscriptions with error handling
     subscriptions.forEach((subscription, index) => {
       try {
-        const channelName = `realtime-${subscription.table}-${index}-${Date.now()}`;
+        const channelName = `realtime-${subscription.table}-${index}`;
         const channel = supabase.channel(channelName);
 
         const config: any = {

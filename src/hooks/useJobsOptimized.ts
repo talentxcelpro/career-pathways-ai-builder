@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 interface JobFilters {
@@ -33,6 +33,7 @@ export const useJobsOptimized = (
   mode: 'pagination' | 'infinite' = 'pagination'
 ): OptimizedJobsResult => {
   const [currentPage, setCurrentPage] = useState(1);
+  const queryClient = useQueryClient();
   const pageSize = 15; // Reduced for faster loading
   const prefetchTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -131,24 +132,36 @@ export const useJobsOptimized = (
         clearTimeout(prefetchTimeoutRef.current);
       }
 
-      // Prefetch after a short delay
+      // Prefetch after a short delay into React Query cache
       prefetchTimeoutRef.current = setTimeout(() => {
-        supabase.rpc('get_jobs_paginated_optimized', {
-          p_page: currentPage + 1,
-          p_limit: pageSize,
-          p_search: filters.search || '',
-          p_location: filters.location || '',
-          p_employment_types: filters.employment_type,
-          p_experience_levels: filters.experience_level,
-          p_min_salary: filters.salary_min || 0,
-          p_max_salary: filters.salary_max || 0,
-          p_is_remote: filters.is_remote || false,
-          p_skills: filters.skills,
-          p_sort_by: sortBy
-        }).then(({ data }) => {
-          console.log('✅ Prefetched next page');
+        const nextPage = currentPage + 1;
+        queryClient.prefetchQuery({
+          queryKey: ['jobs-paginated-optimized', filters, sortBy, nextPage],
+          queryFn: async () => {
+            const { data, error } = await supabase.rpc('get_jobs_paginated_optimized', {
+              p_page: nextPage,
+              p_limit: pageSize,
+              p_search: filters.search || '',
+              p_location: filters.location || '',
+              p_employment_types: filters.employment_type,
+              p_experience_levels: filters.experience_level,
+              p_min_salary: filters.salary_min || 0,
+              p_max_salary: filters.salary_max || 0,
+              p_is_remote: filters.is_remote || false,
+              p_skills: filters.skills,
+              p_sort_by: sortBy
+            });
+            if (error) throw error;
+            const result = data as any;
+            return {
+              jobs: Array.isArray(result?.jobs) ? result.jobs : [],
+              totalCount: result?.total_count || 0,
+              hasMore: result?.has_more || false
+            };
+          },
+          staleTime: 90000,
         });
-      }, 1000);
+      }, 1500);
     }
   }, [mode, currentPage, filters, sortBy, paginationQuery.data?.hasMore]);
 
