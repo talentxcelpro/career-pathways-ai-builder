@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createClient } from '@supabase/supabase-js';
-import { renderEnterpriseTemplate as renderSendTemplate } from './send';
 
 const SUPABASE_URL =
   process.env.TX_SUPABASE_URL ||
@@ -364,8 +363,1464 @@ export function wrapInMasterLayout(options: {
 
 
 
-export const renderEnterpriseTemplate = renderSendTemplate;
-export const renderTemplate = renderSendTemplate;
+export function renderEnterpriseTemplate(
+  templateName: string,
+  vars: Record<string, any>,
+  recipientEmail: string
+): EmailRenderOutput {
+  const t = templateName.toLowerCase().trim();
+  const name = escapeHtml(vars.name || vars.firstName || vars.candidateName || vars.recipient_name || 'there');
+  const email = escapeHtml(recipientEmail);
+
+  let subject = 'Notification from TalentXcel';
+  let preheader = 'Important career update from TalentXcel';
+  let contentHtml = '';
+  let plainText = '';
+  let category: 'transactional' | 'engagement' | 'marketing' = 'transactional';
+
+  switch (t) {
+    // ═════════════════════════════════════════════════════════════════════════
+    // 1. CANDIDATE CAREER OS (1 - 5)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'welcome':
+    case 'welcome_candidate': {
+      category = 'transactional';
+      subject = `Welcome to TalentXcel. Your next career chapter starts here.`;
+      preheader = 'Your account is active. Access your connected professional ecosystem to build your identity, unlock opportunities and accelerate your career.';
+
+      contentHtml = `
+        <div style="margin-bottom: 24px;">
+          <div style="font-size: 15px; font-weight: 600; color: #64748b; margin-bottom: 8px;">
+            Hi ${name},
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 14px 0; font-size: 25px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px; line-height: 32px;">
+            Welcome to TalentXcel.<br>Your next career chapter starts here.
+          </h1>
+          <p style="margin: 0 0 12px 0; font-size: 14.5px; line-height: 23px; color: #334155;">
+            Your account is now active, and you have access to a connected professional ecosystem designed to help you build your identity, unlock opportunities and accelerate your career.
+          </p>
+          <p style="margin: 0 0 12px 0; font-size: 14.5px; line-height: 23px; color: #334155; font-style: italic;">
+            The world of work is evolving. Your professional journey should evolve with it.
+          </p>
+          <p style="margin: 0; font-size: 14.5px; line-height: 23px; color: #475569;">
+            TalentXcel combines AI-powered career intelligence, professional networking, digital career credentials, job discovery and continuous skill development to help you stay prepared, visible and connected.
+          </p>
+        </div>
+
+        <div style="margin: 28px 0 14px 0; border-top: 1px solid #e2e8f0; padding-top: 22px;">
+          <h2 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a; letter-spacing: -0.3px;">
+            Everything You Need to Move Your Career Forward
+          </h2>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-1.png`,
+            title: '01. Build a Stronger Resume',
+            description: 'Create professional resumes, analyse ATS compatibility, identify skill and keyword gaps, and tailor your profile to the roles you want.',
+            url: 'https://talentxcel.in/resume/ats-check'
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-2.png`,
+            title: '02. Create Your Career Passport',
+            description: 'Go beyond a traditional CV. Build your digital professional identity with your experience, skills, projects, achievements and certifications.',
+            url: 'https://talentxcel.in/passport'
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-3.png`,
+            title: '03. Discover Your Next Opportunity',
+            description: 'Explore job opportunities across industries, discover relevant roles and take meaningful steps towards your next career move.',
+            url: 'https://talentxcel.in/jobs'
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-4.png`,
+            title: '04. Navigate Your Career with AI',
+            description: 'Get intelligent career guidance, personalised roadmaps, skill-gap analysis, job matching and technical assessments.',
+            url: 'https://careers.talentxcel.in/ai-career-hub'
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-5.png`,
+            title: '05. Know Your Professional Worth',
+            description: 'Explore salary benchmarks, compensation insights and market intelligence to make informed career decisions.',
+            url: 'https://salary.talentxcel.in/index-salary.html'
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-6.png`,
+            title: '06. Connect with the Professional World',
+            description: 'Build meaningful connections with professionals, industry experts, founders and emerging talent. Share knowledge, publish articles and participate in professional discussions.',
+            url: 'https://talentxcel.in/network/articles'
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-7.png`,
+            title: '07. Prepare. Perform. Progress.',
+            description: 'Strengthen your interview skills, improve your professional presentation and build the capabilities needed for long-term career success.',
+            url: 'https://talentxcel.in/dashboard'
+          }
+        ])}
+
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 22px 20px; margin: 26px 0 22px 0;">
+          <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">
+            Make Your First Move
+          </div>
+          <p style="margin: 0 0 12px 0; font-size: 13.5px; color: #475569; line-height: 20px;">
+            Your TalentXcel journey begins with three simple actions:
+          </p>
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 12px;">
+            <tr>
+              <td style="padding: 4px 0; font-size: 13.5px; color: #1e293b; line-height: 20px;">
+                <strong style="color: #0071e3;">1.</strong> Complete your professional profile.
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; font-size: 13.5px; color: #1e293b; line-height: 20px;">
+                <strong style="color: #0071e3;">2.</strong> Run your first ATS resume assessment.
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 4px 0; font-size: 13.5px; color: #1e293b; line-height: 20px;">
+                <strong style="color: #0071e3;">3.</strong> Create your Career Passport.
+              </td>
+            </tr>
+          </table>
+          <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 19px;">
+            These steps will help you establish a stronger professional presence and get more value from the TalentXcel ecosystem.
+          </p>
+        </div>
+
+        <div style="text-align: center; margin: 26px 0 8px 0;">
+          <p style="margin: 0; font-size: 15px; font-weight: 600; color: #0f172a; line-height: 23px; letter-spacing: -0.2px;">
+            Think beyond the resume. Build your professional identity.<br>
+            Discover your potential. Create your next opportunity.
+          </p>
+        </div>
+
+        ${renderButton('GET STARTED WITH TALENTXCEL', `${CANONICAL_URL}/dashboard`)}
+
+        <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 13.5px; line-height: 22px; color: #475569;">
+          <p style="margin: 0 0 12px 0;">
+            We look forward to being part of your journey.<br>
+            <strong style="color: #0f172a;">Team TalentXcel</strong><br>
+            <a href="https://talentxcel.in" target="_blank" style="color: #0071e3; text-decoration: none; font-weight: 500;">www.talentxcel.in</a>
+          </p>
+          <p style="margin: 12px 0 0 0; font-size: 12px; font-weight: 600; color: #64748b; letter-spacing: 0.3px;">
+            Your Career. Your Identity. Your Next Opportunity.
+          </p>
+          <p style="margin: 6px 0 0 0; font-size: 11px; color: #94a3b8; line-height: 16px;">
+            This is an automated account welcome email. You received this message because an account was created on TalentXcel.
+          </p>
+        </div>
+      `;
+
+      plainText = `Hi ${name},\n\nWelcome to TalentXcel. Your next career chapter starts here.\n\nYour account is now active, and you have access to a connected professional ecosystem designed to help you build your identity, unlock opportunities and accelerate your career.\n\nThe world of work is evolving. Your professional journey should evolve with it.\n\nTalentXcel combines AI-powered career intelligence, professional networking, digital career credentials, job discovery and continuous skill development to help you stay prepared, visible and connected.\n\nEverything You Need to Move Your Career Forward:\n\n01. Build a Stronger Resume: https://talentxcel.in/resume/ats-check\n02. Create Your Career Passport: https://talentxcel.in/passport\n03. Discover Your Next Opportunity: https://talentxcel.in/jobs\n04. Navigate Your Career with AI: https://careers.talentxcel.in/ai-career-hub\n05. Know Your Professional Worth: https://salary.talentxcel.in/index-salary.html\n06. Connect with the Professional World: https://talentxcel.in/network/articles\n07. Prepare. Perform. Progress.: https://talentxcel.in/dashboard\n\nMake Your First Move:\n1. Complete your professional profile.\n2. Run your first ATS resume assessment.\n3. Create your Career Passport.\n\nThink beyond the resume. Build your professional identity. Discover your potential. Create your next opportunity.\n\nGET STARTED WITH TALENTXCEL: https://talentxcel.in/dashboard\n\nWe look forward to being part of your journey.\nTeam TalentXcel\nwww.talentxcel.in\n\nYour Career. Your Identity. Your Next Opportunity.\nThis is an automated account welcome email.`;
+      break;
+    }
+
+    case 'profile_incomplete':
+    case 'profile_completion_reminder': {
+      category = 'engagement';
+      const completeness = escapeHtml(vars.completeness || '65%');
+      const missingSection = escapeHtml(vars.missingSection || 'Portfolio, Key Projects & Work Highlights');
+      subject = `Complete your TalentXcel profile to unlock 3x recruiter search visibility`;
+      preheader = `Your profile is at ${completeness}. Adding ${missingSection} gives you priority visibility with top hiring managers and recruiters.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Your profile is ${completeness} complete, ${name}.
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Candidates with completed Career Passports receive 3.4x more recruiter profile views and direct connection requests.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-2.png`,
+            title: 'Complete Your Career Passport',
+            description: 'Add verified achievements, project case studies, and certifications to reach 100% completeness.',
+            url: `${CANONICAL_URL}/passport`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Current Completeness', value: completeness },
+          { label: 'Recommended Next Step', value: missingSection },
+          { label: 'Est. Completion Time', value: '2 Minutes' },
+          { label: 'Search Visibility Impact', value: '+240% Priority Rank' }
+        ])}
+
+        ${renderButton('Complete Your Profile', `${CANONICAL_URL}/profile/edit`)}
+      `;
+
+      plainText = `Hi ${name}, your TalentXcel profile is ${completeness} complete. Complete ${missingSection} to boost recruiter views: ${CANONICAL_URL}/profile/edit`;
+      break;
+    }
+
+    case 'career_map_ready': {
+      category = 'engagement';
+      const targetRole = escapeHtml(vars.targetRole || 'Strategy & Operations Director');
+      const timeHorizon = escapeHtml(vars.timeHorizon || '3-5 Years');
+      const skillGaps = escapeHtml(vars.skillGaps || 'Enterprise Cross-Functional Leadership, P&L Modeling, Growth Strategy');
+      const ctcCorridor = escapeHtml(vars.ctcCorridor || '₹35L - ₹55L PA');
+      subject = `Your AI Career Pathway Roadmap is Ready: ${targetRole} 🧭`;
+      preheader = `We analyzed 10,000+ career trajectories to chart your fastest path to ${targetRole}.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Your Career Pathway to ${targetRole}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Our Career Pathway intelligence engine generated a milestone-by-milestone roadmap for your skills.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-4.png`,
+            title: 'Explore AI Milestone Roadmap',
+            description: 'View personalized skill bridges, execution milestones, and compensation benchmark corridors.',
+            url: `${CANONICAL_URL}/ai-career-map`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Target Role', value: targetRole },
+          { label: 'Target Horizon', value: timeHorizon },
+          { label: 'Core Skill Gaps', value: skillGaps },
+          { label: 'Target CTC Corridor', value: ctcCorridor }
+        ])}
+
+        ${renderButton('Explore Your AI Career Roadmap', `${CANONICAL_URL}/ai-career-map`)}
+      `;
+
+      plainText = `Hi ${name}, your AI Career Roadmap to ${targetRole} is ready. View milestones: ${CANONICAL_URL}/ai-career-map`;
+      break;
+    }
+
+    case 'career_passport_verified': {
+      category = 'transactional';
+      const badgeTitle = escapeHtml(vars.badgeTitle || 'Professional Domain Excellence & Leadership');
+      const passportId = escapeHtml(vars.passportId || 'TXC-PASS-84920');
+      subject = `Career Passport Verified: ${badgeTitle} ✅`;
+      preheader = 'Your verified credentials, achievements and skill benchmarks are active on TalentXcel.';
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Career Passport Verified
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Congratulations, ${name}. Your career profile and achievements have received an authenticated verification badge.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-2.png`,
+            title: 'Cryptographic Career Passport',
+            description: 'Your verified credentials and achievements are tamper-proof and shareable directly with hiring leaders.',
+            url: `${CANONICAL_URL}/passport`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Passport Credential ID', value: passportId },
+          { label: 'Verified Competency', value: badgeTitle },
+          { label: 'Verification Standard', value: 'Proof-of-Work & Peer Audit' },
+          { label: 'Recruiter Badge Status', value: 'Active on Network' }
+        ])}
+
+        ${renderButton('View Verified Career Passport', `${CANONICAL_URL}/passport`)}
+      `;
+
+      plainText = `Hi ${name}, your Career Passport (${passportId}) is verified for ${badgeTitle}. View: ${CANONICAL_URL}/passport`;
+      break;
+    }
+
+    case 'weekly_summary':
+    case 'weekly_candidate_digest': {
+      category = 'engagement';
+      const views = escapeHtml(vars.views || '48');
+      const appearances = escapeHtml(vars.appearances || '134');
+      const matches = escapeHtml(vars.matches || '12');
+      subject = `Your TalentXcel Weekly Network & Career Digest 📊`;
+      preheader = `${views} recruiter views, ${appearances} search appearances, and ${matches} new matching jobs this week.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Your Weekly Activity Summary
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Here is how your profile and network performed across TalentXcel this past week:
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Recruiter Profile Views', value: `${views} Views` },
+          { label: 'Talent Search Appearances', value: `${appearances} Times` },
+          { label: 'New Curated Role Matches', value: `${matches} Verified Jobs` },
+          { label: 'Most In-Demand Stack', value: 'Go, PostgreSQL, Kubernetes' }
+        ])}
+
+        ${renderButton('Open Your Career Dashboard', `${CANONICAL_URL}/dashboard`)}
+      `;
+
+      plainText = `Hi ${name}, here is your weekly summary:\n- Recruiter Views: ${views}\n- Search Appearances: ${appearances}\n- New Matches: ${matches}\n\nView details: ${CANONICAL_URL}/dashboard`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 2. THE PROFESSIONAL SOCIAL NETWORK (/network) (6 - 13)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'connection_request':
+    case 'new_connection': {
+      category = 'engagement';
+      const sender = escapeHtml(vars.sender_name || vars.senderName || vars.inviter_name || vars.requester_name || vars.from_name || vars.name || 'A TalentXcel Member');
+      const senderTitle = escapeHtml(vars.sender_title || vars.senderTitle || vars.sender_headline || vars.senderHeadline || vars.headline || vars.title || vars.current_job_title || vars.role || vars.requester_title || '');
+      const senderLocation = escapeHtml(vars.sender_location || vars.senderLocation || vars.location || '');
+      const senderCompany = escapeHtml(vars.sender_company || vars.senderCompany || vars.company || '');
+      const senderAvatar = vars.sender_avatar || vars.senderAvatar || vars.avatar_url || vars.avatarUrl || '';
+      const personalNote = escapeHtml(vars.personal_note || vars.personalNote || vars.message || vars.note || '');
+
+      subject = `${sender} wants to connect with you on TalentXcel 🤝`;
+      preheader = senderTitle ? `${sender} (${senderTitle}) sent you a connection request.` : `${sender} sent you a connection request on TalentXcel.`;
+
+      const avatarHtml = renderMemberAvatar(sender, senderAvatar, 76);
+
+      const metadataRows: Array<{ label: string; value: string }> = [];
+      if (senderTitle) metadataRows.push({ label: 'Current Role', value: senderTitle });
+      if (senderCompany) metadataRows.push({ label: 'Company / Organization', value: senderCompany });
+      if (senderLocation) metadataRows.push({ label: 'Location', value: senderLocation });
+      if (vars.mutual_connections || vars.mutualConnections) {
+        metadataRows.push({ label: 'Mutual Connections', value: `${escapeHtml(vars.mutual_connections || vars.mutualConnections)} Connections` });
+      }
+      if (vars.mutual_focus || vars.mutualFocus) {
+        metadataRows.push({ label: 'Shared Focus Area', value: escapeHtml(vars.mutual_focus || vars.mutualFocus) });
+      }
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="margin: 0 auto 16px auto; width: 76px; height: 76px; text-align: center;">
+            ${avatarHtml}
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px; line-height: 28px;">
+            ${sender}
+          </h1>
+          ${senderTitle ? `
+            <div style="font-size: 14.5px; color: #475569; font-weight: 500; line-height: 20px; max-width: 440px; margin: 0 auto 6px auto; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+              ${senderTitle}
+            </div>
+          ` : ''}
+          ${senderLocation ? `
+            <div style="font-size: 13px; color: #64748b; font-weight: 400; margin: 0 auto 12px auto; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;">
+              📍 ${senderLocation}
+            </div>
+          ` : ''}
+          <p style="margin: 12px 0 0 0; font-size: 14.5px; color: #334155; line-height: 22px;">
+            would like to connect with you on the TalentXcel professional network.
+          </p>
+        </div>
+
+        ${personalNote ? `
+          <div style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-left: 4px solid #0071e3; border-radius: 12px; padding: 16px 20px; margin: 20px 0; text-align: left;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #0071e3; margin-bottom: 6px;">
+              Personal Invitation Note
+            </div>
+            <div style="font-size: 14px; line-height: 22px; color: #1e293b; font-style: italic;">
+              &ldquo;${personalNote}&rdquo;
+            </div>
+          </div>
+        ` : ''}
+
+        ${metadataRows.length > 0 ? renderDataCard(metadataRows) : ''}
+
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 28px auto 12px auto; text-align: center;">
+          <tr>
+            <td align="center" style="border-radius: 980px; background-color: #0071e3; background-image: linear-gradient(180deg, #0077ed 0%, #0066cc 100%); border: 1px solid #005bb5; box-shadow: 0 4px 16px rgba(0, 113, 227, 0.32);">
+              <a href="${CANONICAL_URL}/network/requests" target="_blank" style="font-size: 14px; font-weight: 600; color: #ffffff; text-decoration: none; padding: 13px 34px; border-radius: 980px; display: inline-block; letter-spacing: -0.2px; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif;">
+                Accept Invitation &rarr;
+              </a>
+            </td>
+          </tr>
+        </table>
+      `;
+
+      plainText = `${sender}${senderTitle ? ` (${senderTitle})` : ''} wants to connect with you on TalentXcel: ${CANONICAL_URL}/network/requests`;
+      break;
+    }
+
+    case 'connection_accepted': {
+      category = 'engagement';
+      const connectionName = escapeHtml(vars.connection_name || vars.connectionName || vars.name || vars.sender_name || vars.senderName || 'A TalentXcel Member');
+      const connectionTitle = escapeHtml(vars.connection_title || vars.connectionTitle || vars.sender_title || vars.senderTitle || vars.headline || vars.title || '');
+      const connectionAvatar = vars.connection_avatar || vars.connectionAvatar || vars.avatar_url || '';
+      subject = `${connectionName} accepted your connection request! 🎉`;
+      preheader = `You and ${connectionName} are now connected on TalentXcel. Start a conversation.`;
+
+      const avatarHtml = renderMemberAvatar(connectionName, connectionAvatar, 76);
+
+      const metadataRows: Array<{ label: string; value: string }> = [
+        { label: 'Connected With', value: connectionName }
+      ];
+      if (connectionTitle) metadataRows.push({ label: 'Headline / Role', value: connectionTitle });
+      metadataRows.push({ label: 'Network Access', value: 'Direct Messaging & Profile Collaboration' });
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <div style="margin: 0 auto 16px auto; width: 76px; height: 76px; text-align: center;">
+            ${avatarHtml}
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 8px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px;">
+            ${connectionName} accepted your connection request
+          </h1>
+          ${connectionTitle ? `
+            <div style="font-size: 14.5px; color: #475569; font-weight: 500; line-height: 20px; max-width: 440px; margin: 0 auto 12px auto;">
+              ${connectionTitle}
+            </div>
+          ` : ''}
+          <p style="margin: 12px 0 0 0; font-size: 14.5px; color: #334155; line-height: 22px;">
+            You and <strong>${connectionName}</strong> are now connected. You can now exchange direct messages, view each other's full Career Passports, and collaborate on professional opportunities.
+          </p>
+        </div>
+
+        ${renderDataCard(metadataRows)}
+
+        ${renderButton('Send a Message', `${CANONICAL_URL}/network/messages`)}
+      `;
+
+      plainText = `${connectionName} accepted your connection request on TalentXcel! Send a message: ${CANONICAL_URL}/network/messages`;
+      break;
+    }
+
+    case 'direct_message':
+    case 'message_notification': {
+      category = 'engagement';
+      const sender = escapeHtml(vars.sender_name || vars.senderName || vars.from_name || vars.fromName || vars.name || 'A TalentXcel Member');
+      const senderTitle = escapeHtml(vars.sender_title || vars.senderTitle || vars.headline || '');
+      const senderAvatar = vars.sender_avatar || vars.senderAvatar || vars.avatar_url || '';
+      const preview = escapeHtml(vars.message_preview || vars.messagePreview || vars.preview || vars.message || vars.content || 'You have received a new direct message on TalentXcel.');
+      subject = `New message from ${sender} on TalentXcel 💬`;
+      preheader = `"${preview.slice(0, 80)}..."`;
+
+      const avatarHtml = renderMemberAvatar(sender, senderAvatar, 68);
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="margin: 0 auto 14px auto; width: 68px; height: 68px; text-align: center;">
+            ${avatarHtml}
+          </div>
+          <h1 class="hero-title" style="margin: 0 0 6px 0; font-size: 22px; font-weight: 700; color: #0f172a; letter-spacing: -0.4px;">
+            New message from ${sender}
+          </h1>
+          ${senderTitle ? `
+            <div style="font-size: 14px; color: #64748b; font-weight: 500; margin-bottom: 8px;">
+              ${senderTitle}
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="background-color: #f8fafc; border: 1.5px solid #e2e8f0; border-left: 4px solid #0071e3; border-radius: 12px; padding: 18px 22px; margin: 20px 0; text-align: left;">
+          <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 8px;">
+            Message Preview
+          </div>
+          <div style="font-size: 14.5px; line-height: 23px; color: #1e293b; font-style: italic;">
+            &ldquo;${preview}&rdquo;
+          </div>
+        </div>
+
+        ${renderButton('Reply to Message', `${CANONICAL_URL}/network/messages`)}
+      `;
+
+      plainText = `New message from ${sender}: "${preview}"\n\nReply here: ${CANONICAL_URL}/network/messages`;
+      break;
+    }
+
+    case 'mention_notification': {
+      category = 'engagement';
+      const author = escapeHtml(vars.author_name || vars.authorName || vars.sender_name || vars.senderName || 'A member');
+      const postTitle = escapeHtml(vars.post_title || vars.postTitle || vars.title || 'a discussion post');
+      subject = `${author} mentioned you in a discussion on TalentXcel 📣`;
+      preheader = `${author} tagged you in "${postTitle}". Join the conversation.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            You were mentioned by ${author}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            ${author} mentioned you in a professional post: <strong>"${postTitle}"</strong>.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Post Discussion', value: postTitle },
+          { label: 'Mentioned By', value: author },
+          { label: 'Channel', value: escapeHtml(vars.channel || 'Industry Leadership & Discussions') }
+        ])}
+
+        ${renderButton('View Discussion & Reply', `${CANONICAL_URL}/network/posts`)}
+      `;
+
+      plainText = `${author} mentioned you in "${postTitle}". View post: ${CANONICAL_URL}/network/posts`;
+      break;
+    }
+
+    case 'event_invitation': {
+      category = 'engagement';
+      const eventTitle = escapeHtml(vars.eventTitle || 'Global Leadership Roundtable: Navigating Industry Evolution');
+      const host = escapeHtml(vars.hostName || 'TalentXcel Executive Network');
+      const eventDate = escapeHtml(vars.eventDate || 'Saturday, 14 Nov 2026, 6:00 PM IST');
+      subject = `Event Invitation: ${eventTitle} 🗓️`;
+      preheader = `You're invited to join ${eventTitle} hosted by ${host}.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            ${eventTitle}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            You are invited to an interactive live roundtable and AMA hosted by ${host}.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Event', value: eventTitle },
+          { label: 'Date & Time', value: eventDate },
+          { label: 'Format', value: 'Live Virtual Session & Interactive Q&A' },
+          { label: 'Host', value: host }
+        ])}
+
+        ${renderButton('RSVP & Reserve Your Seat', `${CANONICAL_URL}/network/events`)}
+      `;
+
+      plainText = `You're invited to "${eventTitle}" on ${eventDate}. RSVP here: ${CANONICAL_URL}/network/events`;
+      break;
+    }
+
+    case 'community_invite': {
+      category = 'engagement';
+      const communityName = escapeHtml(vars.communityName || 'Global Strategy & Operations Leadership Guild');
+      const memberCount = escapeHtml(vars.memberCount || '3,420 Verified Professionals');
+      subject = `You're invited to join ${communityName} 👥`;
+      preheader = `Connect with ${memberCount} sharing industry insights and leadership opportunities.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Join ${communityName}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Based on your professional profile and credentials, you've been invited to join this private leadership circle.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Community', value: communityName },
+          { label: 'Members', value: memberCount },
+          { label: 'Primary Topics', value: escapeHtml(vars.primaryTopics || 'Strategic Leadership, Market Expansion, Operational Excellence') },
+          { label: 'Moderation', value: 'Verified Industry Leaders Only' }
+        ])}
+
+        ${renderButton('Accept Community Invite', `${CANONICAL_URL}/network/communities`)}
+      `;
+
+      plainText = `You're invited to join ${communityName}. Join here: ${CANONICAL_URL}/network/communities`;
+      break;
+    }
+
+    case 'skill_swap_request': {
+      category = 'engagement';
+      const peerName = escapeHtml(vars.peer_name || vars.peerName || vars.sender_name || vars.senderName || vars.name || 'A TalentXcel Member');
+      const offeringSkill = escapeHtml(vars.offering_skill || vars.offeringSkill || vars.skill_offered || 'Domain Mentorship & Expertise');
+      const seekingSkill = escapeHtml(vars.seeking_skill || vars.seekingSkill || vars.skill_sought || 'Professional Collaboration');
+      subject = `Skill Swap Request from ${peerName}: ${offeringSkill} ⇄ ${seekingSkill} 🔄`;
+      preheader = `${peerName} wants to swap 1-on-1 professional knowledge sessions with you.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            New Skill Swap Request
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            <strong>${peerName}</strong> noticed your expertise in <strong>${seekingSkill}</strong> and would like to exchange professional insights.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Peer Member', value: peerName },
+          { label: 'Offers Knowledge In', value: offeringSkill },
+          { label: 'Interested in Learning', value: seekingSkill },
+          { label: 'Format', value: '45-Min Peer Exchange Session' }
+        ])}
+
+        ${renderButton('Review Skill Swap Request', `${CANONICAL_URL}/network/skill-swap`)}
+      `;
+
+      plainText = `${peerName} wants to swap skills (${offeringSkill} for ${seekingSkill}). Review: ${CANONICAL_URL}/network/skill-swap`;
+      break;
+    }
+
+    case 'post_trending': {
+      category = 'engagement';
+      const postTitle = escapeHtml(vars.postTitle || 'Frameworks for Scaling High-Performing Multi-Disciplinary Teams');
+      const impressionCount = escapeHtml(vars.impressionCount || '8,920 Impressions');
+      subject = `Your post is trending on TalentXcel! 🔥`;
+      preheader = `"${postTitle}" just passed ${impressionCount} across the professional feed.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Your post is gaining traction!
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Your publication <strong>"${postTitle}"</strong> has been featured on the network homepage.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Publication', value: postTitle },
+          { label: 'Total Reach', value: impressionCount },
+          { label: 'Community Reactions', value: '430+ Endorsements & 84 Comments' },
+          { label: 'New Followers Gained', value: '+38 Industry Peers' }
+        ])}
+
+        ${renderButton('View Post & Engage with Readers', `${CANONICAL_URL}/network/posts`)}
+      `;
+
+      plainText = `Your post "${postTitle}" is trending with ${impressionCount}. View analytics: ${CANONICAL_URL}/network/posts`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 3. REELS & VIDEO INTROS (/reels) (14)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'reel_activity_alert': {
+      category = 'engagement';
+      const company = escapeHtml(vars.company_name || vars.companyName || vars.company || 'A verified hiring team');
+      const reelTitle = escapeHtml(vars.reel_title || vars.reelTitle || vars.title || 'Career Video Pitch');
+      const watchTime = escapeHtml(vars.watchTime || vars.watch_time || 'Full Watch');
+      subject = `A recruiter from ${company} watched your Video Reel 🎬`;
+      preheader = `${company} reviewed your 30-second elevator pitch on TalentXcel Reels.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Recruiter Watched Your Reel
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            A verified hiring team from <strong>${company}</strong> watched your video elevator pitch: <strong>"${reelTitle}"</strong>.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Interested Company', value: company },
+          { label: 'Reel Highlight', value: reelTitle },
+          { label: 'Engagement Level', value: watchTime },
+          { label: 'Recruiter Action', value: 'Saved to Candidate Shortlist' }
+        ])}
+
+        ${renderButton('Manage Your Reels & Pitches', `${CANONICAL_URL}/reels`)}
+      `;
+
+      plainText = `A recruiter from ${company} watched your video reel "${reelTitle}". Manage reels: ${CANONICAL_URL}/reels`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 4. RESUME BUILDER & ATS DIAGNOSTICS (/resume) (15 - 17)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'resume_created': {
+      category = 'transactional';
+      const resumeTitle = escapeHtml(vars.resumeTitle || 'Senior Backend Engineer (Go/Distributed Systems)');
+      subject = `Resume Created Successfully: ${resumeTitle} 📄`;
+      preheader = 'Your ATS-optimized resume has been generated and is ready to download.';
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Resume Created Successfully
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Your resume <strong>${resumeTitle}</strong> is saved and formatted with clean parsing typography for company applicant tracking systems.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Resume Name', value: resumeTitle },
+          { label: 'Format Compatibility', value: 'PDF & Clean Text Parsing' },
+          { label: 'ATS Optimization Status', value: 'Scored & Ready' }
+        ])}
+
+        ${renderButton('Edit & Download Resume', `${CANONICAL_URL}/resume/builder`)}
+      `;
+
+      plainText = `Your resume "${resumeTitle}" is ready. Download it here: ${CANONICAL_URL}/resume/builder`;
+      break;
+    }
+
+    case 'ats_score_ready':
+    case 'resume_feedback': {
+      category = 'transactional';
+      const score = escapeHtml(vars.score || '88/100');
+      const targetRole = escapeHtml(vars.targetRole || 'Senior Operations & Strategy Lead');
+      subject = `ATS Resume Diagnostic Ready: ${score} Score for ${targetRole} 🎯`;
+      preheader = `Detailed keyword parse analysis, formatting check, and suggestions are ready.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            ATS Diagnostic Score: ${score}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Here is how your resume parsed against current hiring benchmarks for <strong>${targetRole}</strong>:
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-1.png`,
+            title: 'Deep ATS Diagnostic & Keyword Optimizer',
+            description: 'Review parsing integrity, skill gap analysis, and tailored recommendations for target roles.',
+            url: `${CANONICAL_URL}/resume/ats-check`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Overall Score', value: score },
+          { label: 'Keyword Alignment', value: escapeHtml(vars.keywordAlignment || 'Strong (P&L Management, Strategic Planning, Operations)') },
+          { label: 'Missing High-Value Tags', value: escapeHtml(vars.missingTags || 'Cross-Functional Governance, Financial Modeling, OKRs') },
+          { label: 'Parse Integrity', value: '100% Machine-Readable' }
+        ])}
+
+        ${renderButton('View Full ATS Breakdown', `${CANONICAL_URL}/resume/ats-check`)}
+      `;
+
+      plainText = `Your ATS Resume score for ${targetRole} is ${score}. View diagnostic breakdown: ${CANONICAL_URL}/resume/ats-check`;
+      break;
+    }
+
+    case 'resume_viewed':
+    case 'resume_viewed_alert': {
+      category = 'engagement';
+      const company = escapeHtml(vars.companyName || vars.company || 'A Verified Employer');
+      const location = escapeHtml(vars.location || vars.city || '');
+      const targetDomain = escapeHtml(vars.targetDomain || vars.domain || 'professional');
+      subject = `A recruiter from ${company} viewed your Career Profile 👀`;
+      preheader = `Your profile appeared in candidate searches for ${targetDomain} roles.`;
+
+      const rows: Array<{ label: string; value: string }> = [
+        { label: 'Interested Organization', value: company }
+      ];
+      if (location) rows.push({ label: 'Location Corridor', value: location });
+      if (vars.matchDomain || vars.targetDomain) {
+        rows.push({ label: 'Primary Match Domain', value: escapeHtml(vars.matchDomain || vars.targetDomain) });
+      }
+      rows.push({ label: 'Activity Time', value: 'Recent' });
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Recruiter Profile View
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            A verified hiring team member from <strong>${company}</strong>${location ? ` (${location})` : ''} inspected your Career Passport and credentials.
+          </p>
+        </div>
+
+        ${renderDataCard(rows)}
+
+        ${renderButton('View Profile Insights & Analytics', `${CANONICAL_URL}/network/analytics`)}
+      `;
+
+      plainText = `A recruiter from ${company} viewed your Career Profile. View analytics: ${CANONICAL_URL}/network/analytics`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 5. JOBS, GOVERNMENT & DIRECT APPLICATIONS (18 - 21)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'job_match_alert':
+    case 'job_opening': {
+      category = 'engagement';
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || vars.title || 'Curated Career Opportunity');
+      const company = escapeHtml(vars.company || vars.company_name || vars.companyName || 'Verified Employer');
+      const salary = escapeHtml(vars.salary || vars.compensation || vars.salary_range || '');
+      const location = escapeHtml(vars.location || vars.job_location || vars.workplace_type || '');
+      const matchScore = escapeHtml(vars.match_score || vars.compatibility || '');
+
+      subject = `New Job Match: ${role} at ${company} 💼`;
+      preheader = matchScore ? `Matches ${matchScore} of your verified skills. View role details.` : `New opportunity at ${company} matching your profile.`;
+
+      const jobRows: Array<{ label: string; value: string }> = [
+        { label: 'Position', value: role },
+        { label: 'Employer', value: company }
+      ];
+      if (salary) jobRows.push({ label: 'Compensation Band', value: salary });
+      if (location) jobRows.push({ label: 'Location / Mode', value: location });
+      if (matchScore) jobRows.push({ label: 'Skill Match Score', value: `${matchScore} Compatibility` });
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            ${role}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            A new role matching your professional background and domain expertise was published by <strong>${company}</strong>.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-3.png`,
+            title: 'Curated Opportunity & Fast-Track Application',
+            description: 'Direct recruiter pipeline with priority review for candidates with completed Career Passports.',
+            url: `${CANONICAL_URL}/jobs`
+          }
+        ])}
+
+        ${renderDataCard(jobRows)}
+
+        ${renderButton('View Job & Apply Directly', `${CANONICAL_URL}/jobs`)}
+      `;
+
+      plainText = `Job Match: ${role} at ${company}${salary ? ` (${salary})` : ''}. View and apply: ${CANONICAL_URL}/jobs`;
+      break;
+    }
+
+    case 'gov_job_alert': {
+      category = 'engagement';
+      const org = escapeHtml(vars.org || 'Official Technical Organization');
+      const post = escapeHtml(vars.post || 'Technical Recruitment Notification');
+      const payScale = escapeHtml(vars.payScale || '');
+      const lastDate = escapeHtml(vars.lastDate || 'Upcoming');
+      subject = `Government Job Alert: ${post} at ${org} 🏛️`;
+      preheader = `New PSU / Central notification released. Applications close ${lastDate}.`;
+
+      const govRows: Array<{ label: string; value: string }> = [
+        { label: 'Organization', value: org },
+        { label: 'Cadre / Role', value: post }
+      ];
+      if (payScale) govRows.push({ label: 'Pay Band / Scale', value: payScale });
+      govRows.push({ label: 'Application Deadline', value: lastDate });
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            ${post}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            A new official technical recruitment notification has been published by <strong>${org}</strong>.
+          </p>
+        </div>
+
+        ${renderDataCard(govRows)}
+
+        ${renderButton('View Official Notification & Syllabus', `${CANONICAL_URL}/government-jobs`)}
+      `;
+
+      plainText = `Government Job Alert: ${post} at ${org}. Deadline: ${lastDate}. View: ${CANONICAL_URL}/government-jobs`;
+      break;
+    }
+
+    case 'application_confirmation':
+    case 'application_received': {
+      category = 'transactional';
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || vars.title || 'Position Applied');
+      const company = escapeHtml(vars.company || vars.company_name || vars.companyName || 'Hiring Organization');
+      const appId = escapeHtml(vars.application_id || vars.applicationId || vars.app_id || vars.appId || 'TXC-APP-CONFIRMED');
+      subject = `Application Submitted: ${role} at ${company} ✅`;
+      preheader = `Application ID: ${appId}. Your profile has been sent to the hiring team.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Application Confirmed
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Your application for <strong>${role}</strong> at <strong>${company}</strong> was delivered directly to the employer workspace.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Role Applied', value: role },
+          { label: 'Company / Organization', value: company },
+          { label: 'Application ID', value: appId },
+          { label: 'Status', value: 'Under Review by Hiring Team' }
+        ])}
+
+        ${renderButton('Track Your Applications', `${CANONICAL_URL}/jobs/my-applications`)}
+      `;
+
+      plainText = `Application Confirmed: ${role} at ${company} (ID: ${appId}). Track: ${CANONICAL_URL}/jobs/my-applications`;
+      break;
+    }
+
+    case 'saved_job_reminder':
+    case 'saved_job_closing_soon': {
+      category = 'engagement';
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || vars.title || 'Saved Opportunity');
+      const company = escapeHtml(vars.company || vars.company_name || vars.companyName || 'Hiring Organization');
+      const deadline = escapeHtml(vars.deadline || 'Soon');
+      subject = `Saved Job Closing Soon: ${role} at ${company} ⏰`;
+      preheader = `Applications close in ${deadline}. Don't miss this opportunity.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Application Closing Soon
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Your saved opening for <strong>${role}</strong> at <strong>${company}</strong> is closing soon.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Position', value: role },
+          { label: 'Company', value: company },
+          { label: 'Deadline Remaining', value: deadline },
+          { label: 'Submission Mode', value: '1-Click Apply with Career Passport' }
+        ])}
+
+        ${renderButton('Submit Application Now', `${CANONICAL_URL}/jobs`)}
+      `;
+
+      plainText = `Your saved job ${role} at ${company} closes in ${deadline}. Apply here: ${CANONICAL_URL}/jobs`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 6. SALARY INTELLIGENCE & BENCHMARKS (/salary) (22)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'salary_benchmark_digest': {
+      category = 'engagement';
+      const domain = escapeHtml(vars.domain || vars.techStack || 'Strategy, Product Operations & Commercial Leadership');
+      const percentile = escapeHtml(vars.percentile || 'Top 15% (75th Percentile)');
+      const medianBand = escapeHtml(vars.medianBand || '₹35L - ₹52L PA');
+      subject = `Industry Salary Benchmark: Where Your Experience Ranks 📈`;
+      preheader = `National median compensation benchmarks for ${domain} are updated.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Professional Salary Benchmark Digest
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Based on verified platform data, here is the updated salary band for <strong>${domain}</strong>:
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-5.png`,
+            title: 'Real-Time Salary Insights & Percentile Simulator',
+            description: 'Compare compensation percentiles, bonus structures, and market compensation corridors across industries.',
+            url: `${CANONICAL_URL}/salary`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Domain & Skill Focus', value: domain },
+          { label: 'Your Estimated Bracket', value: percentile },
+          { label: 'Market 75th Percentile', value: medianBand },
+          { label: 'Highest Paying Corridor', value: 'Bengaluru / Mumbai / National Metros' }
+        ])}
+
+        ${renderButton('Explore Salary Analyzer & Simulator', `${CANONICAL_URL}/salary`)}
+      `;
+
+      plainText = `Salary Benchmark for ${domain}: 75th percentile is ${medianBand}. View analyzer: ${CANONICAL_URL}/salary`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 7. COLLEGES & CAMPUS PLACEMENT DRIVES (/colleges) (23 - 24)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'college_placement_alert': {
+      category = 'engagement';
+      const driveRole = escapeHtml(vars.drive_role || vars.driveRole || vars.role || vars.title || 'Campus Recruitment Drive');
+      const hiringCompany = escapeHtml(vars.hiring_company || vars.hiringCompany || vars.company || vars.company_name || 'Corporate Hiring Partner');
+      const eligibility = escapeHtml(vars.eligibility || 'Eligible Campus Candidates');
+      subject = `Campus Placement Drive Alert: ${driveRole} at ${hiringCompany} 🎓`;
+      preheader = `Exclusive drive open for verified college candidates. Eligible: ${eligibility}.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Campus Hiring Drive: ${hiringCompany}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            A direct campus recruitment drive is accepting applications through the TalentXcel College Network.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Hiring Company', value: hiringCompany },
+          { label: 'Role Offered', value: driveRole },
+          { label: 'Eligible Batches', value: eligibility },
+          { label: 'Compensation Package', value: '₹18L - ₹24L CTC' }
+        ])}
+
+        ${renderButton('View College Placement Drive', `${CANONICAL_URL}/colleges`)}
+      `;
+
+      plainText = `Campus Drive: ${driveRole} at ${hiringCompany}. Eligible: ${eligibility}. Apply: ${CANONICAL_URL}/colleges`;
+      break;
+    }
+
+    case 'college_partnership_welcome': {
+      category = 'transactional';
+      const collegeName = escapeHtml(vars.collegeName || 'National Institute of Technology');
+      subject = `Welcome to TalentXcel Campus Portal, ${collegeName} 🎓`;
+      preheader = 'Your institutional placement cell workspace is ready to connect students with verified corporate hiring partners & recruiters.';
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Welcome, ${collegeName}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Your college placement director portal is active on the TalentXcel Institutional Network.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Institution', value: collegeName },
+          { label: 'Verified Student Profiles', value: 'Ready for Onboarding' },
+          { label: 'Corporate Sourcing Hub', value: 'Connected to 500+ Hiring Partners' }
+        ])}
+
+        ${renderButton('Open Placement Cell Portal', `${CANONICAL_URL}/colleges`)}
+      `;
+
+      plainText = `Welcome ${collegeName} to TalentXcel Campus Portal! Access: ${CANONICAL_URL}/colleges`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 8. RECRUITER OS & TALENT DISCOVERY (/employer, /talent) (25 - 28)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'employer_welcome': {
+      category = 'transactional';
+      const companyName = escapeHtml(vars.companyName || 'FinTech Velocity');
+      subject = `Welcome to TalentXcel Recruiter OS, ${companyName} 🚀`;
+      preheader = 'Your company hiring workspace is active. Start sourcing verified professional talent.';
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 16px 0 10px 0; font-size: 24px; font-weight: 700; color: #111827;">
+            Welcome to Recruiter OS, ${companyName}
+          </h1>
+          <p style="margin: 0; font-size: 15px; line-height: 24px; color: #4b5563;">
+            Your employer workspace is configured. Post verified openings, search pre-vetted candidate profiles across industries, and receive qualified applicants.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-6.png`,
+            title: 'Search Pre-Vetted Talent Pool',
+            description: 'Filter verified candidates by domain expertise, performance percentile, and availability.',
+            url: `${CANONICAL_URL}/talent`
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-3.png`,
+            title: 'Post a Verified Opening',
+            description: 'Publish open roles syndicated directly to 100,000+ verified professionals across sectors.',
+            url: `${CANONICAL_URL}/employer/post-job`
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-5.png`,
+            title: 'Launch Pipeline Intelligence',
+            description: 'Track candidate flow, scorecards, and team reviews in your employer ATS dashboard.',
+            url: `${CANONICAL_URL}/employer/dashboard`
+          }
+        ])}
+
+        ${renderButton('Open Employer Workspace', `${CANONICAL_URL}/employer/dashboard`)}
+      `;
+
+      plainText = `Welcome ${companyName} to TalentXcel Recruiter OS! Access your dashboard: ${CANONICAL_URL}/employer/dashboard`;
+      break;
+    }
+
+    case 'talent_discovery_alert': {
+      category = 'engagement';
+      const searchCriteria = escapeHtml(vars.searchCriteria || 'Senior Strategy & Operations Directors (Bengaluru / Hybrid)');
+      const candidateCount = escapeHtml(vars.candidateCount || '14 Verified Profiles');
+      subject = `Talent Discovery Alert: ${candidateCount} matching your sourcing filter 🎯`;
+      preheader = `New verified professionals matching "${searchCriteria}" joined the network this week.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            New Candidates Matching Your Sourcing Filter
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Our automated talent discovery engine found candidates matching your saved recruiter search:
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Saved Filter', value: searchCriteria },
+          { label: 'New Matching Candidates', value: candidateCount },
+          { label: 'Average ATS TalentScore', value: '91/100' },
+          { label: 'Notice Period', value: 'Immediate to 30 Days' }
+        ])}
+
+        ${renderButton('Discover Candidates in Recruiter OS', `${CANONICAL_URL}/talent`)}
+      `;
+
+      plainText = `Talent Discovery: ${candidateCount} matching "${searchCriteria}". View candidate pool: ${CANONICAL_URL}/talent`;
+      break;
+    }
+
+    case 'new_candidate_applied':
+    case 'new_applicant': {
+      category = 'transactional';
+      const candidate = escapeHtml(vars.candidate_name || vars.candidateName || vars.applicant_name || vars.name || 'A qualified candidate');
+      const role = escapeHtml(vars.role || vars.job_title || vars.jobTitle || 'Your Job Opening');
+      const talentScore = escapeHtml(vars.talentScore || vars.talent_score || vars.score || 'High Alignment');
+      subject = `New Application: ${candidate} applied for ${role} 📥`;
+      preheader = `TalentScore Match: ${talentScore}. View verified credentials, achievements and resume.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            New Applicant: ${candidate}
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            A candidate submitted their verified application for your <strong>${role}</strong> opening.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Applicant', value: candidate },
+          { label: 'Role', value: role },
+          { label: 'ATS TalentScore', value: talentScore },
+          { label: 'Verified Experience', value: escapeHtml(vars.experience || '8+ Years (Domain Leadership)') }
+        ])}
+
+        ${renderButton('Review Candidate in Dashboard', `${CANONICAL_URL}/employer/jobs`)}
+      `;
+
+      plainText = `${candidate} applied for ${role} (TalentScore: ${talentScore}). Review: ${CANONICAL_URL}/employer/jobs`;
+      break;
+    }
+
+    case 'job_post_live': {
+      category = 'transactional';
+      const jobTitle = escapeHtml(vars.jobTitle || 'Commercial Operations Director');
+      const location = escapeHtml(vars.location || 'Bengaluru');
+      subject = `Job Listing is Live: ${jobTitle} 🌐`;
+      preheader = `Your listing is published across TalentXcel and matching candidates are being notified.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            ${jobTitle} is Live
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Your opening is syndicated and active across the TalentXcel talent network.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Position', value: jobTitle },
+          { label: 'Location', value: location },
+          { label: 'Syndication', value: 'TalentXcel Hub & Google Jobs' },
+          { label: 'Matching Candidates', value: 'Notification Batch Enqueued' }
+        ])}
+
+        ${renderButton('Manage Job Postings', `${CANONICAL_URL}/employer/jobs`)}
+      `;
+
+      plainText = `Your job listing "${jobTitle}" is live on TalentXcel. Manage: ${CANONICAL_URL}/employer/jobs`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 9. LEARNING HUB & CREDENTIALS (/learning) (29 - 30)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'course_recommendation': {
+      category = 'engagement';
+      const course = escapeHtml(vars.courseTitle || 'Enterprise Leadership & High-Growth Strategy');
+      const targetDelta = escapeHtml(vars.ctcDelta || '+₹8L PA Salary Potential');
+      subject = `Recommended Skill Track: ${course} 📚`;
+      preheader = `Bridge your strategic skill gap and unlock higher senior compensation bands.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Recommended Skill Track
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Based on your career roadmap, mastering <strong>${course}</strong> bridges your next career milestone.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Recommended Course', value: course },
+          { label: 'Target Career Impact', value: targetDelta },
+          { label: 'Curated Provider', value: 'TalentXcel Learning Hub' },
+          { label: 'Format', value: 'Hands-on Lab & Capstone Project' }
+        ])}
+
+        ${renderButton('Explore Skill Course', `${CANONICAL_URL}/learning`)}
+      `;
+
+      plainText = `Recommended Course: ${course} (${targetDelta}). Explore: ${CANONICAL_URL}/learning`;
+      break;
+    }
+
+    case 'certificate_ready': {
+      category = 'transactional';
+      const certTitle = escapeHtml(vars.certificateTitle || 'Strategic Leadership & Operations Management');
+      const certId = escapeHtml(vars.certificateId || 'TXC-CERT-2026-8812');
+      subject = `Verifiable Certificate Ready: ${certTitle} 🏅`;
+      preheader = `Certificate ID: ${certId}. Add your verified credential to your Career Passport.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Certificate of Completion Ready
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Congratulations on completing your assessment in <strong>${certTitle}</strong>!
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-2.png`,
+            title: 'Verifiable Digital Certificate',
+            description: 'Authenticated completion credential added to your Career Passport and LinkedIn profile.',
+            url: `${CANONICAL_URL}/learning/certificates`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Credential Title', value: certTitle },
+          { label: 'Verification ID', value: certId },
+          { label: 'Issuing Authority', value: escapeHtml(vars.issuingAuthority || 'TalentXcel Executive Council') },
+          { label: 'Passport Badge', value: 'Added to Public Profile' }
+        ])}
+
+        ${renderButton('View & Download Certificate', `${CANONICAL_URL}/learning/certificates`)}
+      `;
+
+      plainText = `Congratulations! Your certificate for ${certTitle} (${certId}) is ready: ${CANONICAL_URL}/learning/certificates`;
+      break;
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    // 10. MARKETING, REFER & EARN, CREATOR GROWTH (31 - 35)
+    // ═════════════════════════════════════════════════════════════════════════
+
+    case 'refer_and_earn':
+    case 'referral_invite': {
+      category = 'marketing';
+      const inviteLink = `${CANONICAL_URL}/refer-and-earn`;
+      subject = `Invite Colleagues & Friends to TalentXcel: Earn Free Pro & Executive Recruiter Access 🎁`;
+      preheader = `Earn free Pro upgrades, unlock verified recruiter directories, and boost your Career Passport visibility.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 16px 0 10px 0; font-size: 24px; font-weight: 700; color: #111827;">
+            Invite Friends. Earn Pro Access.
+          </h1>
+          <p style="margin: 0; font-size: 15px; line-height: 24px; color: #4b5563;">
+            Help your colleagues, peers and batchmates accelerate their careers on TalentXcel and earn exclusive rewards for every verified member who joins.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-6.png`,
+            title: '3 Referrals: 500+ Verified Hiring Leaders Directory',
+            description: 'Direct email access to hiring heads across India, US, and EU enterprise teams.',
+            url: inviteLink
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-1.png`,
+            title: '5 Referrals: Free Pro Upgrade & ATS Optimizer',
+            description: '1-Month Pro tier with unlimited AI resume diagnostics and priority visibility.',
+            url: inviteLink
+          },
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-2.png`,
+            title: '10 Referrals: Campus & Industry Ambassador Badge',
+            description: 'Verified ambassador credential with top recruiter spotlight on /network.',
+            url: inviteLink
+          }
+        ])}
+
+        ${renderButton('Get Your Referral Link & Start Earning', inviteLink)}
+      `;
+
+      plainText = `Invite friends to TalentXcel and earn free Pro access + 500+ HR contacts: ${inviteLink}`;
+      break;
+    }
+
+    case 'referral_reward_unlocked': {
+      category = 'engagement';
+      const friendName = escapeHtml(vars.friend_name || vars.friendName || vars.name || 'Your referral');
+      const rewardTier = escapeHtml(vars.reward_tier || vars.rewardTier || 'Pro Membership Upgrade');
+      subject = `Reward Unlocked! ${friendName} joined TalentXcel via your invite 🎉`;
+      preheader = `You unlocked ${rewardTier}. Your Pro superpowers are now active.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Congratulations, ${name}!
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            <strong>${friendName}</strong> just joined TalentXcel using your unique invite link. You've officially reached your next reward milestone!
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'New Member Joined', value: friendName },
+          { label: 'Milestone Unlocked', value: rewardTier },
+          { label: 'Pro Benefits', value: 'Unlimited ATS Scans & Priority Search Rank' },
+          { label: 'Status', value: 'Instantly Activated on Your Account' }
+        ])}
+
+        ${renderButton('View Rewards & Invite More Friends', `${CANONICAL_URL}/refer-and-earn`)}
+      `;
+
+      plainText = `Reward Unlocked! ${friendName} joined TalentXcel. You earned ${rewardTier}. View your rewards: ${CANONICAL_URL}/refer-and-earn`;
+      break;
+    }
+
+    case 'campus_ambassador_invite': {
+      category = 'marketing';
+      subject = `Become a TalentXcel Campus Ambassador — Lead on Your Campus 🎓`;
+      preheader = `Represent India's premier professional network, organize placement drives, and gain direct mentorship.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            TalentXcel Student Ambassador Program
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            We are looking for student and emerging leaders to represent TalentXcel across 10,000+ colleges and universities.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Leadership Role', value: 'Campus Ambassador & Community Lead' },
+          { label: 'Perks & Rewards', value: 'Free Pro Membership + Executive Mentorship' },
+          { label: 'Campus Impact', value: 'Lead Campus Placement Drives & Seminars' },
+          { label: 'Recognition', value: 'Official Verified Ambassador Credential' }
+        ])}
+
+        ${renderButton('Apply for Campus Ambassador', `${CANONICAL_URL}/colleges`)}
+      `;
+
+      plainText = `Become a TalentXcel Campus Ambassador! Apply here: ${CANONICAL_URL}/colleges`;
+      break;
+    }
+
+    case 'creator_studio_invitation': {
+      category = 'marketing';
+      subject = `Write on TalentXcel Creator Studio: Reach 100,000+ Industry Leaders & Peers ✍️`;
+      preheader = `Publish your case studies, insights, and thought leadership to get discovered by founders and hiring leaders.`;
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            Publish Your Industry Insights & Articles
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Turn your real-world professional experiences and case studies into authority. Publish on TalentXcel Articles and build your thought leadership.
+          </p>
+        </div>
+
+        ${renderActionTiles([
+          {
+            image: `${CANONICAL_URL}/assets/email/welcome-feature-6.png`,
+            title: 'Publish Across TalentXcel Professional Network',
+            description: 'Distribute articles directly to 100,000+ industry leaders, founders, and peers.',
+            url: `${CANONICAL_URL}/network/articles`
+          }
+        ])}
+
+        ${renderDataCard([
+          { label: 'Audience Reach', value: '100,000+ Verified Professionals & Hiring Teams' },
+          { label: 'Featured Channels', value: 'Strategy, Leadership, Operations, Product & Tech' },
+          { label: 'Author Visibility', value: 'Pinned to Career Passport & Network Feed' },
+          { label: 'Creator Tools', value: 'Rich Article Editor, Analytics & Direct Distribution' }
+        ])}
+
+        ${renderButton('Start Writing on Creator Studio', `${CANONICAL_URL}/network/articles`)}
+      `;
+
+      plainText = `Publish your articles on TalentXcel Creator Studio. Start writing: ${CANONICAL_URL}/network/articles`;
+      break;
+    }
+
+    case 'contact_auto_reply':
+    default: {
+      category = 'transactional';
+      const inquiryTopic = escapeHtml(vars.topic || vars.subject || 'Platform Partnership & Sourcing');
+      subject = `We received your message, ${name} - TalentXcel`;
+      preheader = 'Thank you for contacting TalentXcel. Our team will review and reply within 12-24 business hours.';
+
+      contentHtml = `
+        <div style="text-align: center; margin-bottom: 24px;">
+          <h1 class="hero-title" style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.5px;">
+            We received your message
+          </h1>
+          <p style="margin: 0; font-size: 15px; color: #6e6e73;">
+            Thank you for reaching out to TalentXcel. A dedicated member of our team is reviewing your inquiry.
+          </p>
+        </div>
+
+        ${renderDataCard([
+          { label: 'Topic / Subject', value: inquiryTopic },
+          { label: 'Submitted By', value: email || name },
+          { label: 'Target Response Time', value: '12 - 24 Business Hours' },
+          { label: 'Support Queue', value: 'General Operations & Partnerships' }
+        ])}
+
+        ${renderButton('Explore TalentXcel Platform', `${CANONICAL_URL}`)}
+      `;
+
+      plainText = `Hi ${name}, we received your message regarding "${inquiryTopic}". We will respond within 12-24 business hours.`;
+      break;
+    }
+  }
+
+  const unsubscribeUrl = category !== 'transactional'
+    ? `${CANONICAL_URL}/unsubscribe?email=${encodeURIComponent(recipientEmail)}`
+    : undefined;
+
+  const html = wrapInMasterLayout({
+    title: subject,
+    preheader,
+    contentHtml,
+    category,
+    recipientEmail,
+    unsubscribeUrl
+  });
+
+  return { subject, html, plainText, category, preheader };
+}
+
+
+
+export const renderTemplate = renderEnterpriseTemplate;
 export const baseEmailLayout = wrapInMasterLayout;
 
 
