@@ -128,6 +128,23 @@ const MobilePassport                  = lazy(() => import('./pages/mobile/Mobile
 const MobileJobs                      = lazy(() => import('./pages/mobile/MobileJobs'));
 const RegionalMarketHub               = lazy(() => import('./pages/RegionalMarketHub'));
 const UserManagement                  = lazy(() => import('@/pages/admin/UserManagement'));
+const ResumeStudioProduct             = lazy(() => import('@/components/products/ResumeStudioProduct').then(m => ({ default: m.ResumeStudioProduct })));
+const JobMatchProduct                 = lazy(() => import('@/components/products/JobMatchProduct').then(m => ({ default: m.JobMatchProduct })));
+const JobDetailPage                   = lazy(() => import('@/components/products/jobmatch/JobDetailPage').then(m => ({ default: m.JobDetailPage })));
+const InternationalJobLandingPage     = lazy(() => import('@/components/products/jobmatch/InternationalJobLandingPage').then(m => ({ default: m.InternationalJobLandingPage })));
+const PayScaleProduct                 = lazy(() => import('@/components/products/PayScaleProduct').then(m => ({ default: m.PayScaleProduct })));
+const CampusOSProduct                 = lazy(() => import('@/components/products/CampusOSProduct').then(m => ({ default: m.CampusOSProduct })));
+const SarkariHubProduct               = lazy(() => import('@/components/products/SarkariHubProduct').then(m => ({ default: m.SarkariHubProduct })));
+const CAPracticeProduct             = lazy(() => import('@/components/products/CAPracticeProduct').then(m => ({ default: m.CAPracticeProduct })));
+const LegalPracticeProduct           = lazy(() => import('@/components/products/LegalPracticeProduct').then(m => ({ default: m.LegalPracticeProduct })));
+const ProfessionalServicesProduct    = lazy(() => import('@/components/products/ProfessionalServicesProduct').then(m => ({ default: m.ProfessionalServicesProduct })));
+const LocalTestingDashboard         = lazy(() => import('@/pages/LocalTestingDashboard').then(m => ({ default: m.LocalTestingDashboard })));
+const SoloFounderCommandCenter        = lazy(() => import('@/pages/admin/SoloFounderCommandCenter'));
+const CentralBillingDashboard         = lazy(() => import('@/pages/billing/CentralBillingDashboard').then(m => ({ default: m.CentralBillingDashboard })));
+const RevenueCommandCenter            = lazy(() => import('@/pages/admin/RevenueCommandCenter').then(m => ({ default: m.RevenueCommandCenter })));
+const PassportAcquisitionLanding     = lazy(() => import('@/pages/passport/components/PassportAcquisitionLanding').then(m => ({ default: m.PassportAcquisitionLanding })));
+const SkillPodsProduct                 = lazy(() => import('@/components/products/SkillPodsProduct').then(m => ({ default: m.SkillPodsProduct })));
+const CareerPathfinderProduct          = lazy(() => import('@/components/products/CareerPathfinderProduct').then(m => ({ default: m.CareerPathfinderProduct })));
 const TalentDatabase                  = lazy(() => import('@/pages/admin/TalentDatabase'));
 const SecurityCenter                  = lazy(() => import('@/pages/admin/SecurityCenter'));
 const ProductRequirementDocument      = lazy(() => import('@/pages/admin/ProductRequirementDocument'));
@@ -373,7 +390,7 @@ const App = () => {
                         <TooltipProvider>
                           <PhaseInitializer />
                          <div className="min-h-screen flex flex-col w-full max-w-full overflow-x-hidden">
-                        <Navbar />
+                        {currentUniverse !== 'JOBS' && currentUniverse !== 'CAREERS' && currentUniverse !== 'SALARY' && <Navbar />}
                         <main className="flex-1 w-full max-w-full overflow-x-hidden flex flex-col">
                           <Suspense fallback={<PageFallbackSkeleton />}>
                             <RouteTransition>
@@ -392,8 +409,20 @@ const App = () => {
                                  {/* ── Multi-Domain Universe Entry Routes (Active when visited via dedicated product subdomain) ── */}
                                   {currentUniverse === 'JOBS' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div>Loading Jobs...</div>}><SubdomainLandingPage universe="JOBS" /></Suspense>} />
-                                      <Route path="/jobs" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobsPage /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div>Loading JobMatch OS...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/jobs" element={<Suspense fallback={<div>Loading Jobs...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/post" element={<Suspense fallback={<div>Loading Job Composer...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/post-job" element={<Suspense fallback={<div>Loading Job Composer...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/hire" element={<Suspense fallback={<div>Loading Employer Workspace...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/manage" element={<Suspense fallback={<div>Loading Job Manager...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/tracker" element={<Suspense fallback={<div>Loading Application Tracker...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/applications" element={<Suspense fallback={<div>Loading Applications...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/applied" element={<Suspense fallback={<div>Loading Applications...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/saved" element={<Suspense fallback={<div>Loading Saved Jobs...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/talent" element={<Suspense fallback={<div>Loading Talent Search...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/candidates" element={<Suspense fallback={<div>Loading Candidates...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/match" element={<Suspense fallback={<div>Loading AI Match...</div>}><JobMatchProduct /></Suspense>} />
+                                      <Route path="/interview-prep" element={<Suspense fallback={<div>Loading Interview Prep...</div>}><JobMatchProduct /></Suspense>} />
 
                                       {/* City & Location Hubs - Must precede :slugOrId wildcard */}
                                       <Route path="/bangalore" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
@@ -438,14 +467,22 @@ const App = () => {
                                       <Route path="/top-companies/:company/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
 
                                       {/* Specific & Wildcard Job Details (Strictly AFTER city and role hubs) */}
-                                      <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
-                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading...</div>}><JobDetails /></Suspense>} />
+                                      {/* International Curated Regional Hubs (Phase 5 SEO Routes) */}
+                                      <Route path="/jobs/data-analyst-dubai-uae" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="data-analyst-dubai-uae" /></Suspense>} />
+                                      <Route path="/jobs/software-engineer-abu-dhabi-uae" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="software-engineer-abu-dhabi-uae" /></Suspense>} />
+                                      <Route path="/jobs/cloud-engineer-riyadh-saudi-arabia" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="cloud-engineer-riyadh-saudi-arabia" /></Suspense>} />
+                                      <Route path="/jobs/data-analyst-remote-usa" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="data-analyst-remote-usa" /></Suspense>} />
+                                      <Route path="/jobs/software-engineer-remote-us" element={<Suspense fallback={<div>Loading Hub...</div>}><InternationalJobLandingPage hubId="software-engineer-remote-us" /></Suspense>} />
+
+                                      <Route path="/jobs/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobDetailPage /></Suspense>} />
+                                      <Route path="/job/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobDetailPage /></Suspense>} />
+                                      <Route path="/:slugOrId" element={<Suspense fallback={<div>Loading Job...</div>}><JobDetailPage /></Suspense>} />
                                     </>
                                   )}
 
                                   {currentUniverse === 'LEARNING' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Learning Hub...</div>}><SubdomainLandingPage universe="LEARNING" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading SkillPods...</div>}><SkillPodsProduct /></Suspense>} />
                                       <Route path="/learning" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/hub" element={<Suspense fallback={null}><LearningHub /></Suspense>} />
                                       <Route path="/courses" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
@@ -465,7 +502,7 @@ const App = () => {
 
                                   {currentUniverse === 'PASSPORT' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={null}><SubdomainLandingPage universe="PASSPORT" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Career Passport...</div>}><PassportAcquisitionLanding /></Suspense>} />
                                       <Route path="/passport" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/dashboard" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
                                       <Route path="/passport/public/:identifier" element={<Suspense fallback={null}><PublicPassport /></Suspense>} />
@@ -479,7 +516,7 @@ const App = () => {
 
                                   {currentUniverse === 'GOVERNMENT' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div>Loading...</div>}><SubdomainLandingPage universe="GOVERNMENT" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div>Loading SarkariHub...</div>}><SarkariHubProduct /></Suspense>} />
                                       <Route path="/government-jobs" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/government" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/vacancies" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />
@@ -494,7 +531,7 @@ const App = () => {
 
                                   {currentUniverse === 'EMPLOYERS' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><SubdomainLandingPage universe="EMPLOYERS" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter Workspace...</div>}><RecruiterLandingPage /></Suspense>} />
                                       <Route path="/employer" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/employers" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/recruiters" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
@@ -522,7 +559,7 @@ const App = () => {
 
                                   {currentUniverse === 'COLLEGES' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={null}><SubdomainLandingPage universe="COLLEGES" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div>Loading CampusOS...</div>}><CampusOSProduct /></Suspense>} />
                                       <Route path="/colleges" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/directory" element={<Suspense fallback={null}><Colleges /></Suspense>} />
                                       <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
@@ -549,7 +586,7 @@ const App = () => {
 
                                   {currentUniverse === 'CAREERS' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={null}><SubdomainLandingPage universe="CAREERS" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold text-slate-300">Loading Career Pathfinder...</div>}><CareerPathfinderProduct /></Suspense>} />
                                       <Route path="/careers" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/career-map" element={<AICareerHub />} />
                                       <Route path="/careers/:role" element={<CareerRoadmapGenerator />} />
@@ -566,6 +603,17 @@ const App = () => {
                                       <Route path="/how-to-become/:role" element={<CareerRoadmapGenerator />} />
                                       <Route path="/roadmap" element={<CareerRoadmapGenerator />} />
                                       <Route path="/skills-assessment" element={<SkillsGap />} />
+                                      <Route path="/pricing" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
+                                      <Route path="/ca-practice" element={<Suspense fallback={<div>Loading CA PracticeOS...</div>}><CAPracticeProduct /></Suspense>} />
+                                      <Route path="/ca" element={<Suspense fallback={<div>Loading CA PracticeOS...</div>}><CAPracticeProduct /></Suspense>} />
+                <Route path="/ca-practice" element={<Suspense fallback={<div>Loading CA PracticeOS...</div>}><CAPracticeProduct /></Suspense>} />
+                                      <Route path="/legal-practice" element={<Suspense fallback={<div>Loading Legal PracticeOS...</div>}><LegalPracticeProduct /></Suspense>} />
+                                      <Route path="/legal" element={<Suspense fallback={<div>Loading Legal PracticeOS...</div>}><LegalPracticeProduct /></Suspense>} />
+                <Route path="/legal-practice" element={<Suspense fallback={<div>Loading Legal PracticeOS...</div>}><LegalPracticeProduct /></Suspense>} />
+                                      <Route path="/auth/login" element={<Suspense fallback={<div>Loading Sign In...</div>}><AuthPage mode="signin" /></Suspense>} />
+                                      <Route path="/auth/register" element={<Suspense fallback={<div>Loading Sign Up...</div>}><AuthPage mode="signup" /></Suspense>} />
+                                      <Route path="/login" element={<Suspense fallback={<div>Loading Sign In...</div>}><AuthPage mode="signin" /></Suspense>} />
+                                      <Route path="/register" element={<Suspense fallback={<div>Loading Sign Up...</div>}><AuthPage mode="signup" /></Suspense>} />
                                       <Route path="/career-goals" element={<CareerGoals />} />
                                       <Route path="/intelligence" element={<CareerIntelligenceDashboard />} />
                                       <Route path="/platform" element={<CareerPlatformShowcasePage />} />
@@ -574,7 +622,7 @@ const App = () => {
 
                                   {currentUniverse === 'SALARY' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SubdomainLandingPage universe="SALARY" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading PayScale...</div>}><PayScaleProduct /></Suspense>} />
                                       <Route path="/salary" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                                       <Route path="/salary/scenarios" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading What-If Simulator...</div>}><SalaryAnalyzer defaultTab="scenarios" /></Suspense>} />
@@ -595,7 +643,7 @@ const App = () => {
 
                                   {currentUniverse === 'RESUME' && (
                                     <>
-                                      <Route path="/" element={<Suspense fallback={null}><SubdomainLandingPage universe="RESUME" /></Suspense>} />
+                                      <Route path="/" element={<Suspense fallback={<div>Loading ResumeStudio...</div>}><ResumeStudioProduct /></Suspense>} />
                                       <Route path="/resume" element={<RedundantSuffixRedirect target="/" />} />
                                       <Route path="/studio" element={<UnifiedResumeHub />} />
                                       <Route path="/resume/build" element={<UnifiedResumeBuilder />} />
@@ -624,7 +672,37 @@ const App = () => {
                                     </>
                                   )}
 
+                                  {currentUniverse === 'CA_PRACTICE' && (
+                                    <>
+                                      <Route path="/" element={<Suspense fallback={<div>Loading CA PracticeOS...</div>}><CAPracticeProduct /></Suspense>} />
+                                      <Route path="/ca" element={<RedundantSuffixRedirect target="/" />} />
+                                    </>
+                                  )}
+
+                                  {currentUniverse === 'LEGAL_PRACTICE' && (
+                                    <>
+                                      <Route path="/" element={<Suspense fallback={<div>Loading Legal PracticeOS...</div>}><LegalPracticeProduct /></Suspense>} />
+                                      <Route path="/legal" element={<RedundantSuffixRedirect target="/" />} />
+                                    </>
+                                  )}
+
+                                  {currentUniverse === 'SERVICES' && (
+                                    <>
+                                      <Route path="/" element={<Suspense fallback={<div>Loading Professional ServicesOS...</div>}><ProfessionalServicesProduct /></Suspense>} />
+                                      <Route path="/services" element={<RedundantSuffixRedirect target="/" />} />
+                                    </>
+                                  )}
+
                 {/* Universal Product Hub Routes (Accessible on CORE domain, localhost, and cross-subdomain) */}
+                {/* 12 Products Independent Practice Hubs & Central Testing Matrix */}
+                <Route path="/products" element={<Suspense fallback={<div>Loading 12 Products Matrix...</div>}><LocalTestingDashboard /></Suspense>} />
+                <Route path="/local-testing-index" element={<Suspense fallback={<div>Loading Local Testing Index...</div>}><LocalTestingDashboard /></Suspense>} />
+                <Route path="/12-products" element={<Suspense fallback={<div>Loading 12 Products Matrix...</div>}><LocalTestingDashboard /></Suspense>} />
+                <Route path="/ca" element={<Suspense fallback={<div>Loading CA PracticeOS...</div>}><CAPracticeProduct /></Suspense>} />
+                <Route path="/ca-practice" element={<Suspense fallback={<div>Loading CA PracticeOS...</div>}><CAPracticeProduct /></Suspense>} />
+                <Route path="/legal" element={<Suspense fallback={<div>Loading Legal PracticeOS...</div>}><LegalPracticeProduct /></Suspense>} />
+                <Route path="/legal-practice" element={<Suspense fallback={<div>Loading Legal PracticeOS...</div>}><LegalPracticeProduct /></Suspense>} />
+                <Route path="/services" element={<Suspense fallback={<div>Loading Professional ServicesOS...</div>}><ProfessionalServicesProduct /></Suspense>} />
                 <Route path="/salary" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                 <Route path="/salary/scenarios" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading What-If Simulator...</div>}><SalaryAnalyzer defaultTab="scenarios" /></Suspense>} />
                 <Route path="/salary/negotiation" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Negotiation Coach...</div>}><SalaryAnalyzer defaultTab="negotiation" /></Suspense>} />
@@ -771,6 +849,13 @@ const App = () => {
                 } />
                 <Route path="/discovery/benchmark" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading empirical benchmark...</div>}><BenchmarkResultsPage /></Suspense>} />
                 <Route path="/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
+                <Route path="/admin/founder-command-center" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Solo Founder Command Center...</div>}><SoloFounderCommandCenter /></Suspense>} />
+                <Route path="/admin/solo-founder" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Solo Founder Command Center...</div>}><SoloFounderCommandCenter /></Suspense>} />
+                <Route path="/founder" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center font-mono text-xs">Loading Solo Founder Command Center...</div>}><SoloFounderCommandCenter /></Suspense>} />
+                <Route path="/admin/revenue-command-center" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm font-semibold text-slate-500">Loading Revenue Command Center...</div>}><RevenueCommandCenter /></Suspense>} />
+                <Route path="/admin/revenue" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm font-semibold text-slate-500">Loading Revenue Command Center...</div>}><RevenueCommandCenter /></Suspense>} />
+                <Route path="/billing" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm font-semibold text-slate-500">Loading Billing & Entitlements...</div>}><CentralBillingDashboard /></Suspense>} />
+                <Route path="/plans" element={<Suspense fallback={<div className="min-h-screen flex items-center justify-center text-sm font-semibold text-slate-500">Loading Billing & Entitlements...</div>}><CentralBillingDashboard /></Suspense>} />
                 <Route path="/admin/discovery" element={<UDXSuperAdminGuard><UDXDiscoveryDashboard /></UDXSuperAdminGuard>} />
                 <Route path="/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />
                 <Route path="/admin/growth" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 text-slate-400 p-8 flex items-center justify-center">Loading Growth Control Plane...</div>}><UDXSuperAdminGuard><GrowthControlPlane /></UDXSuperAdminGuard></Suspense>} />

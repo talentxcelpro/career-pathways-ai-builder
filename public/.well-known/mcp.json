@@ -1,0 +1,31 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp-server.json",
+  "name": "talentxcel-mcp",
+  "title": "TalentXcel Universal Career & Jobs MCP",
+  "description": "Stateless Streamable HTTP Model Context Protocol (MCP) server providing live job search, candidate matching, salary benchmarking, and career pathways.",
+  "version": "1.0.0",
+  "transport": {
+    "type": "streamable-http",
+    "url": "https://talentxcel.in/api/mcp"
+  },
+  "capabilities": {
+    "tools": [
+      "search_jobs",
+      "get_job_details",
+      "get_trending_jobs",
+      "get_candidate_profile",
+      "match_candidate_to_jobs",
+      "calculate_skill_gap",
+      "get_resume_profile",
+      "analyze_resume",
+      "career_path_recommendation",
+      "skill_recommendations",
+      "career_coach",
+      "platform_statistics",
+      "get_user_dashboard",
+      "get_user_notifications",
+      "search_learning_resources",
+      "universal_talent_search"
+    ]
+  }
+}

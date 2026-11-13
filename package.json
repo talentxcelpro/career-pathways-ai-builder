@@ -37,7 +37,18 @@
     "backlink:top25": "node backlink-engine/cli.cjs stage-top25",
     "backlink:b2b": "node backlink-engine/cli.cjs b2b-directories",
     "backlink:stage4.1": "node backlink-engine/cli.cjs stage4.1",
-    "backlink:stage5": "node backlink-engine/cli.cjs stage5"
+    "backlink:stage5": "node backlink-engine/cli.cjs stage5",
+    "backlink:migrate-autonomous": "node backlink-engine/src/autonomous/migrate-existing.cjs",
+    "backlink:test-autonomous": "node --test backlink-engine/test/autonomous.test.cjs",
+    "backlink:provision-phase2": "node backlink-engine/src/autonomous/provision-phase2.cjs",
+    "backlink:simulate-phase2": "node backlink-engine/src/autonomous/run-phase2-simulation.cjs",
+    "backlink:test-phase2": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs",
+    "backlink:run-phase3-pilot": "node backlink-engine/src/autonomous/run-phase3-pilot.cjs",
+    "backlink:test-phase3": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs",
+    "backlink:reconcile-phase4": "node backlink-engine/src/autonomous/run-phase4-reconciliation.cjs",
+    "backlink:test-phase4": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs backlink-engine/test/phase4.test.cjs",
+    "backlink:classify-phase4-1": "node backlink-engine/src/autonomous/run-phase4-1-classification.cjs",
+    "backlink:test-phase4-1": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs backlink-engine/test/phase4.test.cjs backlink-engine/test/phase4-1.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",
@@ -55,7 +66,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^3.9.0",
-    "@lovable.dev/mcp-js": "^0.20.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",

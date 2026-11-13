@@ -133,7 +133,7 @@ export const useEmailAutomation = () => {
       template: 'application_confirmation' as any,
       trigger: 'job_application',
       to: userEmail,
-      subject: Application Submitted:  at ,
+      subject: 'Application Submitted: ' + jobTitle + ' at ' + companyName,
       data: {
         name: userName,
         recipient_name: userName,

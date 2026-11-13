@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { FastGoogleOneTap } from './FastGoogleOneTap';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -78,7 +78,7 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
     return null;
   }
 
-  const handleSuccess = () => {
+  const handleSuccess = useCallback(() => {
     console.log('🎉 Google One Tap login successful!');
     const urlParams = new URLSearchParams(window.location.search);
     localStorage.removeItem('subdomain_redirect');
@@ -98,7 +98,7 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
 
     // On landing or content page across any domain: reload in place to immediately hydrate session
     window.location.reload();
-  };
+  }, [navigate]);
 
   return (
     <FastGoogleOneTap

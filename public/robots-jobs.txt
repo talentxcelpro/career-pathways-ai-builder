@@ -77,10 +77,9 @@ Allow: /*.jpg$
 Allow: /*.svg$
 
 # Parameter Filtering Control
-Allow: /jobs?search=
+Disallow: /*?*search=
 Disallow: /*?*filter=
 Disallow: /*?*sort=
-Disallow: /*?*page=
 Disallow: /*?*utm_
 
 Sitemap: https://jobs.talentxcel.in/sitemap.xml

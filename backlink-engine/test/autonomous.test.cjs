@@ -1,0 +1,17 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { DatabaseSync } = require('node:sqlite');
+const { migrate, canonicalStatus, CANONICAL_STATUSES } = require('../src/autonomous/migration.cjs');
+const { evaluateOpportunity } = require('../src/autonomous/policy.cjs');
+const { AGENT_NAMES, runAgent } = require('../src/autonomous/agents.cjs');
+const queue = require('../src/autonomous/queue.cjs');
+const { scheduleDaily } = require('../src/autonomous/scheduler.cjs');
+const { dashboard } = require('../src/autonomous/metrics.cjs');
+const { consume } = require('../src/autonomous/rate-limit.cjs');
+function db() { const d = new DatabaseSync(':memory:'); d.exec('CREATE TABLE domains(id INTEGER PRIMARY KEY, qualification_status TEXT); CREATE TABLE backlinks(id INTEGER PRIMARY KEY, status TEXT, is_external INTEGER, referring_domain TEXT);'); migrate(d); return d; }
+test('migration is additive and maps legacy statuses', () => { const d = db(); assert.equal(canonicalStatus('DISCOVERED_DOMAIN'), 'DISCOVERED'); assert.equal(canonicalStatus('VERIFIED_REFERRING_DOMAIN'), 'VERIFIED_LIVE'); assert.equal(CANONICAL_STATUSES.length, 10); assert.ok(d.prepare("SELECT name FROM sqlite_master WHERE name='autonomous_jobs'").get()); });
+test('policy escalates restricted opportunities and never authorizes live submission', () => { const p = evaluateOpportunity({ captchaRequired: true, apiAvailable: true }); assert.equal(p.decision, 'ESCALATE_HUMAN'); assert.equal(p.safeForLiveSubmission, false); assert.ok(p.reasons.includes('CAPTCHA')); });
+test('all ten agents return structured evidence and decisions', () => { assert.equal(AGENT_NAMES.length, 10); for (const name of AGENT_NAMES) { const r = runAgent(name, { relevance: ['HR'], formSubmissionPermitted: true }); assert.equal(r.agent, name); assert.ok(r.evidence); assert.ok(r.decision); } });
+test('queue is idempotent and recovers expired leases', () => { const d = db(); const a = queue.enqueue(d, { jobType: 'VERIFY', payload: { id: 1 }, idempotencyKey: 'same' }); const b = queue.enqueue(d, { jobType: 'VERIFY', payload: { id: 1 }, idempotencyKey: 'same' }); assert.equal(a.id, b.id); assert.equal(d.prepare('SELECT count(*) n FROM autonomous_jobs').get().n, 1); const leased = queue.lease(d, { workerId: 'test', leaseSeconds: 1 }); assert.ok(leased); d.prepare("UPDATE autonomous_jobs SET leased_until='2000-01-01T00:00:00.000Z' WHERE id=?").run(leased.id); assert.ok(queue.lease(d, { workerId: 'restart', leaseSeconds: 1 })); });
+test('daily schedule is idempotent and dashboard reconciles', () => { const d = db(); assert.equal(scheduleDaily(d, '2026-11-12').length, 4); scheduleDaily(d, '2026-11-12'); assert.equal(d.prepare('SELECT count(*) n FROM autonomous_jobs').get().n, 4); d.prepare("INSERT INTO autonomous_opportunities(root_domain,status,created_at,updated_at) VALUES('example.com','READY',datetime('now'),datetime('now'))").run(); assert.equal(dashboard(d).submissionReady, 1); });
+test('domain and global rate limits are enforced', () => { const d = db(); assert.equal(consume(d, { domain: 'a.com', domainLimit: 1, globalLimit: 2 }).allowed, true); assert.equal(consume(d, { domain: 'a.com', domainLimit: 1, globalLimit: 2 }).reason, 'DOMAIN_RATE_LIMIT'); assert.equal(consume(d, { domain: 'b.com', domainLimit: 1, globalLimit: 2 }).allowed, true); assert.equal(consume(d, { domain: 'c.com', domainLimit: 1, globalLimit: 2 }).reason, 'GLOBAL_RATE_LIMIT'); });

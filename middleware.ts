@@ -88,17 +88,8 @@ export default async function middleware(req: Request) {
     return Response.redirect(`https://talentxcel.in/colleges/${collegeSlug}`, 301);
   }
 
-  // 7. For individual expired job UUIDs, permanently redirect to /jobs (resolves GSC 404 validation)
-  if (section === 'jobs' && pathParts.length === 2) {
-    const jobSlug = pathParts[1];
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(jobSlug);
-    if (isUuid) {
-      const job = await fetchJobForMeta(jobSlug);
-      if (!job) {
-        return Response.redirect('https://talentxcel.in/jobs', 301);
-      }
-    }
-  }
+  // 7. Expired & inactive job requests pass through to /api/seo-render, which returns HTTP 410 Gone.
+  // We do NOT 301-redirect expired jobs to /jobs, because Google considers homepage/hub redirects for expired jobs as Soft-404 errors.
 
   // 8. For ALL active catalog, programmatic corridor, entity, and content routes:
   // Allow request to pass through (return;) so vercel.json rewrites crawlers directly to /api/seo-render.

@@ -39,6 +39,11 @@ interface JobFilters {
   posted_by?: string[];
   freshness?: string[];
   company_id?: string;
+  country?: string[];
+  currency?: string[];
+  applicant_eligibility?: string[];
+  visa_sponsored?: boolean;
+  relocation_provided?: boolean;
 }
 
 export const FALLBACK_JOBS = [
@@ -305,6 +310,59 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
           return text.includes(edu.toLowerCase());
         });
         if (!eduMatches) return false;
+      }
+
+      
+      // 8. Country filter
+      if (filters.country && filters.country.length > 0) {
+        const fullLoc = `${job.location || ''} ${job.location_city || ''}`.toLowerCase();
+        const countryMatches = filters.country.some(code => {
+          if (code === 'IN') return fullLoc.includes('india') || (!fullLoc.includes('united states') && !fullLoc.includes('usa') && !fullLoc.includes('uae') && !fullLoc.includes('dubai') && !fullLoc.includes('abu dhabi') && !fullLoc.includes('riyadh') && !fullLoc.includes('london') && !fullLoc.includes('sydney') && !fullLoc.includes('singapore'));
+          if (code === 'AE') return fullLoc.includes('uae') || fullLoc.includes('emirates') || fullLoc.includes('dubai') || fullLoc.includes('abu dhabi') || fullLoc.includes('sharjah');
+          if (code === 'US') return fullLoc.includes('united states') || fullLoc.includes('usa') || fullLoc.includes('austin') || fullLoc.includes('seattle') || fullLoc.includes('washington') || fullLoc.includes('san francisco') || fullLoc.includes('new york') || fullLoc.includes('san mateo');
+          if (code === 'SA') return fullLoc.includes('saudi') || fullLoc.includes('riyadh');
+          if (code === 'QA') return fullLoc.includes('qatar') || fullLoc.includes('doha');
+          if (code === 'OM') return fullLoc.includes('oman') || fullLoc.includes('muscat');
+          if (code === 'GB') return fullLoc.includes('united kingdom') || fullLoc.includes('london') || fullLoc.includes('uk');
+          if (code === 'DE') return fullLoc.includes('germany') || fullLoc.includes('berlin') || fullLoc.includes('munich') || fullLoc.includes('darmstadt');
+          if (code === 'AU') return fullLoc.includes('australia') || fullLoc.includes('sydney') || fullLoc.includes('canberra');
+          if (code === 'SG') return fullLoc.includes('singapore');
+          if (code === 'CA') return fullLoc.includes('canada') || fullLoc.includes('toronto') || fullLoc.includes('ottawa');
+          if (code === 'REMOTE') return job.is_remote || fullLoc.includes('remote');
+          return false;
+        });
+        if (!countryMatches) return false;
+      }
+
+      // 9. Currency filter
+      if (filters.currency && filters.currency.length > 0) {
+        const cur = (job.salary_currency || '').toUpperCase();
+        const loc = (job.location || '').toLowerCase();
+        const detectedCur = cur || (
+          loc.includes('dubai') || loc.includes('abu dhabi') || loc.includes('uae') ? 'AED' :
+          loc.includes('united states') || loc.includes('usa') || loc.includes('austin') ? 'USD' :
+          loc.includes('riyadh') || loc.includes('saudi') ? 'SAR' :
+          loc.includes('doha') || loc.includes('qatar') ? 'QAR' :
+          loc.includes('muscat') || loc.includes('oman') ? 'OMR' :
+          loc.includes('london') || loc.includes('uk') ? 'GBP' :
+          loc.includes('singapore') ? 'SGD' :
+          loc.includes('australia') || loc.includes('sydney') ? 'AUD' :
+          'INR'
+        );
+        if (!filters.currency.includes(detectedCur)) return false;
+      }
+
+      // 10. Visa & Eligibility filter
+      if (filters.applicant_eligibility && filters.applicant_eligibility.length > 0) {
+        const text = `${job.applicant_location_requirements || ''} ${job.location || ''} ${job.description || ''}`.toLowerCase();
+        const eligMatches = filters.applicant_eligibility.some(elig => {
+          if (elig === 'uae_visa') return text.includes('visa sponsored') || text.includes('residence visa') || (text.includes('uae') && text.includes('visa'));
+          if (elig === 'relocation') return text.includes('relocation') || text.includes('flight');
+          if (elig === 'us_auth') return text.includes('us work') || text.includes('authorization') || text.includes('united states');
+          if (elig === 'intl_remote') return text.includes('worldwide') || text.includes('international') || text.includes('india');
+          return false;
+        });
+        if (!eligMatches) return false;
       }
 
       return true;

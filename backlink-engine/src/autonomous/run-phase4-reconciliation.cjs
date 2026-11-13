@@ -1,0 +1,1 @@
+const {DatabaseSync}=require('node:sqlite'); const config=require('../config.cjs'); const {migrate}=require('./migration.cjs'); const {reconcile}=require('./reconcile-phase4.cjs'); const db=new DatabaseSync(config.PATHS.DB);migrate(db);console.log(JSON.stringify(reconcile(db),null,2));console.log(JSON.stringify(db.prepare('PRAGMA integrity_check').get()));db.close();

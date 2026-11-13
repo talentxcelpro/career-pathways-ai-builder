@@ -1839,6 +1839,14 @@
       "destination": "/api/badge"
     },
     {
+      "source": "/api/mcp",
+      "destination": "/api/mcp"
+    },
+    {
+      "source": "/api/mcp/:path*",
+      "destination": "/api/mcp/:path*"
+    },
+    {
       "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap|sitemaps).*)",
       "has": [
         {

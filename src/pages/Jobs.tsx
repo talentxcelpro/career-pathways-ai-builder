@@ -61,6 +61,9 @@ const filtersSchema = z.object({
   posted_by: z.array(z.string()).optional(),
   freshness: z.array(z.string()).optional(),
   company_id: z.string().optional(),
+  country: z.array(z.string()).optional(),
+  currency: z.array(z.string()).optional(),
+  applicant_eligibility: z.array(z.string()).optional(),
 }).passthrough();
 
 const Jobs = () => {
@@ -88,6 +91,9 @@ const Jobs = () => {
       posted_by: [],
       freshness: [],
       company_id: searchParams.get('company') || '',
+      country: [],
+      currency: [],
+      applicant_eligibility: [],
     };
   });
 
@@ -741,13 +747,15 @@ const Jobs = () => {
                               isSaved={savedJobs.includes(job.id)}
                             />
                           ) : (
-                            <OptimizedJobCard
+                            <TalentSparkJobCard
                               key={job.id}
                               job={job}
                               onSave={handleSaveJob}
-                            onApply={handleQuickApply}
-                            isSaved={savedJobs.includes(job.id)}
-                          />
+                              onQuickApply={handleQuickApply}
+                              isSaved={savedJobs.includes(job.id)}
+                              txcReward={15}
+                              viewMode={viewMode}
+                            />
                           )
                         ))}
                       </div>

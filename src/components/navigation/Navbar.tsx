@@ -52,16 +52,23 @@ export const Navbar = () => {
   const { isMobile } = useMobileDetection();
   const currentUniverse = getCurrentUniverse();
   const isJobsUniverse = currentUniverse === 'JOBS' || location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
+
+  // JobMatch OS has its own dedicated single-tier header (JobPortalHeader)
+  // Part 1 directive: Remove duplicate global header from jobs subdomain
+  if (currentUniverse === 'JOBS') {
+    return null;
+  }
+
   const universeBadges: Record<string, string> = {
-    JOBS: 'Jobs',
-    LEARNING: 'Learning',
-    PASSPORT: 'Passport',
-    GOVERNMENT: 'Government',
-    EMPLOYERS: 'Employers',
-    COLLEGES: 'Colleges',
-    CAREERS: 'Careers',
-    SALARY: 'Salary',
-    RESUME: 'Resume',
+    JOBS: 'JobMatch OS',
+    LEARNING: 'SkillPods',
+    PASSPORT: 'Career Passport',
+    GOVERNMENT: 'SarkariHub',
+    EMPLOYERS: 'Recruiter Workspace',
+    COLLEGES: 'CampusOS',
+    CAREERS: 'Career Pathfinder',
+    SALARY: 'PayScale',
+    RESUME: 'ResumeStudio',
   };
   const productBadge = universeBadges[currentUniverse];
 
@@ -407,13 +414,22 @@ export const Navbar = () => {
                     </DropdownMenuItem>
 
                     {isAdmin && (
-                      <DropdownMenuItem 
-                        onClick={() => navigate('/admin')}
-                        className="text-xs font-bold hover:bg-slate-800 focus:bg-slate-800 text-amber-300 cursor-pointer"
-                      >
-                        <Shield className="mr-2 h-4 w-4 text-amber-400" />
-                        <span>Admin Dashboard</span>
-                      </DropdownMenuItem>
+                      <>
+                        <DropdownMenuItem 
+                          onClick={() => navigate('/admin/founder-command-center')}
+                          className="text-xs font-bold hover:bg-slate-800 focus:bg-slate-800 text-emerald-400 cursor-pointer"
+                        >
+                          <Zap className="mr-2 h-4 w-4 text-emerald-400" />
+                          <span>Founder Command Center</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem 
+                          onClick={() => navigate('/admin')}
+                          className="text-xs font-bold hover:bg-slate-800 focus:bg-slate-800 text-amber-300 cursor-pointer"
+                        >
+                          <Shield className="mr-2 h-4 w-4 text-amber-400" />
+                          <span>Admin Dashboard</span>
+                        </DropdownMenuItem>
+                      </>
                     )}
 
                     <DropdownMenuSeparator className="bg-slate-800" />

@@ -1,0 +1,207 @@
+{
+  "totalAudited": 2282,
+  "activeUnexpiredJobs": 2276,
+  "inactiveOrExpired": 6,
+  "activeJobsByCountry": {
+    "India": 2114,
+    "United Kingdom": 7,
+    "Australia": 9,
+    "United Arab Emirates": 18,
+    "Singapore": 9,
+    "Worldwide Remote": 68,
+    "United States": 23,
+    "Canada": 5,
+    "Germany": 6,
+    "Belgium": 2,
+    "Kenya": 2,
+    "Nigeria": 1,
+    "South Africa": 2,
+    "Egypt": 1,
+    "Rwanda": 1,
+    "Qatar": 2,
+    "Saudi Arabia": 3,
+    "Netherlands": 1,
+    "Ireland": 1,
+    "Oman": 1
+  },
+  "topCities": [
+    [
+      "Remote, India",
+      66
+    ],
+    [
+      "Mumbai",
+      53
+    ],
+    [
+      "Hyderabad",
+      51
+    ],
+    [
+      "Noida",
+      50
+    ],
+    [
+      "Pune",
+      48
+    ],
+    [
+      "Gurugram",
+      46
+    ],
+    [
+      "Bhopal",
+      45
+    ],
+    [
+      "Jaipur",
+      45
+    ],
+    [
+      "Chandigarh",
+      45
+    ],
+    [
+      "Chennai",
+      45
+    ],
+    [
+      "Kolkata",
+      44
+    ],
+    [
+      "Bhubaneswar",
+      44
+    ],
+    [
+      "Kochi",
+      44
+    ],
+    [
+      "Surat",
+      44
+    ],
+    [
+      "Coimbatore",
+      44
+    ],
+    [
+      "Indore",
+      44
+    ],
+    [
+      "Patna",
+      43
+    ],
+    [
+      "Visakhapatnam",
+      43
+    ],
+    [
+      "Nagpur",
+      43
+    ],
+    [
+      "Vadodara",
+      43
+    ],
+    [
+      "Delhi",
+      33
+    ],
+    [
+      "Agra",
+      28
+    ],
+    [
+      "Bangalore",
+      28
+    ],
+    [
+      "Nashik",
+      28
+    ],
+    [
+      "Amravati",
+      28
+    ]
+  ],
+  "employersCountByCountry": {
+    "India": 277,
+    "United Kingdom": 3,
+    "Australia": 3,
+    "United Arab Emirates": 14,
+    "Singapore": 3,
+    "Worldwide Remote": 4,
+    "United States": 12,
+    "Canada": 2,
+    "Germany": 3,
+    "Belgium": 1,
+    "Kenya": 2,
+    "Nigeria": 1,
+    "South Africa": 2,
+    "Egypt": 1,
+    "Rwanda": 1,
+    "Qatar": 1,
+    "Saudi Arabia": 2,
+    "Netherlands": 1,
+    "Ireland": 1,
+    "Oman": 1
+  },
+  "internationalVacanciesWithValidApplicationLinks": 97,
+  "totalValidApplicationUrls": 1820,
+  "missingApplicationUrls": 456,
+  "visaAndEligibilityCoverage": {
+    "confirmedVisaSponsored": 10,
+    "usWorkAuthRequired": 7,
+    "openToInternationalRemote": 3
+  },
+  "salaryCurrencyCoverage": {
+    "INR": 2252,
+    "USD": 10,
+    "AED": 11,
+    "QAR": 1,
+    "SAR": 1,
+    "OMR": 1
+  },
+  "jobPostingValidation": {
+    "totalValidatedJobPostings": 2276,
+    "withTelecommuteForRemote": 0,
+    "withApplicantLocationRequirements": 2276,
+    "withExplicitCountryCode": 2276
+  },
+  "internationalUrlsGenerated": [
+    "/jobs/data-analyst-dubai-uae",
+    "/jobs/software-engineer-abu-dhabi-uae",
+    "/jobs/cloud-engineer-riyadh-saudi-arabia",
+    "/jobs/data-analyst-remote-usa",
+    "/jobs/software-engineer-remote-us"
+  ],
+  "internationalUrlsEligibleForIndexing": [
+    {
+      "url": "https://jobs.talentxcel.in/jobs/data-analyst-dubai-uae",
+      "liveJobs": 2,
+      "status": "Eligible (index, follow)"
+    },
+    {
+      "url": "https://jobs.talentxcel.in/jobs/software-engineer-abu-dhabi-uae",
+      "liveJobs": 3,
+      "status": "Eligible (index, follow)"
+    },
+    {
+      "url": "https://jobs.talentxcel.in/jobs/cloud-engineer-riyadh-saudi-arabia",
+      "liveJobs": 1,
+      "status": "Eligible (index, follow)"
+    },
+    {
+      "url": "https://jobs.talentxcel.in/jobs/data-analyst-remote-usa",
+      "liveJobs": 2,
+      "status": "Eligible (index, follow)"
+    },
+    {
+      "url": "https://jobs.talentxcel.in/jobs/software-engineer-remote-us",
+      "liveJobs": 5,
+      "status": "Eligible (index, follow)"
+    }
+  ]
+}

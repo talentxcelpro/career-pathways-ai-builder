@@ -1,19 +1,6 @@
-import { auth, defineMcp } from "@lovable.dev/mcp-js";
-import getPassport from "./tools/get-passport";
-import searchJobs from "./tools/search-jobs";
-import listMyApplications from "./tools/list-my-applications";
-
-const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
-
-export default defineMcp({
-  name: "talentxcel-mcp",
-  title: "TalentXcel MCP",
-  version: "0.1.0",
-  instructions:
-    "TalentXcel Career Passport tools. Use `get_passport` to read the signed-in user's verified career identity (profile, education, experience, certificates). Use `search_jobs` to search TalentXcel job postings. Use `list_my_applications` to review the user's job applications.",
-  auth: auth.oauth.issuer({
-    issuer: `https://${projectRef}.supabase.co/auth/v1`,
-    acceptedAudiences: "authenticated",
-  }),
-  tools: [getPassport, searchJobs, listMyApplications],
-});
+// src/lib/mcp/index.ts
+// The TalentXcel MCP server has been migrated to the standalone talentxcel-mcp/ package.
+// See talentxcel-mcp/src/index.ts for the production server.
+// See docs/MCP_LOCAL_SETUP.md for local Antigravity setup instructions.
+// See api/mcp.ts for the Vercel remote endpoint.
+export default {};

@@ -1,0 +1,11 @@
+platform,opportunity_url,evidence_url,category,permission_state,owner_action
+"Product Hunt","https://www.producthunt.com/launch","https://help.producthunt.com/en/articles/479557-how-to-post-a-product","STARTUP_TECH","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"G2","https://www.g2.com/seller_login","https://www.g2.com/seller_login","SAAS_SOFTWARE","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"Capterra","https://www.capterra.com/vendors/","https://www.capterra.com/vendors/","SAAS_SOFTWARE","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"GetApp","https://www.getapp.com/vendors/","https://www.getapp.com/vendors/","SAAS_SOFTWARE","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"F6S","https://www.f6s.com/","https://www.f6s.com/","STARTUP_BUSINESS","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"Wellfound","https://wellfound.com/","https://wellfound.com/","STARTUP_BUSINESS","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"SaaSHub","https://www.saashub.com/","https://www.saashub.com/","SAAS_SOFTWARE","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"AlternativeTo","https://alternativeto.net/","https://alternativeto.net/","SAAS_SOFTWARE","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"GoodFirms","https://www.goodfirms.co/get-listed","https://www.goodfirms.co/get-listed","BUSINESS_DIRECTORY","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"
+"Clutch","https://clutch.co/claim-profile","https://clutch.co/claim-profile","BUSINESS_DIRECTORY","UNVERIFIED","Confirm eligibility, account, cost, editorial rules and permission"

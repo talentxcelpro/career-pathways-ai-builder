@@ -16,13 +16,19 @@ import {
   Clock,
   GraduationCap,
   Users,
-  Briefcase
+  Briefcase,
+  Globe,
+  Coins,
+  ShieldCheck
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface JobFilters {
   search: string;
   location: string;
+  country?: string[];
+  currency?: string[];
+  applicant_eligibility?: string[];
   employment_type: string[];
   experience_level: string[];
   salary_min: number;
@@ -128,6 +134,9 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
   };
 
   const activeFiltersCount = 
+    (filters.country?.length || 0) +
+    (filters.currency?.length || 0) +
+    (filters.applicant_eligibility?.length || 0) +
     filters.employment_type.length +
     filters.experience_level.length +
     (filters.department?.length || 0) +
@@ -141,6 +150,41 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
     filters.skills.length +
     (filters.is_remote ? 1 : 0) +
     (filters.salary_min > 0 || filters.salary_max > 0 ? 1 : 0);
+
+  
+  const COUNTRY_OPTIONS = [
+    { value: 'IN', label: '🇮🇳 India', count: 2129 },
+    { value: 'AE', label: '🇦🇪 UAE (Dubai, Abu Dhabi)', count: 18 },
+    { value: 'US', label: '🇺🇸 United States', count: 23 },
+    { value: 'SA', label: '🇸🇦 Saudi Arabia (Riyadh)', count: 3 },
+    { value: 'QA', label: '🇶🇦 Qatar (Doha)', count: 2 },
+    { value: 'OM', label: '🇴🇲 Oman (Muscat)', count: 1 },
+    { value: 'SG', label: '🇸🇬 Singapore', count: 9 },
+    { value: 'AU', label: '🇦🇺 Australia (Sydney)', count: 9 },
+    { value: 'GB', label: '🇬🇧 United Kingdom (London)', count: 7 },
+    { value: 'DE', label: '🇩🇪 Germany (Berlin, Munich)', count: 6 },
+    { value: 'CA', label: '🇨🇦 Canada (Toronto, Ottawa)', count: 5 },
+    { value: 'REMOTE', label: '🌐 Worldwide Remote', count: 68 }
+  ];
+
+  const CURRENCY_OPTIONS = [
+    { value: 'INR', label: '₹ INR (Indian Rupee)', count: 2242 },
+    { value: 'AED', label: 'AED (UAE Dirham)', count: 11 },
+    { value: 'USD', label: '$ USD (US Dollar)', count: 12 },
+    { value: 'SAR', label: 'SAR (Saudi Riyal)', count: 1 },
+    { value: 'QAR', label: 'QAR (Qatari Riyal)', count: 1 },
+    { value: 'OMR', label: 'OMR (Omani Rial)', count: 1 },
+    { value: 'GBP', label: '£ GBP (British Pound)', count: 6 },
+    { value: 'SGD', label: 'S$ SGD (Singapore Dollar)', count: 4 },
+    { value: 'AUD', label: 'A$ AUD (Australian Dollar)', count: 4 }
+  ];
+
+  const ELIGIBILITY_OPTIONS = [
+    { value: 'uae_visa', label: '🇦🇪 UAE Visa Sponsored', count: 8 },
+    { value: 'relocation', label: '✈ Relocation Support Provided', count: 7 },
+    { value: 'us_auth', label: '🇺🇸 US Work Auth Required', count: 15 },
+    { value: 'intl_remote', label: '🌐 Open to International / India', count: 68 }
+  ];
 
   const EXPERIENCE_OPTIONS = [
     { value: 'fresher', label: '0-1 Years', count: 99 },
@@ -250,6 +294,39 @@ export const ComprehensiveJobFilters: React.FC<ComprehensiveJobFiltersProps> = (
       <CardContent className="p-1">
         <div className="space-y-0.5">
           
+          {/* Country & Region */}
+          <FilterSection title="Country & Region" icon={<Globe className="h-3 w-3 text-muted-foreground" />} defaultOpen={true}>
+            <CheckboxFilter
+              options={COUNTRY_OPTIONS}
+              selected={filters.country || []}
+              onChange={(values) => updateFilters({ country: values })}
+            />
+          </FilterSection>
+
+          <Separator className="my-1" />
+
+          {/* Visa & International Eligibility */}
+          <FilterSection title="Visa & Work Auth" icon={<ShieldCheck className="h-3 w-3 text-muted-foreground" />} defaultOpen={false}>
+            <CheckboxFilter
+              options={ELIGIBILITY_OPTIONS}
+              selected={filters.applicant_eligibility || []}
+              onChange={(values) => updateFilters({ applicant_eligibility: values })}
+            />
+          </FilterSection>
+
+          <Separator className="my-1" />
+
+          {/* Currency */}
+          <FilterSection title="Currency" icon={<Coins className="h-3 w-3 text-muted-foreground" />} defaultOpen={false}>
+            <CheckboxFilter
+              options={CURRENCY_OPTIONS}
+              selected={filters.currency || []}
+              onChange={(values) => updateFilters({ currency: values })}
+            />
+          </FilterSection>
+
+          <Separator className="my-1" />
+
           {/* Experience */}
           <FilterSection title="Experience" icon={<Clock className="h-3 w-3 text-muted-foreground" />} defaultOpen={true}>
             <CheckboxFilter

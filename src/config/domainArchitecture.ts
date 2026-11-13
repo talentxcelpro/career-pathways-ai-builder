@@ -30,7 +30,10 @@ export type ProductUniverse =
   | 'COLLEGES'
   | 'CAREERS'
   | 'SALARY'
-  | 'RESUME';
+  | 'RESUME'
+  | 'CA_PRACTICE'
+  | 'LEGAL_PRACTICE'
+  | 'SERVICES';
 
 export const DOMAIN_TO_UNIVERSE: Record<string, ProductUniverse> = {
   'talentxcel.in': 'CORE',
@@ -45,6 +48,9 @@ export const DOMAIN_TO_UNIVERSE: Record<string, ProductUniverse> = {
   'careers.talentxcel.in': 'CAREERS',
   'salary.talentxcel.in': 'SALARY',
   'resume.talentxcel.in': 'RESUME',
+  'ca.talentxcel.in': 'CA_PRACTICE',
+  'legal.talentxcel.in': 'LEGAL_PRACTICE',
+  'services.talentxcel.in': 'SERVICES',
 };
 
 export const UNIVERSE_PRIMARY_DOMAIN: Record<ProductUniverse, string> = {
@@ -58,6 +64,9 @@ export const UNIVERSE_PRIMARY_DOMAIN: Record<ProductUniverse, string> = {
   CAREERS: 'https://careers.talentxcel.in',
   SALARY: 'https://salary.talentxcel.in',
   RESUME: 'https://resume.talentxcel.in',
+  CA_PRACTICE: 'https://ca.talentxcel.in',
+  LEGAL_PRACTICE: 'https://legal.talentxcel.in',
+  SERVICES: 'https://services.talentxcel.in',
 };
 
 export const UNIVERSE_ROOT_PATHS: Record<ProductUniverse, string> = {
@@ -71,6 +80,9 @@ export const UNIVERSE_ROOT_PATHS: Record<ProductUniverse, string> = {
   CAREERS: '/career-map',
   SALARY: '/salary',
   RESUME: '/resume',
+  CA_PRACTICE: '/ca',
+  LEGAL_PRACTICE: '/legal',
+  SERVICES: '/services',
 };
 
 /**
@@ -89,6 +101,9 @@ export const AUTH_ALLOWED_HOSTNAMES: readonly string[] = [
   'careers.talentxcel.in',
   'salary.talentxcel.in',
   'resume.talentxcel.in',
+  'ca.talentxcel.in',
+  'legal.talentxcel.in',
+  'services.talentxcel.in',
 ] as const;
 
 /**
@@ -109,6 +124,9 @@ export const GOOGLE_OAUTH_AUTHORIZED_JAVASCRIPT_ORIGINS: readonly string[] = [
   'https://careers.talentxcel.in',
   'https://salary.talentxcel.in',
   'https://resume.talentxcel.in',
+  'https://ca.talentxcel.in',
+  'https://legal.talentxcel.in',
+  'https://services.talentxcel.in',
 ] as const;
 
 /**
@@ -130,6 +148,9 @@ export const GOOGLE_OAUTH_AUTHORIZED_REDIRECT_URIS: readonly string[] = [
   'https://careers.talentxcel.in/auth/callback',
   'https://salary.talentxcel.in/auth/callback',
   'https://resume.talentxcel.in/auth/callback',
+  'https://ca.talentxcel.in/auth/callback',
+  'https://legal.talentxcel.in/auth/callback',
+  'https://services.talentxcel.in/auth/callback',
 ] as const;
 
 /**
@@ -248,6 +269,9 @@ export function getCurrentUniverse(
   if (host.startsWith('careers.') || host.startsWith('careers-')) return 'CAREERS';
   if (host.startsWith('salary.') || host.startsWith('salary-')) return 'SALARY';
   if (host.startsWith('resume.') || host.startsWith('resume-')) return 'RESUME';
+  if (host.startsWith('ca.') || host.startsWith('ca-')) return 'CA_PRACTICE';
+  if (host.startsWith('legal.') || host.startsWith('legal-')) return 'LEGAL_PRACTICE';
+  if (host.startsWith('services.') || host.startsWith('services-')) return 'SERVICES';
 
   return 'CORE';
 }
@@ -365,6 +389,21 @@ export function getAuthoritativeUniverseForRoute(pathname: string): ProductUnive
     clean === '/tools/resume-tailor'
   ) {
     return 'RESUME';
+  }
+
+  // CA PracticeOS
+  if (clean === '/ca' || clean.startsWith('/ca/')) {
+    return 'CA_PRACTICE';
+  }
+
+  // Legal PracticeOS
+  if (clean === '/legal' || clean.startsWith('/legal/')) {
+    return 'LEGAL_PRACTICE';
+  }
+
+  // Professional ServicesOS
+  if (clean === '/services' || clean.startsWith('/services/')) {
+    return 'SERVICES';
   }
 
   // Core Career Ecosystem (Home, Network, Communities, Messages, Rankings, News, Blog, Company Profiles, Public Profiles)
