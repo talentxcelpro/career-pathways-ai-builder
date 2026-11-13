@@ -1857,6 +1857,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // 1. Mandatory Authorization Check (Cron Secret Bearer, Vercel Cron, or Service Role Key)
   const authHeader = req.headers.authorization || '';
+  const callerBearer = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+  const isCallerJwt = callerBearer.startsWith('eyJ');
   const isVercelCron = req.headers['x-vercel-cron'] === '1';
   const expectedSecret = process.env.CRON_SECRET;
   const serviceKey =
@@ -1870,6 +1872,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const origin = String(req.headers.origin || req.headers.referer || '');
   const isSameOrigin = origin.includes('talentxcel.in') || origin.includes('localhost') || origin.includes('127.0.0.1');
   const isAuthorized =
+    isCallerJwt ||
     isBearerCronSecret ||
     isBearerServiceKey ||
     isVercelEdge ||
@@ -1891,8 +1894,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || process.env.AWS_SES_SECRET_ACCESS_KEY;
   const region = process.env.AWS_REGION || process.env.AWS_SES_REGION || DEFAULT_REGION;
 
+  const effectiveSupabaseKey = (isCallerJwt ? callerBearer : null) ||
+    process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    SUPABASE_KEY;
+
   try {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+    const supabase = createClient(SUPABASE_URL, effectiveSupabaseKey, {
       auth: { persistSession: false }
     });
 
