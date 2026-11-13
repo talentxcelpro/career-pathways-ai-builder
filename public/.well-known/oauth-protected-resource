@@ -1,0 +1,15 @@
+{
+  "resource": "https://talentxcel.in/api/mcp",
+  "authorization_servers": [
+    "https://dthlgsnakhoftinssokm.supabase.co/auth/v1"
+  ],
+  "scopes_supported": [
+    "public",
+    "user",
+    "employer"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "resource_documentation": "https://talentxcel.in"
+}

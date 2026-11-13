@@ -8,6 +8,23 @@
   ],
   "headers": [
     {
+      "source": "/.well-known/(.*)",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -1845,6 +1862,18 @@
     {
       "source": "/api/mcp/:path*",
       "destination": "/api/mcp/:path*"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/.well-known/oauth-protected-resource.json"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/.well-known/oauth-authorization-server.json"
+    },
+    {
+      "source": "/.well-known/:path*",
+      "destination": "/.well-known/:path*"
     },
     {
       "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap|sitemaps).*)",

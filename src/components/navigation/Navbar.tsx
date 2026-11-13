@@ -50,14 +50,9 @@ export const Navbar = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
   const { isMobile } = useMobileDetection();
+  const { isAdmin } = useAdminAccess();
   const currentUniverse = getCurrentUniverse();
   const isJobsUniverse = currentUniverse === 'JOBS' || location.pathname === '/jobs' || location.pathname.startsWith('/jobs/');
-
-  // JobMatch OS has its own dedicated single-tier header (JobPortalHeader)
-  // Part 1 directive: Remove duplicate global header from jobs subdomain
-  if (currentUniverse === 'JOBS') {
-    return null;
-  }
 
   const universeBadges: Record<string, string> = {
     JOBS: 'JobMatch OS',
@@ -191,7 +186,10 @@ export const Navbar = () => {
     return user?.email?.[0]?.toUpperCase() || 'U';
   };
 
-  const { isAdmin } = useAdminAccess();
+  // JobMatch OS has its own dedicated single-tier header (JobPortalHeader)
+  if (currentUniverse === 'JOBS') {
+    return null;
+  }
 
   // Hide navbar on mobile when user is authenticated (mobile bottom nav wrapper handles mobile navigation)
   if (isMobile && user) {

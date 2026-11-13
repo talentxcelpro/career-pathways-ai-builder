@@ -63,10 +63,15 @@ function wrap<T>(fn: (input: T) => Promise<unknown>) {
 
 // ── Server Factory ───────────────────────────────────────────────────────────
 function buildMcpServer(auth: AuthContext): McpServer {
-  const server = new McpServer({
-    name: "talentxcel-mcp",
-    version: "1.0.0",
-  });
+  const server = new McpServer(
+    {
+      name: "talentxcel-mcp",
+      version: "1.0.0",
+    },
+    {
+      instructions: "TalentXcel Universal MCP Server — Real-time AI connector for job search, candidate profiling, skill gap analysis, resume reviews, salary analytics, and career coaching across TalentXcel.in ecosystem.",
+    }
+  );
 
   const pubSb = getPublicSb();
   const userSb = auth.token ? getUserSb(auth.token) : pubSb;
@@ -579,7 +584,8 @@ function buildMcpServer(auth: AuthContext): McpServer {
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Mcp-Session-Id");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Mcp-Session-Id, Mcp-Protocol-Version");
+  res.setHeader("Access-Control-Expose-Headers", "Content-Type, Mcp-Session-Id, Mcp-Protocol-Version");
 
   if (req.method === "OPTIONS") {
     return res.status(204).end();
@@ -596,6 +602,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       resources_count: 4,
       prompts_count: 5,
       deployment: "Vercel Serverless",
+      protocol_versions: ["2024-11-05", "2025-03-26", "2025-11-25"],
     });
   }
 
@@ -608,10 +615,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(413).json({ jsonrpc: "2.0", error: { code: -32600, message: "Request payload exceeds 64KB limit" }, id: null });
   }
 
+  // Normalize Accept header so that clients sending */* or application/json only never receive 406
+  if (!req.headers.accept || !req.headers.accept.includes("application/json") || !req.headers.accept.includes("text/event-stream")) {
+    req.headers.accept = "application/json, text/event-stream";
+  }
+
   const auth = await validateAuth(req.headers.authorization);
   const mcpServer = buildMcpServer(auth);
+
+  // CRITICAL: In Vercel Serverless, sessionIdGenerator MUST be undefined.
+  // In stateless mode, the transport allows non-initialization requests (such as tools/list)
+  // across independent serverless invocations without requiring persistent in-memory session state.
   const transport = new StreamableHTTPServerTransport({
-    sessionIdGenerator: () => `txc-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    sessionIdGenerator: undefined,
+    enableJsonResponse: true,
   });
 
   try {

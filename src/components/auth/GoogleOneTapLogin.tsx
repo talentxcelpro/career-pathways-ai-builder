@@ -60,24 +60,6 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Cancel immediately if user is already authenticated
-  useEffect(() => {
-    if (user && window.google?.accounts?.id?.cancel) {
-      window.google.accounts.id.cancel();
-    }
-  }, [user]);
-
-  // If user is authenticated in React state or an active unexpired session exists, DO NOT SHOW
-  if (disabled || user || hasActiveAuthSession()) {
-    return null;
-  }
-
-  // If on an internal application route, DO NOT SHOW
-  const isInternalRoute = APP_ROUTE_PREFIXES.some(prefix => location.pathname.startsWith(prefix));
-  if (isInternalRoute) {
-    return null;
-  }
-
   const handleSuccess = useCallback(() => {
     console.log('🎉 Google One Tap login successful!');
     const urlParams = new URLSearchParams(window.location.search);
@@ -99,6 +81,24 @@ export const GoogleOneTapLogin: React.FC<GoogleOneTapLoginProps> = ({
     // On landing or content page across any domain: reload in place to immediately hydrate session
     window.location.reload();
   }, [navigate]);
+
+  // Cancel immediately if user is already authenticated
+  useEffect(() => {
+    if (user && window.google?.accounts?.id?.cancel) {
+      window.google.accounts.id.cancel();
+    }
+  }, [user]);
+
+  // If user is authenticated in React state or an active unexpired session exists, DO NOT SHOW
+  if (disabled || user || hasActiveAuthSession()) {
+    return null;
+  }
+
+  // If on an internal application route, DO NOT SHOW
+  const isInternalRoute = APP_ROUTE_PREFIXES.some(prefix => location.pathname.startsWith(prefix));
+  if (isInternalRoute) {
+    return null;
+  }
 
   return (
     <FastGoogleOneTap

@@ -18,7 +18,10 @@ const transportMode =
     : (process.env.TALENTXCEL_MCP_TRANSPORT || "stdio");
 
 function createMcpServer(auth: AuthContext): McpServer {
-  const server = new McpServer({ name: config.server.name, version: config.server.version });
+  const server = new McpServer(
+    { name: config.server.name, version: config.server.version },
+    { instructions: "TalentXcel Universal MCP Server — Real-time AI connector for job search, candidate profiling, skill gap analysis, resume reviews, salary analytics, and career coaching across TalentXcel.in ecosystem." }
+  );
   registerAllTools(server, () => auth);
   registerResources(server);
   registerPrompts(server);
@@ -61,9 +64,15 @@ async function startHttp(): Promise<void> {
       return;
     }
 
+    // Normalize Accept header so that clients sending */* or application/json only never receive 406
+    if (!req.headers.accept || !req.headers.accept.includes("application/json") || !req.headers.accept.includes("text/event-stream")) {
+      req.headers["accept"] = "application/json, text/event-stream";
+    }
+
     const mcpServer = createMcpServer(auth);
     const mcpTransport = new StreamableHTTPServerTransport({
-      sessionIdGenerator: () => `txc-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      sessionIdGenerator: undefined,
+      enableJsonResponse: true,
     });
     res.on("close", () => { mcpServer.close().catch(() => {}); });
     try {
