@@ -64,6 +64,30 @@ export function escapeHtml(unsafe: any): string {
     .replace(/'/g, '&#039;');
 }
 
+export function renderMemberAvatar(name: string, avatarUrl?: string, size = 76): string {
+  if (avatarUrl && typeof avatarUrl === 'string' && avatarUrl.startsWith('http')) {
+    return `<img src="${escapeHtml(avatarUrl)}" alt="${escapeHtml(name)}" width="${size}" height="${size}" style="width: ${size}px; height: ${size}px; border-radius: 50%; object-fit: cover; border: 3px solid #ffffff; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12); display: inline-block;" />`;
+  }
+  const cleanName = (name || 'Member').trim();
+  const initials = cleanName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(w => w[0].toUpperCase())
+    .join('') || 'TX';
+  const fontSize = Math.round(size * 0.35);
+
+  return `
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto; display: inline-block;">
+      <tr>
+        <td align="center" valign="middle" style="width: ${size}px; height: ${size}px; border-radius: 50%; background-color: #0071e3; background-image: linear-gradient(135deg, #0071e3 0%, #4f46e5 100%); color: #ffffff; font-size: ${fontSize}px; font-weight: 700; text-align: center; border: 3px solid #ffffff; box-shadow: 0 4px 16px rgba(0, 113, 227, 0.28); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;">
+          ${initials}
+        </td>
+      </tr>
+    </table>
+  `;
+}
+
 /**
  * Render a software-native pill button with subtle gradient and inner border (Linear/Apple standard)
  */
