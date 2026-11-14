@@ -39,6 +39,7 @@ import { SocialShare } from '@/components/social/SocialShare';
 import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
+import { RelatedHubsMesh } from '@/components/seo/RelatedHubsMesh';
 import { FALLBACK_JOBS } from '@/hooks/useJobsCriticalPath';
 
 const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'));
@@ -463,6 +464,9 @@ export default function JobDetails() {
   const companySlug = (job.companies?.slug) ||
     (companyName ? companyName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') : 'talentxcel');
 
+  const rawCity = (job.location_city || job.location?.split(',')[0] || '').trim();
+  const citySlug = rawCity.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
   const isExpired = Boolean(
     job.is_active === false ||
     job.job_status === 'closed' ||
@@ -491,6 +495,12 @@ export default function JobDetails() {
             <Link to="/" className="hover:text-white transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link to="/jobs" className="hover:text-white transition-colors">Jobs</Link>
+            {rawCity && citySlug && (
+              <>
+                <ChevronRight className="w-3.5 h-3.5" />
+                <Link to={`/locations/${citySlug}`} className="hover:text-white transition-colors">{rawCity}</Link>
+              </>
+            )}
             <ChevronRight className="w-3.5 h-3.5" />
             <Link to={`/company/${companySlug}`} className="hover:text-white transition-colors">{companyName}</Link>
             <ChevronRight className="w-3.5 h-3.5" />
@@ -547,9 +557,15 @@ export default function JobDetails() {
                     <Building2 className="w-4 h-4" /> {companyName}
                   </Link>
                   <span>&bull;</span>
-                  <span className="flex items-center gap-1 text-slate-400">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500" /> {job.location || 'Noida, India'}
-                  </span>
+                  {rawCity && citySlug ? (
+                    <Link to={`/locations/${citySlug}`} className="flex items-center gap-1 text-slate-400 hover:text-blue-400 transition-colors">
+                      <MapPin className="w-3.5 h-3.5 text-slate-500" /> {job.location || rawCity}
+                    </Link>
+                  ) : (
+                    <span className="flex items-center gap-1 text-slate-400">
+                      <MapPin className="w-3.5 h-3.5 text-slate-500" /> {job.location || 'India'}
+                    </span>
+                  )}
                 </p>
 
                 {job.salary_min && (() => {
@@ -816,6 +832,9 @@ export default function JobDetails() {
               </div>
             </section>
           )}
+
+          {/* Sibling Career Hubs Mesh */}
+          <RelatedHubsMesh currentCitySlug={citySlug} currentCompanySlug={companySlug} className="mt-8" />
         </div>
       </div>
     </>

@@ -546,6 +546,9 @@ const App = () => {
                                       <Route path="/companies" element={<Suspense fallback={null}><Companies /></Suspense>} />
                                       <Route path="/company/:slug" element={<Suspense fallback={null}><CompanyPublicProfile /></Suspense>} />
                 <Route path="/company/salesforce/jobs/data-engineer" element={<Navigate to="/career-insights" replace />} />
+                <Route path="/company/:company/jobs-in-:city" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/company/:company/salaries/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
+                <Route path="/jobs/freshers/:roleInCity" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
                 <Route path="/company/:company/jobs/:role/:city" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                 <Route path="/company/:company/jobs/:role" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />
                 <Route path="/company/:company/jobs" element={<Suspense fallback={null}><CompanyRoleJobsPage /></Suspense>} />

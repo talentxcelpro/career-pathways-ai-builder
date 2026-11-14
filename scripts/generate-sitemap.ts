@@ -119,6 +119,19 @@ function buildSitemapIndexXml(sitemapFiles: { filename: string; count: number }[
   ].join('\n');
 }
 
+function safeWriteFile(filePath: string, content: string, retries = 5) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      writeFileSync(filePath, content, 'utf-8');
+      return;
+    } catch (err) {
+      if (attempt === retries) throw err;
+      const end = Date.now() + 100 * attempt;
+      while (Date.now() < end) {}
+    }
+  }
+}
+
 export async function generateProductionSitemaps() {
   console.log('Generating TalentXcel XML sitemaps from configured public routes...');
   const publicDir = resolve(process.cwd(), 'public');
@@ -297,13 +310,62 @@ export async function generateProductionSitemaps() {
   }
   const postEntries = deduplicate(postEntriesList);
 
-  // 7. Verified Company Profiles
-  const companyEntries = deduplicate([
-    { path: '/company/talentxcel', changefreq: 'daily', priority: '1.0' },
-    { path: '/company/talentxcel-services', changefreq: 'daily', priority: '1.0' },
-    { path: '/company/chatr-chat', changefreq: 'daily', priority: '1.0' },
-    { path: '/company/savantis-solutions', changefreq: 'daily', priority: '1.0' },
-  ]);
+  // 7. Verified Company Profiles (All 15 Verified Platform Enterprises)
+  const VERIFIED_COMPANY_SLUGS = [
+    'hdfc-bank', 'tata-steel', 'ntpc', 'steel-authority-of-india',
+    'jindal-steel-power', 'bajaj-auto', 'hcl-technologies', 'bharat-coking-coal-limited',
+    'raymond', 'zomato', 'ibs-software', 'talentxcel', 'talentxcel-services',
+    'chatr-chat', 'savantis-solutions'
+  ];
+  const companyEntries = deduplicate(
+    VERIFIED_COMPANY_SLUGS.map((slug) => ({
+      path: `/company/${slug}`,
+      changefreq: 'daily' as const,
+      priority: '1.0',
+    }))
+  );
+
+  // 7B. Verified Location Hubs (Only 60 Indian Cities with >= 10 unexpired jobs)
+  const ELIGIBLE_CITY_SLUGS = [
+    'bhopal', 'jaipur', 'chandigarh', 'pune', 'coimbatore', 'mumbai', 'bhubaneswar',
+    'noida', 'kolkata', 'indore', 'surat', 'chennai', 'kochi', 'hyderabad', 'patna',
+    'delhi', 'bangalore', 'gurugram', 'bilaspur', 'nagpur', 'dhanbad', 'jamshedpur',
+    'aurangabad', 'amravati', 'kanpur', 'vadodara', 'nashik', 'kota', 'jammu', 'guwahati',
+    'hubli', 'dehradun', 'srinagar', 'mysuru', 'solapur', 'kolhapur', 'gwalior', 'jabalpur',
+    'jodhpur', 'udaipur', 'haridwar', 'calicut', 'ranchi', 'aligarh', 'raipur', 'mangalore',
+    'belgaum', 'tiruchirappalli', 'salem', 'moradabad', 'thrissur', 'kollam', 'warangal',
+    'guntur', 'vellore', 'vijayawada', 'ahmedabad', 'varanasi', 'lucknow'
+  ];
+  const locationEntries = deduplicate(
+    ELIGIBLE_CITY_SLUGS.map((slug) => ({
+      path: `/locations/${slug}`,
+      changefreq: 'daily' as const,
+      priority: '0.9',
+    }))
+  );
+
+  // 7C. Verified Combinatorial pSEO Hubs (from mv_eligible_seo_hubs >= 5 unexpired jobs)
+  let comboEntriesList: SitemapEntry[] = [];
+  try {
+    const { data: dbCombos } = await supabase
+      .from('mv_eligible_seo_hubs')
+      .select('hub_type, hub_slug, last_modified_at')
+      .neq('hub_type', 'city');
+    if (dbCombos && dbCombos.length > 0) {
+      dbCombos.forEach((c) => {
+        const pathPrefix = c.hub_type === 'company_city' ? '/company/' : '/jobs/';
+        comboEntriesList.push({
+          path: `${pathPrefix}${c.hub_slug}`,
+          changefreq: 'daily',
+          priority: '0.85',
+          lastmod: (c.last_modified_at || '').split('T')[0] || undefined
+        });
+      });
+    }
+  } catch (e) {
+    console.warn('Could not query mv_eligible_seo_hubs directly, skipping dynamic combos');
+  }
+  const comboEntries = deduplicate(comboEntriesList);
 
   // 8. Verified Talent & Recruitment Services
   const serviceSlugs = ['ai-recruitment', 'staffing-recruitment', 'rpo', 'it-services', 'career-counseling', 'resume-optimization', 'talent-management', 'job-placement'];
@@ -481,6 +543,8 @@ export async function generateProductionSitemaps() {
     { filename: 'sitemap-blog.xml', entries: blogEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-news.xml', entries: newsEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-companies.xml', entries: companyEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-locations.xml', entries: locationEntries, origin: 'https://talentxcel.in' },
+    ...(comboEntries.length > 0 ? [{ filename: 'sitemap-combos.xml', entries: comboEntries, origin: 'https://talentxcel.in' }] : []),
     { filename: 'sitemap-services.xml', entries: serviceEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-rankings.xml', entries: rankingsEntries, origin: 'https://talentxcel.in' },
   ];
@@ -520,8 +584,8 @@ export async function generateProductionSitemaps() {
 
   // Generate Master Index (sitemap.xml and sitemap-root.xml)
   const masterXml = buildSitemapIndexXml(validSitemapsForIndex);
-  writeFileSync(resolve(publicDir, 'sitemap.xml'), masterXml, 'utf-8');
-  writeFileSync(resolve(publicDir, 'sitemap-root.xml'), masterXml, 'utf-8');
+  safeWriteFile(resolve(publicDir, 'sitemap.xml'), masterXml);
+  safeWriteFile(resolve(publicDir, 'sitemap-root.xml'), masterXml);
   console.log(`\n✓ Master sitemap.xml & sitemap-root.xml generated with ${validSitemapsForIndex.length} segmented sitemaps!`);
   console.log(`Total URLs Published in Sitemaps: ${globalSeenLocs.size.toLocaleString()}`);
 
@@ -529,9 +593,13 @@ export async function generateProductionSitemaps() {
   const robotsRoot = resolve(publicDir, 'robots-root.txt');
   if (existsSync(robotsSrc)) {
     const robotsContent = readFileSync(robotsSrc, 'utf-8');
-    writeFileSync(robotsRoot, robotsContent, 'utf-8');
+    safeWriteFile(robotsRoot, robotsContent);
     console.log(`✓ Synchronized robots-root.txt`);
   }
 }
 
-generateProductionSitemaps().catch(console.error);
+export const generateSitemaps = generateProductionSitemaps;
+
+if (process.argv[1] && process.argv[1].endsWith('generate-sitemap.ts')) {
+  generateProductionSitemaps().catch(console.error);
+}

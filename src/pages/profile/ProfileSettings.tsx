@@ -45,7 +45,7 @@ interface UserPreferences {
 }
 
 const DEFAULT_PREFERENCES: UserPreferences = {
-  profileVisibility: 'public',
+  profileVisibility: 'private',
   showEmail: false,
   showPhone: false,
   allowMessaging: true,
@@ -74,31 +74,70 @@ const ProfileSettings = () => {
     confirmPassword: '',
   });
 
-  // Load user preferences from Supabase auth user_metadata or localStorage
+  // Load user preferences from Supabase auth user_metadata or localStorage, plus verified affirmative consent
   useEffect(() => {
     if (!user) return;
-    try {
-      const metaPrefs = user.user_metadata?.preferences as Partial<UserPreferences> | undefined;
-      const localPrefsStr = localStorage.getItem(`talentxcel_prefs_${user.id}`);
-      const localPrefs = localPrefsStr ? JSON.parse(localPrefsStr) : {};
+    let isMounted = true;
+    const loadPreferences = async () => {
+      try {
+        const metaPrefs = user.user_metadata?.preferences as Partial<UserPreferences> | undefined;
+        const localPrefsStr = localStorage.getItem(`talentxcel_prefs_${user.id}`);
+        const localPrefs = localPrefsStr ? JSON.parse(localPrefsStr) : {};
 
-      setSettings({
-        ...DEFAULT_PREFERENCES,
-        ...(metaPrefs || {}),
-        ...localPrefs,
-      });
-    } catch {
-      // Fallback to default
-    } finally {
-      setIsLoaded(true);
-    }
+        let effectiveVisibility: 'public' | 'connections' | 'private' = 'private';
+        
+        // Fetch explicit affirmative consent from candidate_privacy_consents
+        const { data: consentRecord } = await supabase
+          .from('candidate_privacy_consents')
+          .select('consent_status, revocation_timestamp')
+          .eq('user_id', user.id)
+          .eq('consent_type', 'public_profile_indexing')
+          .maybeSingle();
+
+        if (consentRecord && consentRecord.consent_status === 'granted' && !consentRecord.revocation_timestamp) {
+          effectiveVisibility = 'public';
+        } else if (metaPrefs?.profileVisibility === 'connections' || localPrefs?.profileVisibility === 'connections') {
+          effectiveVisibility = 'connections';
+        }
+
+        if (isMounted) {
+          setSettings({
+            ...DEFAULT_PREFERENCES,
+            ...(metaPrefs || {}),
+            ...localPrefs,
+            profileVisibility: effectiveVisibility,
+          });
+        }
+      } catch {
+        // Fallback to default
+      } finally {
+        if (isMounted) setIsLoaded(true);
+      }
+    };
+
+    loadPreferences();
+    return () => { isMounted = false; };
   }, [user]);
 
   const handleSaveSettings = async () => {
     setIsLoading(true);
     try {
       if (user) {
-        // Save to Supabase auth metadata
+        // 1. Synchronize affirmative consent via secure RPC
+        const isPublic = settings.profileVisibility === 'public';
+        const targetVis = isPublic ? 'public' : settings.profileVisibility === 'connections' ? 'connections_only' : 'private';
+
+        const { error: rpcError } = await supabase.rpc('set_public_profile_consent', {
+          p_granted: isPublic,
+          p_visibility: targetVis,
+          p_source: 'profile_settings',
+        });
+
+        if (rpcError) {
+          console.error('Failed to sync consent RPC:', rpcError);
+        }
+
+        // 2. Save to Supabase auth metadata
         const { error: authError } = await supabase.auth.updateUser({
           data: {
             preferences: settings,
@@ -110,10 +149,10 @@ const ProfileSettings = () => {
 
         if (authError) throw authError;
 
-        // Persist locally for instant offline cache
+        // 3. Persist locally for instant offline cache
         localStorage.setItem(`talentxcel_prefs_${user.id}`, JSON.stringify(settings));
 
-        // Attempt best-effort update to profiles table if columns exist
+        // 4. Update profiles timestamp
         await supabase
           .from('profiles')
           .update({
@@ -124,7 +163,7 @@ const ProfileSettings = () => {
         localStorage.setItem('talentxcel_guest_prefs', JSON.stringify(settings));
       }
 
-      toast.success('Account settings saved successfully!');
+      toast.success('Account & privacy settings saved successfully!');
     } catch (err: any) {
       console.error('Failed to save settings:', err);
       toast.error(err?.message || 'Failed to save settings. Please try again.');
@@ -321,11 +360,32 @@ const ProfileSettings = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="public">Public — Visible to employers & Google Search</SelectItem>
-                  <SelectItem value="connections">Connections Only — Verified network</SelectItem>
-                  <SelectItem value="private">Private — Only visible to you</SelectItem>
+                  <SelectItem value="public">Public — Explicit affirmative consent to search indexing</SelectItem>
+                  <SelectItem value="connections">Connections Only — Verified network only</SelectItem>
+                  <SelectItem value="private">Private — Only visible to you (Default)</SelectItem>
                 </SelectContent>
               </Select>
+
+              {settings.profileVisibility === 'public' ? (
+                <div className="mt-3 p-3 rounded-lg border border-blue-500/30 bg-blue-500/5 text-xs text-muted-foreground space-y-1">
+                  <p className="font-semibold text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
+                    <Globe className="h-4 w-4" /> Affirmative Consent Disclosure
+                  </p>
+                  <p>
+                    By selecting Public, you explicitly grant affirmative consent for TalentXcel to index your sanitized profile (headline, bio, skills, experience, portfolio links) on search engines.
+                  </p>
+                  <p className="font-medium text-foreground">
+                    Strict PII Protection: Your email address, phone number, resume documents, and private preferences are never exposed publicly.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-3 p-3 rounded-lg border border-amber-500/30 bg-amber-500/5 text-xs text-muted-foreground flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-amber-500 shrink-0" />
+                  <span>
+                    Private by default: Your profile is completely excluded from search engines and public directories.
+                  </span>
+                </div>
+              )}
             </div>
 
             <Separator className="my-2" />

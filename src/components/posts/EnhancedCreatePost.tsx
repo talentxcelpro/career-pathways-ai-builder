@@ -411,11 +411,11 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
         action: {
           label: 'Sign In',
           onClick: () => {
-            const authTrigger = document.querySelector('[data-auth-trigger="login"]');
+            const authTrigger = document.querySelector<HTMLElement>('[data-auth-trigger="login"]');
             if (authTrigger) {
               authTrigger.click();
             } else {
-              window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+              window.location.href = '/auth/login?returnTo=' + encodeURIComponent(window.location.pathname);
             }
           }
         }

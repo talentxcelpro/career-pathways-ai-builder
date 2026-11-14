@@ -28,6 +28,7 @@ export const OnboardingWizard = () => {
   const [searchParams] = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [publicOptIn, setPublicOptIn] = useState(false); // Unchecked default (private by default)
   const [data, setData] = useState<OnboardingData>({
     role: '',
     experience: '',
@@ -118,6 +119,17 @@ export const OnboardingWizard = () => {
         .upsert(profileData, { onConflict: 'id' });
 
       if (profileError) throw profileError;
+
+      // Affirmative consent synchronization via secure RPC
+      try {
+        await supabase.rpc('set_public_profile_consent', {
+          p_granted: publicOptIn,
+          p_visibility: publicOptIn ? 'public' : 'private',
+          p_source: 'onboarding_opt_in',
+        });
+      } catch (consentErr) {
+        console.error('Consent recording error:', consentErr);
+      }
 
       // Track onboarding completion
       await supabase.from('user_journey_tracking').insert({
@@ -225,6 +237,7 @@ export const OnboardingWizard = () => {
                   </SelectContent>
                 </Select>
               </div>
+
               <div className="p-4 bg-muted/50 rounded-lg">
                 <h4 className="font-medium mb-2">🎉 Almost Done!</h4>
                 <p className="text-sm text-muted-foreground">
@@ -334,6 +347,33 @@ export const OnboardingWizard = () => {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Affirmative Public Profile Consent (Unchecked Default) */}
+              <div className="p-3.5 rounded-lg border border-border/60 bg-muted/20 space-y-2">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <label htmlFor="public-opt-in" className="text-sm font-semibold cursor-pointer">
+                      Allow public discovery & search indexing
+                    </label>
+                    <p className="text-xs text-muted-foreground">
+                      Defaults to private. Opt in if you want hiring managers and search engines to discover your public profile.
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    id="public-opt-in"
+                    checked={publicOptIn}
+                    onChange={(e) => setPublicOptIn(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary mt-1 cursor-pointer"
+                  />
+                </div>
+                {publicOptIn && (
+                  <p className="text-[11px] text-blue-600 dark:text-blue-400 bg-blue-500/10 p-2 rounded leading-relaxed">
+                    <strong>Pre-Consent Disclosure:</strong> Your public profile will expose only your professional headline, bio, skills, and experience. Your email address, phone number, and resume documents remain strictly confidential and will never be exposed.
+                  </p>
+                )}
+              </div>
+
               <div className="p-4 bg-muted/50 rounded-lg">
                 <h4 className="font-medium mb-2">🎉 You're All Set!</h4>
                 <p className="text-sm text-muted-foreground">

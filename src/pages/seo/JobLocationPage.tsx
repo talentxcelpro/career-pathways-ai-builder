@@ -11,9 +11,24 @@ import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimen
 import { ResumeQuickScanWidget } from '@/components/conversion/ResumeQuickScanWidget';
 import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
+import { RelatedHubsMesh } from '@/components/seo/RelatedHubsMesh';
 import { getTier2LocationConfig } from '@/data/tier2LocationsData';
 
 interface JobLocationPageProps {}
+
+export const CITY_ALIAS_MAP: Record<string, string> = {
+  'gurgaon': 'gurugram',
+  'cyber city': 'gurugram',
+  'cyber city gurgaon': 'gurugram',
+  'bengaluru': 'bangalore',
+  'prayagraj': 'allahabad',
+  'allahabad': 'prayagraj',
+  'cochin': 'kochi',
+  'trivandrum': 'thiruvananthapuram',
+  'mysore': 'mysuru',
+  'baroda': 'vadodara',
+  'vizag': 'visakhapatnam',
+};
 
 const JobLocationPage: React.FC<JobLocationPageProps> = () => {
   const { location: routeLocation } = useParams<{ location: string }>();
@@ -37,40 +52,48 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
     return 'varanasi';
   }, [routeLocation]);
 
+  const isGurgaonVariant = derivedLocation === 'gurgaon' || derivedLocation === 'gurugram';
+  const canonicalCity = CITY_ALIAS_MAP[derivedLocation] || derivedLocation;
   const locationData = getLocationData(derivedLocation);
-  const canonicalUrl = `https://talentxcel.in/locations/${derivedLocation}`;
+  const displayName = isGurgaonVariant ? 'Gurgaon / Gurugram' : locationData.name;
+  const canonicalUrl = isGurgaonVariant
+    ? 'https://talentxcel.in/locations/gurugram'
+    : `https://talentxcel.in/locations/${canonicalCity}`;
 
   const verifiedCompaniesCount = useMemo(() => {
-    const set = new Set(realJobs.map((j) => j.company_name).filter(Boolean));
-    return set.size > 0 ? set.size : (locationData.topCompanies?.length || 6);
-  }, [realJobs, locationData.topCompanies]);
+    return new Set(realJobs.map((j) => j.company_name).filter(Boolean)).size;
+  }, [realJobs]);
 
   useEffect(() => {
     async function loadJobs() {
       setLoading(true);
       try {
-        const locClean = derivedLocation.replace(/-/g, ' ').trim();
+        const locClean = canonicalCity.replace(/-/g, ' ').trim();
+        const filterOr = isGurgaonVariant
+          ? 'location.ilike.%gurugram%,location_city.ilike.%gurugram%,location.ilike.%gurgaon%,location_city.ilike.%gurgaon%'
+          : `location.ilike.%${locClean}%,location_city.ilike.%${locClean}%`;
+
         const { data, count, error } = await supabase
           .from('jobs')
           .select('*', { count: 'exact' })
-          .or(`location.ilike.%${locClean}%,location_city.ilike.%${locClean}%`)
+          .or(filterOr)
           .eq('is_active', true)
           .order('posted_at', { ascending: false })
-          .limit(30);
+          .limit(50);
 
         if (!error && data && data.length > 0) {
           setRealJobs(data);
           setTotalJobsCount(count || data.length);
         } else {
-          // If no immediate local match, supply high-performing verified fresher & remote jobs
-          const { data: fallbackData, count: fallbackCount } = await supabase
+          // If no local jobs exist for this city, show zero local count and optional remote jobs
+          const { data: fallbackData } = await supabase
             .from('jobs')
-            .select('*', { count: 'exact' })
-            .or('is_remote.eq.true,location_country.ilike.%india%')
+            .select('*')
+            .or('is_remote.eq.true,location.ilike.%remote%')
             .eq('is_active', true)
             .limit(10);
           setRealJobs(fallbackData || []);
-          setTotalJobsCount(fallbackCount || (fallbackData ? fallbackData.length : 0));
+          setTotalJobsCount(0);
         }
       } catch (err) {
         console.warn('[JobLocationPage] Error loading location jobs:', err);
@@ -79,7 +102,15 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
       }
     }
     loadJobs();
-  }, [derivedLocation]);
+  }, [derivedLocation, canonicalCity, isGurgaonVariant]);
+
+  const isIndexable = totalJobsCount >= 10;
+  const pageTitle = (isGurgaonVariant && totalJobsCount >= 10)
+    ? `Jobs in Gurgaon / Gurugram (${totalJobsCount} Openings) | TalentXcel`.slice(0, 60)
+    : (totalJobsCount >= 10
+        ? `Jobs in ${displayName} (${totalJobsCount} Openings) | TalentXcel`
+        : `Jobs in ${displayName} | TalentXcel`
+      ).slice(0, 60);
 
   useEffect(() => {
     conversionTelemetry.track('landing_view', {
@@ -93,20 +124,21 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
   return (
     <>
       <Helmet>
-        <title>{locationData.title}</title>
+        <title>{pageTitle}</title>
         <meta name="description" content={locationData.description} />
         <meta name="keywords" content={locationData.keywords.join(', ')} />
         <link rel="canonical" href={canonicalUrl} />
+        <meta name="robots" content={isIndexable ? "index, follow" : "noindex, follow"} />
         
         {/* Open Graph */}
-        <meta property="og:title" content={locationData.title} />
+        <meta property="og:title" content={pageTitle} />
         <meta property="og:description" content={locationData.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={locationData.title} />
+        <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={locationData.description} />
         
         {/* Structured Data */}
@@ -380,6 +412,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
         {/* Contextual Subdomain Discovery Mesh */}
         <section className="py-12 bg-background border-t">
           <div className="container mx-auto px-4 max-w-5xl">
+            <RelatedHubsMesh currentCitySlug={derivedLocation} className="mb-8" />
             <RelatedSubdomainLinks role="Software Engineer" city={locationData.name} className="mb-8" />
           </div>
         </section>
@@ -403,8 +436,6 @@ function getLocationData(location: string) {
       h1: 'Job Vacancies in Varanasi (2026)',
       keywords: ['jobs in varanasi', 'varanasi job vacancy', 'jobs for freshers in varanasi', 'it jobs in varanasi', 'private jobs in varanasi', 'teaching jobs varanasi', 'bank jobs in varanasi'],
       stats: {
-        companies: '250',
-        jobs: '16',
         avgSalary: '₹3-8L'
       },
       topCompanies: ['TCS', 'Utkarsh Small Finance Bank', 'Banaras Hindu University', 'HDFC Bank', 'Byju\'s', 'Apex Hospitals', 'Tech Mahindra'],
@@ -466,8 +497,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Noida - Premier IT & Corporate Hub (2026)',
       keywords: ['jobs in noida', 'it jobs in noida', 'fresher jobs noida', 'noida corporate jobs', 'software jobs noida'],
       stats: {
-        companies: '1800',
-        jobs: '12000',
         avgSalary: '₹5-14L'
       },
       topCompanies: ['HCL', 'Paytm', 'Adobe', 'Samsung', 'TCS', 'Wipro', 'Microsoft'],
@@ -504,8 +533,6 @@ function getLocationData(location: string) {
       h1: 'Job Openings in Lucknow (2026)',
       keywords: ['jobs in lucknow', 'lucknow job vacancy', 'it jobs in lucknow', 'fresher jobs lucknow'],
       stats: {
-        companies: '450',
-        jobs: '1500',
         avgSalary: '₹3.5-9L'
       },
       topCompanies: ['TCS', 'HCL', 'Tata Motors', 'Utkarsh Bank', 'Medanta', 'Apollo'],
@@ -540,8 +567,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Bangalore - India\'s Silicon Valley (2026)',
       keywords: ['jobs in bangalore', 'bangalore careers', 'it jobs bangalore', 'engineering jobs bangalore', 'fresher jobs bangalore'],
       stats: {
-        companies: '2000',
-        jobs: '15000',
         avgSalary: '₹5-12L'
       },
       topCompanies: ['Infosys', 'TCS', 'Wipro', 'Accenture', 'Microsoft', 'Google'],
@@ -576,8 +601,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Mumbai - Financial Capital of India (2026)',
       keywords: ['jobs in mumbai', 'mumbai careers', 'finance jobs mumbai', 'banking jobs mumbai', 'media jobs mumbai'],
       stats: {
-        companies: '3000',
-        jobs: '20000',
         avgSalary: '₹6-15L'
       },
       topCompanies: ['HDFC Bank', 'ICICI Bank', 'Reliance', 'Tata Group', 'Aditya Birla', 'Bajaj'],
@@ -612,8 +635,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Delhi NCR - Capital of Opportunities (2026)',
       keywords: ['jobs in delhi', 'delhi ncr careers', 'government jobs delhi', 'corporate jobs delhi', 'gurgaon jobs'],
       stats: {
-        companies: '2500',
-        jobs: '18000',
         avgSalary: '₹5-14L'
       },
       topCompanies: ['HCL', 'Genpact', 'American Express', 'IBM', 'Deloitte', 'EY'],
@@ -648,8 +669,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Hyderabad - HITEC City & Tech Capital (2026)',
       keywords: ['jobs in hyderabad', 'hitec city jobs', 'it jobs hyderabad', 'pharma jobs hyderabad'],
       stats: {
-        companies: '2200',
-        jobs: '18000',
         avgSalary: '₹5.5-16L'
       },
       topCompanies: ['Microsoft', 'Google', 'Amazon', 'Novartis', 'Dr. Reddy\'s', 'Deloitte'],
@@ -684,8 +703,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Chennai - SaaS & Engineering Capital (2026)',
       keywords: ['jobs in chennai', 'it jobs chennai', 'omr chennai jobs', 'automotive jobs chennai'],
       stats: {
-        companies: '1900',
-        jobs: '14000',
         avgSalary: '₹4.8-13L'
       },
       topCompanies: ['Zoho', 'Freshworks', 'Cognizant', 'Hyundai', 'Ford', 'TCS'],
@@ -720,8 +737,6 @@ function getLocationData(location: string) {
       h1: 'Jobs in Pune - Tech & Engineering Hub (2026)',
       keywords: ['jobs in pune', 'hinjewadi it jobs', 'pune fresher jobs', 'automobile jobs pune'],
       stats: {
-        companies: '1700',
-        jobs: '13500',
         avgSalary: '₹5-13.5L'
       },
       topCompanies: ['Infosys', 'Wipro', 'Tata Motors', 'Bajaj', 'Barclays', 'Tech Mahindra'],
@@ -769,8 +784,6 @@ function getLocationData(location: string) {
     h1: `Job Vacancies in ${formattedName} (2026)`,
     keywords: [`jobs in ${norm}`, `${norm} job vacancy`, `fresher jobs ${norm}`, `careers in ${norm}`],
     stats: {
-      companies: '200',
-      jobs: '500',
       avgSalary: '₹4-10L'
     },
     topCompanies: ['TCS', 'Infosys', 'HDFC Bank', 'Reliance', 'Wipro'],

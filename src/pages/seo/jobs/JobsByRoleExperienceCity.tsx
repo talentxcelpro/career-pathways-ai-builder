@@ -26,17 +26,29 @@ import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainL
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 
 export const JobsByRoleExperienceCity: React.FC = () => {
-  const { role: roleParam, experience: expParam, city: cityParam, country: countryParam } = useParams<{
-    role: string;
-    experience: string;
-    city: string;
+  const { role: roleParam, experience: expParam, city: cityParam, country: countryParam, roleInCity } = useParams<{
+    role?: string;
+    experience?: string;
+    city?: string;
     country?: string;
+    roleInCity?: string;
   }>();
 
+  let resolvedRole = roleParam || '';
+  let resolvedCity = cityParam || '';
+  let resolvedExp = expParam || '';
+
+  if (roleInCity && roleInCity.includes('-in-')) {
+    const parts = roleInCity.split('-in-');
+    resolvedRole = parts[0];
+    resolvedCity = parts.slice(1).join('-in-');
+    resolvedExp = resolvedExp || 'freshers';
+  }
+
   const resolved = resolveMatrixParams(
-    roleParam || '',
-    expParam || '',
-    cityParam || '',
+    resolvedRole,
+    resolvedExp,
+    resolvedCity,
     countryParam
   );
 

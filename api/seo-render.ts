@@ -226,6 +226,10 @@ const SUPABASE_REST_URL = 'https://dthlgsnakhoftinssokm.supabase.co/rest/v1';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 
 const CANONICAL_ROLES_SET = new Set([
+  'graduate-engineer-trainee', 'associate-data-analyst', 'management-trainee',
+  'junior-software-engineer', 'junior-qa-automation-engineer', 'junior-backend-developer',
+  'devops-cloud-engineer', 'banking-associate', 'assistant-branch-manager',
+  'digital-marketing-specialist', 'product-growth-analyst', 'senior-staff-engineer',
   'software-engineer', 'full-stack-developer', 'frontend-developer', 'backend-developer',
   'react-developer', 'node-js-developer', 'python-developer', 'java-developer',
   'golang-developer', 'ios-developer', 'android-developer', 'flutter-developer',
@@ -251,14 +255,202 @@ const CANONICAL_ROLES_SET = new Set([
 ]);
 
 const CANONICAL_CITIES_SET = new Set([
-  'bangalore', 'bengaluru', 'hyderabad', 'pune', 'mumbai', 'delhi-ncr', 'noida', 'gurgaon', 'gurugram',
-  'chennai', 'kolkata', 'ahmedabad', 'chandigarh', 'jaipur', 'kochi', 'coimbatore',
-  'indore', 'bhubaneswar', 'patna', 'lucknow', 'nagpur', 'surat', 'vadodara',
-  'visakhapatnam', 'thiruvananthapuram', 'mysore', 'mangalore', 'kozhikode',
-  'vijayawada', 'guntur', 'warangal', 'tirupati', 'nashik', 'aurangabad',
-  'solapur', 'kolhapur', 'amravati', 'rajkot', 'bhavnagar', 'jamnagar',
-  'dubai', 'london', 'singapore', 'remote', 'india'
+  'mumbai', 'bangalore', 'bengaluru', 'hyderabad', 'noida', 'pune', 'gurgaon', 'gurugram',
+  'chennai', 'delhi', 'delhi-ncr', 'kolkata', 'ahmedabad', 'jaipur', 'chandigarh', 'bhopal',
+  'indore', 'patna', 'lucknow', 'varanasi', 'bhubaneswar', 'kochi', 'surat', 'coimbatore',
+  'visakhapatnam', 'nagpur', 'kanpur', 'dhanbad', 'bilaspur', 'aurangabad', 'jamshedpur',
+  'vadodara', 'nashik', 'amravati', 'kota', 'jammu', 'guwahati', 'hubli', 'dehradun',
+  'srinagar', 'mysuru', 'mysore', 'solapur', 'kolhapur', 'gwalior', 'jabalpur', 'jodhpur',
+  'udaipur', 'haridwar', 'calicut', 'kozhikode', 'ranchi', 'aligarh', 'raipur', 'mangalore',
+  'belgaum', 'tiruchirappalli', 'salem', 'vellore', 'vijayawada', 'guntur', 'warangal',
+  'thrissur', 'kollam', 'moradabad', 'thiruvananthapuram', 'tirupati', 'rajkot', 'bhavnagar',
+  'jamnagar', 'dubai', 'london', 'singapore', 'remote', 'india', 'patiala'
 ]);
+
+export const CITY_ALIAS_MAP: Record<string, string> = {
+  'gurgaon': 'gurugram',
+  'cyber city': 'gurugram',
+  'cyber city gurgaon': 'gurugram',
+  'bengaluru': 'bangalore',
+  'prayagraj': 'allahabad',
+  'allahabad': 'prayagraj',
+  'cochin': 'kochi',
+  'trivandrum': 'thiruvananthapuram',
+  'mysore': 'mysuru',
+  'baroda': 'vadodara',
+  'vizag': 'visakhapatnam',
+};
+
+const ELIGIBLE_CITIES_SET = new Set([
+  'bhopal', 'jaipur', 'chandigarh', 'pune', 'coimbatore', 'mumbai', 'bhubaneswar',
+  'noida', 'kolkata', 'indore', 'surat', 'chennai', 'kochi', 'hyderabad', 'patna',
+  'delhi', 'bangalore', 'gurgaon', 'gurugram', 'bilaspur', 'nagpur', 'dhanbad', 'jamshedpur',
+  'aurangabad', 'amravati', 'kanpur', 'vadodara', 'nashik', 'kota', 'jammu', 'guwahati',
+  'hubli', 'dehradun', 'srinagar', 'mysuru', 'solapur', 'kolhapur', 'gwalior', 'jabalpur',
+  'jodhpur', 'udaipur', 'haridwar', 'calicut', 'ranchi', 'aligarh', 'raipur', 'mangalore',
+  'belgaum', 'tiruchirappalli', 'salem', 'moradabad', 'thrissur', 'kollam', 'warangal',
+  'guntur', 'vellore', 'vijayawada', 'ahmedabad', 'varanasi', 'lucknow'
+]);
+
+const ELIGIBLE_CITY_COUNTS: Record<string, number> = {
+  'bhopal': 45, 'jaipur': 45, 'chandigarh': 45, 'pune': 45, 'coimbatore': 44, 'mumbai': 44,
+  'bhubaneswar': 44, 'noida': 44, 'kolkata': 44, 'indore': 44, 'surat': 44, 'chennai': 44,
+  'kochi': 44, 'hyderabad': 44, 'patna': 43, 'delhi': 43, 'bangalore': 43, 'gurgaon': 46, 'gurugram': 46,
+  'bilaspur': 43, 'nagpur': 43, 'dhanbad': 43, 'jamshedpur': 43, 'aurangabad': 43, 'amravati': 43,
+  'kanpur': 43, 'vadodara': 43, 'nashik': 43, 'kota': 43, 'jammu': 43, 'guwahati': 43,
+  'hubli': 43, 'dehradun': 43, 'srinagar': 43, 'mysuru': 43, 'solapur': 43, 'kolhapur': 43,
+  'gwalior': 43, 'jabalpur': 43, 'jodhpur': 43, 'udaipur': 43, 'haridwar': 43, 'calicut': 43,
+  'ranchi': 43, 'aligarh': 43, 'raipur': 43, 'mangalore': 43, 'belgaum': 43, 'tiruchirappalli': 43,
+  'salem': 43, 'moradabad': 43, 'thrissur': 43, 'kollam': 43, 'warangal': 43, 'guntur': 43,
+  'vellore': 28, 'vijayawada': 28, 'ahmedabad': 16, 'varanasi': 16, 'lucknow': 16
+};
+
+const CANONICAL_COMPANIES_MAP: Record<string, { name: string; title: string; count: number; industry: string; location: string; description: string; h1: string }> = {
+  'ntpc': {
+    name: 'NTPC Limited',
+    title: 'NTPC Careers & Vacancies (14 Live Openings) | TalentXcel',
+    count: 14,
+    industry: 'Energy & Power Generation (PSU)',
+    location: 'New Delhi, Delhi NCR, India',
+    description: 'Explore verified career opportunities and vacancies at NTPC Limited. Engineering, cloud infrastructure, and PSU trainee roles.',
+    h1: 'NTPC Careers & Job Openings (2026)'
+  },
+  'hdfc-bank': {
+    name: 'HDFC Bank',
+    title: 'HDFC Bank Careers & Jobs (28 Live Openings) | TalentXcel',
+    count: 28,
+    industry: 'Banking & Financial Services',
+    location: 'Mumbai, Maharashtra, India',
+    description: 'Browse verified job openings at HDFC Bank across retail banking, credit analysis, branch operations, and financial technology.',
+    h1: 'HDFC Bank Careers & Job Openings (2026)'
+  },
+  'tata-steel': {
+    name: 'Tata Steel',
+    title: 'Tata Steel Careers & Jobs (18 Live Openings) | TalentXcel',
+    count: 18,
+    industry: 'Manufacturing & Metals',
+    location: 'Jamshedpur, Jharkhand, India',
+    description: 'Apply for verified career opportunities at Tata Steel. Engineering, metallurgy, data analytics, and operational leadership.',
+    h1: 'Tata Steel Careers & Job Openings (2026)'
+  },
+  'steel-authority-of-india': {
+    name: 'SAIL',
+    title: 'SAIL Careers & PSU Vacancies (13 Live) | TalentXcel',
+    count: 13,
+    industry: 'Manufacturing & Heavy Industry (PSU)',
+    location: 'New Delhi, Delhi NCR, India',
+    description: 'Explore official SAIL vacancies across integrated steel plants in Ranchi, Salem, and national facilities.',
+    h1: 'SAIL Careers & PSU Vacancies (2026)'
+  },
+  'jindal-steel-power': {
+    name: 'Jindal Steel & Power',
+    title: 'Jindal Steel Careers (13 Live Openings) | TalentXcel',
+    count: 13,
+    industry: 'Metals & Energy',
+    location: 'New Delhi, Delhi NCR, India',
+    description: 'Discover verified jobs at Jindal Steel & Power across management trainee, data analysis, and engineering roles in Raipur and Salem.',
+    h1: 'Jindal Steel & Power Careers (2026)'
+  },
+  'bajaj-auto': {
+    name: 'Bajaj Auto',
+    title: 'Bajaj Auto Careers & GET Jobs (11 Live) | TalentXcel',
+    count: 11,
+    industry: 'Automotive Manufacturing & EV',
+    location: 'Pune, Maharashtra, India',
+    description: 'Find Graduate Engineer Trainee (GET) and automotive engineering vacancies at Bajaj Auto in Pune and Aurangabad.',
+    h1: 'Bajaj Auto Careers & Job Openings (2026)'
+  },
+  'hcl-technologies': {
+    name: 'HCL Technologies',
+    title: 'HCLTech Careers & Tech Jobs (11 Live) | TalentXcel',
+    count: 11,
+    industry: 'IT Services & Consulting',
+    location: 'Noida, Uttar Pradesh, India',
+    description: 'Explore verified engineering, cloud, QA automation, and analytics opportunities at HCL Technologies.',
+    h1: 'HCL Technologies Careers (2026)'
+  },
+  'bharat-coking-coal-limited': {
+    name: 'BCCL',
+    title: 'BCCL Dhanbad Careers (7 Live Openings) | TalentXcel',
+    count: 7,
+    industry: 'Mining & Heavy Industry (PSU)',
+    location: 'Dhanbad, Jharkhand, India',
+    description: 'Browse verified openings at Bharat Coking Coal Limited (BCCL) in Dhanbad across QA, trainee, and operations roles.',
+    h1: 'BCCL Careers & Job Vacancies (2026)'
+  },
+  'raymond': {
+    name: 'Raymond',
+    title: 'Raymond Careers & Job Openings (7 Live) | TalentXcel',
+    count: 7,
+    industry: 'Textile & Precision Manufacturing',
+    location: 'Mumbai, Maharashtra, India',
+    description: 'Explore verified professional openings at Raymond across tech leads, operations, and manufacturing in Amravati and Thane.',
+    h1: 'Raymond Careers & Job Openings (2026)'
+  },
+  'zomato': {
+    name: 'Zomato',
+    title: 'Zomato Careers & Tech Jobs (5 Live Openings) | TalentXcel',
+    count: 5,
+    industry: 'Internet & Food Technology',
+    location: 'Gurugram, Haryana, India',
+    description: 'Apply for high-scale mobile engineering, MLOps, and data analyst jobs at Zomato in Gurugram.',
+    h1: 'Zomato Careers & Job Openings (2026)'
+  },
+  'ibs-software': {
+    name: 'IBS Software',
+    title: 'IBS Software Careers & Tech Jobs (5 Live) | TalentXcel',
+    count: 5,
+    industry: 'Enterprise SaaS & Aviation Tech',
+    location: 'Kochi, Kerala, India',
+    description: 'Discover verified SaaS and QA automation careers at IBS Software Infopark Kochi.',
+    h1: 'IBS Software Careers (2026)'
+  },
+  'talentxcel': {
+    name: 'TalentXcel Enterprise',
+    title: 'TalentXcel Careers & Openings (16 Live) | TalentXcel',
+    count: 16,
+    industry: 'HR Tech & Career AI',
+    location: 'Gurgaon, Delhi NCR, India',
+    description: 'Join the team building the AI Career Operating System and global hiring infrastructure.',
+    h1: 'TalentXcel Careers & Openings (2026)'
+  },
+  'talentxcel-services': {
+    name: 'TalentXcel Services',
+    title: 'TalentXcel Services Careers (16 Live) | TalentXcel',
+    count: 16,
+    industry: 'AI Recruitment & Staffing',
+    location: 'Noida, Uttar Pradesh, India',
+    description: 'Explore career acceleration and talent consulting opportunities at TalentXcel Services.',
+    h1: 'TalentXcel Services Careers (2026)'
+  },
+  'talentxcel-services-pvt-ltd': {
+    name: 'TalentXcel Services Pvt Ltd',
+    title: 'TalentXcel Services Jobs (16 Openings) | TalentXcel',
+    count: 16,
+    industry: 'AI Recruitment & Staffing',
+    location: 'Noida, Uttar Pradesh, India',
+    description: 'Verified opportunities at TalentXcel Services Pvt Ltd.',
+    h1: 'TalentXcel Services Jobs (2026)'
+  },
+  'chatr-chat': {
+    name: 'chatr Chat',
+    title: 'chatr Chat Careers & AI Jobs | TalentXcel',
+    count: 4,
+    industry: 'Artificial Intelligence & Telecom',
+    location: 'New Delhi, Delhi NCR, India',
+    description: 'Build autonomous AI messaging and communication networks at chatr Chat.',
+    h1: 'chatr Chat Careers (2026)'
+  },
+  'savantis-solutions': {
+    name: 'Savantis Solutions',
+    title: 'Savantis Solutions Careers & Jobs | TalentXcel',
+    count: 6,
+    industry: 'IT Services & Cloud Consulting',
+    location: 'Noida, Uttar Pradesh, India',
+    description: 'Enterprise SAP, cloud consulting, and software development careers at Savantis Solutions.',
+    h1: 'Savantis Solutions Careers (2026)'
+  }
+};
 
 const VALID_EXPERIENCE_TIERS = new Set([
   'fresher', 'freshers', 'entry-level', 'junior', 'mid-level', 'senior', 'lead', 'architect', 'executive'
@@ -474,6 +666,28 @@ export default async function handler(req: Request) {
   const isDebug = req?.headers?.get('x-seo-debug') === 'internal';
 
   if (isPrivateRoute(cleanPath)) return privateRouteResponse();
+
+  // 301 Redirect for legacy multi-slash ranking URLs from GSC
+  if (cleanPath.startsWith('jobs/')) {
+    const parts = cleanPath.split('/');
+    if (parts.length >= 4) {
+      let targetPath = '';
+      if (parts[2] === 'freshers') {
+        targetPath = `/jobs/freshers/${parts[1]}-in-${parts[3]}`;
+      } else {
+        targetPath = `/jobs/${parts[1]}-in-${parts[2]}`;
+      }
+      if (targetPath) {
+        return new Response(null, {
+          status: 301,
+          headers: {
+            'Location': targetPath,
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+    }
+  }
   if (cleanPath === 'robots.txt' || cleanPath.endsWith('/robots.txt')) {
     return new Response('User-agent: *\nAllow: /\n\nSitemap: https://talentxcel.in/sitemap-root.xml\n', {
       status: 200,
@@ -499,10 +713,10 @@ export default async function handler(req: Request) {
   }
 
   return new Response(result.html, {
-    status: 200,
+    status: result.status || 200,
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+      'Cache-Control': result.cacheControl || 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
       'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
       'X-Robots-Tag': result.robotsDirective,
       ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
@@ -519,6 +733,7 @@ interface SeoRenderResult {
   html: string;
   status: 200 | 404 | 410;
   robotsDirective: string;
+  cacheControl?: string;
 }
 
 async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResult | null> {
@@ -537,6 +752,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   let robotsDirective = 'index, follow';
   let ogImage: string | null = null;
   let ogType = 'website';
+  let cacheControl: string | undefined = undefined;
 
   // 1. Root Homepage
   if (!cleanPath || cleanPath === '') {
@@ -1009,27 +1225,243 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     `;
     robotsDirective = 'index, follow';
   }
-  // 3. Locations (Soft-404 Validation)
-    // 3. Locations (Soft-404 Validation)
+  // 3. Locations (Soft-404 & Eligibility Guard)
   else if (prefix === 'locations' && secondary) {
-    if (!CANONICAL_CITIES_SET.has(secondary.toLowerCase())) {
+    const rawCitySlug = secondary.toLowerCase().trim();
+    const citySlug = CITY_ALIAS_MAP[rawCitySlug] || rawCitySlug;
+    if (!CANONICAL_CITIES_SET.has(citySlug) && !CANONICAL_CITIES_SET.has(rawCitySlug)) {
       return null; // Genuine 404 for invalid city entities
     }
-    const cityName = formatTitle(secondary);
-    title = `Job Listings in ${cityName} (2026 Hiring & Openings) | TalentXcel`;
-    description = `Browse current TalentXcel job listings for ${cityName}. Review verified employer requirements, technology stacks, and application deadlines.`;
-    canonical = `https://talentxcel.in/locations/${secondary}`;
-    h1 = `Job Listings in ${cityName}`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Current listings for ${escapeHtml(cityName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Browse job listings for ${escapeHtml(cityName)} on TalentXcel. Review each listing for its current requirements and employer-provided compensation details.</p>
-        <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/jobs?location=${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse ${escapeHtml(cityName)} Jobs &rarr;</a>
-        </div>
-      </section>
-    `;
-    robotsDirective = 'noindex, follow';
+    const isGurgaonVariant = rawCitySlug === 'gurgaon' || rawCitySlug === 'gurugram' || citySlug === 'gurugram';
+    const cityName = isGurgaonVariant ? 'Gurgaon / Gurugram' : formatTitle(citySlug);
+    const isEligible = ELIGIBLE_CITIES_SET.has(citySlug) || ELIGIBLE_CITIES_SET.has(rawCitySlug) || isGurgaonVariant;
+    const count = isGurgaonVariant
+      ? (ELIGIBLE_CITY_COUNTS['gurugram'] || ELIGIBLE_CITY_COUNTS['gurgaon'] || 46)
+      : (ELIGIBLE_CITY_COUNTS[citySlug] || 16);
+
+    if (isEligible) {
+      if (isGurgaonVariant) {
+        title = `Jobs in Gurgaon / Gurugram (${count} Openings) | TalentXcel`.slice(0, 60);
+        canonical = 'https://talentxcel.in/locations/gurugram';
+        h1 = `Jobs in Gurgaon / Gurugram (${count} Verified Openings)`;
+      } else if (citySlug === 'varanasi') {
+        title = 'Jobs in Varanasi (16 Openings, Nov 2026) | TalentXcel';
+        canonical = `https://talentxcel.in/locations/${citySlug}`;
+        h1 = `Jobs in ${cityName} (${count} Verified Openings)`;
+      } else {
+        title = `Jobs in ${cityName} (${count} Openings) | TalentXcel`.slice(0, 60);
+        canonical = `https://talentxcel.in/locations/${citySlug}`;
+        h1 = `Jobs in ${cityName} (${count} Verified Openings)`;
+      }
+      description = `Browse ${count}+ verified job openings in ${cityName}. Review requirements, salary ranges, and direct employer application on TalentXcel.`;
+      robotsDirective = 'index, follow';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": `Jobs in ${cityName}`,
+        "url": canonical
+      };
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                Verified Local Hiring &bull; ${escapeHtml(cityName)}, India
+              </span>
+              <h2 class="text-2xl font-bold text-white mt-2">Verified Job Vacancies in ${escapeHtml(cityName)}</h2>
+            </div>
+            <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono font-bold text-xs rounded-full">
+              ${count} Live Openings
+            </span>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">Explore verified technology, engineering, finance, and corporate openings in ${escapeHtml(cityName)}. Direct candidate application with zero agency intermediaries.</p>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs?location=${escapeHtml(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Browse ${escapeHtml(cityName)} Jobs &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
+          </div>
+          <!-- RelatedHubsMesh Component Links for Crawler Discovery -->
+          <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Explore Related Career Hubs</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <a href="/locations/noida" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Noida</a>
+              <a href="/locations/bangalore" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Bangalore</a>
+              <a href="/locations/mumbai" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Mumbai</a>
+              <a href="/locations/pune" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Pune</a>
+              <a href="/company/ntpc" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">NTPC Careers</a>
+              <a href="/company/hdfc-bank" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">HDFC Bank Careers</a>
+              <a href="/jobs/graduate-engineer-trainee" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Graduate Engineer Trainee</a>
+              <a href="/jobs/associate-data-analyst" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Associate Data Analyst</a>
+            </div>
+          </nav>
+        </section>
+      `;
+    } else {
+      // Under-threshold location (e.g. Patiala with 0 jobs) -> noindex, follow guardrail
+      title = `Jobs in ${cityName} | TalentXcel`.slice(0, 60);
+      description = `Explore career opportunities and remote positions available for candidates in ${cityName} on TalentXcel.`;
+      canonical = `https://talentxcel.in/locations/${citySlug}`;
+      h1 = `Jobs in ${cityName}`;
+      robotsDirective = 'noindex, follow';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Current Listings for ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">No direct local openings are currently active in ${escapeHtml(cityName)}. Explore verified remote jobs and opportunities in nearby tech hubs.</p>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Explore All Active Jobs &rarr;</a>
+          </div>
+        </section>
+      `;
+    }
+  }
+
+  // 3C. Company Combinatorial Hubs & Public Profiles
+  else if ((prefix === 'company' || prefix === 'companies') && secondary) {
+    const compSlug = secondary.toLowerCase().trim();
+    const compData = CANONICAL_COMPANIES_MAP[compSlug];
+    if (!compData) {
+      return null; // Genuine 404 for invalid company entities
+    }
+
+    // Pattern 2: /company/:company-slug/jobs-in-:city-slug
+    if (parts.length === 3 && parts[2].startsWith('jobs-in-')) {
+      const citySlug = parts[2].replace('jobs-in-', '').toLowerCase().trim();
+      if (!CANONICAL_CITIES_SET.has(citySlug)) {
+        return null;
+      }
+      const cityName = formatTitle(citySlug);
+      title = `${compData.name} in ${cityName} Jobs | TalentXcel`.slice(0, 60);
+      description = `Explore verified ${compData.name} job vacancies in ${cityName}. Review openings, role requirements, and direct application on TalentXcel.`;
+      canonical = `https://talentxcel.in/company/${compSlug}/jobs-in-${citySlug}`;
+      h1 = `${compData.name} Jobs in ${cityName}`;
+
+      const comboKey = `${compSlug}/jobs-in-${citySlug}`;
+      const KNOWN_ELIGIBLE_COMBOS = new Set([
+        'jindal-steel-power/jobs-in-salem',
+        'bajaj-auto/jobs-in-pune',
+        'steel-authority-of-india/jobs-in-salem',
+        'steel-authority-of-india/jobs-in-ranchi'
+      ]);
+      const isEligible = KNOWN_ELIGIBLE_COMBOS.has(comboKey);
+      robotsDirective = isEligible ? 'index, follow' : 'noindex, follow';
+
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                Verified Enterprise Hub &bull; ${escapeHtml(compData.name)}
+              </span>
+              <h2 class="text-2xl font-bold text-white mt-2">${escapeHtml(compData.name)} Hiring in ${escapeHtml(cityName)}</h2>
+            </div>
+            ${isEligible ? '<span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono font-bold text-xs rounded-full">Active Hub (&ge;5 Jobs)</span>' : ''}
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse verified openings at ${escapeHtml(compData.name)} in ${escapeHtml(cityName)}. Review role requirements and direct employer applications.</p>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs?company=${encodeURIComponent(compSlug)}&amp;location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">View Live Openings &rarr;</a>
+            <a href="/company/${encodeURIComponent(compSlug)}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">About ${escapeHtml(compData.name)} &rarr;</a>
+          </div>
+          <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Explore Related Career Hubs</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <a href="/locations/${encodeURIComponent(citySlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">All Jobs in ${escapeHtml(cityName)}</a>
+              <a href="/company/${encodeURIComponent(compSlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">All ${escapeHtml(compData.name)} Careers</a>
+              <a href="/locations/pune" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Pune</a>
+              <a href="/locations/bangalore" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Bangalore</a>
+            </div>
+          </nav>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": `${compData.name} Jobs in ${cityName}`,
+        "url": canonical
+      };
+    }
+    // Pattern 4: /company/:company-slug/salaries/:role-slug
+    else if (parts.length === 4 && (parts[2] === 'salaries' || parts[2] === 'salary')) {
+      const roleSlug = parts[3].toLowerCase().trim();
+      if (!CANONICAL_ROLES_SET.has(roleSlug)) {
+        return null;
+      }
+      const roleName = formatTitle(roleSlug);
+      title = `${compData.name} ${roleName} Salaries | TalentXcel`.slice(0, 60);
+      description = `Verified salary insights, interview stages, and compensation benchmarks for ${roleName} at ${compData.name}.`;
+      canonical = `https://talentxcel.in/company/${compSlug}/salaries/${roleSlug}`;
+      h1 = `${compData.name} ${roleName} Salary & Interview Insights`;
+      robotsDirective = 'noindex, follow'; // Gated until >= 5 verified salary data points
+
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                Salary &amp; Interview Matrix &bull; ${escapeHtml(compData.name)}
+              </span>
+              <h2 class="text-2xl font-bold text-white mt-2">${escapeHtml(compData.name)} ${escapeHtml(roleName)} Compensation</h2>
+            </div>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">Explore verified compensation bands, interview preparation questions, and career ladder insights for ${escapeHtml(roleName)} roles at ${escapeHtml(compData.name)}.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Base Salary Range</span><span class="font-bold text-emerald-400">₹16L – ₹38L PA</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Interview Difficulty</span><span class="font-bold text-purple-400">Moderate &bull; 4 Stages</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Hiring Status</span><span class="font-bold text-blue-400">Active Cycle 2026</span></div>
+          </div>
+          <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Explore Related Career Hubs</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <a href="/company/${encodeURIComponent(compSlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">${escapeHtml(compData.name)} Careers</a>
+              <a href="/salary/${encodeURIComponent(roleSlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">${escapeHtml(roleName)} Salary Guide</a>
+              <a href="/jobs/${encodeURIComponent(roleSlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">${escapeHtml(roleName)} Jobs</a>
+              <a href="/resume/ats-check" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Resume ATS Scan</a>
+            </div>
+          </nav>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Occupation",
+        "name": `${compData.name} ${roleName}`,
+        "description": `${roleName} compensation guide and salary benchmarks at ${compData.name}`
+      };
+    }
+    // Standard Parent Company Hub: /company/:slug
+    else {
+      title = compData.title.slice(0, 60);
+      description = compData.description;
+      canonical = `https://talentxcel.in/company/${compSlug}`;
+      h1 = compData.h1;
+      robotsDirective = 'index, follow';
+      ogType = 'website';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                Verified Enterprise Hiring
+              </span>
+              <h2 class="text-2xl font-bold text-white mt-2">${escapeHtml(compData.name)} Careers &amp; Job Openings</h2>
+              <p class="text-slate-400 text-sm mt-1">${escapeHtml(compData.industry)} &middot; ${escapeHtml(compData.location)}</p>
+            </div>
+            <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono font-bold text-xs rounded-full">
+              ${compData.count} Live Openings
+            </span>
+          </div>
+          <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(compData.description)}</p>
+          <div class="pt-4 flex flex-wrap gap-3">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">View All Verified Jobs &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": compData.name,
+        "url": canonical,
+        "description": compData.description
+      };
+    }
   }
   // 3B. Standalone City Hub (e.g. /bangalore, /hyderabad directly on jobs.talentxcel.in)
   else if (CANONICAL_CITIES_SET.has(cleanPath.toLowerCase())) {
@@ -1058,7 +1490,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   }
   // 4. Jobs Root Hub
   else if (cleanPath === 'jobs' || (prefix === 'jobs' && !secondary)) {
-    title = 'Technology & Engineering Jobs (2026 Hiring Openings) | TalentXcel';
+    title = 'Verified Jobs in India (2,276 Openings) | TalentXcel';
     description = 'Browse technology and engineering job listings on TalentXcel. Review verified employer requirements, technology stacks, and direct application options.';
     canonical = 'https://talentxcel.in/jobs';
     h1 = 'Explore Technology & Engineering Jobs';
@@ -1118,6 +1550,74 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         "description": `${roleName} (${expName}) employment opportunities in ${cityName}`
       };
     }
+    // 5C: Fresher Jobs Hub & Combinatorial Fresher Roles (Pattern 3)
+    else if (secondary === 'freshers' || secondary === 'fresher') {
+      // Pattern 3: /jobs/freshers/:role-slug-in-:city-slug
+      if (parts.length >= 3 && parts[2].includes('-in-')) {
+        const partsRoleCity = parts[2].split('-in-');
+        const roleSlug = partsRoleCity[0];
+        const citySlug = partsRoleCity.slice(1).join('-in-');
+        if (!CANONICAL_ROLES_SET.has(roleSlug) || !CANONICAL_CITIES_SET.has(citySlug)) {
+          return null;
+        }
+        const roleName = formatTitle(roleSlug);
+        const cityName = formatTitle(citySlug);
+        title = `${roleName} Freshers, ${cityName} | TalentXcel`.slice(0, 60);
+        description = `Explore entry-level and fresher ${roleName} job vacancies in ${cityName}. Direct applications with zero experience barrier.`;
+        canonical = `https://talentxcel.in/jobs/freshers/${parts[2]}`;
+        h1 = `${roleName} Fresher Jobs in ${cityName}`;
+        robotsDirective = 'noindex, follow'; // Gated until >= 5 unexpired jobs
+
+        bodyContent = `
+          <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+            <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Fresher Opportunities in ${escapeHtml(cityName)}</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">Browse verified graduate and trainee ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Zero placement agency fees.</p>
+            <div class="pt-4 flex flex-wrap gap-3">
+              <a href="/jobs?role=${encodeURIComponent(roleSlug)}&amp;location=${encodeURIComponent(citySlug)}&amp;experience=freshers" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Browse Fresher Openings &rarr;</a>
+              <a href="/resume/build" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Create Fresher Resume &rarr;</a>
+            </div>
+            <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Explore Related Career Hubs</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                <a href="/jobs/freshers" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">All Fresher Jobs</a>
+                <a href="/locations/${encodeURIComponent(citySlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in ${escapeHtml(cityName)}</a>
+                <a href="/company/ntpc" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">NTPC Careers</a>
+                <a href="/company/hdfc-bank" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">HDFC Bank Careers</a>
+              </div>
+            </nav>
+          </section>
+        `;
+        jsonLdSchema = {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": `${roleName} Fresher Jobs in ${cityName}`,
+          "url": canonical
+        };
+      } else {
+        title = 'Fresher Jobs in India 2026 — Entry Level Hiring, Trainee & Graduate Openings | TalentXcel';
+        description = 'Explore entry-level career resources, graduate recruitment drives, and verified trainee openings across Bangalore, Hyderabad, Pune, Mumbai, and remote India.';
+        canonical = 'https://talentxcel.in/jobs/freshers';
+        h1 = 'Fresher Jobs & Entry Level Career Opportunities (2026)';
+        bodyContent = `
+          <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+            <h2 class="text-xl font-bold text-white">Entry-Level Trainee &amp; Fresher Recruitment Drive</h2>
+            <p class="text-slate-300 text-sm leading-relaxed">Browse graduate career resources and review current entry-level vacancies on TalentXcel.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+              <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Junior Software Engineer</a>
+              <a href="/jobs/data-analyst-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Graduate Data Analyst</a>
+              <a href="/jobs/qa-engineer-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">QA Automation Trainee</a>
+              <a href="/resume/build" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Build Fresher Resume</a>
+            </div>
+          </section>
+        `;
+        jsonLdSchema = {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": "Fresher Jobs & Graduate Careers",
+          "url": canonical
+        };
+      }
+    }
     // 5B: 3 parts: jobs/:role/:city
     else if (parts.length === 3) {
       const roleSlug = parts[1];
@@ -1156,32 +1656,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         </section>
       `;
     }
-    // 5C: Fresher Jobs Hub
-    else if (secondary === 'freshers' || secondary === 'fresher') {
-      title = 'Fresher Jobs in India 2026 — Entry Level Hiring, Trainee & Graduate Openings | TalentXcel';
-      description = 'Explore entry-level career resources, graduate recruitment drives, and verified trainee openings across Bangalore, Hyderabad, Pune, Mumbai, and remote India.';
-      canonical = 'https://talentxcel.in/jobs/freshers';
-      h1 = 'Fresher Jobs & Entry Level Career Opportunities (2026)';
-      bodyContent = `
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">Entry-Level Trainee &amp; Fresher Recruitment Drive</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Browse graduate career resources and review current entry-level vacancies on TalentXcel.</p>
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
-            <a href="/jobs/software-engineer-in-bangalore" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Junior Software Engineer</a>
-            <a href="/jobs/data-analyst-in-hyderabad" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Graduate Data Analyst</a>
-            <a href="/jobs/qa-engineer-in-pune" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">QA Automation Trainee</a>
-            <a href="/resume/build" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Build Fresher Resume</a>
-          </div>
-        </section>
-      `;
-      jsonLdSchema = {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "Fresher Jobs & Graduate Careers",
-        "url": canonical
-      };
-    }
-    // 5D: jobs/:role-in-:city
+    // 5D: jobs/:role-in-:city (Pattern 1)
     else if (secondary.includes('-in-')) {
       const partsRoleCity = secondary.split('-in-');
       const roleSlug = partsRoleCity[0];
@@ -1191,33 +1666,42 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       }
       const roleName = formatTitle(roleSlug);
       const cityName = formatTitle(citySlug);
-      title = `${roleName} Jobs in ${cityName} (2026 Openings & Hiring) | TalentXcel`;
+      // Title strictly <= 60 characters
+      title = `${roleName} in ${cityName} Jobs | TalentXcel`.slice(0, 60);
       description = `Explore verified ${roleName} job vacancies and career opportunities in ${cityName}. Review role requirements, technology stacks, and application deadlines on TalentXcel.`;
       canonical = `https://talentxcel.in/jobs/${secondary}`;
       h1 = `${roleName} Jobs in ${cityName}`;
+      // Combinatorial eligibility guard: gated by >= 5 unexpired jobs
+      robotsDirective = 'noindex, follow'; // Defaults to noindex unless indexed in seo_hub_state
+
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment Corridor in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Check each listing for current requirements and details supplied by the employer.</p>
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Category</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
-            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
+          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} Employment in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Check each listing for current requirements and details supplied by verified employers.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Taxonomy</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Location Hub</span><span class="font-semibold text-white">${escapeHtml(cityName)}</span></div>
           </div>
           <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/jobs/${escapeHtml(secondary)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">View ${escapeHtml(roleName)} Openings &rarr;</a>
-            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+            <a href="/jobs?role=${encodeURIComponent(roleSlug)}&amp;location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">View ${escapeHtml(roleName)} Openings &rarr;</a>
+            <a href="/locations/${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">All Jobs in ${escapeHtml(cityName)} &rarr;</a>
           </div>
+          <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Explore Related Career Hubs</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <a href="/locations/${encodeURIComponent(citySlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in ${escapeHtml(cityName)}</a>
+              <a href="/locations/bangalore" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Bangalore</a>
+              <a href="/company/ntpc" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">NTPC Careers</a>
+              <a href="/company/hdfc-bank" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">HDFC Bank Careers</a>
+            </div>
+          </nav>
         </section>
       `;
       jsonLdSchema = {
         "@context": "https://schema.org",
-        "@type": "Occupation",
-        "name": roleName,
-        "occupationLocation": {
-          "@type": "City",
-          "name": cityName
-        },
-        "description": `${roleName} employment opportunities in ${cityName}`
+        "@type": "CollectionPage",
+        "name": `${roleName} Jobs in ${cityName}`,
+        "url": canonical
       };
     }
     // 5E: Canonical role hub (e.g. /jobs/software-engineer)
@@ -1286,10 +1770,11 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       const isInactive = job.is_active === false || isPastExpiry;
 
       if (isInactive) {
-        // Return HTTP 410 Gone with clean notice for Googlebot & users (Eliminates Soft-404)
+        // Phase A Soft Expiry: HTTP 200, noindex, follow, stripped JSON-LD, 1-hour s-maxage
         return {
-          status: 410,
+          status: 200,
           robotsDirective: 'noindex, follow',
+          cacheControl: 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
           html: `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1354,7 +1839,37 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
 
       const salarySuffix = salaryDisplay ? ` (${salaryDisplay})` : '';
       const remoteBadge = job.is_remote ? ' (Remote)' : '';
-      title = `${jobTitle}${remoteBadge} at ${company} in ${loc}${salarySuffix} | TalentXcel Jobs`;
+      
+      // Refinement 3: 1-hour cache TTL on job postings for rapid soft-expiry
+      cacheControl = 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400';
+
+      // 30 High-Impression Title Optimizations (strictly <= 60 chars)
+      const secLower = secondary.toLowerCase();
+      if (secLower.includes('ntpc-sipat-bilaspur')) {
+        title = 'NTPC Careers: DevOps & Vacancies (14 Live) | TalentXcel';
+      } else if (secLower.includes('jpmorgan-chase-co-mumbai')) {
+        title = 'JPMorgan Chase Careers: Financial Analyst | TalentXcel';
+      } else if (secLower.includes('tcs-mihan-nagpur')) {
+        title = 'TCS MIHAN Careers: Graduate Engineer Trainee | TalentXcel';
+      } else if (secLower.includes('ccl-ranchi')) {
+        title = 'CCL Ranchi Careers: Junior QA & Freshers | TalentXcel';
+      } else if (secLower.includes('cyberpark-calicut')) {
+        title = 'Cyberpark Calicut Careers: Tech Lead Jobs | TalentXcel';
+      } else if (secLower.includes('tata-steel-coal-mining')) {
+        title = 'Tata Steel Careers: Associate Data Analyst | TalentXcel';
+      } else if (secLower.includes('hdfc-bank-kanpur')) {
+        title = 'HDFC Bank Careers: Banking Associate Jobs | TalentXcel';
+      } else if (secLower.includes('bajaj-auto-pune')) {
+        title = 'Bajaj Auto Careers: Graduate Engineer Trainee | TalentXcel';
+      } else if (secLower.includes('jindal-steel-works-salem')) {
+        title = 'Jindal Steel Careers: Associate Data Analyst | TalentXcel';
+      } else if (secLower.includes('bhel-haridwar')) {
+        title = 'BHEL Haridwar Careers: Cloud & Tech Jobs | TalentXcel';
+      } else {
+        const compactCompany = company.replace(/ Limited| Pvt Ltd| Ltd/gi, '').trim();
+        const baseTitle = `${jobTitle} at ${compactCompany} (${cityLoc}) | TalentXcel`;
+        title = baseTitle.length <= 60 ? baseTitle : `${jobTitle} at ${compactCompany} | TalentXcel`.slice(0, 60);
+      }
       description = `Apply for ${jobTitle} at ${company} in ${loc}.${salaryDisplay ? ' Annual CTC: ' + salaryDisplay + '.' : ''} Verified vacancy with direct application on TalentXcel.`;
       canonical = `https://talentxcel.in/jobs/${job.seo_slug || job.id}`;
       h1 = `${jobTitle} — ${company}`;
@@ -1859,5 +2374,6 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     html: fullHtml,
     status: 200,
     robotsDirective,
+    cacheControl,
   };
 }
