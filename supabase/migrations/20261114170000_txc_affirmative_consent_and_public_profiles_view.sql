@@ -95,12 +95,14 @@ CREATE OR REPLACE FUNCTION public.set_public_profile_consent(
 RETURNS jsonb
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public, pg_temp
+SET search_path = ''
 AS $$
 DECLARE
     v_user_id uuid := auth.uid();
     v_target_status text;
     v_target_visibility text;
+    v_profile_exists boolean;
+    v_rows_updated integer;
     c_consent_version CONSTANT text := 'v1.0';
     c_consent_type CONSTANT text := 'public_profile_indexing';
 BEGIN
@@ -142,7 +144,16 @@ BEGIN
         v_target_visibility := p_visibility;
     END IF;
 
-    -- 4. Transactional update based on affirmative grant or revocation
+    -- 4. Pre-check: Verify that exactly one corresponding public.profiles row exists
+    SELECT EXISTS (
+        SELECT 1 FROM public.profiles WHERE id = v_user_id
+    ) INTO v_profile_exists;
+
+    IF NOT v_profile_exists THEN
+        RAISE EXCEPTION 'Profile row not found for user %', v_user_id USING errcode = 'P0002';
+    END IF;
+
+    -- 5. Transactional update based on affirmative grant or revocation
     IF p_granted IS TRUE THEN
         v_target_status := 'granted';
 
@@ -150,22 +161,27 @@ BEGIN
         INSERT INTO public.candidate_privacy_consents (
             user_id, consent_type, consent_status, consent_version, consent_source, consent_timestamp, revocation_timestamp, updated_at
         ) VALUES (
-            v_user_id, c_consent_type, 'granted', c_consent_version, p_source, now(), NULL, now()
+            v_user_id, c_consent_type, 'granted', c_consent_version, p_source, pg_catalog.now(), NULL, pg_catalog.now()
         )
         ON CONFLICT (user_id, consent_type) DO UPDATE SET
             consent_status = 'granted',
             consent_version = c_consent_version,
-            consent_timestamp = now(),
+            consent_timestamp = pg_catalog.now(),
             revocation_timestamp = NULL,
             consent_source = p_source,
-            updated_at = now();
+            updated_at = pg_catalog.now();
 
         -- Update base profile visibility
         UPDATE public.profiles
         SET is_profile_public = true,
             profile_visibility = 'public',
-            updated_at = now()
+            updated_at = pg_catalog.now()
         WHERE id = v_user_id;
+
+        GET DIAGNOSTICS v_rows_updated = ROW_COUNT;
+        IF v_rows_updated <> 1 THEN
+            RAISE EXCEPTION 'Expected to update exactly 1 profile row for user %, updated %', v_user_id, v_rows_updated USING errcode = 'P0002';
+        END IF;
 
         -- Record immutable audit event
         INSERT INTO public.candidate_consent_events (
@@ -181,21 +197,26 @@ BEGIN
         INSERT INTO public.candidate_privacy_consents (
             user_id, consent_type, consent_status, consent_version, consent_source, consent_timestamp, revocation_timestamp, updated_at
         ) VALUES (
-            v_user_id, c_consent_type, 'revoked', c_consent_version, p_source, now(), now(), now()
+            v_user_id, c_consent_type, 'revoked', c_consent_version, p_source, pg_catalog.now(), pg_catalog.now(), pg_catalog.now()
         )
         ON CONFLICT (user_id, consent_type) DO UPDATE SET
             consent_status = 'revoked',
             consent_version = c_consent_version,
-            revocation_timestamp = now(),
+            revocation_timestamp = pg_catalog.now(),
             consent_source = p_source,
-            updated_at = now();
+            updated_at = pg_catalog.now();
 
         -- Update base profile visibility to non-public
         UPDATE public.profiles
         SET is_profile_public = false,
             profile_visibility = v_target_visibility,
-            updated_at = now()
+            updated_at = pg_catalog.now()
         WHERE id = v_user_id;
+
+        GET DIAGNOSTICS v_rows_updated = ROW_COUNT;
+        IF v_rows_updated <> 1 THEN
+            RAISE EXCEPTION 'Expected to update exactly 1 profile row for user %, updated %', v_user_id, v_rows_updated USING errcode = 'P0002';
+        END IF;
 
         -- Record immutable audit event
         INSERT INTO public.candidate_consent_events (
@@ -205,20 +226,20 @@ BEGIN
         );
     END IF;
 
-    RETURN jsonb_build_object(
+    RETURN pg_catalog.jsonb_build_object(
         'success', true,
         'user_id', v_user_id,
         'consent_status', v_target_status,
         'profile_visibility', v_target_visibility,
         'consent_version', c_consent_version,
-        'timestamp', now()
+        'timestamp', pg_catalog.now()
     );
 END;
 $$;
 
--- Security hardening: revoke from PUBLIC and anon, grant execute only to authenticated and service_role
-REVOKE ALL ON FUNCTION public.set_public_profile_consent(boolean, text, text) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.set_public_profile_consent(boolean, text, text) TO authenticated, service_role;
+-- Security hardening: revoke from PUBLIC, anon, and service_role, grant execute strictly to authenticated
+REVOKE ALL ON FUNCTION public.set_public_profile_consent(boolean, text, text) FROM PUBLIC, anon, service_role;
+GRANT EXECUTE ON FUNCTION public.set_public_profile_consent(boolean, text, text) TO authenticated;
 
 -- 4. Privacy-by-Default Schema Hardening for New Registrations
 -- Ensure profile_visibility column exists idempotently across environments
