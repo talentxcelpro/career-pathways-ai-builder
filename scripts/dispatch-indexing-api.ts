@@ -151,13 +151,13 @@ export async function runIndexingDispatcher(options: {
   batchLimit?: number;
   dryRun?: boolean;
 } = {}): Promise<DispatcherTelemetry> {
-  const batchLimit = Math.min(options.batchLimit ?? 100, 200);
+  const requestedLimit = Math.min(options.batchLimit ?? 45, 190);
   const dryRun = options.dryRun ?? false;
 
   console.log('================================================================');
   console.log('🚀 TALENTXCEL GOOGLE INDEXING API OUTBOX DISPATCHER');
   console.log(`   Mode: ${dryRun ? 'DRY-RUN (No mutations)' : 'LIVE EXECUTION'}`);
-  console.log(`   Batch Limit: ${batchLimit} URLs (Daily Quota Guard: 200)`);
+  console.log(`   Requested Run Limit: ${requestedLimit} URLs (Per-6h Batch Target: 45)`);
   console.log('================================================================\n');
 
   // 1. Locate credentials
@@ -175,15 +175,52 @@ export async function runIndexingDispatcher(options: {
   console.log(`✓ GCP IAM Key: ${serviceAccount.client_email}`);
   console.log(`✓ GCP Project ID: ${serviceAccount.project_id}`);
 
-  // 2. Generate Google OAuth2 Token
-  console.log('\n🔑 Acquiring Google OAuth2 Bearer Access Token...');
+  // 2. Connect to Supabase
+  const supabase = getSupabaseAdminClient();
+
+  // 3. Rolling 24-Hour Quota Verification (Ceiling: 190 URLs/24h)
+  const ROLLING_24H_HARD_CEILING = 190;
+  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+  const { count: recentDispatchedCount, error: countError } = await supabase
+    .from('indexing_outbox')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'dispatched')
+    .gte('dispatched_at', twentyFourHoursAgo);
+
+  if (countError) {
+    throw new Error(`Failed to query rolling 24h dispatches: ${countError.message}`);
+  }
+
+  const alreadyDispatched24h = recentDispatchedCount || 0;
+  const remainingQuota24h = Math.max(0, ROLLING_24H_HARD_CEILING - alreadyDispatched24h);
+  const effectiveBatchLimit = Math.min(requestedLimit, remainingQuota24h);
+
+  console.log(`📊 Rolling 24-Hour Quota Status:`);
+  console.log(`   - Dispatched in past 24h: ${alreadyDispatched24h} / ${ROLLING_24H_HARD_CEILING} hard ceiling`);
+  console.log(`   - Remaining Quota Budget : ${remainingQuota24h} URLs`);
+  console.log(`   - Effective Batch Limit  : ${effectiveBatchLimit} URLs\n`);
+
+  if (remainingQuota24h <= 0) {
+    console.warn('⚠️ ROLLING 24H QUOTA CEILING REACHED (190 URLs). Halting run to prevent GCP 429 penalties.');
+    return {
+      timestamp: new Date().toISOString(),
+      queueDepth: 0,
+      itemsProcessed: 0,
+      submittedSuccess: 0,
+      failedCount: 0,
+      droppedInvalidCount: 0,
+      quotaHit: true,
+      dryRun,
+    };
+  }
+
+  // 4. Generate Google OAuth2 Token
+  console.log('🔑 Acquiring Google OAuth2 Bearer Access Token...');
   const accessToken = await getGoogleAccessToken(serviceAccount);
   console.log('✅ Google OAuth2 Bearer Token Acquired!\n');
 
-  // 3. Connect to Supabase
-  const supabase = getSupabaseAdminClient();
-
-  // 4. Fetch queued items
+  // 5. Fetch queued items (strictly ordered by priority ASC, scheduled_at ASC, id ASC)
   const { data: queuedItems, count: totalQueueDepth, error: fetchError } = await supabase
     .from('indexing_outbox')
     .select('id, url, action, priority, status, attempts, last_error, scheduled_at', { count: 'exact' })
@@ -192,7 +229,7 @@ export async function runIndexingDispatcher(options: {
     .order('priority', { ascending: true })
     .order('scheduled_at', { ascending: true })
     .order('id', { ascending: true })
-    .limit(batchLimit);
+    .limit(effectiveBatchLimit);
 
   if (fetchError) {
     throw new Error(`Failed to fetch indexing_outbox: ${fetchError.message}`);
@@ -200,7 +237,7 @@ export async function runIndexingDispatcher(options: {
 
   const items: OutboxItem[] = (queuedItems || []) as OutboxItem[];
   console.log(`📦 Outbox Queue Depth: ${totalQueueDepth ?? 0} total queued items`);
-  console.log(`📋 Selected for Dispatch: ${items.length} items (limit: ${batchLimit})\n`);
+  console.log(`📋 Selected for Dispatch: ${items.length} items (limit: ${effectiveBatchLimit})\n`);
 
   const telemetry: DispatcherTelemetry = {
     timestamp: new Date().toISOString(),
@@ -326,7 +363,7 @@ export async function runIndexingDispatcher(options: {
 if (process.argv[1]?.includes('dispatch-indexing-api')) {
   const isDryRun = process.argv.includes('--dry-run');
   const limitArg = process.argv.find((a) => a.startsWith('--limit='));
-  const limit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 100;
+  const limit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 45;
 
   runIndexingDispatcher({ batchLimit: limit, dryRun: isDryRun }).catch((err) => {
     console.error('Fatal Dispatcher Error:', err);
