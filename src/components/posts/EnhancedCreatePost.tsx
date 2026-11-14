@@ -407,18 +407,19 @@ export const EnhancedCreatePost: React.FC<EnhancedCreatePostProps> = ({ onPostCr
     }
 
     if (!activeUserId) {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('id')
-        .limit(1)
-        .maybeSingle();
-      if (profileData?.id) {
-        activeUserId = profileData.id;
-      }
-    }
-
-    if (!activeUserId) {
-      toast.error('Please sign in to publish your post on TalentXcel');
+      toast.error('Please sign in to publish your post on TalentXcel', {
+        action: {
+          label: 'Sign In',
+          onClick: () => {
+            const authTrigger = document.querySelector('[data-auth-trigger="login"]');
+            if (authTrigger) {
+              authTrigger.click();
+            } else {
+              window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+            }
+          }
+        }
+      });
       return;
     }
 
