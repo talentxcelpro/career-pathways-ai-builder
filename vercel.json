@@ -697,15 +697,6 @@
       ]
     },
     {
-      "source": "/locations/:city",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, follow"
-        }
-      ]
-    },
-    {
       "source": "/compare/:path*",
       "headers": [
         {

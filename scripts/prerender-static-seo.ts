@@ -1943,11 +1943,26 @@ async function prerender() {
 
     for (const loc of allLocations) {
       const slug = loc.slug;
-      const canonical = formatCanonicalUrl(`/locations/${slug}`);
-      const title = `Job Listings in ${loc.name} | TalentXcel`;
-      const description = `Browse TalentXcel job listings for ${loc.name}, ${loc.state}. Review each listing for its current requirements and employer-provided compensation details.`;
+      const isGurgaonOrGurugram = slug === 'gurgaon' || slug === 'gurugram';
+      const canonical = isGurgaonOrGurugram
+        ? formatCanonicalUrl('/locations/gurugram')
+        : formatCanonicalUrl(`/locations/${slug}`);
 
-      const cityRealJobs = (activeJobsByCity.get(slug) || []).filter((job) => job.seo_slug && job.title && job.company_name);
+      const rawCityJobs = isGurgaonOrGurugram
+        ? Array.from(new Set([...(activeJobsByCity.get('gurgaon') || []), ...(activeJobsByCity.get('gurugram') || [])]))
+        : (activeJobsByCity.get(slug) || []);
+
+      const cityRealJobs = rawCityJobs.filter((job) => job.seo_slug && job.title && job.company_name);
+      const totalJobs = cityRealJobs.length;
+
+      const title = isGurgaonOrGurugram
+        ? `Jobs in Gurgaon / Gurugram (${totalJobs} Openings) | TalentXcel`.slice(0, 60)
+        : (totalJobs >= 10
+            ? `Jobs in ${loc.name} (${totalJobs} Openings) | TalentXcel`.slice(0, 60)
+            : `Job Listings in ${loc.name} | TalentXcel`);
+
+      const robotsDirective = totalJobs >= 10 ? 'index, follow' : 'noindex, follow';
+      const description = `Browse TalentXcel job listings for ${loc.name}, ${loc.state}. Review each listing for its current requirements and employer-provided compensation details.`;
       const companiesFromListings = Array.from(new Set(cityRealJobs.map(j => j.company_name).filter(Boolean))).slice(0, 8);
 
       // Sibling city links (10 nearby or prominent hubs)
@@ -2042,9 +2057,9 @@ async function prerender() {
         title,
         description,
         canonical,
-        h1: `Job Listings in ${loc.name}`,
+        h1: isGurgaonOrGurugram ? `Jobs in Gurgaon / Gurugram (${totalJobs} Verified Openings)` : `Job Listings in ${loc.name}`,
         bodyContentHtml: bodyHtml,
-        robots: 'noindex, follow',
+        robots: robotsDirective,
         jsonLd: [collectionSchema, breadcrumbSchema],
       });
     }
