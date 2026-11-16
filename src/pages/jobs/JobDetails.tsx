@@ -405,9 +405,9 @@ export default function JobDetails() {
             {/* Quick Action Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
               <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
-                <Briefcase className="w-6 h-6 text-blue-400" />
-                <h3 className="text-sm font-bold text-white">Browse Live Jobs</h3>
-                <p className="text-xs text-slate-400">Search thousands of active tech &amp; corporate openings in India.</p>
+                <Briefcase className="w-6 h-6 text-blue-600" />
+                <h3 className="text-sm font-bold text-slate-900">Browse Live Jobs</h3>
+                <p className="text-xs text-slate-600">Search thousands of active tech &amp; corporate openings in India.</p>
                 <Button 
                   onClick={() => navigate(`/jobs?search=${encodeURIComponent(rawRole)}`)} 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20"
@@ -417,9 +417,9 @@ export default function JobDetails() {
               </Card>
 
               <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
-                <FileCheck2 className="w-6 h-6 text-emerald-400" />
-                <h3 className="text-sm font-bold text-white">Free ATS Resume Check</h3>
-                <p className="text-xs text-slate-400">Get a 10-second parseability audit for top Indian recruiters.</p>
+                <FileCheck2 className="w-6 h-6 text-emerald-600" />
+                <h3 className="text-sm font-bold text-slate-900">Free ATS Resume Check</h3>
+                <p className="text-xs text-slate-600">Get a 10-second parseability audit for top Indian recruiters.</p>
                 <Button 
                   variant="outline" 
                   onClick={() => navigate('/resume/ats-check')} 
@@ -430,9 +430,9 @@ export default function JobDetails() {
               </Card>
 
               <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
-                <TrendingUp className="w-6 h-6 text-indigo-400" />
-                <h3 className="text-sm font-bold text-white">2026 Salary Calculator</h3>
-                <p className="text-xs text-slate-400">Calculate take-home in-hand pay across Bangalore, Pune &amp; NCR.</p>
+                <TrendingUp className="w-6 h-6 text-indigo-600" />
+                <h3 className="text-sm font-bold text-slate-900">2026 Salary Calculator</h3>
+                <p className="text-xs text-slate-600">Calculate take-home in-hand pay across Bangalore, Pune &amp; NCR.</p>
                 <Button 
                   variant="outline" 
                   onClick={() => navigate(`/rankings`)} 
@@ -710,12 +710,12 @@ export default function JobDetails() {
               {/* Company Info Box */}
               <section className="bg-white border-2 border-slate-200/80 rounded-2xl p-6 space-y-3 shadow-sm">
                 <h3 className="text-base font-bold text-slate-900">About the Employer</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   {companyName} is an SI-powered talent and recruitment organization providing strategic staffing, technology solutions, and career intelligence.
                 </p>
                 <Link to={`/company/${companySlug}`}>
                   <Button size="sm" variant="ghost" className="text-blue-600 hover:text-blue-700 text-xs font-semibold p-0 h-auto">
-                    View Company Profile & Open Roles &rarr;
+                    View Company Profile &amp; Open Roles &rarr;
                   </Button>
                 </Link>
               </section>
@@ -782,7 +782,7 @@ export default function JobDetails() {
               {/* Free ATS Resume Tool CTA */}
               <div className="bg-gradient-to-br from-blue-50 via-indigo-50/60 to-white border-2 border-blue-200/80 rounded-2xl p-6 space-y-3 shadow-sm">
                 <h3 className="text-base font-bold text-slate-900">Optimize Your Resume</h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
+                <p className="text-xs text-slate-600 leading-relaxed">
                   Ensure your resume matches this job’s keywords and passes applicant tracking system parsers.
                 </p>
                 <Link to="/resume" className="block">
