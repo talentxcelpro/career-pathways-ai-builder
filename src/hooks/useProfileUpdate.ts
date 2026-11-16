@@ -83,9 +83,24 @@ export function useProfileUpdate() {
     mutationFn: async (data: ProfileUpdateData) => {
       const user = await resolveAuthenticatedUser();
 
+      // Separate affirmative consent and privacy settings from base profile payload
+      const { profile_visibility, allow_profile_sharing, ...rawUpdateData } = data;
+
+      if (profile_visibility) {
+        try {
+          await supabase.rpc('set_public_profile_consent', {
+            p_granted: profile_visibility === 'public',
+            p_visibility: profile_visibility,
+            p_source: 'profile_settings'
+          });
+        } catch (consentErr) {
+          console.warn('Consent RPC update notice:', consentErr);
+        }
+      }
+
       // Always use UPDATE for existing profiles - much safer than upsert
       const updateData = {
-        ...data,
+        ...rawUpdateData,
         updated_at: new Date().toISOString()
       };
 
