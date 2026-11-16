@@ -110,6 +110,7 @@ const CareerInsightsPage              = lazy(() => import('./pages/CareerInsight
 const CareerAnalyticsPage             = lazy(() => import('./pages/learning/CareerAnalytics'));
 const PublicInterviewPrep             = lazy(() => import('./pages/tools/PublicInterviewPrep'));
 const ResumeChecker                   = lazy(() => import('./pages/tools/ResumeChecker'));
+const PublicAtsCheck                  = lazy(() => import('./pages/PublicAtsCheck'));
 const CoverLetterGenerator            = lazy(() => import('./pages/tools/CoverLetterGenerator'));
 const InterviewPrep                   = lazy(() => import('./pages/tools/InterviewPrep'));
 const ProfileOptimizer                = lazy(() => import('./pages/tools/ProfileOptimizer').then(m => ({ default: m.ProfileOptimizer })));
@@ -672,7 +673,9 @@ const App = () => {
                                       <Route path="/build" element={<UnifiedResumeBuilder />} />
                                       <Route path="/build/:id" element={<UnifiedResumeBuilder />} />
                                       <Route path="/dashboard" element={<MyResumes />} />
-                                      <Route path="/ats-check" element={<ATSChecker />} />
+                                      <Route path="/ats-check" element={<PublicAtsCheck />} />
+                                      <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
+                                      <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                                       <Route path="/templates" element={<ResumeTemplates />} />
                                       <Route path="/cover-letter" element={<CoverLetterStudio />} />
                                       <Route path="/interview-prep" element={<InterviewPrepSuite />} />
@@ -893,6 +896,10 @@ const App = () => {
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
+                {/* Free Un-Gated Public ATS Resume Checker */}
+                <Route path="/ats-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading ATS Checker...</div>}><PublicAtsCheck /></Suspense>} />
+                <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
+                <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                 {/* Core Candidate & Career Tools (Explicit Precedence over /tools/:tool generic fallback) */}
                 <Route path="/tools/resume-checker" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
                 <Route path="/tools/resume-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
