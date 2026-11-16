@@ -7,6 +7,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import { verifyToken } from "./oauth/_jwt.js";
 
 // ── Environment Configuration ────────────────────────────────────────────────
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "https://dthlgsnakhoftinssokm.supabase.co";
@@ -20,10 +21,25 @@ interface AuthContext {
 }
 
 async function validateAuth(authHeader: string | undefined): Promise<AuthContext> {
-  if (!authHeader?.startsWith("Bearer ") || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+  if (!authHeader?.startsWith("Bearer ")) {
     return { userId: null, role: "public", token: null, isAuthenticated: false };
   }
   const token = authHeader.slice(7);
+
+  // 1. Check if token is a TalentXcel OAuth 2.1 token (e.g. issued to Google Gemini)
+  try {
+    const oauthPayload = verifyToken(token);
+    if (oauthPayload && oauthPayload.type === "access") {
+      const role: AuthContext["role"] =
+        oauthPayload.role === "admin" ? "admin" : oauthPayload.role === "employer" ? "employer" : "user";
+      return { userId: oauthPayload.sub, role, token, isAuthenticated: true };
+    }
+  } catch {}
+
+  // 2. Check Supabase Auth JWT
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    return { userId: null, role: "public", token: null, isAuthenticated: false };
+  }
   try {
     const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: `Bearer ${token}` } },
