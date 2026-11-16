@@ -53,6 +53,7 @@ async function runCanonicalStorageSuite() {
   const rec_id = authRec.user.id;
   
   async function getFreshRecruiterClient() {
+    await new Promise(r => setTimeout(r, 1100)); // Ensure fresh iat timestamp
     const { data: rAuth } = await anonClient.auth.signInWithPassword({
       email: 'audit_rec1@talentxcel-audit.local',
       password: 'AuditPassword123!Secure'
@@ -66,6 +67,7 @@ async function runCanonicalStorageSuite() {
   // Consistent existing keys and IDs across all tests
   const COMPANY_ID = '11111111-aaaa-aaaa-aaaa-111111111111';
   const OTHER_COMPANY_ID = '99999999-9999-9999-9999-999999999999';
+  const COMPANY_OWNER_ID = '00000000-0000-0000-0000-000000000001';
   const JOB1_ID = 'f0000000-0000-0000-0000-000000000001';
   const JOB2_OTHER_ID = 'f0000000-0000-0000-0000-000000000002';
   const APP1_ID = 'a0000000-0000-0000-0000-000000000001';
@@ -100,8 +102,8 @@ async function runCanonicalStorageSuite() {
     ON CONFLICT (id) DO NOTHING;
 
     INSERT INTO public.company_profiles (company_id, owner_id)
-    VALUES ('${COMPANY_ID}', '${rec_id}')
-    ON CONFLICT (company_id) DO UPDATE SET owner_id = '${rec_id}';
+    VALUES ('${COMPANY_ID}', '${COMPANY_OWNER_ID}')
+    ON CONFLICT (company_id) DO UPDATE SET owner_id = '${COMPANY_OWNER_ID}';
 
     -- Recruiter team member at Company 1
     INSERT INTO public.company_team_members (id, company_id, user_id, role, is_active)
@@ -232,7 +234,7 @@ async function runCanonicalStorageSuite() {
   const oracleCheckOther = await runSql(`
     SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', '${candB_id}');
   `, 'staging');
-  assert('TEST-ORACLE-01', 'Anti-oracle check: passing distinct p_auth_uid returns false', oracleCheckOther[0]?.can_employer_access_document === false);
+  assert('TEST-ORACLE-01', 'Anti-oracle check: passing distinct p_auth_uid returns false', oracleCheckOther[0]?.can_employer_access_document === false, JSON.stringify(oracleCheckOther));
 
   // Test 4.2: Anonymous/null caller returns false
   const oracleCheckNull = await runSql(`

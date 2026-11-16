@@ -62,7 +62,7 @@ BEGIN
                     ELSE 5
                 END +
                 CASE 
-                    WHEN p_category = 'fresher_entry' AND (lower(COALESCE(j.title, '')) LIKE '%fresher%' OR lower(COALESCE(j.title, '')) LIKE '%intern%' OR lower(COALESCE(j.title, '')) LIKE '%graduate%' OR lower(COALESCE(j.title, '')) LIKE '%trainee%' OR lower(COALESCE(j.experience_level, '')) LIKE '%entry%') THEN 35
+                    WHEN p_category = 'fresher_entry' AND (lower(COALESCE(j.experience_level, '')) LIKE '%fresher%' OR lower(COALESCE(j.title, '')) LIKE '%fresher%' OR lower(COALESCE(j.title, '')) LIKE '%intern%' OR lower(COALESCE(j.title, '')) LIKE '%junior%' OR lower(COALESCE(j.title, '')) LIKE '%trainee%') THEN 35
                     WHEN p_category = 'remote_executive' AND (j.is_remote = true OR lower(COALESCE(j.location, '')) LIKE '%remote%') THEN 25
                     WHEN p_category = 'tech_high_growth' AND (lower(COALESCE(j.title, '')) LIKE '%engineer%' OR lower(COALESCE(j.title, '')) LIKE '%developer%' OR lower(COALESCE(j.title, '')) LIKE '%software%' OR lower(COALESCE(j.title, '')) LIKE '%tech%' OR lower(COALESCE(j.title, '')) LIKE '%product%') THEN 25
                     WHEN p_category = 'city_spotlight' AND j.location_city IS NOT NULL THEN 25
@@ -86,7 +86,16 @@ BEGIN
               CASE
                   WHEN p_category = 'fresher_entry' THEN
                       (
-                          (lower(COALESCE(j.title, '')) LIKE '%fresher%' OR lower(COALESCE(j.title, '')) LIKE '%intern%' OR lower(COALESCE(j.title, '')) LIKE '%graduate%' OR lower(COALESCE(j.title, '')) LIKE '%trainee%' OR lower(COALESCE(j.experience_level, '')) LIKE '%entry%' OR (j.min_experience = 0 AND j.max_experience <= 2))
+                          (
+                              lower(COALESCE(j.experience_level, '')) LIKE '%fresher%'
+                              OR lower(COALESCE(j.experience_level, '')) LIKE '%entry%'
+                              OR lower(COALESCE(j.title, '')) LIKE '%fresher%'
+                              OR lower(COALESCE(j.title, '')) LIKE '%intern%'
+                              OR lower(COALESCE(j.title, '')) LIKE '%graduate%'
+                              OR lower(COALESCE(j.title, '')) LIKE '%trainee%'
+                              OR lower(COALESCE(j.title, '')) LIKE '%junior%'
+                              OR (j.min_experience = 0 AND j.max_experience <= 2)
+                          )
                           AND lower(COALESCE(j.title, '')) NOT LIKE '%senior%'
                           AND lower(COALESCE(j.title, '')) NOT LIKE '%lead%'
                           AND lower(COALESCE(j.title, '')) NOT LIKE '%manager%'
