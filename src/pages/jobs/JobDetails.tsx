@@ -40,6 +40,8 @@ import { getPublicJobUrl, getPublicCompanyUrl } from '@/lib/seo/canonicalUrls';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { InteractiveJobMatchWidget } from '@/components/jobs/InteractiveJobMatchWidget';
 import { RelatedHubsMesh } from '@/components/seo/RelatedHubsMesh';
+import { JobAlertCaptureCard } from '@/components/jobs/JobAlertCaptureCard';
+import { WhatsAppChannelCard } from '@/components/jobs/WhatsAppChannelCard';
 import { FALLBACK_JOBS } from '@/hooks/useJobsCriticalPath';
 
 const JobsByRoleCity = React.lazy(() => import('@/pages/seo/jobs/JobsByRoleCity'));
@@ -91,7 +93,19 @@ export default function JobDetails() {
         };
       }
 
-      // Strategy 1: Try exact SEO slug match
+            // Strategy 0.5: Numeric ID or test index (e.g. /jobs/1) -> load first active verified job
+      if (/^\d+$/.test(slugOrId)) {
+        const { data: numJob } = await supabase
+          .from('jobs')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        if (numJob) return numJob;
+      }
+
+// Strategy 1: Try exact SEO slug match
       const { data: exactSlugJob } = await supabase
         .from('jobs')
         .select('*')
@@ -239,7 +253,7 @@ export default function JobDetails() {
     if (slugOrId && KNOWN_CITIES.has(slugOrId.toLowerCase())) {
       const LazyLocationPage = React.lazy(() => import('@/pages/seo/JobLocationPage'));
       return (
-        <React.Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center p-6"><div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>}>
+        <React.Suspense fallback={<div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 flex items-center justify-center p-6"><div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" /></div>}>
           <LazyLocationPage />
         </React.Suspense>
       );
@@ -249,7 +263,7 @@ export default function JobDetails() {
       return (
         <React.Suspense
           fallback={
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 flex items-center justify-center p-6">
               <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             </div>
           }
@@ -266,7 +280,7 @@ export default function JobDetails() {
       return (
         <React.Suspense
           fallback={
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 flex items-center justify-center p-6">
               <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             </div>
           }
@@ -284,7 +298,7 @@ export default function JobDetails() {
       return (
         <React.Suspense
           fallback={
-            <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+            <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 flex items-center justify-center p-6">
               <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
             </div>
           }
@@ -306,20 +320,25 @@ export default function JobDetails() {
           <meta name="robots" content="index, follow" />
         </Helmet>
 
-        <div className="min-h-screen bg-slate-950 text-slate-100 py-12 px-4">
-          <div className="max-w-4xl mx-auto space-y-8">
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900 py-12 px-4 relative overflow-hidden">
+          {/* Subtle ambient lighting matching homepage */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-24 right-1/4 w-[600px] h-[350px] bg-gradient-to-br from-blue-400/10 via-indigo-400/5 to-purple-400/5 rounded-full blur-[130px]" />
+            <div className="absolute top-1/2 -left-20 w-[450px] h-[300px] bg-gradient-to-tr from-cyan-400/10 via-blue-500/5 to-indigo-500/5 rounded-full blur-[120px]" />
+          </div>
+          <div className="max-w-4xl mx-auto space-y-8 relative z-10">
             
             <div className="text-center space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold">
-                <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold shadow-2xs">
+                <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
                 <span>Listing No Longer Active</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900">
                 This Opening Has Closed
               </h1>
 
-              <p className="text-slate-400 text-sm max-w-xl mx-auto leading-relaxed">
+              <p className="text-slate-600 text-sm max-w-xl mx-auto leading-relaxed">
                 The specific vacancy you requested is no longer accepting applications. Explore verified live roles and matching opportunities below.
               </p>
             </div>
@@ -328,51 +347,51 @@ export default function JobDetails() {
             {fallbackJobs.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Briefcase className="w-5 h-5 text-blue-400" />
+                  <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                    <Briefcase className="w-5 h-5 text-blue-600" />
                     <span>Top Verified Opportunities</span>
                   </h2>
-                  <Link to="/jobs" className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                  <Link to="/jobs" className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 font-bold">
                     View all {fallbackJobs.length}+ jobs <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {fallbackJobs.map((item: any) => (
-                    <Card key={item.id} className="bg-slate-900/80 border-slate-800 hover:border-slate-700 transition-all p-5 flex flex-col justify-between">
+                    <Card key={item.id} className="bg-white border-2 border-slate-200/80 hover:border-blue-400 transition-all p-5 rounded-2xl shadow-sm hover:shadow-md flex flex-col justify-between">
                       <div className="space-y-2">
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <h3 className="text-base font-bold text-white line-clamp-1">{item.title}</h3>
-                            <p className="text-xs text-slate-400 font-medium">{item.company_name || 'TalentXcel Partner'}</p>
+                            <h3 className="text-base font-bold text-slate-900 line-clamp-1">{item.title}</h3>
+                            <p className="text-xs text-slate-500 font-medium">{item.company_name || 'TalentXcel Partner'}</p>
                           </div>
-                          <Badge variant="outline" className="border-blue-500/30 text-blue-300 text-[10px] shrink-0">
+                          <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700 text-[10px] shrink-0 font-semibold">
                             {item.employment_type || 'Full-time'}
                           </Badge>
                         </div>
 
-                        <div className="flex items-center gap-3 text-xs text-slate-400 pt-1 flex-wrap">
+                        <div className="flex items-center gap-3 text-xs text-slate-600 pt-1 flex-wrap">
                           {item.location && (
                             <span className="flex items-center gap-1">
                               <MapPin className="w-3.5 h-3.5 text-slate-500" /> {item.location}
                             </span>
                           )}
                           {(item.salary_min || item.salary_max) && (
-                            <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                            <span className="flex items-center gap-1 text-emerald-700 font-semibold">
                               <IndianRupee className="w-3.5 h-3.5" /> {formatSalaryRange(item.salary_min, item.salary_max, item.salary_currency)}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <div className="pt-4 mt-2 border-t border-slate-800/60 flex items-center justify-between">
+                      <div className="pt-4 mt-2 border-t border-slate-100 flex items-center justify-between">
                         <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Verified Opening
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Verified Opening
                         </span>
                         <Button 
                           size="sm"
                           onClick={() => navigate(`/jobs/${item.seo_slug || item.id}`)}
-                          className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold h-8 px-3"
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold h-8 px-3 rounded-xl shadow-2xs"
                         >
                           View &amp; Apply
                         </Button>
@@ -385,39 +404,39 @@ export default function JobDetails() {
 
             {/* Quick Action Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-              <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
+              <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
                 <Briefcase className="w-6 h-6 text-blue-400" />
                 <h3 className="text-sm font-bold text-white">Browse Live Jobs</h3>
                 <p className="text-xs text-slate-400">Search thousands of active tech &amp; corporate openings in India.</p>
                 <Button 
                   onClick={() => navigate(`/jobs?search=${encodeURIComponent(rawRole)}`)} 
-                  className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20"
                 >
                   <Search className="w-3.5 h-3.5 mr-1.5" /> Search {roleCapitalized} Jobs
                 </Button>
               </Card>
 
-              <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
+              <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
                 <FileCheck2 className="w-6 h-6 text-emerald-400" />
                 <h3 className="text-sm font-bold text-white">Free ATS Resume Check</h3>
                 <p className="text-xs text-slate-400">Get a 10-second parseability audit for top Indian recruiters.</p>
                 <Button 
                   variant="outline" 
                   onClick={() => navigate('/resume/ats-check')} 
-                  className="w-full border-slate-700 text-white hover:bg-slate-800 text-xs font-bold"
+                  className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold rounded-xl shadow-2xs"
                 >
                   <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Check Resume (100% Free)
                 </Button>
               </Card>
 
-              <Card className="bg-slate-900/80 border-slate-800 text-left p-5 space-y-3">
+              <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
                 <TrendingUp className="w-6 h-6 text-indigo-400" />
                 <h3 className="text-sm font-bold text-white">2026 Salary Calculator</h3>
                 <p className="text-xs text-slate-400">Calculate take-home in-hand pay across Bangalore, Pune &amp; NCR.</p>
                 <Button 
                   variant="outline" 
                   onClick={() => navigate(`/rankings`)} 
-                  className="w-full border-slate-700 text-white hover:bg-slate-800 text-xs font-bold"
+                  className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold rounded-xl shadow-2xs"
                 >
                   <IndianRupee className="w-3.5 h-3.5 mr-1.5" /> Benchmark Salary
                 </Button>
@@ -425,7 +444,7 @@ export default function JobDetails() {
             </div>
 
             {/* Popular City Links */}
-            <div className="pt-6 border-t border-slate-900 text-center">
+            <div className="pt-6 border-t border-slate-200 text-center">
               <span className="text-xs font-mono uppercase tracking-wider text-slate-500 block mb-3">
                 Explore Jobs by Top Hubs
               </span>
@@ -446,7 +465,7 @@ export default function JobDetails() {
                   <Link 
                     key={hub.name} 
                     to={hub.path} 
-                    className="px-3 py-1.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 transition-colors"
+                    className="px-3 py-1.5 rounded-full bg-white hover:bg-slate-50 border border-slate-200 text-xs text-slate-700 font-medium shadow-2xs transition-colors"
                   >
                     {hub.name}
                   </Link>
@@ -488,32 +507,37 @@ export default function JobDetails() {
         robotsDirective={isExpired ? 'noindex, follow' : 'index, follow'}
       />
 
-      <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 pb-20">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900 py-8 px-4 pb-20 relative overflow-hidden">
+        {/* Subtle ambient lighting matching homepage */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-24 right-1/4 w-[600px] h-[350px] bg-gradient-to-br from-blue-400/10 via-indigo-400/5 to-purple-400/5 rounded-full blur-[130px]" />
+          <div className="absolute top-1/2 -left-20 w-[450px] h-[300px] bg-gradient-to-tr from-cyan-400/10 via-blue-500/5 to-indigo-500/5 rounded-full blur-[120px]" />
+        </div>
         <div className="max-w-4xl mx-auto space-y-8">
           {/* Breadcrumbs */}
-          <nav aria-label="Breadcrumb" className="text-xs text-slate-400 flex items-center gap-1.5 flex-wrap">
-            <Link to="/" className="hover:text-white transition-colors">Home</Link>
+          <nav aria-label="Breadcrumb" className="text-xs text-slate-500 flex items-center gap-1.5 flex-wrap">
+            <Link to="/" className="hover:text-blue-600 transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <Link to="/jobs" className="hover:text-white transition-colors">Jobs</Link>
+            <Link to="/jobs" className="hover:text-blue-600 transition-colors">Jobs</Link>
             {rawCity && citySlug && (
               <>
                 <ChevronRight className="w-3.5 h-3.5" />
-                <Link to={`/locations/${citySlug}`} className="hover:text-white transition-colors">{rawCity}</Link>
+                <Link to={`/locations/${citySlug}`} className="hover:text-blue-600 transition-colors">{rawCity}</Link>
               </>
             )}
             <ChevronRight className="w-3.5 h-3.5" />
-            <Link to={`/company/${companySlug}`} className="hover:text-white transition-colors">{companyName}</Link>
+            <Link to={`/company/${companySlug}`} className="hover:text-blue-600 transition-colors">{companyName}</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <span className="text-blue-400 font-medium truncate max-w-[200px]">{job.title}</span>
+            <span className="text-blue-700 font-semibold truncate max-w-[200px]">{job.title}</span>
           </nav>
 
           {/* Closed Vacancy Alert Banner (Adjustment 4) */}
           {isExpired && (
-            <div className="bg-amber-950/40 border border-amber-800/60 p-5 rounded-3xl flex items-start gap-3.5 text-amber-200">
+            <div className="bg-amber-50 border border-amber-200 p-5 rounded-2xl flex items-start gap-3.5 text-amber-900 shadow-2xs">
               <AlertCircle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div className="space-y-1">
-                <h2 className="text-base font-bold text-amber-300">This vacancy at {companyName} has closed</h2>
-                <p className="text-xs text-amber-200/80 leading-relaxed">
+                <h2 className="text-base font-bold text-amber-900">This vacancy at {companyName} has closed</h2>
+                <p className="text-xs text-amber-800 leading-relaxed">
                   This opportunity is no longer accepting new applications. You can review similar active openings below.
                 </p>
                 <div className="pt-2">
@@ -527,33 +551,33 @@ export default function JobDetails() {
           )}
 
           {/* Job Hero Card */}
-          <header className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl space-y-6">
+          <header className="bg-white border-2 border-slate-200/80 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 relative z-10">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               <div>
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <Badge variant="outline" className="border-blue-500/40 text-blue-400 bg-blue-500/10 text-xs">
+                  <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700 text-xs font-semibold">
                     {job.employment_type || 'Full-time'}
                   </Badge>
                   {job.is_remote ? (
-                    <Badge variant="outline" className="border-purple-500/40 text-purple-400 bg-purple-500/10 text-xs">
+                    <Badge variant="outline" className="border-purple-200 bg-purple-50 text-purple-700 text-xs font-semibold">
                       Remote Role
                     </Badge>
                   ) : (
-                    <Badge variant="outline" className="border-slate-700 text-slate-300 text-xs">
+                    <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-600 text-xs font-semibold">
                       On-site
                     </Badge>
                   )}
-                  <Badge variant="outline" className="border-emerald-500/40 text-emerald-400 bg-emerald-500/10 gap-1 text-xs py-0.5">
+                  <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-emerald-700 gap-1 text-xs py-0.5 font-semibold">
                     <ShieldCheck className="w-3.5 h-3.5" /> Verified Opening
                   </Badge>
                 </div>
 
-                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
                   {job.title}
                 </h1>
 
-                <p className="text-sm font-medium text-slate-300 mt-1.5 flex items-center gap-2">
-                  <Link to={`/company/${companySlug}`} className="text-blue-400 hover:underline flex items-center gap-1">
+                <p className="text-sm font-medium text-slate-600 mt-1.5 flex items-center gap-2">
+                  <Link to={`/company/${companySlug}`} className="text-blue-600 hover:underline font-semibold flex items-center gap-1">
                     <Building2 className="w-4 h-4" /> {companyName}
                   </Link>
                   <span>&bull;</span>
@@ -575,7 +599,7 @@ export default function JobDetails() {
 
                   if (curr === 'INR') {
                     return (
-                      <div className="mt-3 text-emerald-400 font-semibold text-base flex items-center gap-1.5">
+                      <div className="mt-3 text-emerald-700 font-bold text-base md:text-lg flex items-center gap-1.5">
                         <IndianRupee className="w-4 h-4" />
                         <span>
                           {min >= 100000 
@@ -618,7 +642,7 @@ export default function JobDetails() {
                     }
                   }}
                   variant="outline"
-                  className="border-slate-700 hover:bg-slate-800 text-slate-300 font-bold text-xs px-4 py-2.5 h-auto rounded-xl flex items-center gap-1.5"
+                  className="border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs px-4 py-2.5 h-auto rounded-xl flex items-center gap-1.5"
                 >
                   <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                   Check Match
@@ -630,7 +654,7 @@ export default function JobDetails() {
                   description={`Apply for ${job.title} at ${companyName}. Verified opening on TalentXcel.`}
                   url={getPublicJobUrl(job.seo_slug || slugOrId)}
                   size="sm"
-                  className="border-slate-700 hover:bg-slate-800 text-slate-300"
+                  className="border-slate-300 bg-white hover:bg-slate-50 text-slate-700 rounded-xl"
                 />
               </div>
             </div>
@@ -639,26 +663,26 @@ export default function JobDetails() {
           {/* Job Description & Details */}
           <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-6">
-              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <section className="bg-white border-2 border-slate-200/80 rounded-2xl p-6 md:p-8 space-y-4 shadow-sm">
+                <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                   <Briefcase className="w-5 h-5 text-blue-400" /> Job Description & Requirements
                 </h2>
-                <JobDescriptionRenderer content={job.description} className="text-slate-200" theme="dark" />
+                <JobDescriptionRenderer content={job.description} className="text-slate-700" theme="light" />
               </section>
 
               {/* Native TalentXcel Application Section (Part 1.2) */}
-              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 md:p-8 space-y-4">
+              <section className="bg-white border-2 border-slate-200/80 rounded-2xl p-6 md:p-8 space-y-4 shadow-sm">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/15 text-blue-400 border border-blue-500/30 flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 border border-blue-200 flex items-center justify-center font-bold">
                     <Send className="w-4 h-4" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold text-white">Apply for This Position</h2>
-                    <p className="text-xs text-slate-400">Direct candidate application to {companyName} hiring team</p>
+                    <h2 className="text-lg font-bold text-slate-900">Apply for This Position</h2>
+                    <p className="text-xs text-slate-500">Direct candidate application to {companyName} hiring team</p>
                   </div>
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   Interested in this opportunity? Submit your application through TalentXcel. Upload your latest CV and share your details. Your application will be securely recorded and made available to the hiring team.
                 </p>
 
@@ -684,13 +708,13 @@ export default function JobDetails() {
               </section>
 
               {/* Company Info Box */}
-              <section className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-3">
-                <h3 className="text-base font-bold text-white">About the Employer</h3>
+              <section className="bg-white border-2 border-slate-200/80 rounded-2xl p-6 space-y-3 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900">About the Employer</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
                   {companyName} is an SI-powered talent and recruitment organization providing strategic staffing, technology solutions, and career intelligence.
                 </p>
                 <Link to={`/company/${companySlug}`}>
-                  <Button size="sm" variant="ghost" className="text-blue-400 hover:text-blue-300 text-xs p-0 h-auto">
+                  <Button size="sm" variant="ghost" className="text-blue-600 hover:text-blue-700 text-xs font-semibold p-0 h-auto">
                     View Company Profile & Open Roles &rarr;
                   </Button>
                 </Link>
@@ -701,30 +725,30 @@ export default function JobDetails() {
 
             {/* Right Column: Key Summary */}
             <div className="space-y-6 lg:sticky lg:top-6">
-              <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
-                <h3 className="text-base font-bold text-white">Role Summary</h3>
+              <div className="bg-white border-2 border-slate-200/80 rounded-2xl p-6 space-y-4 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900">Role Summary</h3>
                 <div className="space-y-3 text-xs">
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Employment Type</span>
-                    <span className="text-white font-medium">{job.employment_type || 'Full-time'}</span>
+                  <div className="flex justify-between pb-2 border-b border-slate-100">
+                    <span className="text-slate-500">Employment Type</span>
+                    <span className="text-slate-900 font-semibold">{job.employment_type || 'Full-time'}</span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Location</span>
-                    <span className="text-white font-medium">{job.location || 'Noida, India'}</span>
+                  <div className="flex justify-between pb-2 border-b border-slate-100">
+                    <span className="text-slate-500">Location</span>
+                    <span className="text-slate-900 font-semibold">{job.location || 'Noida, India'}</span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Workplace Type</span>
-                    <span className="text-white font-medium">{job.is_remote ? 'Remote' : 'On-site'}</span>
+                  <div className="flex justify-between pb-2 border-b border-slate-100">
+                    <span className="text-slate-500">Workplace Type</span>
+                    <span className="text-slate-900 font-semibold">{job.is_remote ? 'Remote' : 'On-site'}</span>
                   </div>
-                  <div className="flex justify-between pb-2 border-b border-slate-800">
-                    <span className="text-slate-400">Date Posted</span>
-                    <span className="text-white font-medium">
+                  <div className="flex justify-between pb-2 border-b border-slate-100">
+                    <span className="text-slate-500">Date Posted</span>
+                    <span className="text-slate-900 font-semibold">
                       {new Date(job.created_at).toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Status</span>
-                    <Badge variant="outline" className="text-emerald-400 border-emerald-500/30 text-[10px]">
+                    <span className="text-slate-500">Status</span>
+                    <Badge variant="outline" className="text-emerald-700 bg-emerald-50 border-emerald-200 text-[10px] font-semibold">
                       Active Opening
                     </Badge>
                   </div>
@@ -743,14 +767,26 @@ export default function JobDetails() {
                 />
               </div>
 
+              {/* 1-Tap WhatsApp / Email Job Alert Capture */}
+              <WhatsAppChannelCard 
+                locationName={job.location || 'India'}
+                roleName={job.title}
+                className="mb-4"
+              />
+              <JobAlertCaptureCard 
+                locationName={job.location || 'India'} 
+                roleName={job.title} 
+                companyName={companyName} 
+              />
+
               {/* Free ATS Resume Tool CTA */}
-              <div className="bg-gradient-to-br from-blue-950/40 to-indigo-950/40 border border-blue-900/40 rounded-2xl p-6 space-y-3">
-                <h3 className="text-base font-bold text-white">Optimize Your Resume</h3>
+              <div className="bg-gradient-to-br from-blue-50 via-indigo-50/60 to-white border-2 border-blue-200/80 rounded-2xl p-6 space-y-3 shadow-sm">
+                <h3 className="text-base font-bold text-slate-900">Optimize Your Resume</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
                   Ensure your resume matches this job’s keywords and passes applicant tracking system parsers.
                 </p>
                 <Link to="/resume" className="block">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20">
                     Open Free ATS Resume Studio
                   </Button>
                 </Link>
@@ -760,20 +796,20 @@ export default function JobDetails() {
 
           {/* Candidate-Facing Related Jobs (Part 5: Final Structure) */}
           {relatedJobs.length > 0 && (
-            <section className="pt-8 border-t border-slate-800/80 space-y-5">
+            <section className="pt-8 border-t border-slate-100/80 space-y-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
                     <Briefcase className="w-5 h-5 text-blue-400" />
                     <span>Similar Opportunities</span>
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Explore more verified positions matching your professional background
                   </p>
                 </div>
                 <Link
                   to="/jobs"
-                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 flex items-center gap-1 transition-colors"
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition-colors"
                 >
                   <span>View All Jobs</span>
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -784,19 +820,19 @@ export default function JobDetails() {
                 {relatedJobs.map((item: any) => (
                   <Card
                     key={item.id}
-                    className="bg-slate-900/60 border border-slate-800/80 hover:border-blue-500/40 rounded-2xl p-5 flex flex-col justify-between transition-all group"
+                    className="bg-white border-2 border-slate-200/80 hover:border-blue-400 rounded-2xl p-5 flex flex-col justify-between transition-all group shadow-sm hover:shadow-md"
                   >
                     <div className="space-y-2.5">
                       <div className="flex items-start justify-between gap-2">
                         <div>
-                          <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-blue-400 transition-colors line-clamp-1">
+                          <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                             {item.title}
                           </h3>
-                          <p className="text-xs text-slate-400 font-medium mt-0.5">
+                          <p className="text-xs text-slate-500 font-medium mt-0.5">
                             {item.company_name || 'Verified Employer'}
                           </p>
                         </div>
-                        <Badge variant="outline" className="border-blue-500/30 text-blue-300 bg-blue-500/10 text-[10px] shrink-0">
+                        <Badge variant="outline" className="border-blue-200 bg-blue-50 text-blue-700 text-[10px] shrink-0 font-semibold">
                           {item.employment_type || 'Full-time'}
                         </Badge>
                       </div>
@@ -815,14 +851,14 @@ export default function JobDetails() {
                       </div>
                     </div>
 
-                    <div className="pt-4 mt-3 border-t border-slate-800/60 flex items-center justify-between">
+                    <div className="pt-4 mt-3 border-t border-slate-100/60 flex items-center justify-between">
                       <span className="text-[11px] text-slate-500 flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Direct TalentXcel Application
                       </span>
                       <Button
                         size="sm"
                         onClick={() => navigate(`/jobs/${item.seo_slug || item.id}`)}
-                        className="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold h-8 px-3.5 rounded-xl transition-all"
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold h-8 px-3.5 rounded-xl shadow-2xs transition-all"
                       >
                         View &amp; Apply
                       </Button>

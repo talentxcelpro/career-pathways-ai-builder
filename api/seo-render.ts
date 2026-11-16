@@ -9,7 +9,7 @@ const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string;
     currency: 'AED',
     metaTitle: 'Data Analyst Jobs in Dubai, UAE (2026) — Verified Vacancies in AED | TalentXcel Jobs',
     metaDescription: 'Explore verified Data Analyst and Analytics Engineer jobs in Dubai, UAE. Direct employer routing to Tabby FinTech, Careem, and Dubai tech firms with verified AED compensation and UAE visa sponsorship.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/data-analyst-dubai-uae',
+    canonicalUrl: 'https://talentxcel.in/jobs/data-analyst-dubai-uae',
     visaNote: 'UAE Labour Law requires employers to sponsor international hires with an entry permit and 2-year renewable employment residence visa upon signed offer acceptance.'
   },
   'software-engineer-abu-dhabi-uae': {
@@ -21,7 +21,7 @@ const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string;
     currency: 'AED',
     metaTitle: 'Software Engineer Jobs in Abu Dhabi, UAE (2026) — Verified Vacancies in AED | TalentXcel Jobs',
     metaDescription: 'Apply for verified Software Engineer and Systems Analyst roles in Abu Dhabi, UAE. Official vacancies at First Abu Dhabi Bank (FAB), ADNOC, and Cleveland Clinic Abu Dhabi with verified AED salaries.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/software-engineer-abu-dhabi-uae',
+    canonicalUrl: 'https://talentxcel.in/jobs/software-engineer-abu-dhabi-uae',
     visaNote: 'Sovereign entities and multinational institutions in Abu Dhabi process full UAE Ministry of Human Resources & Emiratisation (MOHRE) employment residency permits.'
   },
   'cloud-engineer-riyadh-saudi-arabia': {
@@ -33,7 +33,7 @@ const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string;
     currency: 'SAR',
     metaTitle: 'Cloud Engineer Jobs in Riyadh, Saudi Arabia (2026) — Verified SAR Vacancies | TalentXcel Jobs',
     metaDescription: 'Discover verified Cloud Engineer and Sovereign Cloud Architect positions in Riyadh, Saudi Arabia. Explore tier-1 openings at Aramco Digital and Saudi enterprise hubs with verified SAR compensation.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/cloud-engineer-riyadh-saudi-arabia',
+    canonicalUrl: 'https://talentxcel.in/jobs/cloud-engineer-riyadh-saudi-arabia',
     visaNote: 'International hires in Riyadh receive full Iqama sponsorship and relocation logistics support under the Saudi Ministry of Human Resources regulations.'
   },
   'data-analyst-remote-usa': {
@@ -45,7 +45,7 @@ const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string;
     currency: 'USD',
     metaTitle: 'Data Analyst Remote Jobs in USA (2026) — Verified USD Compensation | TalentXcel Jobs',
     metaDescription: 'Browse verified remote Data Analyst jobs based in the United States. Direct applications to JPMorgan Chase, Capital One, and US employers. Verified USD salary benchmarks and clear US work authorization terms.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/data-analyst-remote-usa',
+    canonicalUrl: 'https://talentxcel.in/jobs/data-analyst-remote-usa',
     visaNote: 'US domestic remote positions require valid United States work authorization. Employer sponsorship is explicitly noted where available.'
   },
   'software-engineer-remote-us': {
@@ -57,7 +57,7 @@ const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string;
     currency: 'USD',
     metaTitle: 'Remote Software Engineer Jobs USA & Global (2026) — Verified USD Salaries | TalentXcel Jobs',
     metaDescription: 'Verified remote Software Engineer openings with top US and global all-remote employers including Microsoft, AWS, Snowflake, GitLab, and Automattic. Filter by US-only and international remote eligibility.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/software-engineer-remote-us',
+    canonicalUrl: 'https://talentxcel.in/jobs/software-engineer-remote-us',
     visaNote: 'Worldwide Remote listings are open to candidates residing in India and internationally without US visa requirements. US-based roles specify US work authorization requirements.'
   }
 };
@@ -103,8 +103,8 @@ export function resolveOgImageForRoute(cleanPath: string): string {
 // Unit 2: SALARY_CANARY_CANONICAL (SEO-004 & SEO-001) - Independent topical authority for salary.talentxcel.in
 // Unit 3: CTR_METADATA_OPTIMIZATION (SEO-007) - Data-grounded search titles and descriptions
 
-import collegeSlugsList from './_college-slugs.json';
-import collegeTierASlugsList from './_college-tier-a-slugs.json';
+import collegeSlugsList from './_college-slugs.json' with { type: 'json' };
+import collegeTierASlugsList from './_college-tier-a-slugs.json' with { type: 'json' };
 
 export const config = {
   runtime: 'edge',
@@ -222,8 +222,8 @@ function legacyGenericOkResponse(cleanPath: string, isDebug: boolean = false): R
   });
 }
 
-const SUPABASE_REST_URL = 'https://dthlgsnakhoftinssokm.supabase.co/rest/v1';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const SUPABASE_REST_URL = process.env.SUPABASE_REST_URL || 'https://dthlgsnakhoftinssokm.supabase.co/rest/v1';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 
 const CANONICAL_ROLES_SET = new Set([
   'graduate-engineer-trainee', 'associate-data-analyst', 'management-trainee',
@@ -655,9 +655,9 @@ async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
     if (isUuid) {
       filter = `id=eq.${encodeURIComponent(cleaned)}`;
     } else {
-      filter = `or=(username.ilike.${encodeURIComponent(cleaned)},custom_url_slug.ilike.${encodeURIComponent(cleaned)},slug.ilike.${encodeURIComponent(cleaned)})`;
+      filter = `username=ilike.${encodeURIComponent(cleaned)}`;
     }
-    const url = `${SUPABASE_REST_URL}/profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
+    const url = `${SUPABASE_REST_URL}/public_profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': SUPABASE_ANON_KEY,
@@ -748,7 +748,7 @@ export default async function handler(req: Request) {
 
   const result = await generateDynamicSeoHtml(cleanPath);
   if (!result || result.status === 404) {
-    if (DEPLOYMENT_UNITS.SOFT_404_PROTECTION) {
+    if (DEPLOYMENT_UNITS.SOFT_404_PROTECTION || cleanPath.startsWith('profile') || cleanPath.startsWith('candidate')) {
       return notFoundResponse(cleanPath, isDebug);
     } else {
       return legacyGenericOkResponse(cleanPath, isDebug);
@@ -1040,23 +1040,33 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         "url": canonical
       };
     } else {
-      title = 'Professional Profile | TalentXcel';
-      description = 'Connect with verified professionals and leadership talent on TalentXcel.';
-      canonical = `https://talentxcel.in/profile/${encodeURIComponent(identifier)}`;
-      h1 = 'TalentXcel Professional Profile';
-      ogType = 'profile';
-      ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
-      robotsDirective = 'noindex, follow';
-
-      bodyContent = `
-        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-4 text-center max-w-3xl mx-auto">
-          <h2 class="text-2xl font-black text-white">Professional Profile</h2>
-          <p class="text-slate-300 text-sm">Explore verified talent and connect with professionals across global industries.</p>
-          <div class="pt-4">
-            <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Explore Professional Network &rarr;</a>
-          </div>
-        </section>
-      `;
+      return {
+        html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile Unavailable (404) | TalentXcel</title>
+  <meta name="robots" content="noindex, nofollow">
+  <script src="https://cdn.tailwindcss.com" defer></script>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased font-sans flex items-center justify-center min-h-screen">
+  <main class="max-w-lg mx-auto px-6 py-12 text-center space-y-4">
+    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/30 text-red-300 text-xs font-semibold">
+      HTTP 404 — Profile Unavailable
+    </span>
+    <h1 class="text-3xl font-black text-white">Profile Unavailable</h1>
+    <p class="text-slate-400 text-sm">This professional profile is private, does not exist, or public consent has been revoked.</p>
+    <div class="pt-4">
+      <a href="/network" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Explore Professional Network &rarr;</a>
+    </div>
+  </main>
+</body>
+</html>`,
+        status: 404,
+        robotsDirective: 'noindex, nofollow',
+        cacheControl: 'public, max-age=0, s-maxage=3600'
+      };
     }
   }
   // 1F. Network Posts & Articles (/network/post/:id, /post/:id, /posts/:id)

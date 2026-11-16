@@ -131,8 +131,7 @@ export const ProfileVisibilitySettings: React.FC<ProfileVisibilitySettingsProps>
         {/* Privacy Notice */}
         <div className="p-3 bg-blue-50/60 dark:bg-blue-950/20 rounded-xl border border-blue-200/70 dark:border-blue-900/40">
           <p className="text-xs text-blue-900 dark:text-blue-300 leading-relaxed">
-            <strong className="font-bold">Privacy Note:</strong> Even with private settings, verified credentials like your name 
-            may still be visible to verified employers through direct applications.
+            <strong className="font-bold">Privacy Note:</strong> Setting your profile to Private or Connections Only hides your full candidate profile, contact details, resume, and career history from public search and non-connections. However, if you publish public posts on the social feed, your basic author display snippet (name, headline, and profile image) remains visible in feed headers for those posts unless the post itself is deleted. Verified employers can also access application materials you explicitly submit.
           </p>
         </div>
       </CardContent>

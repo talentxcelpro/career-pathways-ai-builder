@@ -46,6 +46,8 @@ const BlogRedirect = lazy(() => import("@/pages/BlogRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ResourceDetail = lazy(() => import("@/pages/resources/ResourceDetail"));
 const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
+const WhatsAppAlertsAdmin = lazy(() => import("@/pages/admin/WhatsAppAlertsAdmin"));
+const DistributionCommandCentre = lazy(() => import("@/pages/admin/DistributionCommandCentre"));
 const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
 const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
 const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
@@ -1263,6 +1265,9 @@ const App = () => {
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
+                                 <Route path="/admin/whatsapp-alerts" element={<AdminLayout><WhatsAppAlertsAdmin /></AdminLayout>} />
+                                 <Route path="/admin/distribution-command-centre" element={<AdminLayout><DistributionCommandCentre /></AdminLayout>} />
+                                 <Route path="/admin/distribution" element={<AdminLayout><DistributionCommandCentre /></AdminLayout>} />
                                  <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />

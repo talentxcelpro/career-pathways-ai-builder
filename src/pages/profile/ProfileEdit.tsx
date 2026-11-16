@@ -209,6 +209,7 @@ const ProfileEdit = () => {
       }
 
       // Build safe update payload - NEVER include 'id' in update body to avoid FK validation errors
+      // profile_visibility is managed exclusively via the affirmative-consent RPC (set_public_profile_consent)
       const updatePayload: Record<string, any> = {
         full_name: data.full_name?.trim() || null,
         title: data.title?.trim() || null,
@@ -223,13 +224,17 @@ const ProfileEdit = () => {
         experience_years: typeof data.experience_years === 'number' ? data.experience_years : Number(data.experience_years) || 0,
         profile_picture_url: cleanPictureUrl,
         profile_photo_url: cleanPictureUrl,
-        social_links: data.social_links && typeof data.social_links === 'object' ? data.social_links : {},
-        profile_visibility: data.profile_visibility || 'public',
-        allow_profile_sharing: data.allow_profile_sharing ?? true,
         resume_url: data.resume_url?.trim() || null,
-        work_experiences: normalizedWorkExperiences,
         updated_at: new Date().toISOString()
       };
+
+      if (data.social_links && typeof data.social_links === 'object') {
+        updatePayload.social_links = data.social_links;
+      }
+
+      if (normalizedWorkExperiences && normalizedWorkExperiences.length > 0) {
+        updatePayload.work_experiences = normalizedWorkExperiences;
+      }
 
       if (data.email && data.email.trim()) {
         updatePayload.email = data.email.trim();
@@ -237,6 +242,19 @@ const ProfileEdit = () => {
 
       if (data.custom_profile_url && data.custom_profile_url.trim()) {
         updatePayload.custom_profile_url = data.custom_profile_url.trim();
+      }
+
+      // Handle affirmative consent & visibility via secure RPC if changed
+      if (data.profile_visibility && data.profile_visibility !== profile?.profile_visibility) {
+        try {
+          await supabase.rpc('set_public_profile_consent', {
+            p_granted: data.profile_visibility === 'public',
+            p_visibility: data.profile_visibility,
+            p_source: 'profile_settings'
+          });
+        } catch (consentErr) {
+          console.warn('Consent RPC update notice:', consentErr);
+        }
       }
 
       // Try to update existing profile first

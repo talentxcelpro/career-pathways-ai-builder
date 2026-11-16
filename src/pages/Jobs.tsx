@@ -197,7 +197,7 @@ const Jobs = () => {
             "itemListElement": allJobs.slice(0, 10).map((job, index) => ({
               "@type": "ListItem",
               "position": index + 1,
-              "url": `https://jobs.talentxcel.in/jobs/${job.id}`,
+              "url": `https://talentxcel.in/jobs/${job.seo_slug || job.id}`,
               "name": job.title || 'Career Opportunity'
             }))
           }

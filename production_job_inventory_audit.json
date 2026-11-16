@@ -1,0 +1,225 @@
+{
+  "timestamp": "2026-11-16T09:58:47.790Z",
+  "databaseRef": "dthlgsnakhoftinssokm",
+  "totalJobs": 2711,
+  "activeJobs": 2711,
+  "inactiveJobs": 0,
+  "openStatusJobs": 2711,
+  "closedStatusJobs": 0,
+  "last24h": 0,
+  "last7d": 497,
+  "last30d": 2185,
+  "olderThan30d": 526,
+  "expiredActive": 0,
+  "expiringSoonActive": 0,
+  "futureUnexpiredActive": 2711,
+  "nullExpiryActive": 0,
+  "hasExternalUrl": 2249,
+  "hasSeoSlug": 2711,
+  "missingCompany": 0,
+  "hasSalaryMin": 2711,
+  "hasSalaryRange": 2711,
+  "missingSalary": 0,
+  "remoteJobs": 269,
+  "fresherLevelJobs": 947,
+  "internJobs": 9,
+  "itCount": 2148,
+  "nonItCount": 563,
+  "govtCount": 125,
+  "duplicateCount": 180,
+  "readyJobsCount": 2711,
+  "topCities": [
+    [
+      "Bangalore",
+      229
+    ],
+    [
+      "Remote, India",
+      168
+    ],
+    [
+      "Mumbai",
+      72
+    ],
+    [
+      "Remote",
+      66
+    ],
+    [
+      "Noida",
+      65
+    ],
+    [
+      "Hyderabad",
+      55
+    ],
+    [
+      "Pune",
+      54
+    ],
+    [
+      "Gurugram",
+      53
+    ],
+    [
+      "Chennai",
+      51
+    ],
+    [
+      "Kolkata",
+      45
+    ],
+    [
+      "Bhopal",
+      45
+    ],
+    [
+      "Jaipur",
+      45
+    ],
+    [
+      "Chandigarh",
+      45
+    ],
+    [
+      "Bhubaneswar",
+      44
+    ],
+    [
+      "Kochi",
+      44
+    ],
+    [
+      "Surat",
+      44
+    ],
+    [
+      "Coimbatore",
+      44
+    ],
+    [
+      "Indore",
+      44
+    ],
+    [
+      "Patna",
+      43
+    ],
+    [
+      "Visakhapatnam",
+      43
+    ],
+    [
+      "Nagpur",
+      43
+    ],
+    [
+      "Vadodara",
+      43
+    ],
+    [
+      "Delhi",
+      33
+    ],
+    [
+      "Guwahati",
+      29
+    ],
+    [
+      "Agra",
+      28
+    ]
+  ],
+  "topStates": [
+    [
+      "Maharashtra",
+      284
+    ],
+    [
+      "India",
+      228
+    ],
+    [
+      "Uttar Pradesh",
+      207
+    ],
+    [
+      "Tamil Nadu",
+      201
+    ],
+    [
+      "Unspecified",
+      191
+    ],
+    [
+      "Karnataka",
+      175
+    ],
+    [
+      "Madhya Pradesh",
+      173
+    ],
+    [
+      "Rajasthan",
+      129
+    ],
+    [
+      "Kerala",
+      128
+    ],
+    [
+      "Gujarat",
+      103
+    ],
+    [
+      "Andhra Pradesh",
+      99
+    ],
+    [
+      "Jharkhand",
+      84
+    ],
+    [
+      "Telangana",
+      80
+    ],
+    [
+      "Jammu & Kashmir",
+      56
+    ],
+    [
+      "Uttarakhand",
+      56
+    ]
+  ],
+  "sources": {
+    "TalentXcel Live Ingestion Engine": 1680,
+    "Client Partner Recruitment": 450,
+    "Manual": 144,
+    "GitLab ATS Ingestion": 37,
+    "TalentXcel Official Govt Ingestion": 8,
+    "Rubrik ATS Ingestion": 47,
+    "Databricks ATS Ingestion": 116,
+    "Elastic ATS Ingestion": 8,
+    "Agoda ATS Ingestion": 6,
+    "Zeta ATS Ingestion": 6,
+    "Stripe ATS Ingestion": 15,
+    "Reddit ATS Ingestion": 47,
+    "Meesho ATS Ingestion": 8,
+    "Affirm ATS Ingestion": 50,
+    "Swiggy ATS Ingestion": 5,
+    "Freshworks ATS Ingestion": 12,
+    "ServiceNow ATS Ingestion": 3,
+    "Grab ATS Ingestion": 1,
+    "Ramp ATS Ingestion": 11,
+    "Snyk ATS Ingestion": 3,
+    "Replit ATS Ingestion": 1,
+    "Perplexity AI ATS Ingestion": 6,
+    "OpenAI ATS Ingestion": 10,
+    "CRED ATS Ingestion": 1,
+    "Airwallex ATS Ingestion": 1,
+    "Paytm ATS Ingestion": 15,
+    "Snowflake ATS Ingestion": 14,
+    "InMobi ATS Ingestion": 6
+  }
+}

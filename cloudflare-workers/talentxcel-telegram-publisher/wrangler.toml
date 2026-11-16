@@ -1,0 +1,20 @@
+name = "talentxcel-telegram-publisher"
+main = "src/index.ts"
+compatibility_date = "2024-11-12"
+compatibility_flags = ["nodejs_compat"]
+
+# 4 Scheduled Cron Publishing Slots in IST (IST = UTC + 05:30)
+# 08:00 IST -> 02:30 UTC
+# 12:00 IST -> 06:30 UTC
+# 16:00 IST -> 10:30 UTC
+# 20:00 IST -> 14:30 UTC
+[triggers]
+crons = ["30 2 * * *", "30 6 * * *", "30 10 * * *", "30 14 * * *"]
+
+# Production Variables (Non-secret defaults; secrets are stored encrypted in Cloudflare Worker settings)
+[vars]
+TELEGRAM_CHANNEL = "@TalentXcelJobs"
+TALENTXCEL_PORTAL_URL = "https://talentxcel.in/jobs"
+TALENTXCEL_JOBS_URL = "https://jobs.talentxcel.in"
+WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/0029VbDfu6Z1noz0UA2HYZ0o"
+TELEGRAM_INVITE_URL = "https://t.me/TalentXcelJobs"

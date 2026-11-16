@@ -1,0 +1,644 @@
+[
+  {
+    "column_default": null,
+    "column_name": "id",
+    "data_type": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "column_default": null,
+    "column_name": "full_name",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "title",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "location",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "email",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "phone",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "website",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "about",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "profile_picture_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "cover_image_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "skills",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "experience_years",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "industry",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "current_company",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "linkedin_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "github_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "portfolio_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "resume_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "true",
+    "column_name": "is_profile_public",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "looking_for_job",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "true",
+    "column_name": "open_to_remote",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "preferred_salary_min",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "preferred_salary_max",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "preferred_locations",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "now()",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "now()",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'job_seeker'::user_role",
+    "column_name": "user_role",
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'public'::text",
+    "column_name": "profile_visibility",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "true",
+    "column_name": "allow_profile_sharing",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "custom_profile_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{}'::jsonb",
+    "column_name": "social_links",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "profile_views_count",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "last_profile_view",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'INR'::text",
+    "column_name": "preferred_currency",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "true",
+    "column_name": "first_login",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "profile_completed",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'email'::text",
+    "column_name": "provider",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "onboarding_completed",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{}'::jsonb",
+    "column_name": "preferences",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "last_login_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "login_count",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_employer",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'pending'::text",
+    "column_name": "employer_status",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'user'::app_role",
+    "column_name": "primary_role",
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "ARRAY[]::text[]",
+    "column_name": "career_goals",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "ARRAY[]::text[]",
+    "column_name": "career_interests",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'early_career'::text",
+    "column_name": "career_stage",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "profile_photo_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "video_resume_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_viewing_private",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "work_experiences",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "banner_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "headline",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'free'::text",
+    "column_name": "pro_status",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "pro_plan",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "pro_expires_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "custom_logo_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "video_bio_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "vanity_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{\"accent\": \"hsl(var(--accent))\", \"primary\": \"hsl(var(--primary))\", \"secondary\": \"hsl(var(--secondary))\"}'::jsonb",
+    "column_name": "custom_theme",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'unverified'::text",
+    "column_name": "verification_status",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "verification_badges",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "testimonials_count",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'email'::text",
+    "column_name": "oauth_provider",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{}'::jsonb",
+    "column_name": "oauth_metadata",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{}'::jsonb",
+    "column_name": "profile_data_source",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "profile_photo_storage_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "username",
+    "data_type": "text",
+    "is_nullable": "NO"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_ai_bot",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "bot_tone",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "content_frequency",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "departments",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "content_domains",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "banner_picture_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "bot_config_id",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "bot_tag",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "talentxcel_id",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "achievement_score",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "verified_skills",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "career_passport_completed_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "bio",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "current_job_title",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "years_of_experience",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "custom_url_slug",
+    "data_type": "character varying",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "now()",
+    "column_name": "last_seen",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_online",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_mentor",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_mentee",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "mentorship_areas",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "looking_for_collaboration",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "collaboration_interests",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "education_history",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "current_streak",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "slug",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{}'::jsonb",
+    "column_name": "linkedin_profile_data",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "import_batch_id",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "linkedin_id",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'manual'::text",
+    "column_name": "data_source",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "txc_coins",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'manual'::text",
+    "column_name": "source",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'active'::text",
+    "column_name": "activation_status",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "cv_file_id",
+    "data_type": "uuid",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'{\"skills\": true, \"contact\": false, \"education\": true, \"experience\": true, \"trust_score\": true, \"certificates\": true}'::jsonb",
+    "column_name": "passport_visibility",
+    "data_type": "jsonb",
+    "is_nullable": "NO"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "education",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "certifications",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "awards",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'[]'::jsonb",
+    "column_name": "languages",
+    "data_type": "jsonb",
+    "is_nullable": "YES"
+  }
+]
