@@ -6,8 +6,9 @@ export class JobMatcherService {
 
   constructor(env: Env) {
     this.supabaseUrl = env.SUPABASE_URL.replace(/\/+$/, '');
-    // Prefer service role key if configured, else anon key
-    this.apiKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
+    // Prefer service role key if configured, else anon key; strip any surrounding quotes
+    const rawKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY || '';
+    this.apiKey = rawKey.replace(/['"]/g, '').trim();
   }
 
   private get headers(): Record<string, string> {
@@ -68,6 +69,7 @@ export class JobMatcherService {
 
   /**
    * Records a published post in distribution_posts and records deduplication records.
+   * Uses atomic SECURITY DEFINER RPC record_distribution_post with direct table insert fallback.
    */
   async recordPublishedPost(params: {
     channelId: string;
@@ -79,58 +81,95 @@ export class JobMatcherService {
     idempotencyKey: string;
     externalMessageId?: string;
   }): Promise<string | null> {
-    const postPayload = {
-      channel_id: params.channelId,
-      slot_time: params.slotTime,
-      category: params.category,
-      title: params.title,
-      content_formatted: params.content,
-      job_ids: params.jobIds,
-      status: 'published',
-      idempotency_key: params.idempotencyKey,
-      external_message_id: params.externalMessageId || null,
-      published_at: new Date().toISOString()
+    const rpcPayload = {
+      p_channel_id: params.channelId,
+      p_slot_time: params.slotTime,
+      p_category: params.category,
+      p_title: params.title,
+      p_content_formatted: params.content,
+      p_job_ids: params.jobIds || [],
+      p_idempotency_key: params.idempotencyKey,
+      p_external_message_id: params.externalMessageId || null
     };
 
-    const res = await fetch(`${this.supabaseUrl}/rest/v1/distribution_posts`, {
-      method: 'POST',
-      headers: {
-        ...this.headers,
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify(postPayload)
-    });
-
-    if (!res.ok) {
-      console.warn(`[JobMatcherService] Failed to insert distribution_posts: ${res.statusText}`);
-      return null;
-    }
-
-    const inserted = (await res.json()) as Array<{ id: string }>;
-    const postId = inserted[0]?.id;
-
-    // Record deduplication for each job to prevent repeats for 72 hours
-    if (postId && params.jobIds.length > 0) {
-      const dedupRows = params.jobIds.map(jobId => ({
-        job_id: jobId,
-        channel_id: params.channelId,
-        post_id: postId,
-        published_at: new Date().toISOString(),
-        cooldown_until: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
-      }));
-
-      await fetch(`${this.supabaseUrl}/rest/v1/distribution_deduplication`, {
+    // Strategy 1: Secure server-side RPC function record_distribution_post (runs with postgres owner privileges)
+    try {
+      const rpcRes = await fetch(`${this.supabaseUrl}/rest/v1/rpc/record_distribution_post`, {
         method: 'POST',
         headers: this.headers,
-        body: JSON.stringify(dedupRows)
-      }).catch(err => console.warn(`[JobMatcherService] Dedup insert notice:`, err));
+        body: JSON.stringify(rpcPayload)
+      });
+
+      if (rpcRes.ok) {
+        const postId = (await rpcRes.json()) as string;
+        return postId || null;
+      }
+
+      const errText = await rpcRes.text();
+      console.warn(`[JobMatcherService] RPC record_distribution_post returned (${rpcRes.status}): ${errText}`);
+    } catch (rpcErr) {
+      console.warn(`[JobMatcherService] RPC record_distribution_post exception:`, rpcErr);
     }
 
-    return postId || null;
+    // Strategy 2: Direct REST table insert fallback (requires service_role key to bypass table RLS)
+    try {
+      const postPayload = {
+        channel_id: params.channelId,
+        slot_time: params.slotTime,
+        category: params.category,
+        title: params.title,
+        content_formatted: params.content,
+        job_ids: params.jobIds,
+        status: 'published',
+        idempotency_key: params.idempotencyKey,
+        external_message_id: params.externalMessageId || null,
+        published_at: new Date().toISOString()
+      };
+
+      const res = await fetch(`${this.supabaseUrl}/rest/v1/distribution_posts`, {
+        method: 'POST',
+        headers: {
+          ...this.headers,
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify(postPayload)
+      });
+
+      if (res.ok) {
+        const inserted = (await res.json()) as Array<{ id: string }>;
+        const postId = inserted[0]?.id;
+
+        // Record deduplication for each job
+        if (postId && params.jobIds.length > 0) {
+          const dedupRows = params.jobIds.map(jobId => ({
+            job_id: jobId,
+            channel_id: params.channelId,
+            post_id: postId,
+            published_at: new Date().toISOString(),
+            cooldown_until: new Date(Date.now() + 72 * 60 * 60 * 1000).toISOString()
+          }));
+
+          await fetch(`${this.supabaseUrl}/rest/v1/distribution_deduplication`, {
+            method: 'POST',
+            headers: this.headers,
+            body: JSON.stringify(dedupRows)
+          }).catch(err => console.warn(`[JobMatcherService] Dedup insert notice:`, err));
+        }
+
+        return postId || null;
+      }
+
+      const errText = await res.text();
+      console.warn(`[JobMatcherService] Table insert fallback failed (${res.status}): ${errText}`);
+    } catch (tableErr) {
+      console.warn(`[JobMatcherService] Table insert exception:`, tableErr);
+    }
+
+    return null;
   }
 
   /**
-   * Records delivery log event.
+   * Records delivery log event via secure RPC log_distribution_delivery with table insert fallback.
    */
   async logDelivery(params: {
     postId?: string | null;
@@ -142,6 +181,28 @@ export class JobMatcherService {
     errorMessage?: string;
     latencyMs?: number;
   }): Promise<void> {
+    const rpcPayload = {
+      p_post_id: params.postId || null,
+      p_channel_id: params.channelId,
+      p_action: params.action,
+      p_status: params.status,
+      p_status_code: params.statusCode || 200,
+      p_response_payload: params.responsePayload ? params.responsePayload : null,
+      p_error_message: params.errorMessage || null,
+      p_latency_ms: params.latencyMs || 0
+    };
+
+    // Strategy 1: Secure RPC function log_distribution_delivery
+    try {
+      const res = await fetch(`${this.supabaseUrl}/rest/v1/rpc/log_distribution_delivery`, {
+        method: 'POST',
+        headers: this.headers,
+        body: JSON.stringify(rpcPayload)
+      });
+      if (res.ok) return;
+    } catch (_) {}
+
+    // Strategy 2: Direct table insert fallback
     try {
       await fetch(`${this.supabaseUrl}/rest/v1/distribution_delivery_logs`, {
         method: 'POST',
