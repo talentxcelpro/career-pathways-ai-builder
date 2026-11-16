@@ -67,7 +67,7 @@ async function runCanonicalStorageSuite() {
   // Consistent existing keys and IDs across all tests
   const COMPANY_ID = '11111111-aaaa-aaaa-aaaa-111111111111';
   const OTHER_COMPANY_ID = '99999999-9999-9999-9999-999999999999';
-  const COMPANY_OWNER_ID = '5b2022b9-37f0-4fc1-807d-56cec1044303'; // audit_rec2 (Company Owner)
+  const COMPANY_OWNER_ID = '5b2022b9-37f0-4fc1-807d-56cec1044303';
   const JOB1_ID = 'f0000000-0000-0000-0000-000000000001';
   const JOB2_OTHER_ID = 'f0000000-0000-0000-0000-000000000002';
   const APP1_ID = 'a0000000-0000-0000-0000-000000000001';
@@ -81,10 +81,11 @@ async function runCanonicalStorageSuite() {
 
   // 1. Confirm and ensure all files exist before testing
   const pdfBuffer = Buffer.from('%PDF-1.4 Mock Candidate PDF Document Content For Security Audit');
-  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_KEY, pdfBuffer, { upsert: true, contentType: 'application/pdf' });
-  await clientCandA.storage.from('documents').upload(CAND_A_PRIVATE_KEY, pdfBuffer, { upsert: true, contentType: 'application/pdf' });
-  await clientCandB.storage.from('documents').upload(CAND_B_IDENTICAL_FILENAME_KEY, pdfBuffer, { upsert: true, contentType: 'application/pdf' });
-  await clientCandA.storage.from('documents').upload(CAND_A_JOB2_RESUME_KEY, pdfBuffer, { upsert: true, contentType: 'application/pdf' });
+  const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_KEY, pdfBlob, { upsert: true, contentType: 'application/pdf' });
+  await clientCandA.storage.from('documents').upload(CAND_A_PRIVATE_KEY, pdfBlob, { upsert: true, contentType: 'application/pdf' });
+  await clientCandB.storage.from('documents').upload(CAND_B_IDENTICAL_FILENAME_KEY, pdfBlob, { upsert: true, contentType: 'application/pdf' });
+  await clientCandA.storage.from('documents').upload(CAND_A_JOB2_RESUME_KEY, pdfBlob, { upsert: true, contentType: 'application/pdf' });
 
   // Verify file existence by owner download
   const { data: own1 } = await clientCandA.storage.from('documents').download(CAND_A_RESUME_KEY);
@@ -121,8 +122,8 @@ async function runCanonicalStorageSuite() {
     ON CONFLICT (id) DO NOTHING;
 
     INSERT INTO public.company_profiles (company_id, owner_id)
-    VALUES ('${OTHER_COMPANY_ID}', '${COMPANY_OWNER_ID}')
-    ON CONFLICT (company_id) DO UPDATE SET owner_id = '${COMPANY_OWNER_ID}';
+    VALUES ('${OTHER_COMPANY_ID}', '${candB_id}')
+    ON CONFLICT (company_id) DO UPDATE SET owner_id = '${candB_id}';
 
     INSERT INTO public.jobs (id, company_id, title, description, location, is_active, expires_at)
     VALUES ('${JOB2_OTHER_ID}', '${OTHER_COMPANY_ID}', 'Frontend Specialist', 'Job 2 description', 'Remote', true, NOW() + INTERVAL '30 days')
@@ -211,7 +212,7 @@ async function runCanonicalStorageSuite() {
   // Test 3.4: Generating a NEW signed URL after suspension is STRICTLY BLOCKED by live RLS
   recClient = await getFreshRecruiterClient();
   const { data: newSignBlocked, error: errNewSignBlocked } = await recClient.storage.from('documents').createSignedUrl(CAND_A_RESUME_KEY, 300);
-  assert('TEST-SIGN-RES-04', 'Generating a NEW signed URL after suspension is STRICTLY BLOCKED by RLS', (errNewSignBlocked !== null || !newSignBlocked?.signedUrl), JSON.stringify({ newSignBlocked, errNewSignBlocked }));
+  assert('TEST-SIGN-RES-04', 'Generating a NEW signed URL after suspension is STRICTLY BLOCKED by RLS', errNewSignBlocked !== null);
 
   // Restore recruiter active status
   await runSql(`UPDATE public.company_team_members SET is_active = true WHERE id = '${TEAM_MEMBER_ID}';`, 'staging');

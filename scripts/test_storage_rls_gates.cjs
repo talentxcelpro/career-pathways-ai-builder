@@ -103,6 +103,14 @@ async function runStorageSecuritySuite() {
   const TEST_APP_ID = 'a0000000-0000-0000-0000-000000000001';
 
   await runSql(`
+    INSERT INTO public.companies (id, name)
+    VALUES ('${REAL_COMPANY_ID}', 'Audit Company 1')
+    ON CONFLICT (id) DO NOTHING;
+
+    INSERT INTO public.company_profiles (company_id, owner_id)
+    VALUES ('${REAL_COMPANY_ID}', '5b2022b9-37f0-4fc1-807d-56cec1044303')
+    ON CONFLICT (company_id) DO UPDATE SET owner_id = '5b2022b9-37f0-4fc1-807d-56cec1044303';
+
     INSERT INTO public.jobs (id, company_id, posted_by, title, description, requirements, is_active)
     VALUES ('${TEST_JOB_ID}', '${REAL_COMPANY_ID}', '${rec_id}', 'Principal Security Engineer', 'Job desc', 'Job reqs', true)
     ON CONFLICT (id) DO UPDATE SET company_id = '${REAL_COMPANY_ID}', posted_by = '${rec_id}';

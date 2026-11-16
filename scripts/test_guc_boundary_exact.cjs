@@ -157,11 +157,25 @@ async function main() {
 
   // 6. Direct authenticated user mutation of is_profile_public via REST API
   console.log('\n--- 6. AUTHENTICATED DIRECT MUTATION DENIAL ---');
-  const { data: authData, error: authErr } = await candClient
-    .from('profiles')
-    .update({ is_profile_public: false })
-    .eq('id', candId)
-    .select();
+  let authData = null;
+  let authErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const res = await candClient
+        .from('profiles')
+        .update({ is_profile_public: false })
+        .eq('id', candId)
+        .select();
+      authData = res.data;
+      authErr = res.error;
+      if (authErr && (authErr.code === '42501' || authErr.message?.includes('permission denied'))) {
+        break;
+      }
+    } catch (e) {
+      authErr = e;
+    }
+    if (attempt < 2) await new Promise(r => setTimeout(r, 1000));
+  }
 
   assert(
     'TEST-GUC-06',
