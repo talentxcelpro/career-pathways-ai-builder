@@ -1,5 +1,5 @@
 // api/oauth/_jwt.ts — Lightweight OAuth 2.1 Crypto & Token Helpers
-import crypto from "crypto";
+import * as crypto from "crypto";
 
 const OAUTH_SECRET =
   process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
@@ -67,7 +67,9 @@ export function verifyToken(token: string): TokenPayload | null {
     .update(`${headerB64}.${payloadB64}`)
     .digest("base64url");
 
-  if (!crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSig))) {
+  const sigBuf = Buffer.from(signature);
+  const expBuf = Buffer.from(expectedSig);
+  if (sigBuf.length !== expBuf.length || !crypto.timingSafeEqual(sigBuf, expBuf)) {
     return null;
   }
 
