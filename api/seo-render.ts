@@ -505,7 +505,7 @@ const COLLEGE_SLUGS_SET = new Set(collegeSlugsList);
 const TIER_A_COLLEGE_SLUGS_SET = new Set(collegeTierASlugsList);
 
 const CORE_STATIC_ROUTES = new Set([
-  '', 'reels', 'jobs', 'colleges', 'learning', 'resume', 'passport', 'network',
+  '', 'reels', 'explore', 'jobs', 'colleges', 'learning', 'resume', 'passport', 'network',
   'salary', 'salaries', 'directory', 'directory/colleges-a-z', 'directory/salaries-by-role',
   'directory/jobs-by-city', 'rankings', 'blog', 'news', 'about', 'contact', 'faq',
   'terms', 'privacypolicy', 'hire', 'recruiters', 'staffing', 'recruitment', 'rpo', 'careers', 'government-jobs', 'services',
@@ -1471,18 +1471,39 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     `;
   }
 
-  // 2. Reels
-  else if (cleanPath === 'reels') {
-    title = 'TalentXcel Reels — Global Tech, AI & Career Stories';
+  // 2. Reels & Pitch Reels
+  else if (cleanPath === 'reels' || cleanPath.startsWith('reels/')) {
+    const isSingleReel = cleanPath.startsWith('reels/');
+    const reelId = isSingleReel ? cleanPath.replace(/^reels\//, '') : '';
+    title = isSingleReel ? 'Career Pitch & Tech Demo | TalentXcel Reels' : 'TalentXcel Reels — Global Tech, AI & Career Stories';
     description = 'Watch short-form professional knowledge, engineering architecture breakdowns, and career stories on TalentXcel Reels.';
-    canonical = 'https://talentxcel.in/reels';
-    h1 = 'TalentXcel Reels — Professional Career Content';
+    canonical = isSingleReel ? `https://talentxcel.in/reels/${reelId}` : 'https://talentxcel.in/reels';
+    h1 = isSingleReel ? 'Career Pitch Reel | TalentXcel' : 'TalentXcel Reels — Professional Career Content';
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
         <h2 class="text-2xl font-bold text-white">Professional Career Content &amp; Architectural Breakdowns</h2>
         <p class="text-slate-300 text-sm leading-relaxed">Short-form video content curated for professionals and leaders across all industries, career growth, negotiation, and professional advancement.</p>
-        <div class="pt-2">
+        <div class="pt-2 flex items-center gap-3">
           <a href="/reels" class="px-5 py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-xl">Watch Reels in App &rarr;</a>
+          <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl">Join Network &rarr;</a>
+        </div>
+      </section>
+    `;
+    robotsDirective = 'index, follow';
+  }
+  // 2B. Explore Hub (/explore)
+  else if (cleanPath === 'explore') {
+    title = 'Explore TalentXcel — 12 Verticals, Career Passports, Salary Corridors & Tech Guilds';
+    description = 'Explore the TalentXcel ecosystem: verified jobs, AI pitch reels, salary intelligence, tech communities, and recruiter talent search.';
+    canonical = 'https://talentxcel.in/explore';
+    h1 = 'Explore TalentXcel Ecosystem';
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+        <h2 class="text-2xl font-bold text-white">The Unified Career Operating System</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">Discover 12 integrated verticals across professional networking, career passports, ATS resume intelligence, and live hiring corridors.</p>
+        <div class="pt-2 flex items-center gap-3 flex-wrap">
+          <a href="/explore" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl">Launch Explore Hub &rarr;</a>
+          <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl">Community Feed &rarr;</a>
         </div>
       </section>
     `;

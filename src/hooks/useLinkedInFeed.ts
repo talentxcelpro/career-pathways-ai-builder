@@ -60,10 +60,8 @@ export const useLinkedInFeed = () => {
     isFetchingNextPage,
     fetchNextPage
   } = useInfiniteQuery({
-    queryKey: ['linkedInMobilePosts'],
+    queryKey: ['linkedInMobilePosts', user?.id || 'anonymous'],
     queryFn: async ({ pageParam = 0 }) => {
-      if (!user) return { posts: [], nextPage: undefined };
-
       const limit = 20; // Posts per page
       const offset = pageParam * limit;
 
@@ -126,27 +124,32 @@ export const useLinkedInFeed = () => {
 
       if (profilesError) throw profilesError;
 
-      // Get current user's connections
-      const { data: connectionsData } = await supabase
-        .from('connections')
-        .select('requester_id, recipient_id, status')
-        .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-        .eq('status', 'accepted');
-
       const connections = new Set();
-      connectionsData?.forEach(conn => {
-        if (conn.requester_id === user.id) connections.add(conn.recipient_id);
-        if (conn.recipient_id === user.id) connections.add(conn.requester_id);
-      });
+      let likedPosts = new Set<string>();
+      let savedPosts = new Set<string>();
 
-      // Get user's likes and saved posts
-      const [userLikesRes, userSavesRes] = await Promise.all([
-        supabase.from('post_likes').select('post_id').eq('user_id', user.id),
-        supabase.from('post_saves').select('post_id').eq('user_id', user.id),
-      ]);
+      if (user?.id) {
+        // Get current user's connections
+        const { data: connectionsData } = await supabase
+          .from('connections')
+          .select('requester_id, recipient_id, status')
+          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
+          .eq('status', 'accepted');
 
-      const likedPosts = new Set(userLikesRes.data?.map(like => like.post_id) || []);
-      const savedPosts = new Set(userSavesRes.data?.map(save => save.post_id) || []);
+        connectionsData?.forEach(conn => {
+          if (conn.requester_id === user.id) connections.add(conn.recipient_id);
+          if (conn.recipient_id === user.id) connections.add(conn.requester_id);
+        });
+
+        // Get user's likes and saved posts
+        const [userLikesRes, userSavesRes] = await Promise.all([
+          supabase.from('post_likes').select('post_id').eq('user_id', user.id),
+          supabase.from('post_saves').select('post_id').eq('user_id', user.id),
+        ]);
+
+        likedPosts = new Set(userLikesRes.data?.map(like => like.post_id) || []);
+        savedPosts = new Set(userSavesRes.data?.map(save => save.post_id) || []);
+      }
 
       // Create profiles map
       const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));

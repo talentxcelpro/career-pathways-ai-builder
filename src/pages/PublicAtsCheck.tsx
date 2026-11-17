@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   FileText, Upload, Sparkles, CheckCircle2, AlertTriangle, Lock, ArrowRight, 
-  Briefcase, Search, ShieldCheck, ChevronRight, RefreshCw, Zap, Building2, MapPin
+  Briefcase, Search, ShieldCheck, ChevronRight, RefreshCw, Zap, Building2, MapPin, Share2, Trophy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -89,6 +89,8 @@ export default function PublicAtsCheck() {
   const [foundKeywords, setFoundKeywords] = useState<string[]>([]);
   const [missingKeywords, setMissingKeywords] = useState<string[]>([]);
   const [scanId, setScanId] = useState<string | null>(null);
+  const [isSharingToNetwork, setIsSharingToNetwork] = useState<boolean>(false);
+  const [hasSharedToNetwork, setHasSharedToNetwork] = useState<boolean>(false);
 
   // Check if returning from claiming an OAuth scan
   useEffect(() => {
@@ -116,6 +118,22 @@ export default function PublicAtsCheck() {
               p_session_fingerprint: parsed.sessionFingerprint
             }).then(() => {
               trackFunnelEvent('signup_completed', { trigger: 'ats_check', scan_id: parsed.scanId });
+              if (parsed.autoShareToNetwork) {
+                const topSkills = (parsed.foundKeywords || []).slice(0, 5).join(', ');
+                const postContent = `🏆 Just verified my ATS Resume Match Score: ${parsed.score || 75}/100 for ${parsed.targetRole || 'Full Stack Developer'} on TalentXcel ATS Studio!\n\nVerified Core Competencies: ${topSkills || 'Technical Expertise, Problem Solving'}.\n\n⚡ Test your resume parseability free in 5 seconds:\n👉 https://talentxcel.in/ats-check\n\n#TalentXcel #ATSScore #CareerMilestone #OpenToWork`;
+                supabase.from('posts').insert({
+                  author_id: user.id,
+                  user_id: user.id,
+                  content: postContent,
+                  post_type: 'text',
+                  is_public: true,
+                  status: 'published',
+                  tags: ['ATSScore', 'CareerMilestone', 'OpenToWork']
+                }).then(() => {
+                  setHasSharedToNetwork(true);
+                  toast.success('Achievement shared to /network feed!');
+                }).catch(() => {});
+              }
             }).catch(err => {
               console.warn('[PublicAtsCheck] Scan claim notice:', err);
             });
@@ -318,6 +336,45 @@ export default function PublicAtsCheck() {
   };
 
   // 1-Click High-Intent Conversion Gate (Google OAuth)
+  const handleShareAchievement = async () => {
+    if (!user) {
+      const stored = sessionStorage.getItem('tx_pending_ats_scan');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          sessionStorage.setItem('tx_pending_ats_scan', JSON.stringify({ ...parsed, autoShareToNetwork: true }));
+        } catch (_) {}
+      }
+      handleGoogleConversion();
+      return;
+    }
+
+    setIsSharingToNetwork(true);
+    try {
+      const topSkills = foundKeywords.slice(0, 5).join(', ');
+      const postContent = `🏆 Just verified my ATS Resume Match Score: ${score}/100 for ${targetRole} on TalentXcel ATS Studio!\n\nVerified Core Competencies: ${topSkills || 'Technical Expertise, Problem Solving'}.\n\n⚡ Test your resume parseability free in 5 seconds:\n👉 https://talentxcel.in/ats-check\n\n#TalentXcel #ATSScore #CareerMilestone #OpenToWork`;
+
+      const { error } = await supabase.from('posts').insert({
+        author_id: user.id,
+        user_id: user.id,
+        content: postContent,
+        post_type: 'text',
+        is_public: true,
+        status: 'published',
+        tags: ['ATSScore', 'CareerMilestone', 'OpenToWork']
+      });
+
+      if (error) throw error;
+      setHasSharedToNetwork(true);
+      toast.success('Achievement shared to /network feed!');
+    } catch (err: any) {
+      console.warn('Share to network error:', err);
+      toast.error('Could not share achievement right now');
+    } finally {
+      setIsSharingToNetwork(false);
+    }
+  };
+
   const handleGoogleConversion = async () => {
     setIsOAuthLoading(true);
 
@@ -619,7 +676,40 @@ export default function PublicAtsCheck() {
               </Card>
             </div>
 
-            {/* Keyword Teaser Card */}
+            {/* Milestone Achievement Banner */}
+              {score >= 70 && (
+                <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shrink-0 text-xl">
+                      🏆
+                    </div>
+                    <div>
+                      <div className="text-sm font-extrabold flex items-center gap-2">
+                        <span>Top ATS Score ({score}/100) Milestone Reached!</span>
+                        <Badge className="bg-emerald-400 text-slate-900 text-[10px] font-black uppercase">
+                          Recruiter Ready
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-blue-100 mt-0.5">
+                        Share your verified score to the TalentXcel /network feed to boost your visibility by 3.5x to hiring managers.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <Button
+                      size="sm"
+                      onClick={handleShareAchievement}
+                      disabled={isSharingToNetwork || hasSharedToNetwork}
+                      className="bg-white text-blue-700 hover:bg-blue-50 font-black text-xs px-4 h-9 rounded-xl shadow-md whitespace-nowrap"
+                    >
+                      {hasSharedToNetwork ? 'Shared to /network ✓' : isSharingToNetwork ? 'Publishing...' : 'Share Achievement to /network 🚀'}
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Keyword Teaser Card */}
             <Card className="bg-white border-slate-200 shadow-sm">
               <CardHeader className="pb-3 border-b border-slate-100">
                 <CardTitle className="text-sm font-bold text-slate-900 flex items-center justify-between">

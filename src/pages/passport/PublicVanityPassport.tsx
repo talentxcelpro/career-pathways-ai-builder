@@ -144,6 +144,34 @@ export const PublicVanityPassport: React.FC = () => {
     toast.success('Passport URL copied to clipboard!');
   };
 
+  const handleShareToNetwork = async () => {
+    if (!user) {
+      toast.info('Sign in with Google to post this passport to the /network community feed');
+      navigate(`/auth?returnTo=/u/${cleanUsername}`);
+      return;
+    }
+
+    try {
+      const topSkills = (skills || []).slice(0, 4).join(', ');
+      const postContent = `🛡️ Verified Career Passport Spotlight: @${cleanUsername} (${name})!\n\nHeadline: ${headline}\nVerified Competencies: ${topSkills}\nTalentScore: ${talentScore}/100 🚀\n\nView full passport: https://talentxcel.in/u/${cleanUsername}\nEndorse skills in 10s: https://talentxcel.in/verify/${cleanUsername}\n\n#TalentXcel #CareerPassport #VerifiedTalent #NetworkSpotlight`;
+
+      const { error } = await supabase.from('posts').insert({
+        author_id: user.id,
+        user_id: user.id,
+        content: postContent,
+        post_type: 'text',
+        is_public: true,
+        status: 'published',
+        tags: ['CareerPassport', 'VerifiedTalent', 'NetworkSpotlight']
+      });
+
+      if (error) throw error;
+      toast.success('Passport shared to /network feed!');
+    } catch (err: any) {
+      toast.error('Could not share passport to /network right now');
+    }
+  };
+
   const handleClaimSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const handle = claimInput.trim().toLowerCase().replace(/[^a-z0-9_-]/g, '');
@@ -289,6 +317,14 @@ export const PublicVanityPassport: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShareToNetwork}
+                  className="h-10 px-4 rounded-xl border-blue-700/60 bg-blue-950/40 text-blue-300 hover:text-white hover:bg-blue-900/60 text-xs font-semibold gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-blue-400" /> Share to /network
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

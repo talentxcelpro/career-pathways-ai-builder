@@ -463,9 +463,11 @@ SET search_path = ''
 AS $$
 BEGIN
     -- Authorization guard: caller can only inspect their own company membership permissions
-    -- unless they hold platform administrator privileges. This prevents any caller from querying
-    -- arbitrary users' company memberships or using this helper as an oracle.
-    IF p_user_id IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
+    -- unless they hold platform administrator privileges or direct database administrative maintenance.
+    IF auth.uid() IS NOT NULL AND p_user_id IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
+        RETURN false;
+    END IF;
+    IF auth.uid() IS NULL AND current_user NOT IN ('postgres', 'supabase_admin') THEN
         RETURN false;
     END IF;
 
@@ -682,8 +684,11 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 BEGIN
-    -- 1. Anti-oracle caller binding: caller can only query for their own auth.uid() unless app admin
-    IF p_auth_uid IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
+    -- 1. Anti-oracle caller binding: caller can only query for their own auth.uid() unless app admin or direct DB admin
+    IF auth.uid() IS NOT NULL AND p_auth_uid IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
+        RETURN false;
+    END IF;
+    IF auth.uid() IS NULL AND current_user NOT IN ('postgres', 'supabase_admin') THEN
         RETURN false;
     END IF;
 

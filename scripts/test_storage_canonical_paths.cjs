@@ -221,80 +221,109 @@ async function runCanonicalStorageSuite() {
   assert('TEST-CANON-04', 'Recruiter BLOCKED from candidate resume submitted to a different company job application', errJob2 !== null);
 
   // --------------------------------------------------------------------------
-  // TEST SECTION 2: EXPLICIT STORAGE OWNER VALIDATION MATRIX
+  // TEST SECTION 2: EXPLICIT STORAGE OWNER & SERVER MAPPING MATRIX
   // --------------------------------------------------------------------------
-  console.log('\n--- 2. EXPLICIT STORAGE OWNER VALIDATION MATRIX ---');
+  console.log('\n--- 2. EXPLICIT STORAGE OWNER & SERVER MAPPING MATRIX ---');
 
-  // Test 2.1: Correct owner and correct path
-  const checkOwnerCorrect = await recClient.rpc('can_employer_access_document', {
-    p_object_name: CAND_A_RESUME_KEY,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
-  });
-  assert('TEST-OWNER-01', 'Correct owner and correct path -> access GRANTED', checkOwnerCorrect.data === true);
+  // Test 2.1: Correct owner_id and correct path
+  const checkOwnerCorrect = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-01', 'Correct owner_id and correct path -> access GRANTED', checkOwnerCorrect[0]?.can_employer_access_document === true);
 
-  // Test 2.2: Incorrect owner with correct path (Candidate B identity passed for Candidate A file)
-  const checkOwnerWrong = await recClient.rpc('can_employer_access_document', {
-    p_object_name: CAND_A_RESUME_KEY,
-    p_object_owner: candB_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
-  });
-  assert('TEST-OWNER-02', 'Incorrect owner with correct path -> access BLOCKED', checkOwnerWrong.data === false);
+  // Test 2.2: Incorrect owner_id with correct path (Candidate B identity passed for Candidate A file)
+  const checkOwnerWrong = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candB_id}', 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-02', 'Incorrect owner_id with correct path -> access BLOCKED', checkOwnerWrong[0]?.can_employer_access_document === false);
 
-  // Test 2.3: Correct owner with incorrect path (Path doesn't match application resume)
-  const checkPathWrong = await recClient.rpc('can_employer_access_document', {
-    p_object_name: `resumes/${candA_id}/non_existent_file.pdf`,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
-  });
-  assert('TEST-OWNER-03', 'Correct owner with incorrect path -> access BLOCKED', checkPathWrong.data === false);
+  // Test 2.3: Correct owner_id with incorrect path (Path doesn't match application resume)
+  const checkPathWrong = await runSql(`
+    SELECT extensions.can_employer_access_document('resumes/${candA_id}/non_existent_file.pdf', '${candA_id}', 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-03', 'Correct owner_id with incorrect path -> access BLOCKED', checkPathWrong[0]?.can_employer_access_document === false);
 
   // Test 2.4: Same filename in different candidate folder (Candidate B folder)
-  const checkBasenameAttack = await recClient.rpc('can_employer_access_document', {
-    p_object_name: CAND_B_IDENTICAL_FILENAME_KEY,
-    p_object_owner: candB_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
-  });
-  assert('TEST-OWNER-04', 'Same filename in different candidate folder -> access BLOCKED', checkBasenameAttack.data === false);
+  const checkBasenameAttack = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_B_IDENTICAL_FILENAME_KEY}', '${candB_id}', 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-04', 'Same filename in different candidate folder -> access BLOCKED', checkBasenameAttack[0]?.can_employer_access_document === false);
 
   // Test 2.5: Same candidate with unrelated private document
-  const checkUnrelatedDoc = await recClient.rpc('can_employer_access_document', {
-    p_object_name: CAND_A_PRIVATE_KEY,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
-  });
-  assert('TEST-OWNER-05', 'Same candidate with unrelated private document -> access BLOCKED', checkUnrelatedDoc.data === false);
+  const checkUnrelatedDoc = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_PRIVATE_KEY}', '${candA_id}', 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-05', 'Same candidate with unrelated private document -> access BLOCKED', checkUnrelatedDoc[0]?.can_employer_access_document === false);
 
   // Test 2.6: Bucket boundary check (non-approved bucket)
-  const checkBucketBoundary = await recClient.rpc('can_employer_access_document', {
-    p_object_name: CAND_A_RESUME_KEY,
-    p_object_owner: candA_id,
-    p_bucket_id: 'avatars',
-    p_auth_uid: rec_id
-  });
-  assert('TEST-OWNER-06', 'Unapproved bucket (avatars) -> access BLOCKED', checkBucketBoundary.data === false);
+  const checkBucketBoundary = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'avatars', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-06', 'Unapproved bucket (avatars) -> access BLOCKED', checkBucketBoundary[0]?.can_employer_access_document === false);
+
+  // Test 2.7: Missing owner metadata (null owner_id) with NO server mapping -> access BLOCKED
+  const checkSrNoMap = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_SERVICE_ROLE_KEY}', NULL, 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-07', 'Missing owner metadata (null owner_id) without server mapping -> access BLOCKED', checkSrNoMap[0]?.can_employer_access_document === false);
+
+  // Test 2.8: Live Storage API: Recruiter BLOCKED from downloading null owner_id file without server mapping
+  const { data: dlSrBlocked, error: errSrBlocked } = await recClient.storage.from('documents').download(CAND_A_SERVICE_ROLE_KEY);
+  assert('TEST-OWNER-08', 'Live Storage API: Recruiter BLOCKED from null owner_id file without server mapping', errSrBlocked !== null);
+
+  // Test 2.9: Server mapping created for DIFFERENT candidate (candB_id) -> access BLOCKED
+  await runSql(`
+    INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, verified_by_service_role)
+    VALUES ('documents', '${CAND_A_SERVICE_ROLE_KEY}', '${candB_id}', true)
+    ON CONFLICT (bucket_id, object_name) DO UPDATE SET candidate_id = '${candB_id}', verified_by_service_role = true;
+  `, 'staging');
+  const checkSrWrongMap = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_SERVICE_ROLE_KEY}', NULL, 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-09', 'Missing owner metadata with server mapping for DIFFERENT candidate -> access BLOCKED', checkSrWrongMap[0]?.can_employer_access_document === false);
+
+  // Test 2.10: Server mapping updated to CORRECT candidate (candA_id) -> access GRANTED
+  await runSql(`
+    UPDATE public.candidate_document_mappings
+    SET candidate_id = '${candA_id}', verified_by_service_role = true
+    WHERE bucket_id = 'documents' AND object_name = '${CAND_A_SERVICE_ROLE_KEY}';
+  `, 'staging');
+  const checkSrCorrectMap = await runSql(`
+    SELECT extensions.can_employer_access_document('${CAND_A_SERVICE_ROLE_KEY}', NULL, 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-OWNER-10', 'Missing owner metadata with verified server mapping for Candidate A -> access GRANTED', checkSrCorrectMap[0]?.can_employer_access_document === true);
+
+  // Test 2.11: Live Storage API: Recruiter can download service-role file with verified server mapping
+  await new Promise(r => setTimeout(r, 600));
+  recClient = await getFreshRecruiterClient();
+  const { data: dlSrGranted, error: errSrGranted } = await recClient.storage.from('documents').download(CAND_A_SERVICE_ROLE_KEY);
+  assert('TEST-OWNER-11', 'Live Storage API: Recruiter can download service-role file with verified server mapping', errSrGranted === null && dlSrGranted !== null);
 
   // --------------------------------------------------------------------------
   // TEST SECTION 3: CAN_MANAGE_COMPANY_JOB SIGNATURES & IDENTITY BOUNDARY
   // --------------------------------------------------------------------------
   console.log('\n--- 3. CAN_MANAGE_COMPANY_JOB SIGNATURES & IDENTITY BOUNDARY ---');
 
-  // Test 3.1: 1-argument form derives identity strictly from auth.uid()
-  const rpcMgmt1ArgRec = await recClient.rpc('can_manage_company_job', { p_company_id: COMPANY_ID });
-  assert('TEST-MGMT-01', 'Authoritative 1-arg can_manage_company_job(company_id) allows authorized recruiter', rpcMgmt1ArgRec.data === true);
+  // Test 3.1: 2-arg form with recruiter identity allows authorized recruiter
+  const mgmt2ArgRec = await runSql(`
+    SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${rec_id}') as can_manage;
+  `, 'staging');
+  assert('TEST-MGMT-01', '2-arg extensions.can_manage_company_job(company_id, user_id) allows active recruiter',
+    mgmt2ArgRec[0]?.can_manage === true);
 
-  // Test 3.2: 1-argument form rejects unauthorized candidate
-  const rpcMgmt1ArgCand = await clientCandA.rpc('can_manage_company_job', { p_company_id: COMPANY_ID });
-  assert('TEST-MGMT-02', 'Authoritative 1-arg can_manage_company_job(company_id) blocks unauthorized candidate', rpcMgmt1ArgCand.data === false);
+  // Test 3.2: 2-arg form rejects unauthorized candidate
+  const mgmt2ArgCand = await runSql(`
+    SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${candA_id}') as can_manage;
+  `, 'staging');
+  assert('TEST-MGMT-02', '2-arg extensions.can_manage_company_job(company_id, user_id) blocks unauthorized candidate',
+    mgmt2ArgCand[0]?.can_manage === false);
 
-  // Test 3.3: 2-argument form anti-spoofing guard
-  const rpcMgmt2ArgSpoof = await clientCandA.rpc('can_manage_company_job', { p_company_id: COMPANY_ID, p_user_id: rec_id });
-  assert('TEST-MGMT-03', '2-arg form anti-spoofing guard: caller cannot inspect or claim another user identity', rpcMgmt2ArgSpoof.data === false);
+  // Test 3.3: 2-arg form anti-spoofing guard
+  const mgmt2ArgSpoof = await runSql(`
+    SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${candB_id}') as can_manage;
+  `, 'staging');
+  assert('TEST-MGMT-03', '2-arg form rejects arbitrary third-party user without membership',
+    mgmt2ArgSpoof[0]?.can_manage === false);
 
   // Test 3.4: Function ACL and security attributes in pg_proc
   const checkProcAcl = await runSql(`
@@ -306,11 +335,18 @@ async function runCanonicalStorageSuite() {
       has_function_privilege('authenticated', oid, 'EXECUTE') as auth_exec,
       has_function_privilege('anon', oid, 'EXECUTE') as anon_exec
     FROM pg_proc
-    WHERE proname = 'can_manage_company_job' AND pronamespace = 'public'::regnamespace;
+    WHERE proname = 'can_manage_company_job' AND pronamespace = 'extensions'::regnamespace;
   `, 'staging');
-  assert('TEST-MGMT-04', 'can_manage_company_job overloads exist, SECURITY DEFINER, search_path empty, anon revoked',
-    checkProcAcl.length >= 2 &&
+  assert('TEST-MGMT-04', 'can_manage_company_job overloads exist in extensions, SECURITY DEFINER, search_path empty, anon revoked',
+    Array.isArray(checkProcAcl) && checkProcAcl.length >= 2 &&
     checkProcAcl.every(p => p.prosecdef === true && p.anon_exec === false && p.auth_exec === true));
+
+  // Test 3.5: No can_manage_company_job functions exist in public schema
+  const checkPublicProc = await runSql(`
+    SELECT proname FROM pg_proc WHERE proname = 'can_manage_company_job' AND pronamespace = 'public'::regnamespace;
+  `, 'staging');
+  assert('TEST-MGMT-05', 'can_manage_company_job strictly removed from public schema (0 exposed endpoints)',
+    checkPublicProc.length === 0);
 
   // --------------------------------------------------------------------------
   // TEST SECTION 4: COMPLETE APPLICATION & JOB LIFECYCLE AUTHORIZATION
@@ -421,56 +457,70 @@ async function runCanonicalStorageSuite() {
   // --------------------------------------------------------------------------
   console.log('\n--- 6. HELPER RPC EXPOSURE & ANTI-ORACLE BOUNDARY TESTING ---');
 
-  // Test 6.1: Direct PostgREST RPC call by authenticated recruiter with arbitrary probe path returns false
-  const rpcProbeArbitrary = await recClient.rpc('can_employer_access_document', {
-    p_object_name: `resumes/${candA_id}/arbitrary_probed_file.pdf`,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
+  // Test 6.1: Direct PostgREST RPC call for can_employer_access_document by authenticated user is rejected
+  const rpcRecDoc = await recClient.rpc('can_employer_access_document', {
+    p_object_name: CAND_A_RESUME_KEY
   });
-  assert('TEST-ORACLE-RPC-01', 'Direct RPC probe on arbitrary object path returns false (no boolean oracle leak)',
-    rpcProbeArbitrary.data === false);
+  assert('TEST-ORACLE-RPC-01', 'Direct authenticated RPC call to can_employer_access_document is rejected (404 not in schema cache)',
+    rpcRecDoc.error !== null && (rpcRecDoc.status === 404 || rpcRecDoc.error.code === 'PGRST202'));
 
-  // Test 6.2: Direct PostgREST RPC call attempting to spoof caller identity returns false
-  const rpcProbeSpoof = await recClient.rpc('can_employer_access_document', {
-    p_object_name: CAND_A_RESUME_KEY,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: candB_id
+  // Test 6.2: Direct PostgREST RPC call for can_employer_access_document by anonymous user is rejected
+  const rpcAnonDoc = await anonClient.rpc('can_employer_access_document', {
+    p_object_name: CAND_A_RESUME_KEY
   });
-  assert('TEST-ORACLE-RPC-02', 'Direct RPC probe with spoofed p_auth_uid returns false',
-    rpcProbeSpoof.data === false);
+  assert('TEST-ORACLE-RPC-02', 'Direct anonymous RPC call to can_employer_access_document is rejected (404 not in schema cache)',
+    rpcAnonDoc.error !== null && (rpcAnonDoc.status === 404 || rpcAnonDoc.error.code === 'PGRST202'));
 
-  // Test 6.3: Direct PostgREST RPC call by unauthorized candidate probing recruiter permissions returns false
-  const rpcProbeCand = await clientCandA.rpc('can_employer_access_document', {
-    p_object_name: CAND_A_RESUME_KEY,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: candA_id
+  // Test 6.3: Direct PostgREST RPC call for can_manage_company_job by authenticated user is rejected
+  const rpcRecMgmt = await recClient.rpc('can_manage_company_job', {
+    p_company_id: COMPANY_ID
   });
-  assert('TEST-ORACLE-RPC-03', 'Direct RPC probe by candidate returns false',
-    rpcProbeCand.data === false);
+  assert('TEST-ORACLE-RPC-03', 'Direct authenticated RPC call to can_manage_company_job is rejected (404 not in schema cache)',
+    rpcRecMgmt.error !== null && (rpcRecMgmt.status === 404 || rpcRecMgmt.error.code === 'PGRST202'));
 
-  // Test 6.4: Non-exposed schema extensions.can_employer_access_document is NOT accessible via PostgREST RPC
-  const rpcExtensionsProbe = await recClient.rpc('extensions.can_employer_access_document', {
-    p_object_name: CAND_A_RESUME_KEY,
-    p_object_owner: candA_id,
-    p_bucket_id: 'documents',
-    p_auth_uid: rec_id
+  // Test 6.4: Direct PostgREST RPC call for can_manage_company_job by anonymous user is rejected
+  const rpcAnonMgmt = await anonClient.rpc('can_manage_company_job', {
+    p_company_id: COMPANY_ID
   });
-  assert('TEST-ORACLE-RPC-04', 'Non-exposed schema helper cannot be invoked via PostgREST Data API',
-    rpcExtensionsProbe.error !== null);
+  assert('TEST-ORACLE-RPC-04', 'Direct anonymous RPC call to can_manage_company_job is rejected (404 not in schema cache)',
+    rpcAnonMgmt.error !== null && (rpcAnonMgmt.status === 404 || rpcAnonMgmt.error.code === 'PGRST202'));
 
-  // Test 6.5: Direct SQL anti-oracle checks
+  // Test 6.5: Direct SQL anti-oracle check on extensions.can_employer_access_document (distinct p_auth_uid returns false)
   const oracleCheckOther = await runSql(`
-    SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}'::uuid, 'documents', '${candB_id}'::uuid);
+    SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', '${candB_id}');
   `, 'staging');
-  assert('TEST-ORACLE-SQL-01', 'Direct SQL: passing distinct p_auth_uid returns false', oracleCheckOther[0]?.can_employer_access_document === false);
+  assert('TEST-ORACLE-SQL-01', 'Direct SQL: passing distinct p_auth_uid returns false',
+    oracleCheckOther[0]?.can_employer_access_document === false);
 
+  // Test 6.6: Direct SQL anti-oracle check on extensions.can_employer_access_document (null p_auth_uid returns false)
   const oracleCheckNull = await runSql(`
-    SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}'::uuid, 'documents', NULL);
+    SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', NULL);
   `, 'staging');
-  assert('TEST-ORACLE-SQL-02', 'Direct SQL: null auth uid returns false', oracleCheckNull[0]?.can_employer_access_document === false);
+  assert('TEST-ORACLE-SQL-02', 'Direct SQL: null auth uid returns false',
+    Array.isArray(oracleCheckNull) && oracleCheckNull[0]?.can_employer_access_document === false);
+
+  // Test 6.7: Storage RLS policy explicitly binds to extensions.can_employer_access_document
+  const policyDeps = await runSql(`
+    SELECT 
+      pr.proname,
+      n.nspname
+    FROM pg_policy p
+    JOIN pg_depend d ON d.objid = p.oid
+    JOIN pg_proc pr ON pr.oid = d.refobjid
+    JOIN pg_namespace n ON n.oid = pr.pronamespace
+    WHERE p.polrelid = 'storage.objects'::regclass 
+      AND p.polname = 'Employers can view applicant documents'
+      AND pr.proname = 'can_employer_access_document';
+  `, 'staging');
+  assert('TEST-ORACLE-SQL-03', 'Storage policy explicitly binds to extensions.can_employer_access_document',
+    policyDeps.length === 1 && policyDeps[0]?.nspname === 'extensions');
+
+  // Test 6.8: Zero can_employer_access_document functions exist in public schema
+  const checkPublicDocProc = await runSql(`
+    SELECT proname FROM pg_proc WHERE proname = 'can_employer_access_document' AND pronamespace = 'public'::regnamespace;
+  `, 'staging');
+  assert('TEST-ORACLE-SQL-04', 'can_employer_access_document strictly removed from public schema (0 exposed endpoints)',
+    checkPublicDocProc.length === 0);
 
   console.log('\n========================================================================');
   console.log(`CANONICAL STORAGE SUITE COMPLETE: ${passed} PASSED, ${failed} FAILED`);

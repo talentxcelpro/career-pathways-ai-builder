@@ -179,6 +179,9 @@ const PassportLayout                  = lazy(() => import('./pages/passport/Pass
 const PublicPassport                  = lazy(() => import('./pages/passport/PublicPassport'));
 const PublicVanityPassport            = lazy(() => import('./pages/passport/PublicVanityPassport'));
 const PeerEndorsementPage             = lazy(() => import('./pages/passport/PeerEndorsementPage'));
+const PublicReelPage                  = lazy(() => import('./pages/reels/PublicReelPage'));
+const EmployerJobsEmbed               = lazy(() => import('./pages/embed/EmployerJobsEmbed'));
+const ExplorePage                     = lazy(() => import('./pages/ExplorePage'));
 const ProofRedirect                   = lazy(() => import('./pages/passport/components/ProofRedirect'));
 const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
@@ -1122,6 +1125,11 @@ const App = () => {
                                  <Route path="/u/:username" element={<Suspense fallback={null}><PublicVanityPassport /></Suspense>} />
                                  <Route path="/verify/:username" element={<Suspense fallback={null}><PeerEndorsementPage /></Suspense>} />
                                  <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
+
+                                  {/* Phase 2 Ecosystem Loops: Public Reels, Recruiter OS Embeds & Explore Hub */}
+                                  <Route path="/reels/:id" element={<Suspense fallback={null}><PublicReelPage /></Suspense>} />
+                                  <Route path="/embed/jobs/:employerSlug" element={<Suspense fallback={null}><EmployerJobsEmbed /></Suspense>} />
+                                  <Route path="/explore" element={<Suspense fallback={null}><ExplorePage /></Suspense>} />
 
                                  <Route path="/profile/:username" element={<UniversalProfileRouteHandler />} />
 
