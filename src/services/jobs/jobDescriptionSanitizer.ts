@@ -38,7 +38,22 @@ export function sanitizeAndFormatJobDescription(rawContent: string, options: San
 
   const { theme = 'auto' } = options;
 
-  // 1. Pre-process: Clean code fences, escaped markdown, external application redirects
+  // 1. Detect if content is already formatted HTML (e.g. from ATS or rich-text editor)
+  const isHtml = /<\/?(p|div|ul|ol|li|h[1-6]|strong|em|br|b|i|span)\b/i.test(rawContent);
+  if (isHtml) {
+    let clean = rawContent
+      .replace(/Applications are processed directly through the official hiring portal[^.\n]*\.[^\n]*/gi, TALENTXCEL_APPLICATION_NOTICE)
+      .replace(/Click\s*['"]?Apply on Employer Site['"]?\s*to submit your verified profile[^.\n]*/gi, TALENTXCEL_APPLICATION_NOTICE)
+      .replace(/Submit your verified profile on the employer website[^.\n]*/gi, TALENTXCEL_APPLICATION_NOTICE)
+      .replace(/Apply on Employer Site/gi, 'Apply on TalentXcel');
+
+    return DOMPurify.sanitize(clean, {
+      ALLOWED_TAGS: ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'strong', 'em', 'span', 'br', 'a', 'b', 'i', 'div'],
+      ALLOWED_ATTR: ['class', 'href', 'target', 'rel'],
+    });
+  }
+
+  // 2. Pre-process Markdown / plain text: Clean code fences, escaped markdown, external application redirects
   let text = rawContent
     .replace(/\r\n/g, '\n')
     .replace(/```[a-z]*\n?/gi, '') // remove code fences

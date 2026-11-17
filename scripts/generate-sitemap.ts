@@ -509,6 +509,15 @@ export async function generateProductionSitemaps() {
     { path: '/staffing', changefreq: 'weekly', priority: '0.8' },
     { path: '/recruitment', changefreq: 'weekly', priority: '0.8' },
     { path: '/rpo', changefreq: 'weekly', priority: '0.8' },
+    { path: '/employer/talent-search', changefreq: 'daily', priority: '0.9' },
+    { path: '/employer/post-job', changefreq: 'daily', priority: '0.9' },
+    { path: '/employer/pricing', changefreq: 'weekly', priority: '0.8' },
+    { path: '/employer/screening', changefreq: 'weekly', priority: '0.8' },
+    { path: '/employer/ats-integrations', changefreq: 'weekly', priority: '0.8' },
+    { path: '/employer/candidate-benchmarking', changefreq: 'weekly', priority: '0.8' },
+    { path: '/employer/candidate-search', changefreq: 'daily', priority: '0.9' },
+    { path: '/employer/talent-pool', changefreq: 'daily', priority: '0.9' },
+    { path: '/employer/recruiter-directory', changefreq: 'weekly', priority: '0.85' },
   ]);
 
   const passportEntries = deduplicate([
@@ -560,8 +569,21 @@ export async function generateProductionSitemaps() {
       return;
     }
 
+    const REQUIRED_SUBDOMAIN_SITEMAPS = [
+      'sitemap-jobs.xml',
+      'sitemap-salary.xml',
+      'sitemap-careers.xml',
+      'sitemap-resume.xml',
+      'sitemap-learning.xml',
+      'sitemap-colleges.xml',
+      'sitemap-government.xml',
+      'sitemap-employers.xml',
+      'sitemap-passport.xml',
+    ];
+
     // Google Search Console Quality Gate: Prune thin sitemaps with fewer than 10 URLs (e.g. sitemap-blog, sitemap-news)
-    if (uniqueEntries.length < 10) {
+    // EXCEPTION: Required Subdomain Manifests (must never be pruned to preserve routing contracts)
+    if (uniqueEntries.length < 10 && !REQUIRED_SUBDOMAIN_SITEMAPS.includes(filename)) {
       console.log(`↷ Pruned thin sitemap ${filename}: contains only ${uniqueEntries.length} URLs (< 10 quality threshold)`);
       const existingFile = resolve(publicDir, filename);
       if (existsSync(existingFile)) {

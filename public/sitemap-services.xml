@@ -66,21 +66,6 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/staffing</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/recruitment</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/rpo</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://talentxcel.in/staff-augmentation</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
