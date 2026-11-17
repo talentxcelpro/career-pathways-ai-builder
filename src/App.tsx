@@ -1122,7 +1122,8 @@ const App = () => {
 
                                  {/* First-class Public Profile route (e.g. /profile/first-middle-last or /profile/first-last) */}
                                  {/* Vanity Career Passport & Viral Peer Endorsements (High-Converting PLG Engine) */}
-                                 <Route path="/u/:username" element={<Suspense fallback={null}><PublicVanityPassport /></Suspense>} />
+                                 <Route path="/u/:username" element={<UniversalProfileRouteHandler />} />
+  <Route path="/u/@:username" element={<UniversalProfileRouteHandler />} />
                                  <Route path="/verify/:username" element={<Suspense fallback={null}><PeerEndorsementPage /></Suspense>} />
                                  <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
 

@@ -21,7 +21,13 @@ DROP VIEW IF EXISTS public.connection_profiles;
 -- 2. Drop dependent storage policy before dropping helper function
 DROP POLICY IF EXISTS "Employers can view applicant documents" ON storage.objects;
 
--- 2B. Drop candidate document mappings table
+-- 2B. Drop candidate document mappings audit and table
+DROP TRIGGER IF EXISTS trg_log_candidate_document_mapping_audit ON public.candidate_document_mappings;
+DROP FUNCTION IF EXISTS public.log_candidate_document_mapping_audit();
+DROP TABLE IF EXISTS public.candidate_document_mapping_audit;
+
+DROP TRIGGER IF EXISTS trg_validate_candidate_document_mapping ON public.candidate_document_mappings;
+DROP FUNCTION IF EXISTS public.validate_candidate_document_mapping();
 DROP TABLE IF EXISTS public.candidate_document_mappings;
 
 -- 3. Drop Migration B functions and triggers

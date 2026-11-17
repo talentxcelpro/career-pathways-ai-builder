@@ -28,14 +28,17 @@ export const RESERVED_ROUTES = new Set([
 ]);
 
 export const UniversalProfileRouteHandler: React.FC = () => {
-  const { username } = useParams<{ username: string }>();
+  const { username, id } = useParams<{ username?: string; id?: string }>();
+  const rawTarget = (username || id || '').trim();
 
-  if (!username) {
+  if (!rawTarget) {
     return <Navigate to="/404" replace />;
   }
 
+  // Target parameter verified
+
   // Normalize username / slug
-  const cleanUsername = username.startsWith('@') ? username.slice(1).trim() : username.trim();
+  const cleanUsername = rawTarget.startsWith('@') ? rawTarget.slice(1).trim() : rawTarget;
   const lowerClean = cleanUsername.toLowerCase();
 
   // If hitting CareerVerse / RPG directly, route to CareerVerse

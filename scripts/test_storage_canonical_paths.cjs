@@ -227,42 +227,49 @@ async function runCanonicalStorageSuite() {
 
   // Test 2.1: Correct owner_id and correct path
   const checkOwnerCorrect = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-01', 'Correct owner_id and correct path -> access GRANTED', checkOwnerCorrect[0]?.can_employer_access_document === true);
 
   // Test 2.2: Incorrect owner_id with correct path (Candidate B identity passed for Candidate A file)
   const checkOwnerWrong = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candB_id}', 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-02', 'Incorrect owner_id with correct path -> access BLOCKED', checkOwnerWrong[0]?.can_employer_access_document === false);
 
   // Test 2.3: Correct owner_id with incorrect path (Path doesn't match application resume)
   const checkPathWrong = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('resumes/${candA_id}/non_existent_file.pdf', '${candA_id}', 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-03', 'Correct owner_id with incorrect path -> access BLOCKED', checkPathWrong[0]?.can_employer_access_document === false);
 
   // Test 2.4: Same filename in different candidate folder (Candidate B folder)
   const checkBasenameAttack = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_B_IDENTICAL_FILENAME_KEY}', '${candB_id}', 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-04', 'Same filename in different candidate folder -> access BLOCKED', checkBasenameAttack[0]?.can_employer_access_document === false);
 
   // Test 2.5: Same candidate with unrelated private document
   const checkUnrelatedDoc = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_PRIVATE_KEY}', '${candA_id}', 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-05', 'Same candidate with unrelated private document -> access BLOCKED', checkUnrelatedDoc[0]?.can_employer_access_document === false);
 
   // Test 2.6: Bucket boundary check (non-approved bucket)
   const checkBucketBoundary = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'avatars', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-06', 'Unapproved bucket (avatars) -> access BLOCKED', checkBucketBoundary[0]?.can_employer_access_document === false);
 
   // Test 2.7: Missing owner metadata (null owner_id) with NO server mapping -> access BLOCKED
   const checkSrNoMap = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_SERVICE_ROLE_KEY}', NULL, 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-07', 'Missing owner metadata (null owner_id) without server mapping -> access BLOCKED', checkSrNoMap[0]?.can_employer_access_document === false);
@@ -274,21 +281,23 @@ async function runCanonicalStorageSuite() {
   // Test 2.9: Server mapping created for DIFFERENT candidate (candB_id) -> access BLOCKED
   await runSql(`
     INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, verified_by_service_role)
-    VALUES ('documents', '${CAND_A_SERVICE_ROLE_KEY}', '${candB_id}', true)
+    VALUES ('documents', 'resumes/${candB_id}/canonical_app1_resume_${RUN_ID}.pdf', '${candB_id}', true)
     ON CONFLICT (bucket_id, object_name) DO UPDATE SET candidate_id = '${candB_id}', verified_by_service_role = true;
   `, 'staging');
   const checkSrWrongMap = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_SERVICE_ROLE_KEY}', NULL, 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-09', 'Missing owner metadata with server mapping for DIFFERENT candidate -> access BLOCKED', checkSrWrongMap[0]?.can_employer_access_document === false);
 
-  // Test 2.10: Server mapping updated to CORRECT candidate (candA_id) -> access GRANTED
+  // Test 2.10: Server mapping created for CORRECT candidate (candA_id) -> access GRANTED
   await runSql(`
-    UPDATE public.candidate_document_mappings
-    SET candidate_id = '${candA_id}', verified_by_service_role = true
-    WHERE bucket_id = 'documents' AND object_name = '${CAND_A_SERVICE_ROLE_KEY}';
+    INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, verified_by_service_role)
+    VALUES ('documents', '${CAND_A_SERVICE_ROLE_KEY}', '${candA_id}', true)
+    ON CONFLICT (bucket_id, object_name) DO UPDATE SET candidate_id = '${candA_id}', verified_by_service_role = true;
   `, 'staging');
   const checkSrCorrectMap = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_SERVICE_ROLE_KEY}', NULL, 'documents', '${rec_id}');
   `, 'staging');
   assert('TEST-OWNER-10', 'Missing owner metadata with verified server mapping for Candidate A -> access GRANTED', checkSrCorrectMap[0]?.can_employer_access_document === true);
@@ -299,6 +308,59 @@ async function runCanonicalStorageSuite() {
   const { data: dlSrGranted, error: errSrGranted } = await recClient.storage.from('documents').download(CAND_A_SERVICE_ROLE_KEY);
   assert('TEST-OWNER-11', 'Live Storage API: Recruiter can download service-role file with verified server mapping', errSrGranted === null && dlSrGranted !== null);
 
+  // Test 2.12: Gate 3 Mapping table writer security: authenticated client cannot SELECT
+  const { data: candMapSelect, error: candMapSelectErr } = await clientCandA
+    .from('candidate_document_mappings')
+    .select('*');
+  assert('TEST-MAP-SEC-01', 'Authenticated client cannot SELECT from candidate_document_mappings (privilege revoked)',
+    candMapSelectErr !== null && (candMapSelectErr.code === '42501' || candMapSelectErr.message.includes('permission denied')));
+
+  // Test 2.13: Gate 3 Mapping table writer security: authenticated client cannot INSERT
+  const { data: candMapInsert, error: candMapInsertErr } = await clientCandA
+    .from('candidate_document_mappings')
+    .insert({ bucket_id: 'documents', object_name: CAND_A_RESUME_KEY, candidate_id: candA_id });
+  assert('TEST-MAP-SEC-02', 'Authenticated client cannot INSERT into candidate_document_mappings (privilege revoked)',
+    candMapInsertErr !== null && (candMapInsertErr.code === '42501' || candMapInsertErr.message.includes('permission denied')));
+
+  // Test 2.14: Gate 3 Mapping table writer security: anonymous client cannot SELECT
+  const { data: anonMapSelect, error: anonMapSelectErr } = await anonClient
+    .from('candidate_document_mappings')
+    .select('*');
+  assert('TEST-MAP-SEC-03', 'Anonymous client cannot SELECT from candidate_document_mappings (privilege revoked)',
+    anonMapSelectErr !== null && (anonMapSelectErr.code === '42501' || anonMapSelectErr.message.includes('permission denied')));
+
+  // Test 2.15: Gate 3 Trigger validation: Mismatched candidate folder prefix rejected
+  let triggerFolderCaught = false;
+  try {
+    const res = await runSql(`
+      INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, verified_by_service_role)
+      VALUES ('documents', 'resumes/${candA_id}/test_tamper.pdf', '${candB_id}', true);
+    `, 'staging');
+    if (res.error) triggerFolderCaught = true;
+  } catch (e) {
+    triggerFolderCaught = true;
+  }
+  assert('TEST-MAP-SEC-04', 'Trigger validate_candidate_document_mapping rejects folder-candidate mismatch', triggerFolderCaught);
+
+  // Test 2.16: Gate 3 Trigger validation: Wrong bucket (avatars) rejected
+  let triggerBucketCaught = false;
+  try {
+    const res = await runSql(`
+      INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, verified_by_service_role)
+      VALUES ('avatars', 'resumes/${candA_id}/test_tamper.pdf', '${candA_id}', true);
+    `, 'staging');
+    if (res.error) triggerBucketCaught = true;
+  } catch (e) {
+    triggerBucketCaught = true;
+  }
+  assert('TEST-MAP-SEC-05', 'Trigger validate_candidate_document_mapping rejects unapproved bucket', triggerBucketCaught);
+
+  // Test 2.17: Gate 3 Audit logging: candidate_document_mapping_audit records mutations
+  const auditLogs = await runSql(`
+    SELECT count(*)::int as count FROM public.candidate_document_mapping_audit;
+  `, 'staging');
+  assert('TEST-MAP-SEC-06', 'candidate_document_mapping_audit recorded mapping mutations', (auditLogs[0]?.count ?? 0) > 0);
+
   // --------------------------------------------------------------------------
   // TEST SECTION 3: CAN_MANAGE_COMPANY_JOB SIGNATURES & IDENTITY BOUNDARY
   // --------------------------------------------------------------------------
@@ -306,6 +368,7 @@ async function runCanonicalStorageSuite() {
 
   // Test 3.1: 2-arg form with recruiter identity allows authorized recruiter
   const mgmt2ArgRec = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${rec_id}') as can_manage;
   `, 'staging');
   assert('TEST-MGMT-01', '2-arg extensions.can_manage_company_job(company_id, user_id) allows active recruiter',
@@ -313,6 +376,7 @@ async function runCanonicalStorageSuite() {
 
   // Test 3.2: 2-arg form rejects unauthorized candidate
   const mgmt2ArgCand = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${candA_id}', true);
     SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${candA_id}') as can_manage;
   `, 'staging');
   assert('TEST-MGMT-02', '2-arg extensions.can_manage_company_job(company_id, user_id) blocks unauthorized candidate',
@@ -320,10 +384,19 @@ async function runCanonicalStorageSuite() {
 
   // Test 3.3: 2-arg form anti-spoofing guard
   const mgmt2ArgSpoof = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${candB_id}') as can_manage;
   `, 'staging');
   assert('TEST-MGMT-03', '2-arg form rejects arbitrary third-party user without membership',
     mgmt2ArgSpoof[0]?.can_manage === false);
+
+  // Test 3.3B: 2-arg unauthenticated call fails closed
+  const mgmt2ArgUnauth = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '', true);
+    SELECT extensions.can_manage_company_job('${COMPANY_ID}', '${rec_id}') as can_manage;
+  `, 'staging');
+  assert('TEST-MGMT-03B', '2-arg form unauthenticated caller fails closed (returns false)',
+    mgmt2ArgUnauth[0]?.can_manage === false);
 
   // Test 3.4: Function ACL and security attributes in pg_proc
   const checkProcAcl = await runSql(`
@@ -487,17 +560,27 @@ async function runCanonicalStorageSuite() {
 
   // Test 6.5: Direct SQL anti-oracle check on extensions.can_employer_access_document (distinct p_auth_uid returns false)
   const oracleCheckOther = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '${rec_id}', true);
     SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', '${candB_id}');
   `, 'staging');
   assert('TEST-ORACLE-SQL-01', 'Direct SQL: passing distinct p_auth_uid returns false',
     oracleCheckOther[0]?.can_employer_access_document === false);
 
-  // Test 6.6: Direct SQL anti-oracle check on extensions.can_employer_access_document (null p_auth_uid returns false)
+  // Test 6.6: Direct SQL anti-oracle check on extensions.can_employer_access_document (null auth.uid() fails closed)
   const oracleCheckNull = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '', true);
     SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', NULL);
   `, 'staging');
-  assert('TEST-ORACLE-SQL-02', 'Direct SQL: null auth uid returns false',
+  assert('TEST-ORACLE-SQL-02', 'Direct SQL: null auth uid fails closed (returns false)',
     Array.isArray(oracleCheckNull) && oracleCheckNull[0]?.can_employer_access_document === false);
+
+  // Test 6.6B: Direct SQL unauthenticated caller attempting to pass valid recruiter UUID fails closed
+  const oracleUnauthRec = await runSql(`
+    SELECT set_config('request.jwt.claim.sub', '', true);
+    SELECT extensions.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', '${rec_id}');
+  `, 'staging');
+  assert('TEST-ORACLE-SQL-02B', 'Direct SQL: unauthenticated caller claiming recruiter UUID fails closed (returns false)',
+    Array.isArray(oracleUnauthRec) && oracleUnauthRec[0]?.can_employer_access_document === false);
 
   // Test 6.7: Storage RLS policy explicitly binds to extensions.can_employer_access_document
   const policyDeps = await runSql(`

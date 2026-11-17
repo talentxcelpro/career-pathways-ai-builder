@@ -462,16 +462,13 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 BEGIN
-    -- Authorization guard: caller can only inspect their own company membership permissions
-    -- unless they hold platform administrator privileges or direct database administrative maintenance.
-    IF auth.uid() IS NOT NULL AND p_user_id IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
-        RETURN false;
-    END IF;
-    IF auth.uid() IS NULL AND current_user NOT IN ('postgres', 'supabase_admin') THEN
+    -- Unauthenticated callers (auth.uid() IS NULL) MUST fail closed immediately.
+    -- Authenticated callers can only inspect permissions for their own identity (p_user_id must equal auth.uid()).
+    IF auth.uid() IS NULL OR p_user_id IS NULL OR p_user_id IS DISTINCT FROM auth.uid() THEN
         RETURN false;
     END IF;
 
-    IF p_user_id IS NULL OR p_company_id IS NULL THEN
+    IF p_company_id IS NULL THEN
         RETURN false;
     END IF;
 
@@ -655,15 +652,104 @@ CREATE TABLE IF NOT EXISTS public.candidate_document_mappings (
 ALTER TABLE public.candidate_document_mappings ENABLE ROW LEVEL SECURITY;
 
 REVOKE ALL ON TABLE public.candidate_document_mappings FROM PUBLIC, anon, authenticated;
-GRANT SELECT ON TABLE public.candidate_document_mappings TO authenticated, service_role;
-GRANT INSERT, UPDATE, DELETE ON TABLE public.candidate_document_mappings TO service_role;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.candidate_document_mappings TO service_role;
 
 DROP POLICY IF EXISTS "Candidates can read own document mappings" ON public.candidate_document_mappings;
-CREATE POLICY "Candidates can read own document mappings"
-ON public.candidate_document_mappings FOR SELECT TO authenticated
-USING (candidate_id = auth.uid());
 
-COMMENT ON TABLE public.candidate_document_mappings IS 'Trusted server-maintained mapping between storage documents and candidate identity for service-role uploads lacking object owner_id.';
+-- Integrity validation trigger: enforce bucket, candidate folder prefix, profiles reference, and service-role origin
+CREATE OR REPLACE FUNCTION public.validate_candidate_document_mapping()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+    -- A. Only service_role and postgres may write mappings
+    IF NOT (
+        current_user IN ('postgres', 'service_role', 'supabase_admin')
+        OR session_user IN ('postgres', 'service_role', 'supabase_admin')
+    ) THEN
+        RAISE EXCEPTION 'Direct client manipulation of candidate document mappings is strictly forbidden.' USING errcode = '42501';
+    END IF;
+
+    -- B. Bucket must be 'documents'
+    IF NEW.bucket_id IS DISTINCT FROM 'documents' THEN
+        RAISE EXCEPTION 'Candidate document mappings only allowed for documents bucket (received: %)', NEW.bucket_id USING errcode = '22023';
+    END IF;
+
+    -- C. Candidate ID must not be null and must exist in profiles
+    IF NEW.candidate_id IS NULL THEN
+        RAISE EXCEPTION 'candidate_id cannot be null' USING errcode = '22023';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE id = NEW.candidate_id) THEN
+        RAISE EXCEPTION 'candidate_id % does not exist in profiles', NEW.candidate_id USING errcode = '23503';
+    END IF;
+
+    -- D. Folder depth containment: object_name must contain candidate ID in 1st or 2nd folder segment
+    IF NOT (
+        (NEW.candidate_id)::text = (storage.foldername(NEW.object_name))[1]
+        OR (NEW.candidate_id)::text = (storage.foldername(NEW.object_name))[2]
+    ) THEN
+        RAISE EXCEPTION 'object_name % does not match candidate_id folder prefix %', NEW.object_name, NEW.candidate_id USING errcode = '22023';
+    END IF;
+
+    NEW.verified_by_service_role := true;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_validate_candidate_document_mapping ON public.candidate_document_mappings;
+CREATE TRIGGER trg_validate_candidate_document_mapping
+BEFORE INSERT OR UPDATE ON public.candidate_document_mappings
+FOR EACH ROW EXECUTE FUNCTION public.validate_candidate_document_mapping();
+
+-- Server-side audit trail for document mapping lifecycle mutations
+CREATE TABLE IF NOT EXISTS public.candidate_document_mapping_audit (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    mapping_id uuid,
+    action text NOT NULL,
+    bucket_id text NOT NULL,
+    object_name text NOT NULL,
+    candidate_id uuid NOT NULL,
+    performed_by text NOT NULL DEFAULT current_user,
+    recorded_at timestamptz NOT NULL DEFAULT pg_catalog.now()
+);
+
+ALTER TABLE public.candidate_document_mapping_audit ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.candidate_document_mapping_audit FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.candidate_document_mapping_audit TO service_role;
+
+CREATE OR REPLACE FUNCTION public.log_candidate_document_mapping_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+    IF TG_OP = 'INSERT' THEN
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by)
+        VALUES (NEW.id, 'INSERT', NEW.bucket_id, NEW.object_name, NEW.candidate_id, current_user);
+        RETURN NEW;
+    ELSIF TG_OP = 'UPDATE' THEN
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by)
+        VALUES (NEW.id, 'UPDATE', NEW.bucket_id, NEW.object_name, NEW.candidate_id, current_user);
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by)
+        VALUES (OLD.id, 'DELETE', OLD.bucket_id, OLD.object_name, OLD.candidate_id, current_user);
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_log_candidate_document_mapping_audit ON public.candidate_document_mappings;
+CREATE TRIGGER trg_log_candidate_document_mapping_audit
+AFTER INSERT OR UPDATE OR DELETE ON public.candidate_document_mappings
+FOR EACH ROW EXECUTE FUNCTION public.log_candidate_document_mapping_audit();
+
+COMMENT ON TABLE public.candidate_document_mappings IS 'Trusted server-maintained mapping between storage documents and candidate identity for service-role uploads lacking object owner_id. Strictly restricted to service_role and postgres.';
 
 -- ----------------------------------------------------------------------------
 -- 10B. AUTHORITATIVE STORAGE AUTHORIZATION HELPER
@@ -684,16 +770,15 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 BEGIN
-    -- 1. Anti-oracle caller binding: caller can only query for their own auth.uid() unless app admin or direct DB admin
-    IF auth.uid() IS NOT NULL AND p_auth_uid IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
-        RETURN false;
-    END IF;
-    IF auth.uid() IS NULL AND current_user NOT IN ('postgres', 'supabase_admin') THEN
+    -- 1. Unauthenticated Fail-Closed Guard & Anti-oracle Caller Binding:
+    -- Unauthenticated callers (auth.uid() IS NULL) MUST fail closed immediately.
+    -- Authenticated callers can only query for their own identity (p_auth_uid must equal auth.uid()).
+    IF auth.uid() IS NULL OR p_auth_uid IS NULL OR p_auth_uid IS DISTINCT FROM auth.uid() THEN
         RETURN false;
     END IF;
 
     -- 2. Guard against null inputs
-    IF p_auth_uid IS NULL OR p_object_name IS NULL THEN
+    IF p_object_name IS NULL THEN
         RETURN false;
     END IF;
 
