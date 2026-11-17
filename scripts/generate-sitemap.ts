@@ -555,8 +555,18 @@ export async function generateProductionSitemaps() {
   sitemapConfig.forEach(({ filename, entries, origin }) => {
     if (entries.length === 0) return;
     const uniqueEntries = deduplicate(entries).filter((entry) => !globalSeenLocs.has(canonicalSitemapLoc(entry, origin)));
-    if (uniqueEntries.length === 0) {
+        if (uniqueEntries.length === 0) {
       console.log(`↷ Skipped ${filename}: all URLs already appear in an earlier sitemap`);
+      return;
+    }
+
+    // Google Search Console Quality Gate: Prune thin sitemaps with fewer than 10 URLs (e.g. sitemap-blog, sitemap-news)
+    if (uniqueEntries.length < 10) {
+      console.log(`↷ Pruned thin sitemap ${filename}: contains only ${uniqueEntries.length} URLs (< 10 quality threshold)`);
+      const existingFile = resolve(publicDir, filename);
+      if (existsSync(existingFile)) {
+        try { unlinkSync(existingFile); } catch (_) {}
+      }
       return;
     }
 
