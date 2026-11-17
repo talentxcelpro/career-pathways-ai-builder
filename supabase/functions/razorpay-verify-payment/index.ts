@@ -160,6 +160,24 @@ serve(async (req) => {
           break;
         }
 
+        case "refund.processed":
+        case "refund.created":
+        case "payment.dispute.created": {
+          const refundPaymentId = payload.refund?.entity?.payment_id || payload.payment?.entity?.id;
+          if (refundPaymentId) {
+            console.log(`[razorpay-webhook] Reversing affiliate commission for refunded payment: ${refundPaymentId}`);
+            try {
+              await supabaseClient.rpc('reverse_affiliate_commission_atomic', {
+                p_payment_id: String(refundPaymentId),
+                p_reason: `Razorpay webhook: ${eventType}`
+              });
+            } catch (revErr) {
+              console.warn('[razorpay-webhook] Non-blocking commission reversal error:', revErr);
+            }
+          }
+          break;
+        }
+
         default:
           console.log(`[razorpay-webhook] Handled verified event: ${eventType}`);
           break;
@@ -516,6 +534,58 @@ serve(async (req) => {
         JSON.stringify({ success: false, error: "Payment verified but subscription activation failed. Please contact support." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // PRODUCT BRANCH 4: SERVER-SIDE AFFILIATE COMMISSION ATTRIBUTION
+    // ─────────────────────────────────────────────────────────────────────────
+    try {
+      let matchedReferralCode = body.referral_code || body.ref || null;
+      let matchedProductSlug = body.product_slug || body.aff_prod || null;
+
+      if (!matchedReferralCode) {
+        // Query stored attribution in referral_events table
+        const { data: refRow } = await supabaseClient
+          .from("referral_events")
+          .select("referral_code")
+          .eq("referee_id", authenticatedUser.id)
+          .maybeSingle();
+
+        if (refRow?.referral_code) {
+          matchedReferralCode = refRow.referral_code;
+        }
+      }
+
+      if (!matchedProductSlug) {
+        const lowerTier = targetTier.toLowerCase();
+        if (lowerTier === 'premium' || lowerTier === 'max') {
+          matchedProductSlug = 'career-premium-sub';
+        } else if (lowerTier === 'business') {
+          matchedProductSlug = 'recruiter-os-license';
+        } else {
+          matchedProductSlug = 'career-pro-sub';
+        }
+      }
+
+      if (matchedReferralCode) {
+        console.log(`[affiliate-engine] Evaluating commission for payment ${razorpay_payment_id} (code: ${matchedReferralCode}, product: ${matchedProductSlug})`);
+        const { data: commResult, error: commError } = await supabaseClient.rpc('process_affiliate_commission_atomic', {
+          p_payment_id: String(razorpay_payment_id),
+          p_order_id: String(razorpay_order_id),
+          p_gross_paise: Number(expectedPaise),
+          p_customer_id: authenticatedUser.id,
+          p_product_slug: String(matchedProductSlug),
+          p_referral_code: String(matchedReferralCode)
+        });
+
+        if (commError) {
+          console.warn("[affiliate-engine] Non-blocking attribution notice:", commError.message);
+        } else if (commResult?.success) {
+          console.log(`[affiliate-engine] Successfully attributed commission:`, commResult);
+        }
+      }
+    } catch (affiliateErr) {
+      console.warn("[affiliate-engine] Non-blocking error:", affiliateErr);
     }
 
     return new Response(

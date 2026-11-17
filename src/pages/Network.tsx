@@ -11,6 +11,7 @@ import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnectAI";
 import { GamificationDashboard } from "@/components/gamification/GamificationDashboard";
 import { ViralGrowthEngineDashboard } from "@/components/referral/ViralGrowthEngineDashboard";
+const AffiliateMarketplaceTab = React.lazy(() => import('@/components/affiliate/AffiliateMarketplaceTab'));
 import { 
   Users, 
   Sparkles, 
@@ -459,6 +460,17 @@ const Network: React.FC = () => {
             {renderUniformLayout(
               <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Refer &amp; Earn...</div>}>
                 <ViralGrowthEngineDashboard />
+              </React.Suspense>
+            )}
+          </TabsContent>
+
+          {/* ============================================================================ */}
+          {/* 4b. TAB CONTENT: AFFILIATE MARKETPLACE                                       */}
+          {/* ============================================================================ */}
+          <TabsContent value="affiliate-marketplace" className="mt-0">
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Affiliate Marketplace...</div>}>
+                <AffiliateMarketplaceTab />
               </React.Suspense>
             )}
           </TabsContent>

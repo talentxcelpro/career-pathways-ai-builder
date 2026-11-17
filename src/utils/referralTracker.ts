@@ -10,6 +10,7 @@ const STORAGE_KEY_CHANNEL = 'txc_referral_channel';
 const STORAGE_KEY_CAMPAIGN = 'txc_referral_campaign';
 const STORAGE_KEY_TIMESTAMP = 'txc_referral_timestamp';
 const STORAGE_KEY_VISITOR = 'txc_visitor_id';
+const STORAGE_KEY_PRODUCT = 'txc_affiliate_product';
 
 const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -23,27 +24,33 @@ export function getOrCreateVisitorId(): string {
   return vid;
 }
 
-export function getStoredReferral(): { code: string | null; channel: ReferralChannel; campaignId: string | null } {
+export function getStoredReferral(): { code: string | null; channel: ReferralChannel; campaignId: string | null; productSlug: string | null } {
   if (typeof window === 'undefined') {
-    return { code: null, channel: 'direct', campaignId: null };
+    return { code: null, channel: 'direct', campaignId: null, productSlug: null };
   }
 
   const code = localStorage.getItem(STORAGE_KEY_CODE);
   const tsStr = localStorage.getItem(STORAGE_KEY_TIMESTAMP);
   const channel = (localStorage.getItem(STORAGE_KEY_CHANNEL) as ReferralChannel) || 'direct';
   const campaignId = localStorage.getItem(STORAGE_KEY_CAMPAIGN);
+  const productSlug = localStorage.getItem(STORAGE_KEY_PRODUCT);
 
   if (!code || !tsStr) {
-    return { code: null, channel: 'direct', campaignId: null };
+    return { code: null, channel: 'direct', campaignId: null, productSlug: null };
   }
 
   const ts = parseInt(tsStr, 10);
   if (Date.now() - ts > THIRTY_DAYS_MS) {
     clearStoredReferral();
-    return { code: null, channel: 'direct', campaignId: null };
+    return { code: null, channel: 'direct', campaignId: null, productSlug: null };
   }
 
-  return { code, channel, campaignId };
+  return { code, channel, campaignId, productSlug };
+}
+
+export function getStoredAffiliateProduct(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(STORAGE_KEY_PRODUCT);
 }
 
 export function clearStoredReferral(): void {
@@ -51,6 +58,7 @@ export function clearStoredReferral(): void {
   localStorage.removeItem(STORAGE_KEY_CODE);
   localStorage.removeItem(STORAGE_KEY_CHANNEL);
   localStorage.removeItem(STORAGE_KEY_CAMPAIGN);
+  localStorage.removeItem(STORAGE_KEY_PRODUCT);
   localStorage.removeItem(STORAGE_KEY_TIMESTAMP);
 }
 
@@ -65,12 +73,14 @@ export async function initReferralCapture(): Promise<void> {
   const ref = params.get('ref') || params.get('referral');
   const source = (params.get('utm_source') as ReferralChannel) || 'direct';
   const campaign = params.get('utm_campaign');
+  const affProd = params.get('aff_prod') || params.get('product');
 
   if (ref && ref.trim()) {
     const cleanCode = ref.trim().toUpperCase();
     localStorage.setItem(STORAGE_KEY_CODE, cleanCode);
     localStorage.setItem(STORAGE_KEY_CHANNEL, source);
     if (campaign) localStorage.setItem(STORAGE_KEY_CAMPAIGN, campaign);
+    if (affProd) localStorage.setItem(STORAGE_KEY_PRODUCT, affProd);
     localStorage.setItem(STORAGE_KEY_TIMESTAMP, Date.now().toString());
 
     // Record link_open telemetry
@@ -84,6 +94,15 @@ export async function initReferralCapture(): Promise<void> {
           campaign_id: campaign || null,
           visitor_id: visitorId,
         },
+      });
+
+      // Record affiliate click telemetry
+      await supabase.rpc('record_affiliate_click', {
+        p_referral_code: cleanCode,
+        p_product_slug: affProd || null,
+        p_channel: source,
+        p_campaign_id: campaign || null,
+        p_visitor_id: visitorId,
       });
     } catch {
       // Non-blocking telemetry

@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react';;
-import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp, Calendar, Activity, Gift } from "lucide-react";
+import { Shield, Users, Building2, Home, Network, Briefcase, FileText, Wrench, GraduationCap, Map, CreditCard, BarChart3, Lock, Plus, Mail, Brain, Crown, MessageSquare, Search, Megaphone, Layout, Flag, Bot, Globe, AlertTriangle, Link, Newspaper, Coins, Upload, Database, Rocket, Eye, Target, TrendingUp, Calendar, Activity, Gift, Store } from "lucide-react";
 
 const BulkUserImports = lazy(() => import('../pages/admin/BulkUserImports'));
+const AffiliateAdminPage = lazy(() => import('../pages/admin/AffiliateAdminPage'));
 const SocialMarketingDashboard = lazy(() => import('../pages/admin/SocialMarketingDashboard'));
 const SocialContentStudio = lazy(() => import('../pages/admin/SocialContentStudio'));
 const SocialMarketingCalendar = lazy(() => import('../pages/admin/SocialMarketingCalendar'));
@@ -670,6 +671,13 @@ export const adminRoutes = [
     to: "/admin/growth-engine",
     icon: <Gift className="h-4 w-4 text-pink-500" />,
     page: <Suspense fallback={null}><GrowthEngineAdmin /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Affiliate Marketplace",
+    to: "/admin/affiliates",
+    icon: <Store className="h-4 w-4 text-cyan-400" />,
+    page: <Suspense fallback={null}><AffiliateAdminPage /></Suspense>,
     isPublic: true,
   },
   {

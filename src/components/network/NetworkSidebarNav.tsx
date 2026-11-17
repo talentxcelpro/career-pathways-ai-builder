@@ -7,6 +7,7 @@ import {
   Sparkles, 
   Trophy, 
   Gift, 
+  Store,
   Users, 
   UserPlus, 
   TrendingUp, 
@@ -73,6 +74,14 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
       iconColor: 'text-pink-500',
       description: 'Invite peers & earn TXC',
       badge: null
+    },
+    {
+      id: 'affiliate-marketplace',
+      label: 'Affiliate Marketplace',
+      icon: Store,
+      iconColor: 'text-cyan-600',
+      description: 'Promote TalentXcel & earn cash',
+      badge: 'Earn Cash'
     },
     {
       id: 'connections',

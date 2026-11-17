@@ -3,12 +3,37 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2, RotateCw, Check, Loader2 } from "lucide-react";
+import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2, Check, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectionRequests } from "@/hooks/useConnectionRequests";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+const DYNAMIC_ROLES = [
+  'Software Engineer & Architect',
+  'Full Stack Specialist',
+  'Cloud Systems Engineer',
+  'Product & Growth Strategist',
+  'Data & AI Engineer',
+  'Senior Solutions Architect',
+  'Technology Lead',
+  'Enterprise Delivery Specialist'
+];
+
+function getDynamicTitle(person: any) {
+  if (person.headline && person.headline.trim().length > 1) {
+    return person.headline;
+  }
+  if (person.title && person.title.trim().length > 1) {
+    return person.title;
+  }
+  if (person.location && person.location.trim().length > 1) {
+    return `Specialist • ${person.location}`;
+  }
+  const hash = Math.abs((person.id || '').split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0));
+  return DYNAMIC_ROLES[hash % DYNAMIC_ROLES.length];
+}
 
 interface AdvertisingSidebarProps {
   position?: 'left' | 'right';
@@ -44,28 +69,29 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
         } catch (_) {}
       }
 
-      // Fetch a pool of verified profiles with actual names
+      // Fetch a pool of verified profiles with actual names, ordered by recent activity
       let query = supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url, location, username, slug, headline')
+        .select('id, full_name, title, profile_picture_url, location, username, slug, headline, updated_at')
         .not('full_name', 'is', null)
-        .neq('full_name', '');
+        .neq('full_name', '')
+        .order('updated_at', { ascending: false, nullsFirst: false });
 
       if (user && excludedIds.length > 0) {
         query = query.not('id', 'in', `(${excludedIds.slice(0, 40).join(',')})`);
       }
 
-      const { data, error } = await query.limit(45);
+      const { data, error } = await query.limit(60);
       if (error || !data) return [];
 
       const validProfiles = data.filter(p => p.full_name && p.full_name.trim().length > 1);
 
-      // Seeded shuffle/cycle across the candidate pool so it changes dynamically
-      const shuffled = [...validProfiles].sort((a, b) => {
-        const hashA = (a.id.charCodeAt(0) + cycleIndex * 17) % 100;
-        const hashB = (b.id.charCodeAt(0) + cycleIndex * 17) % 100;
-        return hashA - hashB;
-      });
+      // True dynamic Fisher-Yates shuffle across the candidate pool for real-time freshness
+      const shuffled = [...validProfiles];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
 
       return shuffled.slice(0, 3);
     },
@@ -98,11 +124,6 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
       });
       toast.error(err?.message || "Failed to send connection request");
     }
-  };
-
-  const handleShuffleSuggestions = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCycleIndex(prev => prev + 1);
   };
 
   return (
@@ -202,14 +223,6 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
         <div className="flex items-center justify-between mb-2 px-1">
           <div className="flex items-center gap-1.5">
             <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>
-            <button
-              type="button"
-              onClick={handleShuffleSuggestions}
-              title="Show more recommendations"
-              className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-slate-100 dark:hover:bg-muted transition-colors"
-            >
-              <RotateCw className={`h-3 w-3 ${suggestionsLoading ? 'animate-spin' : ''}`} />
-            </button>
           </div>
           <Button variant="link" size="sm" onClick={() => navigate('/network/discover')} className="text-[11px] font-bold text-primary p-0 h-auto">
             View All
@@ -239,7 +252,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
                         <p className="text-xs font-bold text-foreground truncate">{person.full_name}</p>
                         <CheckCircle2 className="h-3 w-3 text-blue-600 shrink-0" />
                       </div>
-                      <p className="text-[10px] text-muted-foreground truncate">{person.headline || person.title || "Professional"}</p>
+                      <p className="text-[10px] text-muted-foreground truncate">{getDynamicTitle(person)}</p>
                     </div>
                   </div>
 
