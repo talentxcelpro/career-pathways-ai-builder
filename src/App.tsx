@@ -177,6 +177,8 @@ const ProviderPage                    = lazy(() => import('./pages/learning/Prov
 const CareerPassportDashboard         = lazy(() => import('./pages/passport/CareerPassportDashboard'));
 const PassportLayout                  = lazy(() => import('./pages/passport/PassportLayout'));
 const PublicPassport                  = lazy(() => import('./pages/passport/PublicPassport'));
+const PublicVanityPassport            = lazy(() => import('./pages/passport/PublicVanityPassport'));
+const PeerEndorsementPage             = lazy(() => import('./pages/passport/PeerEndorsementPage'));
 const ProofRedirect                   = lazy(() => import('./pages/passport/components/ProofRedirect'));
 const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
@@ -1116,6 +1118,11 @@ const App = () => {
                                 })}
 
                                  {/* First-class Public Profile route (e.g. /profile/first-middle-last or /profile/first-last) */}
+                                 {/* Vanity Career Passport & Viral Peer Endorsements (High-Converting PLG Engine) */}
+                                 <Route path="/u/:username" element={<Suspense fallback={null}><PublicVanityPassport /></Suspense>} />
+                                 <Route path="/verify/:username" element={<Suspense fallback={null}><PeerEndorsementPage /></Suspense>} />
+                                 <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
+
                                  <Route path="/profile/:username" element={<UniversalProfileRouteHandler />} />
 
                                 {/* Legacy UUID-based profile redirects */}

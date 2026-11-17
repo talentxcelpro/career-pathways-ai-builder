@@ -35,6 +35,7 @@ import {
   User
 } from 'lucide-react';
 import { CareerPassportHeader } from './CareerPassportHeader';
+import { PassportClaimWidget } from './PassportClaimWidget';
 import { CareerPassportPricingSection } from './CareerPassportPricingSection';
 import { ProductFooter } from '@/components/products/common/ProductFooter';
 import universityLearningImg from '@/assets/university-learning.jpg';

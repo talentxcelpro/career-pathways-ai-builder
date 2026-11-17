@@ -6,13 +6,17 @@ import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter
 export const LandingFooter: React.FC = () => {
   const platformLinks = [
     { name: 'Search Verified Jobs', href: '/jobs' },
-    { name: 'Professional Network', href: '/network' },
-    { name: 'Professional Communities', href: '/communities' },
-    { name: 'Top Companies & Employers', href: '/companies' },
+    { name: 'Free ATS Resume Checker', href: '/ats-check' },
+    { name: 'AI Resume Builder', href: '/resume-builder' },
+    { name: 'Professional Network & Directory', href: '/network' },
     { name: 'Career Passport & TalentScore', href: '/passport' },
+    { name: 'Salary Intelligence & Curves', href: '/salary' },
+    { name: 'Career Pathways & Roadmaps', href: '/career-paths' },
+    { name: 'Top Companies & Employers', href: '/companies' },
+    { name: 'Colleges & Institutions', href: '/colleges' },
+    { name: 'Government & PSU Jobs', href: '/government' },
     { name: 'Recruiter OS for Employers', href: '/recruiters' },
     { name: 'Career Reels', href: '/reels' },
-    { name: 'Colleges & Institutions', href: '/colleges' },
   ];
 
   const companyLinks = [
@@ -34,34 +38,26 @@ export const LandingFooter: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8">
           {/* Brand Section */}
-          <div className="sm:col-span-2 md:col-span-1">
-            <div className="flex items-center space-x-2.5 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-slate-900 flex items-center justify-center p-1 border border-slate-700">
-                <img 
-                  src="/talentxcel-official-logo.png" 
-                  alt="TalentXcel Logo" 
-                  className="h-full w-full object-contain"
-                />
-              </div>
-              <span className="font-bold text-xl">TalentXcel</span>
+          <div className="md:col-span-2 space-y-4">
+            <h3 className="text-2xl font-bold">TalentXcel</h3>
+            <p className="text-muted-foreground text-sm max-w-sm">
+              The high-velocity Career Operating System & Professional Network. 
+              Search verified jobs, benchmark technology salaries, build ATS-optimized resumes, and claim your verified Career Passport.
+            </p>
+            <div className="pt-2">
+              <SocialConnect />
             </div>
-            <p className="text-background/70 mb-4 text-sm leading-relaxed">
-              The Global Professional Talent Network connecting verified talent, recruiters, and companies worldwide across UAE, Europe, Americas, and Asia.
-            </p>
-            <p className="text-background/50 text-xs">
-              © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
-            </p>
           </div>
 
-          {/* Platform Hub Links */}
-          <div>
-            <h3 className="font-semibold text-base mb-4 text-white">Platform</h3>
-            <ul className="space-y-2">
-              {platformLinks.map((link) => (
+          {/* Platform Links */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-sm">Career Ecosystem</h4>
+            <ul className="space-y-2 text-sm">
+              {platformLinks.slice(0, 6).map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-background/70 hover:text-background transition-colors text-sm"
+                  <Link 
+                    to={link.href} 
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -70,32 +66,41 @@ export const LandingFooter: React.FC = () => {
             </ul>
           </div>
 
-          {/* Company Links */}
-          <div>
-            <h3 className="font-semibold text-base mb-4 text-white">Company</h3>
-            <ul className="space-y-2">
+          <div className="space-y-4">
+            <h4 className="font-semibold text-sm">Intelligence Hubs</h4>
+            <ul className="space-y-2 text-sm">
+              {platformLinks.slice(6).map((link) => (
+                <li key={link.name}>
+                  <Link 
+                    to={link.href} 
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company & Support Links */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-sm">Company & Trust</h4>
+            <ul className="space-y-2 text-sm">
               {companyLinks.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-background/70 hover:text-background transition-colors text-sm"
+                  <Link 
+                    to={link.href} 
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.name}
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
-
-          {/* Support Links */}
-          <div>
-            <h3 className="font-semibold text-base mb-4 text-white">Support</h3>
-            <ul className="space-y-2">
               {supportLinks.map((link) => (
                 <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-background/70 hover:text-background transition-colors text-sm"
+                  <Link 
+                    to={link.href} 
+                    className="text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -103,36 +108,25 @@ export const LandingFooter: React.FC = () => {
               ))}
             </ul>
           </div>
-
-          {/* Social Connect */}
-          <div>
-            <h3 className="font-semibold text-base mb-4 text-white">Connect With Us</h3>
-            <div className="text-background/70">
-              <SocialConnect
-                showDescription={false}
-                variant="compact"
-                size="sm"
-              />
-              <p className="text-xs text-background/50 mt-3">
-                Follow us for career opportunities, college updates, and skill roadmaps.
-              </p>
-            </div>
-          </div>
         </div>
-        
-        {/* High-Authority Cross-Subdomain Mesh */}
-        <div className="mt-12 -mx-4 sm:-mx-6 lg:-mx-8">
+
+        {/* High-Authority Cross-Subdomain Internal Mesh */}
+        <div className="mt-12 pt-8 border-t border-muted/20">
           <SubdomainMeshFooter />
         </div>
 
-        {/* Bottom copyright */}
-        <div className="border-t border-background/20 mt-8 pt-8 text-center">
-          <p className="text-background/50 text-xs">
-            © 2026 TalentXcel Services Pvt Ltd. All rights reserved.
-          </p>
+        {/* Bottom Bar */}
+        <div className="mt-8 pt-8 border-t border-muted/20 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
+          <p>&copy; {new Date().getFullYear()} TalentXcel. All rights reserved.</p>
+          <div className="flex gap-4 mt-4 md:mt-0">
+            <Link to="/privacy" className="hover:underline">Privacy</Link>
+            <Link to="/terms" className="hover:underline">Terms</Link>
+            <Link to="/contact" className="hover:underline">Contact</Link>
+          </div>
         </div>
       </div>
     </footer>
   );
 };
 
+export default LandingFooter;

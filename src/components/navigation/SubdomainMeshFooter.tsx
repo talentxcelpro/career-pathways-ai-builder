@@ -94,8 +94,13 @@ export const SubdomainMeshFooter: React.FC = () => {
             </strong>
             <ul className="space-y-1.5 text-slate-400">
               <li>
-                <a href="https://resume.talentxcel.in/resume/ats-check" className="hover:text-white transition-colors">
-                  Free ATS Resume Scanner
+                <a href="https://talentxcel.in/ats-check" className="hover:text-white transition-colors">
+                  Free In-Browser ATS Scanner
+                </a>
+              </li>
+              <li>
+                <a href="https://talentxcel.in/resume-builder" className="hover:text-white transition-colors">
+                  Live AI Resume Builder & Studio
                 </a>
               </li>
               <li>
@@ -171,8 +176,13 @@ export const SubdomainMeshFooter: React.FC = () => {
                 </a>
               </li>
               <li>
-                <a href="https://passport.talentxcel.in/passport" className="hover:text-white transition-colors">
-                  Verified Career Passport
+                <a href="https://talentxcel.in/passport" className="hover:text-white transition-colors">
+                  Claim Career Passport Handle
+                </a>
+              </li>
+              <li>
+                <a href="https://talentxcel.in/network" className="hover:text-white transition-colors">
+                  Professional Member Directory
                 </a>
               </li>
             </ul>
