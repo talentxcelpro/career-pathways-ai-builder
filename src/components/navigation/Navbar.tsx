@@ -12,6 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
+import { RegionSelector } from '@/components/common/RegionSelector';
 import { supabase } from '@/integrations/supabase/client';
 import {
   User,
@@ -333,6 +334,8 @@ export const Navbar = () => {
                   </div>
                 )}
 
+                <RegionSelector className="hidden sm:flex mr-1" />
+
                 {/* Direct Messages Icon Link */}
                 <Link
                   to="/messages"
@@ -499,6 +502,8 @@ export const Navbar = () => {
                   })
                 )}
               </div>
+
+              <RegionSelector className="hidden sm:flex mr-1" />
 
               {/* Clear Recruiter Entry Door */}
               <Link

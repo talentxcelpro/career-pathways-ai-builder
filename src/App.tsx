@@ -15,6 +15,7 @@ import { PageFallbackSkeleton } from '@/components/navigation/PageFallbackSkelet
 import { RouteTransition } from '@/components/navigation/RouteTransition';
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
+import { RegionProvider } from "@/contexts/RegionContext";
 import { VoicePlayerProvider } from "@/contexts/VoicePlayerContext";
 import { VoiceMiniPlayer } from "@/components/voice/VoiceMiniPlayer";
 import { TXCAutoMiner } from '@/components/txc/TXCAutoMiner';
@@ -391,6 +392,7 @@ const App = () => {
             <TopLoadingBar />
             <ScrollRestoration />
             <OptimizedAuthProvider>
+            <RegionProvider>
               <GoogleOneTapLogin autoSelect={true} />
               <VoicePlayerProvider>
               <NotificationProvider>
@@ -1380,6 +1382,7 @@ const App = () => {
                     </NotificationProvider>
                     <VoiceMiniPlayer />
                   </VoicePlayerProvider>
+                  </RegionProvider>
                   </OptimizedAuthProvider>
               </BrowserRouter>
            </HelmetProvider>

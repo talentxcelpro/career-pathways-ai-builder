@@ -17,26 +17,7 @@ export const NewPostsBanner: React.FC<NewPostsBannerProps> = ({
   isLoading = false
 }) => {
   if (newPostsCount === 0) {
-    return (
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border/50">
-        <div className="max-w-4xl mx-auto px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {/* Connection status removed */}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onRefresh}
-              disabled={isLoading}
-              className="h-7 px-2"
-            >
-              <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

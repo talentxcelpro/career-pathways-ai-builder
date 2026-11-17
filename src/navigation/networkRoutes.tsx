@@ -83,7 +83,19 @@ export const networkRoutes = [
     page: <Suspense fallback={null}><ProfileUrlRedirect /></Suspense>, // This will redirect to /profile/:username
   },
   {
-    title: "Public User Profile",
+    title: "Career Passport",
+    to: "/u/:username",
+    page: <UniversalProfileRouteHandler />,
+    isPublic: true,
+  },
+  {
+    title: "Career Passport Handle",
+    to: "/u/@:username",
+    page: <UniversalProfileRouteHandler />,
+    isPublic: true,
+  },
+  {
+    title: "Public User Profile (Redirect)",
     to: "/p/:username",
     page: <UniversalProfileRouteHandler />,
   },

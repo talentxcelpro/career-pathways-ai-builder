@@ -3,6 +3,7 @@
 // Invariant: Emits static, crawlable <a href="..."> links to pass Googlebot crawl equity from talentxcel.in to all 9 subdomains.
 
 import React from 'react';
+import { RegionSelector } from '@/components/common/RegionSelector';
 
 export const SubdomainMeshFooter: React.FC = () => {
   return (
@@ -190,7 +191,10 @@ export const SubdomainMeshFooter: React.FC = () => {
         </div>
 
         <div className="pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-500 gap-2">
-          <span>&copy; 2026 TalentXcel Global Professional Network. All subdomains actively indexed.</span>
+          <div className="flex flex-col gap-2">
+            <RegionSelector variant="footer" />
+            <span>&copy; 2026 TalentXcel Global Professional Network. All regions actively consolidated on apex canonicals.</span>
+          </div>
           <span>Empowering career mobility, skill verification, and compensation transparency across India.</span>
         </div>
       </div>

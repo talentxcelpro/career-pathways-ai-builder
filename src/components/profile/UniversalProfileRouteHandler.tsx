@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useLocation } from "react-router-dom";
 const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
 
 // Comprehensive set of reserved application routes and static assets
@@ -29,13 +29,12 @@ export const RESERVED_ROUTES = new Set([
 
 export const UniversalProfileRouteHandler: React.FC = () => {
   const { username, id } = useParams<{ username?: string; id?: string }>();
+  const location = useLocation();
   const rawTarget = (username || id || '').trim();
 
   if (!rawTarget) {
     return <Navigate to="/404" replace />;
   }
-
-  // Target parameter verified
 
   // Normalize username / slug
   const cleanUsername = rawTarget.startsWith('@') ? rawTarget.slice(1).trim() : rawTarget;
@@ -66,6 +65,11 @@ export const UniversalProfileRouteHandler: React.FC = () => {
 
   if (isReserved || isStaticFile || cleanUsername.length === 0) {
     return <Navigate to="/404" replace />;
+  }
+
+  // Canonical route consolidation: If path is /p/... or /profile/..., redirect to /u/...
+  if (location.pathname.startsWith('/p/') || location.pathname.startsWith('/profile/')) {
+    return <Navigate to={`/u/${cleanUsername}`} replace />;
   }
 
   // Render Universal Public Profile

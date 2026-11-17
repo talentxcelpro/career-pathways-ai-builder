@@ -157,7 +157,7 @@ const Requests: React.FC = () => {
     const displayTitle = profile?.title || 'Professional Network';
     const displayLocation = profile?.location || null;
     const avatarUrl = profile?.profile_picture_url || undefined;
-    const profileUrl = profile?.username ? `/profile/${profile.username}` : `/p/${partnerId}`;
+    const profileUrl = `/u/${profile?.username || profile?.slug || partnerId}`;
 
     const initials = displayName
       .split(' ')

@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2 } from "lucide-react";
+import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2, RotateCw, Check, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectionRequests } from "@/hooks/useConnectionRequests";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface AdvertisingSidebarProps {
   position?: 'left' | 'right';
@@ -16,21 +17,93 @@ interface AdvertisingSidebarProps {
 
 export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
   const navigate = useNavigate();
+  const { sendConnectionRequest } = useConnectionRequests();
+  const [cycleIndex, setCycleIndex] = useState(0);
+  const [pendingMap, setPendingMap] = useState<Record<string, 'pending' | 'sent'>>({});
 
-  // Fetch connection suggestions for People You May Know directly from Supabase profiles
-  const { data: suggestions } = useQuery({
-    queryKey: ['sidebar-connection-suggestions'],
+  // Dynamic connection suggestions from Supabase profiles pool
+  const { data: suggestions, isLoading: suggestionsLoading } = useQuery({
+    queryKey: ['sidebar-connection-suggestions', cycleIndex],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return [];
-      const { data } = await supabase
+      const excludedIds: string[] = [];
+
+      if (user) {
+        excludedIds.push(user.id);
+        try {
+          const { data: conns } = await supabase
+            .from('connections')
+            .select('requester_id, recipient_id')
+            .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`);
+          if (conns && conns.length > 0) {
+            conns.forEach(c => {
+              if (c.requester_id) excludedIds.push(c.requester_id);
+              if (c.recipient_id) excludedIds.push(c.recipient_id);
+            });
+          }
+        } catch (_) {}
+      }
+
+      // Fetch a pool of verified profiles with actual names
+      let query = supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url, location, username, slug')
-        .neq('id', user.id)
-        .limit(3);
-      return data || [];
-    }
+        .select('id, full_name, title, profile_picture_url, location, username, slug, headline')
+        .not('full_name', 'is', null)
+        .neq('full_name', '');
+
+      if (user && excludedIds.length > 0) {
+        query = query.not('id', 'in', `(${excludedIds.slice(0, 40).join(',')})`);
+      }
+
+      const { data, error } = await query.limit(45);
+      if (error || !data) return [];
+
+      const validProfiles = data.filter(p => p.full_name && p.full_name.trim().length > 1);
+
+      // Seeded shuffle/cycle across the candidate pool so it changes dynamically
+      const shuffled = [...validProfiles].sort((a, b) => {
+        const hashA = (a.id.charCodeAt(0) + cycleIndex * 17) % 100;
+        const hashB = (b.id.charCodeAt(0) + cycleIndex * 17) % 100;
+        return hashA - hashB;
+      });
+
+      return shuffled.slice(0, 3);
+    },
+    staleTime: 60 * 1000
   });
+
+  const handleConnect = async (e: React.MouseEvent, person: any) => {
+    e.stopPropagation();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.info("Please sign in to connect with professionals", {
+        action: {
+          label: "Sign In",
+          onClick: () => navigate('/auth')
+        }
+      });
+      return;
+    }
+
+    try {
+      setPendingMap(prev => ({ ...prev, [person.id]: 'pending' }));
+      await sendConnectionRequest.mutateAsync({ recipientId: person.id });
+      setPendingMap(prev => ({ ...prev, [person.id]: 'sent' }));
+      toast.success(`Connection request sent to ${person.full_name}!`);
+    } catch (err: any) {
+      setPendingMap(prev => {
+        const copy = { ...prev };
+        delete copy[person.id];
+        return copy;
+      });
+      toast.error(err?.message || "Failed to send connection request");
+    }
+  };
+
+  const handleShuffleSuggestions = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCycleIndex(prev => prev + 1);
+  };
 
   return (
     <div className="space-y-3">
@@ -124,10 +197,20 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
         </div>
       </div>
 
-      {/* 3. PEOPLE YOU MAY KNOW CARD - REAL AVATARS ONLY */}
+      {/* 3. PEOPLE YOU MAY KNOW CARD - DYNAMICALLY POPULATED & INTERACTIVE */}
       <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-3">
         <div className="flex items-center justify-between mb-2 px-1">
-          <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>
+          <div className="flex items-center gap-1.5">
+            <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>
+            <button
+              type="button"
+              onClick={handleShuffleSuggestions}
+              title="Show more recommendations"
+              className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-slate-100 dark:hover:bg-muted transition-colors"
+            >
+              <RotateCw className={`h-3 w-3 ${suggestionsLoading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
           <Button variant="link" size="sm" onClick={() => navigate('/network/discover')} className="text-[11px] font-bold text-primary p-0 h-auto">
             View All
           </Button>
@@ -135,39 +218,55 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
 
         <div className="space-y-2">
           {suggestions && suggestions.length > 0 ? (
-            suggestions.map((person) => (
-              <div key={person.id} className="flex items-center justify-between gap-2.5 p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-muted/40 transition-colors">
-                <div 
-                  onClick={() => navigate(`/passport/public/${person.username || person.slug || person.id}`)}
-                  className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer"
-                >
-                  <Avatar className="w-8 h-8 border border-slate-200 dark:border-border shrink-0">
-                    <AvatarImage src={person.profile_picture_url || undefined} />
-                    <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
-                      {person.full_name?.charAt(0) || "P"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1">
-                      <p className="text-xs font-bold text-foreground truncate">{person.full_name}</p>
-                      <CheckCircle2 className="h-3 w-3 text-blue-600 shrink-0" />
-                    </div>
-                    <p className="text-[10px] text-muted-foreground truncate">{person.title || "Professional"}</p>
-                  </div>
-                </div>
+            suggestions.map((person) => {
+              const profileIdentifier = person.username || person.slug || person.id;
+              const status = pendingMap[person.id];
 
-                <Button 
-                  size="sm" 
-                  onClick={() => navigate(`/passport/public/${person.username || person.slug || person.id}`)}
-                  className="rounded-lg text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-2.5 h-6.5 shadow-xs shrink-0"
-                >
-                  Connect
-                </Button>
-              </div>
-            ))
+              return (
+                <div key={person.id} className="flex items-center justify-between gap-2.5 p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-muted/40 transition-colors">
+                  <div 
+                    onClick={() => navigate(`/u/${profileIdentifier}`)}
+                    className="flex items-center gap-2 min-w-0 flex-1 cursor-pointer"
+                  >
+                    <Avatar className="w-8 h-8 border border-slate-200 dark:border-border shrink-0">
+                      <AvatarImage src={person.profile_picture_url || undefined} />
+                      <AvatarFallback className="font-bold text-xs bg-slate-900 text-white">
+                        {person.full_name?.charAt(0) || "P"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs font-bold text-foreground truncate">{person.full_name}</p>
+                        <CheckCircle2 className="h-3 w-3 text-blue-600 shrink-0" />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground truncate">{person.headline || person.title || "Professional"}</p>
+                    </div>
+                  </div>
+
+                  <Button 
+                    size="sm" 
+                    disabled={status === 'pending' || status === 'sent'}
+                    onClick={(e) => handleConnect(e, person)}
+                    className={`rounded-lg text-[10px] font-bold px-2.5 h-6.5 shadow-xs shrink-0 transition-all ${
+                      status === 'sent'
+                        ? 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 border border-slate-200'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white'
+                    }`}
+                  >
+                    {status === 'pending' ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : status === 'sent' ? (
+                      <span className="flex items-center gap-1"><Check className="h-3 w-3 text-emerald-600" /> Pending</span>
+                    ) : (
+                      'Connect'
+                    )}
+                  </Button>
+                </div>
+              );
+            })
           ) : (
             <div className="text-center py-4 text-[11px] text-muted-foreground">
-              No new connection suggestions
+              {suggestionsLoading ? 'Finding professionals...' : 'No new connection suggestions'}
             </div>
           )}
         </div>

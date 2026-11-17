@@ -350,7 +350,7 @@ async function runAllGates() {
   // ==========================================================================
   console.log('\n--- GATE 4: VIEW SECURITY MODEL AUDIT ---');
 
-  const viewAudit = await runSql(`
+  const viewAuditRaw = runSql(`
     SELECT 
       c.relname AS view_name,
       pg_get_userbyid(c.relowner) AS view_owner,
@@ -362,6 +362,7 @@ async function runAllGates() {
       AND c.relname IN ('public_profiles', 'connection_profiles', 'applicant_profiles', 'feed_author_snippets')
     ORDER BY c.relname;
   `, 'staging');
+  const viewAudit = Array.isArray(viewAuditRaw) ? viewAuditRaw : [];
 
   for (const v of viewAudit) {
     const isBarrier = Array.isArray(v.options) && v.options.includes('security_barrier=true');

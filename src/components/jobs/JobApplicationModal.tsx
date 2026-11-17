@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { optimizedStorage } from '@/utils/optimizedStorage';
 import { incrementJobApplications } from "@/utils/supabaseHelpers";
+import { PostApplyNetworkPromptCard } from "@/components/network/PostApplyNetworkPromptCard";
 
 interface JobApplicationModalProps {
   open: boolean;
@@ -43,11 +45,13 @@ interface ApplicationData {
 }
 
 export default function JobApplicationModal({ open, onOpenChange, job }: JobApplicationModalProps) {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('existing');
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [selectedResumeId, setSelectedResumeId] = useState<string>('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
   const [matchScore, setMatchScore] = useState<number | null>(null);
   const [resumeRequired, setResumeRequired] = useState(true);
@@ -60,6 +64,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
   // Fetch user's resumes and profile data
   useEffect(() => {
     if (open) {
+      setIsSubmitted(false);
       fetchUserData();
     }
   }, [open]);
@@ -259,7 +264,7 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
       }
 
       toast.success('Application submitted successfully!');
-      onOpenChange(false);
+      setIsSubmitted(true);
       
       // Reset form
       setFormData({
@@ -289,7 +294,37 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        {isSubmitted ? (
+          <div className="py-2 space-y-4">
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300">
+              <CheckCircle className="h-6 w-6 shrink-0" />
+              <div>
+                <h3 className="font-bold text-sm sm:text-base">Application Submitted! Your profile has been sent.</h3>
+                <p className="text-xs text-muted-foreground">The hiring team has received your application for {job.title}.</p>
+              </div>
+            </div>
+
+            <PostApplyNetworkPromptCard
+              job={{
+                id: job.id,
+                title: job.title,
+                category: (job as any).category,
+                location: (job as any).location,
+                skills_required: job.skills_required
+              }}
+              onPublished={(postId) => {
+                onOpenChange(false);
+                navigate(`/network?highlight_post=${postId}&industry=${encodeURIComponent((job as any).category || 'tech')}`);
+              }}
+              onSkip={() => {
+                onOpenChange(false);
+                navigate(`/network?industry=${encodeURIComponent((job as any).category || 'tech')}`);
+              }}
+            />
+          </div>
+        ) : (
+          <>
+            <DialogHeader>
           <DialogTitle className="flex items-center gap-3">
             {job.companies?.logo_url && (
               <img 
@@ -465,7 +500,9 @@ export default function JobApplicationModal({ open, onOpenChange, job }: JobAppl
             </Button>
           </div>
         </form>
-      </DialogContent>
-    </Dialog>
+      </>
+    )}
+  </DialogContent>
+</Dialog>
   );
 }

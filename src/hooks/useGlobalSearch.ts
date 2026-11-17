@@ -82,10 +82,10 @@ export const useGlobalSearch = ({
             const username = clean(user.username);
             const slug = clean(user.slug);
             const profilePath = username
-              ? `/${username}`
+              ? `/u/${username}`
               : slug
-              ? `/${slug}`
-              : `/p/${user.id}`; // Fallback to public profile by ID
+              ? `/u/${slug}`
+              : `/u/${user.id}`; // Fallback to public passport by ID
             return {
               type: 'user' as const,
               id: user.id,

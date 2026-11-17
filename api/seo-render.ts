@@ -720,9 +720,9 @@ async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
     if (isUuid) {
       filter = `id=eq.${encodeURIComponent(cleaned)}`;
     } else {
-      filter = `or=(username.ilike.${encodeURIComponent(cleaned)},custom_profile_url.ilike.${encodeURIComponent(cleaned)},slug.ilike.${encodeURIComponent(cleaned)})`;
+      filter = `username=ilike.${encodeURIComponent(cleaned)}`;
     }
-    const url = `${getSupabaseRestUrl()}/profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
+    const url = `${getSupabaseRestUrl()}/public_profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': getSupabaseAnonKey(),
@@ -796,6 +796,7 @@ export default async function handler(req: Request) {
       }
     }
   }
+
   if (cleanPath === 'robots.txt' || cleanPath.endsWith('/robots.txt')) {
     return new Response('User-agent: *\nAllow: /\n\nSitemap: https://talentxcel.in/sitemap-root.xml\n', {
       status: 200,

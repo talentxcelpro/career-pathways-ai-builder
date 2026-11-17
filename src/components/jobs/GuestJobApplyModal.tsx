@@ -28,6 +28,7 @@ import {
   Linkedin,
 } from 'lucide-react';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
+import { PostApplyNetworkPromptCard } from '@/components/network/PostApplyNetworkPromptCard';
 
 interface GuestJobApplyModalProps {
   open?: boolean;
@@ -648,6 +649,25 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
                 )}
               </div>
             )}
+
+            {/* Post-Apply Career Perspective Network Seeding Card */}
+            <PostApplyNetworkPromptCard
+              job={{
+                id: job.id,
+                title: job.title,
+                category: job.category,
+                location: job.location,
+                skills_required: job.skills_required
+              }}
+              onPublished={(postId) => {
+                handleOpenChange(false);
+                window.location.href = `/network?highlight_post=${postId}&industry=${encodeURIComponent(job.category || 'tech')}`;
+              }}
+              onSkip={() => {
+                handleOpenChange(false);
+                window.location.href = `/network?industry=${encodeURIComponent(job.category || 'tech')}`;
+              }}
+            />
 
             {/* Retention Loop: Related Jobs */}
             {submittedResult.relatedJobs && submittedResult.relatedJobs.length > 0 && (
