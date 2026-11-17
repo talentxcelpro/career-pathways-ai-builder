@@ -179,6 +179,7 @@ const CVDatabase                      = lazy(() => import('@/components/employer
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
 const RealTimeChat                    = lazy(() => import('@/components/realtime/RealTimeChat').then(m => ({ default: m.RealTimeChat })));
 const NetworkMainPage                 = lazy(() => import('./pages/Network'));
+const AffiliatePage                   = lazy(() => import('./pages/AffiliatePage'));
 const CommunitiesPage                 = lazy(() => import('./pages/network/Communities'));
 const MessagesPage                    = lazy(() => import('./pages/network/Messages'));
 const NotificationsPage               = lazy(() => import('./pages/NotificationsPage'));
@@ -779,6 +780,9 @@ const App = () => {
                 <Route path="/register" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
                 <Route path="/auth/signup" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
                 <Route path="/network" element={<Suspense fallback={<PageFallbackSkeleton />}><NetworkMainPage /></Suspense>} />
+                <Route path="/affiliate" element={<Suspense fallback={<PageFallbackSkeleton />}><AffiliatePage /></Suspense>} />
+                <Route path="/affiliates" element={<Navigate to="/affiliate" replace />} />
+                <Route path="/affiliate-marketplace" element={<Navigate to="/affiliate" replace />} />
                 <Route path="/pricing" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
                 <Route path="/subscription" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />
                 <Route path="/plans" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Plans...</div>}><ProSubscription /></Suspense>} />

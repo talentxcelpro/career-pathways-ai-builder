@@ -11,6 +11,7 @@ import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnectAI";
 import { GamificationDashboard } from "@/components/gamification/GamificationDashboard";
 import { ViralGrowthEngineDashboard } from "@/components/referral/ViralGrowthEngineDashboard";
+const AffiliateMarketplaceTab = React.lazy(() => import('@/components/affiliate/AffiliateMarketplaceTab'));
 import { 
   Users, 
   Sparkles, 
@@ -112,7 +113,7 @@ const Network: React.FC = () => {
 
 
   // Consistent responsive layout renderer ensuring 100% UI theme fidelity on both mobile & desktop
-  const renderUniformLayout = (middleContent: React.ReactNode) => (
+  const renderUniformLayout = (middleContent: React.ReactNode, isWide: boolean = false) => (
     <div className="grid grid-cols-1 md:grid-cols-12 lg:grid-cols-12 gap-3 sm:gap-3.5">
       {/* LEFT COLUMN: PROFILE CARD + QUICK METRICS (hidden on mobile, shown on md+) */}
       <div className="hidden md:block md:col-span-4 lg:col-span-3 space-y-3">
@@ -126,58 +127,60 @@ const Network: React.FC = () => {
         />
       </div>
 
-      {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT (full-width on mobile, col-span-6 on lg) */}
-      <div className="col-span-12 md:col-span-8 lg:col-span-6 space-y-3 w-full max-w-[680px] mx-auto min-w-0">
+      {/* MIDDLE COLUMN: ACTIVE MODULE CONTENT (full-width on mobile, col-span-9 on lg if wide, else col-span-6) */}
+      <div className={`col-span-12 md:col-span-8 ${isWide ? 'lg:col-span-9' : 'lg:col-span-6 max-w-[680px]'} space-y-3 w-full mx-auto min-w-0`}>
         {middleContent}
       </div>
 
-      {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO (hidden on mobile, shown on lg+) */}
-      <div className="hidden lg:block lg:col-span-3 space-y-3">
-        {/* Quick Explore Ecosystem Button on Desktop */}
-        <button
-          type="button"
-          onClick={() => setExploreDrawerOpen(true)}
-          className="w-full py-2.5 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-muted/80 border border-slate-200/80 dark:border-border/60 rounded-2xl transition-all shadow-2xs flex items-center justify-between group cursor-pointer"
-        >
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 shadow-2xs">
-              <Compass className="h-4 w-4" />
-            </div>
-            <div className="text-left">
-              <p className="text-xs font-extrabold text-foreground tracking-tight group-hover:text-blue-600 transition-colors">Explore Ecosystem</p>
-              <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Jobs, Career Passport &amp; Tools</p>
-            </div>
-          </div>
-          <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
-        </button>
-
-        {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
-        <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-2">
-            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-400/30">
-              <Sparkles className="w-3 h-3 text-cyan-300" />
-              Daily Briefing
-            </span>
-          </div>
-
-          <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
-            Your Professional Day
-          </h3>
-          <p className="text-xs text-blue-200/90 leading-relaxed mt-1.5 mb-3.5">
-            Intelligence, community recommendations and career momentum
-          </p>
-
+      {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO (hidden on mobile, shown on lg+ only when not wide) */}
+      {!isWide && (
+        <div className="hidden lg:block lg:col-span-3 space-y-3">
+          {/* Quick Explore Ecosystem Button on Desktop */}
           <button
-            onClick={() => handleTabChange('creator-studio')}
-            className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 group-hover:shadow-md cursor-pointer"
+            type="button"
+            onClick={() => setExploreDrawerOpen(true)}
+            className="w-full py-2.5 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-muted/80 border border-slate-200/80 dark:border-border/60 rounded-2xl transition-all shadow-2xs flex items-center justify-between group cursor-pointer"
           >
-            <span>Creator Studio</span>
-            <span>&rarr;</span>
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 shadow-2xs">
+                <Compass className="h-4 w-4" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-extrabold text-foreground tracking-tight group-hover:text-blue-600 transition-colors">Explore Ecosystem</p>
+                <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Jobs, Career Passport &amp; Tools</p>
+              </div>
+            </div>
+            <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
           </button>
-        </div>
 
-        <AdvertisingSidebar />
-      </div>
+          {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
+          <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
+            <div className="flex items-center justify-between mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-400/30">
+                <Sparkles className="w-3 h-3 text-cyan-300" />
+                Daily Briefing
+              </span>
+            </div>
+
+            <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
+              Your Professional Day
+            </h3>
+            <p className="text-xs text-blue-200/90 leading-relaxed mt-1.5 mb-3.5">
+              Intelligence, community recommendations and career momentum
+            </p>
+
+            <button
+              onClick={() => handleTabChange('creator-studio')}
+              className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 group-hover:shadow-md cursor-pointer"
+            >
+              <span>Creator Studio</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
+
+          <AdvertisingSidebar />
+        </div>
+      )}
     </div>
   );
 
@@ -225,7 +228,7 @@ const Network: React.FC = () => {
                           <span>Network Navigation</span>
                         </div>
                         <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200">
-                          9 Hubs
+                          10 Hubs
                         </Badge>
                       </SheetTitle>
                     </SheetHeader>
@@ -328,17 +331,7 @@ const Network: React.FC = () => {
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-1.5">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      title="Refresh feed"
-                      onClick={handleRefreshFeed} 
-                      className="rounded-lg h-7 w-7 p-0 border-slate-200/80 dark:border-border/60 bg-white dark:bg-card shadow-xs hover:bg-slate-50"
-                    >
-                      <RotateCw className="h-3 w-3 text-slate-600 dark:text-slate-300" />
-                    </Button>
-                  </div>
+
                 </div>
 
                 {/* Posts Feed */}
@@ -404,6 +397,18 @@ const Network: React.FC = () => {
               <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Refer &amp; Earn...</div>}>
                 <ViralGrowthEngineDashboard />
               </React.Suspense>
+            )}
+          </TabsContent>
+
+          {/* ============================================================================ */}
+          {/* 4b. TAB CONTENT: AFFILIATE MARKETPLACE                                       */}
+          {/* ============================================================================ */}
+          <TabsContent value="affiliate-marketplace" className="mt-0">
+            {renderUniformLayout(
+              <React.Suspense fallback={<div className="p-8 text-center text-xs text-muted-foreground">Loading Affiliate Marketplace...</div>}>
+                <AffiliateMarketplaceTab />
+              </React.Suspense>,
+              true
             )}
           </TabsContent>
 
