@@ -1,0 +1,1090 @@
+-- ============================================================================
+-- Migration: 20261114190000_txc_migration_b_secure_profiles_access_model.sql
+-- Module: TalentXcel Security Redesign (Migration B) - Hardened Access Architecture
+-- Target: Staging validated -> Production Candidate
+-- Objectives:
+--   1. Harden table privileges on public.profiles (Revoke anon/public access, revoke TRUNCATE).
+--   2. Enforce Column-Level Security on public.profiles via explicit static allowlists:
+--      - Grant authenticated users INSERT & UPDATE strictly on explicit user-editable columns.
+--      - Strictly deny authenticated write access to created_at, updated_at, verification_status,
+--        user_role, is_profile_public, profile_visibility.
+--      - Install BEFORE INSERT OR UPDATE trigger (protect_profile_system_columns) as SECURITY INVOKER
+--        to prevent service_role and unprivileged bypass.
+--   3. Enforce strict owner-only RLS on base public.profiles (with explicit INSERT and UPDATE WITH CHECK).
+--   4. Interface C: Dedicated limited-column connection view (public.connection_profiles)
+--      - Enforces security_barrier = true.
+--      - Filters profile_visibility IN ('public', 'connections_only') and strictly excludes private profiles.
+--   5. Interface D: Recruiter/employer applicant view (public.applicant_profiles)
+--      - Enforces security_barrier = true.
+--      - Verifies hiring authority via can_manage_company_job (active team member + hiring role/manage_jobs).
+--      - Strictly excludes inactive/suspended members and non-hiring viewers.
+--   6. Interface E: Minimal social feed author snippets view (public.feed_author_snippets)
+--      - Enforces security_barrier = true.
+--      - Exposes only 8 safe display fields for published, non-deleted public posts.
+--   7. Refine public affirmative-consent view (public.public_profiles)
+--      - Enforces security_barrier = true.
+--      - Excludes updated_at, retains created_at and is_profile_public.
+--   8. Harden service_role privileges on consent audit tables (Revoke INSERT, UPDATE, DELETE, TRUNCATE).
+--   9. Harden storage.objects RLS on documents bucket:
+--      - Requires active hiring authority via can_manage_company_job for employer access.
+--      - Restricts document access strictly to the exact resume attached to that job application.
+--      - Unrelated candidate documents remain strictly private.
+-- ============================================================================
+
+BEGIN;
+
+-- ----------------------------------------------------------------------------
+-- 1. BASE TABLE PRIVILEGES HARDENING (public.profiles)
+-- ----------------------------------------------------------------------------
+-- Revoke all direct privileges from PUBLIC and anon on the base profiles table.
+-- Public/anonymous users MUST access candidate data strictly via public_profiles view.
+REVOKE ALL ON TABLE public.profiles FROM PUBLIC, anon;
+
+-- Revoke dangerous administrative and DDL privileges from authenticated role.
+-- RLS does NOT protect against TRUNCATE; it must be revoked at the privilege level.
+REVOKE TRUNCATE, DELETE, REFERENCES, TRIGGER ON TABLE public.profiles FROM authenticated;
+
+-- Revoke TRUNCATE from service_role to prevent accidental catastrophic table wipes.
+REVOKE TRUNCATE ON TABLE public.profiles FROM service_role;
+
+-- Revoke table-wide INSERT and UPDATE from authenticated role to prepare for column grants.
+REVOKE INSERT, UPDATE ON TABLE public.profiles FROM authenticated;
+
+-- Grant SELECT on base profiles table to authenticated (required for owner-only RLS evaluation).
+GRANT SELECT ON TABLE public.profiles TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.profiles TO service_role;
+
+-- ----------------------------------------------------------------------------
+-- 2. COLUMN-LEVEL SECURITY: EXPLICIT USER-EDITABLE ALLOWLIST
+-- ----------------------------------------------------------------------------
+-- Grant authenticated users INSERT & UPDATE privileges ONLY on an explicit allowlist.
+-- System, verification, role, privacy, and system timestamps (created_at, updated_at) are excluded.
+
+GRANT INSERT (
+    id,
+    full_name,
+    username,
+    title,
+    headline,
+    about,
+    location,
+    email,
+    phone,
+    website,
+    profile_picture_url,
+    profile_photo_url,
+    cover_image_url,
+    skills,
+    experience_years,
+    industry,
+    current_company,
+    linkedin_url,
+    github_url,
+    portfolio_url,
+    resume_url,
+    looking_for_job,
+    open_to_remote,
+    preferred_salary_min,
+    preferred_salary_max,
+    preferred_locations
+) ON TABLE public.profiles TO authenticated;
+
+GRANT UPDATE (
+    id,
+    full_name,
+    username,
+    title,
+    headline,
+    about,
+    location,
+    email,
+    phone,
+    website,
+    profile_picture_url,
+    profile_photo_url,
+    cover_image_url,
+    skills,
+    experience_years,
+    industry,
+    current_company,
+    linkedin_url,
+    github_url,
+    portfolio_url,
+    resume_url,
+    looking_for_job,
+    open_to_remote,
+    preferred_salary_min,
+    preferred_salary_max,
+    preferred_locations
+) ON TABLE public.profiles TO authenticated;
+
+-- Explicitly ensure created_at and updated_at have NO user write privileges
+REVOKE INSERT (created_at, updated_at), UPDATE (created_at, updated_at) ON TABLE public.profiles FROM authenticated;
+
+-- ----------------------------------------------------------------------------
+-- 3. DEFENSE-IN-DEPTH TRIGGER: PROTECT SYSTEM & PRIVACY COLUMNS
+-- ----------------------------------------------------------------------------
+-- Implemented as SECURITY INVOKER so it executes under the caller's actual role.
+-- Prevents service_role, authenticated, and other callers from directly mutating
+-- verification_status, user_role, is_profile_public, and profile_visibility.
+CREATE OR REPLACE FUNCTION public.protect_profile_system_columns()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = ''
+AS $$
+BEGIN
+    IF TG_OP = 'UPDATE' THEN
+        -- System security columns (verification_status, user_role) can ONLY be modified by superuser.
+        -- The consent GUC cannot bypass these columns under any circumstances.
+        IF (
+            (OLD.verification_status IS DISTINCT FROM NEW.verification_status) OR
+            (OLD.user_role::text IS DISTINCT FROM NEW.user_role::text)
+        ) THEN
+            IF NOT (current_user = 'postgres' AND session_user = 'postgres') THEN
+                RAISE EXCEPTION 'Direct mutation of verification_status or user_role on public.profiles is forbidden.' USING errcode = '42501';
+            END IF;
+        END IF;
+
+        -- Privacy indexing columns (is_profile_public, profile_visibility) can be modified by superuser
+        -- or strictly within the authorized affirmative-consent RPC (txc.in_consent_rpc = 'on').
+        IF (
+            (OLD.is_profile_public IS DISTINCT FROM NEW.is_profile_public) OR
+            (OLD.profile_visibility IS DISTINCT FROM NEW.profile_visibility)
+        ) THEN
+            IF NOT (
+                (current_user = 'postgres' AND session_user = 'postgres') OR
+                COALESCE(pg_catalog.current_setting('txc.in_consent_rpc', true), '') = 'on'
+            ) THEN
+                RAISE EXCEPTION 'Direct mutation of system/privacy columns on public.profiles is forbidden. Use authorized RPCs.' USING errcode = '42501';
+            END IF;
+        END IF;
+
+    ELSIF TG_OP = 'INSERT' THEN
+        -- On INSERT, enforce safe defaults for unprivileged callers
+        IF (
+            (NEW.verification_status IS NOT NULL AND NEW.verification_status <> 'unverified') OR
+            (NEW.user_role::text IS NOT NULL AND NEW.user_role::text NOT IN ('candidate', 'job_seeker'))
+        ) THEN
+            IF NOT (current_user = 'postgres' AND session_user = 'postgres') THEN
+                RAISE EXCEPTION 'Setting privileged values for verification_status or user_role on profile insert is forbidden.' USING errcode = '42501';
+            END IF;
+        END IF;
+
+        IF (
+            (NEW.is_profile_public IS TRUE) OR
+            (NEW.profile_visibility IS NOT NULL AND NEW.profile_visibility <> 'private')
+        ) THEN
+            IF NOT (
+                (current_user = 'postgres' AND session_user = 'postgres') OR
+                COALESCE(pg_catalog.current_setting('txc.in_consent_rpc', true), '') = 'on'
+            ) THEN
+                RAISE EXCEPTION 'Setting privileged values for privacy columns on profile insert is forbidden.' USING errcode = '42501';
+            END IF;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_protect_profile_system_columns ON public.profiles;
+CREATE TRIGGER trg_protect_profile_system_columns
+BEFORE INSERT OR UPDATE ON public.profiles
+FOR EACH ROW EXECUTE FUNCTION public.protect_profile_system_columns();
+
+-- Update set_public_profile_consent to set transaction-local txc.in_consent_rpc flag
+CREATE OR REPLACE FUNCTION public.set_public_profile_consent(
+    p_granted boolean,
+    p_visibility text DEFAULT NULL,
+    p_source text DEFAULT 'user_privacy_dashboard'
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_user_id uuid := auth.uid();
+    v_target_status text;
+    v_target_visibility text;
+    v_profile_exists boolean;
+    v_rows_updated integer;
+    c_consent_version CONSTANT text := 'v1.0';
+    c_consent_type CONSTANT text := 'public_profile_indexing';
+BEGIN
+    -- 1. Authentication check
+    IF v_user_id IS NULL THEN
+        RAISE EXCEPTION 'Authentication required' USING errcode = '42501';
+    END IF;
+
+    -- 2. Basic parameter validations
+    IF p_granted IS NULL THEN
+        RAISE EXCEPTION 'p_granted must not be null' USING errcode = '22023';
+    END IF;
+
+    IF p_source IS NULL OR p_source NOT IN ('user_privacy_dashboard', 'onboarding_opt_in', 'profile_settings') THEN
+        RAISE EXCEPTION 'Invalid consent source: %', p_source USING errcode = '22023';
+    END IF;
+
+    -- 3. Strict Gate 2 Consistency Validation between p_granted and p_visibility
+    IF p_visibility IS NULL THEN
+        IF p_granted IS TRUE THEN
+            v_target_visibility := 'public';
+        ELSE
+            v_target_visibility := 'private';
+        END IF;
+    ELSE
+        IF p_visibility NOT IN ('public', 'connections_only', 'private') THEN
+            RAISE EXCEPTION 'Invalid profile visibility: %', p_visibility USING errcode = '22023';
+        END IF;
+
+        IF p_granted IS TRUE AND p_visibility <> 'public' THEN
+            RAISE EXCEPTION 'Inconsistent consent grant: when p_granted is true, p_visibility must be ''public'' (received: %)', p_visibility USING errcode = '22023';
+        END IF;
+
+        IF p_granted IS FALSE AND p_visibility NOT IN ('connections_only', 'private') THEN
+            RAISE EXCEPTION 'Inconsistent consent revocation: when p_granted is false, p_visibility must be ''connections_only'' or ''private'' (received: %)', p_visibility USING errcode = '22023';
+        END IF;
+
+        v_target_visibility := p_visibility;
+    END IF;
+
+    -- 4. Pre-check: Verify that exactly one corresponding public.profiles row exists
+    SELECT EXISTS (
+        SELECT 1 FROM public.profiles WHERE id = v_user_id
+    ) INTO v_profile_exists;
+
+    IF NOT v_profile_exists THEN
+        RAISE EXCEPTION 'Profile row not found for user %', v_user_id USING errcode = 'P0002';
+    END IF;
+
+    -- Set transaction-local GUC flag so protect_profile_system_columns allows visibility update
+    PERFORM set_config('txc.in_consent_rpc', 'on', true);
+
+    -- 5. Transactional update based on affirmative grant or revocation
+    IF p_granted IS TRUE THEN
+        v_target_status := 'granted';
+
+        INSERT INTO public.candidate_privacy_consents (
+            user_id, consent_type, consent_status, consent_version, consent_source, consent_timestamp, revocation_timestamp, updated_at
+        ) VALUES (
+            v_user_id, c_consent_type, 'granted', c_consent_version, p_source, pg_catalog.now(), NULL, pg_catalog.now()
+        )
+        ON CONFLICT (user_id, consent_type) DO UPDATE SET
+            consent_status = 'granted',
+            consent_version = c_consent_version,
+            consent_timestamp = pg_catalog.now(),
+            revocation_timestamp = NULL,
+            consent_source = p_source,
+            updated_at = pg_catalog.now();
+
+        UPDATE public.profiles
+        SET is_profile_public = true,
+            profile_visibility = 'public',
+            updated_at = pg_catalog.now()
+        WHERE id = v_user_id;
+
+        GET DIAGNOSTICS v_rows_updated = ROW_COUNT;
+        IF v_rows_updated <> 1 THEN
+            RAISE EXCEPTION 'Expected to update exactly 1 profile row for user %, updated %', v_user_id, v_rows_updated USING errcode = 'P0002';
+        END IF;
+
+        INSERT INTO public.candidate_consent_events (
+            user_id, consent_type, event_type, consent_version, consent_source
+        ) VALUES (
+            v_user_id, c_consent_type, 'consent_granted', c_consent_version, p_source
+        );
+
+    ELSE
+        v_target_status := 'revoked';
+
+        INSERT INTO public.candidate_privacy_consents (
+            user_id, consent_type, consent_status, consent_version, consent_source, consent_timestamp, revocation_timestamp, updated_at
+        ) VALUES (
+            v_user_id, c_consent_type, 'revoked', c_consent_version, p_source, pg_catalog.now(), pg_catalog.now(), pg_catalog.now()
+        )
+        ON CONFLICT (user_id, consent_type) DO UPDATE SET
+            consent_status = 'revoked',
+            consent_version = c_consent_version,
+            revocation_timestamp = pg_catalog.now(),
+            consent_source = p_source,
+            updated_at = pg_catalog.now();
+
+        UPDATE public.profiles
+        SET is_profile_public = false,
+            profile_visibility = v_target_visibility,
+            updated_at = pg_catalog.now()
+        WHERE id = v_user_id;
+
+        GET DIAGNOSTICS v_rows_updated = ROW_COUNT;
+        IF v_rows_updated <> 1 THEN
+            RAISE EXCEPTION 'Expected to update exactly 1 profile row for user %, updated %', v_user_id, v_rows_updated USING errcode = 'P0002';
+        END IF;
+
+        INSERT INTO public.candidate_consent_events (
+            user_id, consent_type, event_type, consent_version, consent_source
+        ) VALUES (
+            v_user_id, c_consent_type, 'consent_revoked', c_consent_version, p_source
+        );
+    END IF;
+
+    RETURN pg_catalog.jsonb_build_object(
+        'success', true,
+        'user_id', v_user_id,
+        'consent_status', v_target_status,
+        'profile_visibility', v_target_visibility,
+        'consent_version', c_consent_version,
+        'timestamp', pg_catalog.now()
+    );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.set_public_profile_consent(boolean, text, text) FROM PUBLIC, anon, service_role;
+GRANT EXECUTE ON FUNCTION public.set_public_profile_consent(boolean, text, text) TO authenticated;
+
+-- ----------------------------------------------------------------------------
+-- 4. BASE TABLE RLS POLICIES (public.profiles)
+-- ----------------------------------------------------------------------------
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- Drop all existing / legacy policies on public.profiles
+DROP POLICY IF EXISTS "Users can view public profiles" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_public" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_connections" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_employers" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_all" ON public.profiles;
+DROP POLICY IF EXISTS "Users can view their own profile" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_select_own" ON public.profiles;
+DROP POLICY IF EXISTS "Users can insert own profile" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_insert_own" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_update_own" ON public.profiles;
+DROP POLICY IF EXISTS "profiles_admin_all" ON public.profiles;
+
+-- Policy A1: Owner & Admin SELECT
+CREATE POLICY "profiles_select_own" ON public.profiles
+FOR SELECT TO authenticated
+USING (
+    (auth.uid() = id) 
+    OR (public.is_app_admin(auth.uid()))
+);
+
+-- Policy A2: Owner INSERT (Onboarding & Registration)
+CREATE POLICY "profiles_insert_own" ON public.profiles
+FOR INSERT TO authenticated
+WITH CHECK (
+    auth.uid() = id
+);
+
+-- Policy A3: Owner UPDATE (Profile Editing)
+CREATE POLICY "profiles_update_own" ON public.profiles
+FOR UPDATE TO authenticated
+USING (
+    auth.uid() = id
+)
+WITH CHECK (
+    auth.uid() = id
+);
+
+-- Policy A4: Administrative Scoped Access
+CREATE POLICY "profiles_admin_all" ON public.profiles
+FOR ALL TO authenticated
+USING (
+    public.is_app_admin(auth.uid())
+)
+WITH CHECK (
+    public.is_app_admin(auth.uid())
+);
+
+-- ----------------------------------------------------------------------------
+-- 5. SERVICE-ROLE AUDIT PROTECTION (candidate_privacy_consents & events)
+-- ----------------------------------------------------------------------------
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.candidate_privacy_consents FROM service_role;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.candidate_consent_events FROM service_role;
+
+GRANT SELECT ON TABLE public.candidate_privacy_consents TO service_role;
+GRANT SELECT ON TABLE public.candidate_consent_events TO service_role;
+
+-- ----------------------------------------------------------------------------
+-- 6. INTERFACE C: DEDICATED CONNECTIONS PROFILE INTERFACE
+-- ----------------------------------------------------------------------------
+DROP VIEW IF EXISTS public.connection_profiles;
+
+CREATE VIEW public.connection_profiles
+WITH (security_barrier = true) AS
+SELECT 
+    p.id,
+    p.full_name,
+    p.username,
+    p.title,
+    p.headline,
+    p.about,
+    p.location,
+    p.profile_picture_url,
+    p.profile_photo_url,
+    p.cover_image_url,
+    p.skills,
+    p.experience_years,
+    p.industry,
+    p.current_company,
+    p.linkedin_url,
+    p.github_url,
+    p.portfolio_url,
+    p.website,
+    p.verification_status,
+    p.created_at
+FROM public.profiles p
+WHERE (p.profile_visibility IN ('public', 'connections_only'))
+  AND EXISTS (
+    SELECT 1 FROM public.connections c
+    WHERE (
+        (c.requester_id = auth.uid() AND c.recipient_id = p.id)
+        OR
+        (c.recipient_id = auth.uid() AND c.requester_id = p.id)
+    )
+    AND c.status = 'accepted'
+);
+
+REVOKE ALL ON public.connection_profiles FROM PUBLIC, anon;
+GRANT SELECT ON public.connection_profiles TO authenticated, service_role;
+COMMENT ON VIEW public.connection_profiles IS 'Dedicated 1st-degree connection profile interface with security barrier. Exposes approved networking columns for accepted connections whose visibility is public or connections_only. Strictly excludes private profiles, email, phone, salary expectations, and raw resume files.';
+
+-- ----------------------------------------------------------------------------
+-- 7. INTERFACE D: RECRUITER / EMPLOYER APPLICANT PROFILE INTERFACE
+-- ----------------------------------------------------------------------------
+-- Authoritative company job management helpers reside in non-exposed extensions schema
+-- to prevent exposure via PostgREST Data API RPC endpoints.
+CREATE OR REPLACE FUNCTION extensions.can_manage_company_job(p_company_id uuid, p_user_id uuid)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+    -- Unauthenticated callers (auth.uid() IS NULL) MUST fail closed immediately.
+    -- Authenticated callers can only inspect permissions for their own identity (p_user_id must equal auth.uid()).
+    IF auth.uid() IS NULL OR p_user_id IS NULL OR p_user_id IS DISTINCT FROM auth.uid() THEN
+        RETURN false;
+    END IF;
+
+    IF p_company_id IS NULL THEN
+        RETURN false;
+    END IF;
+
+    RETURN EXISTS (
+        -- 1. Company owner in company_profiles
+        SELECT 1 FROM public.company_profiles cp
+        WHERE cp.company_id = p_company_id AND cp.owner_id = p_user_id
+        UNION ALL
+        -- 2. Active team member with hiring role or manage_jobs permission
+        SELECT 1 FROM public.company_team_members ctm
+        WHERE ctm.company_id = p_company_id 
+          AND ctm.user_id = p_user_id
+          AND ctm.is_active = true
+          AND (
+            ctm.role::text IN ('admin', 'recruiter', 'hr_manager', 'hiring_manager', 'owner')
+            OR (ctm.permissions->>'manage_jobs')::boolean = true
+          )
+    );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION extensions.can_manage_company_job(uuid, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_manage_company_job(uuid, uuid) TO authenticated, service_role;
+
+-- Authoritative 1-argument overload deriving identity strictly from auth.uid()
+CREATE OR REPLACE FUNCTION extensions.can_manage_company_job(p_company_id uuid)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_user_id uuid;
+BEGIN
+    v_user_id := auth.uid();
+    IF v_user_id IS NULL OR p_company_id IS NULL THEN
+        RETURN false;
+    END IF;
+
+    RETURN extensions.can_manage_company_job(p_company_id, v_user_id);
+END;
+$$;
+
+REVOKE ALL ON FUNCTION extensions.can_manage_company_job(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_manage_company_job(uuid) TO authenticated, service_role;
+
+-- Drop legacy view before dropping dependent function
+DROP VIEW IF EXISTS public.applicant_profiles;
+
+-- Drop legacy public functions to ensure zero exposed Data API RPC surface
+DROP FUNCTION IF EXISTS public.can_manage_company_job(uuid);
+DROP FUNCTION IF EXISTS public.can_manage_company_job(uuid, uuid);
+
+CREATE VIEW public.applicant_profiles
+WITH (security_barrier = true) AS
+SELECT 
+    ja.id AS application_id,
+    ja.job_id,
+    ja.user_id AS candidate_id,
+    p.full_name,
+    p.headline,
+    p.title,
+    p.location,
+    p.skills,
+    p.experience_years,
+    p.industry,
+    p.current_company,
+    p.linkedin_url,
+    p.github_url,
+    p.portfolio_url,
+    p.website,
+    ja.resume_url AS application_resume_url,
+    ja.cover_letter,
+    ja.status AS application_status,
+    ja.ai_match_score,
+    ja.applied_at
+FROM public.job_applications ja
+JOIN public.jobs j ON j.id = ja.job_id
+JOIN public.profiles p ON p.id = ja.user_id
+WHERE (
+    public.is_app_admin(auth.uid())
+    OR (j.company_id IS NOT NULL AND extensions.can_manage_company_job(j.company_id, auth.uid()))
+    OR (j.company_id IS NULL AND j.posted_by = auth.uid())
+);
+
+REVOKE ALL ON public.applicant_profiles FROM PUBLIC, anon;
+GRANT SELECT ON public.applicant_profiles TO authenticated, service_role;
+COMMENT ON VIEW public.applicant_profiles IS 'Scoped applicant interface for authorized employers and recruiters with security barrier. Requires active hiring authority or individual job ownership. Excludes base profile salary, private tokens, and unconsented contact identifiers.';
+
+-- ----------------------------------------------------------------------------
+-- 8. INTERFACE E: SOCIAL FEED AUTHOR SNIPPETS INTERFACE
+-- ----------------------------------------------------------------------------
+DROP VIEW IF EXISTS public.feed_author_snippets;
+
+CREATE VIEW public.feed_author_snippets
+WITH (security_barrier = true) AS
+SELECT 
+    p.id,
+    p.full_name,
+    p.username,
+    p.title,
+    p.headline,
+    p.profile_picture_url,
+    p.profile_photo_url,
+    p.verification_status
+FROM public.profiles p
+WHERE EXISTS (
+    SELECT 1 FROM public.posts pt 
+    WHERE (pt.author_id = p.id OR pt.user_id = p.id)
+      AND pt.is_deleted = false
+      AND (pt.is_public = true OR pt.visibility = 'public')
+      AND (pt.status = 'published' OR pt.status IS NULL)
+);
+
+REVOKE ALL ON public.feed_author_snippets FROM PUBLIC, anon;
+GRANT SELECT ON public.feed_author_snippets TO authenticated, service_role;
+COMMENT ON VIEW public.feed_author_snippets IS 'Minimal public author snippet interface with security barrier. Returns only 8 display attributes for authors of published, non-deleted public posts.';
+
+-- ----------------------------------------------------------------------------
+-- 9. REFINED AFFIRMATIVE-CONSENT VIEW (public.public_profiles)
+-- ----------------------------------------------------------------------------
+DROP VIEW IF EXISTS public.public_profiles;
+
+CREATE VIEW public.public_profiles
+WITH (security_barrier = true) AS
+SELECT 
+    p.id,
+    p.full_name,
+    p.username,
+    p.title,
+    p.headline,
+    p.about,
+    p.location,
+    p.profile_picture_url,
+    p.profile_photo_url,
+    p.cover_image_url,
+    p.skills,
+    p.experience_years,
+    p.industry,
+    p.current_company,
+    p.linkedin_url,
+    p.github_url,
+    p.portfolio_url,
+    p.website,
+    p.verification_status,
+    p.is_profile_public,
+    p.created_at
+FROM public.profiles p
+JOIN public.candidate_privacy_consents c 
+  ON c.user_id = p.id 
+ AND c.consent_type = 'public_profile_indexing'
+WHERE c.consent_status = 'granted'
+  AND c.revocation_timestamp IS NULL
+  AND p.profile_visibility = 'public'
+  AND p.is_profile_public = true;
+
+REVOKE ALL ON public.public_profiles FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.public_profiles TO anon, authenticated, service_role;
+
+COMMENT ON VIEW public.public_profiles IS 'Affirmative-consent protected public profile interface with security barrier. Exposes public professional personal data strictly for candidates with verified affirmative consent (consent_status = granted and profile_visibility = public). Excludes direct contact identifiers (email, phone), financial expectations (salary), private resume documents, and security metadata.';
+
+-- ----------------------------------------------------------------------------
+-- 10. STORAGE RLS: RESTRICT EMPLOYER ACCESS TO EXPLICIT APPLICATION RESUMES
+-- ----------------------------------------------------------------------------
+-- 10A. TRUSTED SERVER CANDIDATE DOCUMENT MAPPINGS
+-- Maintains verified document-to-candidate ownership for documents uploaded
+-- via service-role or administrative tooling where storage.objects.owner_id is NULL.
+-- Authenticated and anonymous roles are strictly REVOKED from mutating this table.
+-- ----------------------------------------------------------------------------
+-- Restore preserved backup tables if re-applying forward migration after a rollback
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings_rollback_backup') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings') THEN
+            ALTER TABLE public.candidate_document_mappings_rollback_backup RENAME TO candidate_document_mappings;
+        ELSE
+            INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, created_at, verified_by_service_role, actor_id)
+            SELECT bucket_id, object_name, candidate_id, created_at, verified_by_service_role, actor_id
+            FROM public.candidate_document_mappings_rollback_backup
+            ON CONFLICT (bucket_id, object_name) DO NOTHING;
+            DROP TABLE public.candidate_document_mappings_rollback_backup CASCADE;
+        END IF;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit_rollback_backup') THEN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit') THEN
+            ALTER TABLE public.candidate_document_mapping_audit_rollback_backup RENAME TO candidate_document_mapping_audit;
+        ELSE
+            INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id, recorded_at)
+            SELECT mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id, recorded_at
+            FROM public.candidate_document_mapping_audit_rollback_backup;
+            DROP TABLE public.candidate_document_mapping_audit_rollback_backup CASCADE;
+        END IF;
+    END IF;
+END $$;
+
+CREATE TABLE IF NOT EXISTS public.candidate_document_mappings (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    bucket_id text NOT NULL DEFAULT 'documents',
+    object_name text NOT NULL,
+    candidate_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    created_at timestamptz NOT NULL DEFAULT pg_catalog.now(),
+    verified_by_service_role boolean NOT NULL DEFAULT true,
+    actor_id uuid,
+    CONSTRAINT candidate_document_mappings_bucket_object_key UNIQUE (bucket_id, object_name)
+);
+
+ALTER TABLE public.candidate_document_mappings ADD COLUMN IF NOT EXISTS actor_id uuid;
+
+ALTER TABLE public.candidate_document_mappings ENABLE ROW LEVEL SECURITY;
+
+REVOKE ALL ON TABLE public.candidate_document_mappings FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.candidate_document_mappings TO service_role;
+
+DROP POLICY IF EXISTS "Candidates can read own document mappings" ON public.candidate_document_mappings;
+
+-- Integrity validation trigger: enforce bucket, candidate folder prefix, profiles reference, and service-role origin
+CREATE OR REPLACE FUNCTION public.validate_candidate_document_mapping()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+    -- A. Caller identity enforcement:
+    -- Remove reliance on SECURITY DEFINER current_user (which always returns postgres inside definer).
+    -- Ensure client manipulation via PostgREST (session_user = 'authenticator') is strictly restricted to service_role JWT.
+    IF session_user = 'authenticator' AND coalesce(auth.role(), '') <> 'service_role' THEN
+        RAISE EXCEPTION 'Direct client manipulation of candidate document mappings is strictly forbidden.' USING errcode = '42501';
+    END IF;
+
+    IF session_user IN ('anon', 'authenticated') THEN
+        RAISE EXCEPTION 'Direct client manipulation of candidate document mappings is strictly forbidden.' USING errcode = '42501';
+    END IF;
+
+    IF NOT (
+        session_user IN ('postgres', 'supabase_admin')
+        OR (session_user = 'authenticator' AND coalesce(auth.role(), '') = 'service_role')
+    ) THEN
+        RAISE EXCEPTION 'Direct client manipulation of candidate document mappings is strictly forbidden.' USING errcode = '42501';
+    END IF;
+
+    -- B. Bucket must be 'documents'
+    IF NEW.bucket_id IS DISTINCT FROM 'documents' THEN
+        RAISE EXCEPTION 'Candidate document mappings only allowed for documents bucket (received: %)', NEW.bucket_id USING errcode = '22023';
+    END IF;
+
+    -- C. Candidate ID must not be null and must exist in profiles
+    IF NEW.candidate_id IS NULL THEN
+        RAISE EXCEPTION 'candidate_id cannot be null' USING errcode = '22023';
+    END IF;
+
+    IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE id = NEW.candidate_id) THEN
+        RAISE EXCEPTION 'candidate_id % does not exist in profiles', NEW.candidate_id USING errcode = '23503';
+    END IF;
+
+    -- D. Folder depth containment: object_name must contain candidate ID in 1st or 2nd folder segment
+    IF NOT (
+        (NEW.candidate_id)::text = (storage.foldername(NEW.object_name))[1]
+        OR (NEW.candidate_id)::text = (storage.foldername(NEW.object_name))[2]
+    ) THEN
+        RAISE EXCEPTION 'object_name % does not match candidate_id folder prefix %', NEW.object_name, NEW.candidate_id USING errcode = '22023';
+    END IF;
+
+    NEW.verified_by_service_role := true;
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_validate_candidate_document_mapping ON public.candidate_document_mappings;
+CREATE TRIGGER trg_validate_candidate_document_mapping
+BEFORE INSERT OR UPDATE ON public.candidate_document_mappings
+FOR EACH ROW EXECUTE FUNCTION public.validate_candidate_document_mapping();
+
+-- Server-side audit trail for document mapping lifecycle mutations
+CREATE TABLE IF NOT EXISTS public.candidate_document_mapping_audit (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    mapping_id uuid,
+    action text NOT NULL,
+    bucket_id text NOT NULL,
+    object_name text NOT NULL,
+    candidate_id uuid NOT NULL,
+    performed_by text NOT NULL DEFAULT coalesce(nullif(auth.role(), ''), session_user, 'unknown'),
+    actor_id uuid,
+    recorded_at timestamptz NOT NULL DEFAULT pg_catalog.now()
+);
+
+ALTER TABLE public.candidate_document_mapping_audit ADD COLUMN IF NOT EXISTS actor_id uuid;
+
+ALTER TABLE public.candidate_document_mapping_audit ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.candidate_document_mapping_audit FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.candidate_document_mapping_audit TO service_role;
+
+CREATE OR REPLACE FUNCTION public.log_candidate_document_mapping_audit()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_actor text;
+    v_actor_id uuid;
+BEGIN
+    v_actor := coalesce(nullif(auth.role(), ''), session_user, 'unknown');
+    IF TG_OP = 'INSERT' THEN
+        v_actor_id := coalesce(auth.uid(), NEW.actor_id);
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id)
+        VALUES (NEW.id, 'INSERT', NEW.bucket_id, NEW.object_name, NEW.candidate_id, v_actor, v_actor_id);
+        RETURN NEW;
+    ELSIF TG_OP = 'UPDATE' THEN
+        v_actor_id := coalesce(auth.uid(), NEW.actor_id);
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id)
+        VALUES (NEW.id, 'UPDATE', NEW.bucket_id, NEW.object_name, NEW.candidate_id, v_actor, v_actor_id);
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        v_actor_id := coalesce(auth.uid(), OLD.actor_id);
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id)
+        VALUES (OLD.id, 'DELETE', OLD.bucket_id, OLD.object_name, OLD.candidate_id, v_actor, v_actor_id);
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_log_candidate_document_mapping_audit ON public.candidate_document_mappings;
+CREATE TRIGGER trg_log_candidate_document_mapping_audit
+AFTER INSERT OR UPDATE OR DELETE ON public.candidate_document_mappings
+FOR EACH ROW EXECUTE FUNCTION public.log_candidate_document_mapping_audit();
+
+COMMENT ON TABLE public.candidate_document_mappings IS 'Trusted server-maintained mapping between storage documents and candidate identity for service-role uploads lacking object owner_id. Strictly restricted to service_role and postgres.';
+
+-- ----------------------------------------------------------------------------
+-- 10B. AUTHORITATIVE STORAGE AUTHORIZATION HELPER
+-- Defined strictly in non-exposed extensions schema with owner_id text matching.
+-- Strictly evaluates the employer-candidate application authorization predicate.
+-- No blanket administrative wildcard bypass (administrative reads use dedicated policy).
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION extensions.can_employer_access_document(
+    p_object_name text,
+    p_object_owner_id text,
+    p_bucket_id text DEFAULT 'documents'::text,
+    p_auth_uid uuid DEFAULT auth.uid()
+)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+    -- 1. Unauthenticated Fail-Closed Guard & Anti-oracle Caller Binding:
+    -- Unauthenticated callers (auth.uid() IS NULL) MUST fail closed immediately.
+    -- Authenticated callers can only query for their own identity (p_auth_uid must equal auth.uid()).
+    IF auth.uid() IS NULL OR p_auth_uid IS NULL OR p_auth_uid IS DISTINCT FROM auth.uid() THEN
+        RETURN false;
+    END IF;
+
+    -- 2. Guard against null inputs
+    IF p_object_name IS NULL THEN
+        RETURN false;
+    END IF;
+
+    -- 3. Strict bucket enforcement: object must belong to the approved 'documents' bucket
+    IF p_bucket_id IS DISTINCT FROM 'documents' THEN
+        RETURN false;
+    END IF;
+
+    -- 4. Authorized recruiter document access predicate
+    RETURN EXISTS (
+        SELECT 1
+        FROM public.job_applications ja
+        JOIN public.jobs j ON ja.job_id = j.id
+        WHERE 
+            -- A. Active job requirement (job is active and not expired)
+            j.is_active = true
+            AND (j.expires_at IS NULL OR j.expires_at > pg_catalog.now())
+
+            -- B. Positive allowlist for application lifecycle:
+            -- ONLY active hiring statuses permit document access.
+            -- Explicitly excludes: rejected, withdrawn, archived, deleted, draft, or any unknown status.
+            AND ja.status IS NOT NULL
+            AND ja.status IN (
+                'applied',
+                'submitted',
+                'reviewing',
+                'under_review',
+                'interviewing',
+                'shortlisted',
+                'accepted',
+                'offered',
+                'hired'
+            )
+
+            -- C. Authorized hiring authority for the job's company
+            AND (
+                (j.company_id IS NOT NULL AND extensions.can_manage_company_job(j.company_id, p_auth_uid))
+                OR (j.company_id IS NULL AND j.posted_by = p_auth_uid)
+            )
+
+            -- D. Explicit Storage owner validation:
+            -- Uses modern owner_id (text) with fallback to trusted server mapping for service-role uploads.
+            AND (
+                -- D1. Standard candidate-authenticated upload: object owner_id matches application candidate ID
+                (p_object_owner_id IS NOT NULL AND p_object_owner_id = (ja.user_id)::text)
+                OR
+                -- D2. Trusted server-maintained mapping for service-role uploads (where owner_id is NULL)
+                (p_object_owner_id IS NULL AND EXISTS (
+                    SELECT 1 FROM public.candidate_document_mappings cdm
+                    WHERE cdm.bucket_id = p_bucket_id
+                      AND cdm.object_name = p_object_name
+                      AND cdm.candidate_id = ja.user_id
+                      AND cdm.verified_by_service_role = true
+                ))
+            )
+
+            -- E. Folder depth containment (candidate folder prefix)
+            AND (
+                (ja.user_id)::text = (storage.foldername(p_object_name))[1]
+                OR (ja.user_id)::text = (storage.foldername(p_object_name))[2]
+            )
+
+            -- F. Exact canonical Storage object key comparison (strictly full path, NO basename matching)
+            AND ja.resume_url IS NOT NULL
+            AND p_object_name = (
+                CASE 
+                    WHEN ja.resume_url LIKE '%/documents/%' THEN pg_catalog.regexp_replace(ja.resume_url, '^.*/documents/', '')
+                    WHEN ja.resume_url LIKE 'documents/%' THEN pg_catalog.substring(ja.resume_url, 11)
+                    ELSE pg_catalog.ltrim(ja.resume_url, '/')
+                END
+            )
+    );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION extensions.can_employer_access_document(text, text, text, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_employer_access_document(text, text, text, uuid) TO authenticated, service_role;
+
+-- ----------------------------------------------------------------------------
+-- 10C. STORAGE RLS POLICY BINDING
+-- Explicitly binds to extensions.can_employer_access_document and owner_id.
+-- ----------------------------------------------------------------------------
+-- Drop legacy dependent storage policy first before dropping legacy public helper
+DROP POLICY IF EXISTS "Employers can view applicant documents" ON storage.objects;
+
+-- Drop legacy public helper overloads to guarantee 0 exposed Data API RPC endpoints
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, text, uuid);
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, text, text, uuid);
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, uuid);
+
+CREATE POLICY "Employers can view applicant documents"
+ON storage.objects FOR SELECT TO authenticated
+USING (
+    bucket_id = 'documents'::text
+    AND extensions.can_employer_access_document(name, owner_id, bucket_id, auth.uid())
+);
+
+-- ----------------------------------------------------------------------------
+-- 10D. HARDENED ADMINISTRATOR AUTHORIZATION & USER ROLES PROTECTION
+-- Prevents unauthenticated probing or enumeration of administrative users.
+-- Replaces insecure SQL function with PL/pgSQL anti-probing guard.
+-- Ensures caller cannot test arbitrary user_uuids unless caller is already an admin.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_app_admin(user_uuid uuid DEFAULT auth.uid())
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_caller_id uuid;
+    v_is_caller_admin boolean;
+BEGIN
+    -- 1. Privileged server context (postgres, service_role) can check arbitrary target uuid
+    IF session_user IN ('postgres', 'supabase_admin') OR coalesce(auth.role(), '') = 'service_role' THEN
+        IF user_uuid IS NULL THEN
+            RETURN false;
+        END IF;
+        RETURN EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_id = user_uuid
+              AND role IN ('super_admin', 'admin')
+              AND is_active = true
+        );
+    END IF;
+
+    -- 2. Client context: unauthenticated callers fail closed immediately
+    v_caller_id := auth.uid();
+    IF v_caller_id IS NULL THEN
+        RETURN false;
+    END IF;
+
+    IF user_uuid IS NULL THEN
+        RETURN false;
+    END IF;
+
+    -- 3. Self-check: Caller checking their own administrative status
+    IF user_uuid = v_caller_id THEN
+        RETURN EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_id = v_caller_id
+              AND role IN ('super_admin', 'admin')
+              AND is_active = true
+        );
+    END IF;
+
+    -- 4. Anti-probing guard: Caller checking someone else's administrative status.
+    -- Non-admin callers CANNOT probe or discover whether other users are admins.
+    SELECT EXISTS (
+        SELECT 1 FROM public.user_roles
+        WHERE user_id = v_caller_id
+          AND role IN ('super_admin', 'admin')
+          AND is_active = true
+    ) INTO v_is_caller_admin;
+
+    IF NOT v_is_caller_admin THEN
+        RETURN false;
+    END IF;
+
+    -- 5. Authorized admin caller inspecting another user
+    RETURN EXISTS (
+        SELECT 1 FROM public.user_roles
+        WHERE user_id = user_uuid
+          AND role IN ('super_admin', 'admin')
+          AND is_active = true
+    );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.is_app_admin(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_app_admin(uuid) TO authenticated, service_role;
+
+-- Ensure user_roles cannot be modified by authenticated users and has RLS enabled
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.user_roles FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.user_roles TO authenticated, service_role;
+
+-- ----------------------------------------------------------------------------
+-- 10E. CANDIDATE STORAGE POLICIES: ALIGN WITH NON-DEPRECATED owner_id & LEAST PRIVILEGE
+-- Eliminates all dependencies on deprecated storage.objects.owner.
+-- Candidates can read documents in their folder layout ([1] or [2]) or owned documents.
+-- Candidates CANNOT update or delete server-managed, ownerless documents (owner_id IS NULL).
+-- Candidates CAN update and delete documents they own within their folder layout.
+-- Administrators can manage documents via public.is_app_admin.
+-- ----------------------------------------------------------------------------
+DROP POLICY IF EXISTS "Candidates can read own documents" ON storage.objects;
+CREATE POLICY "Candidates can read own documents"
+ON storage.objects FOR SELECT TO authenticated
+USING (
+    bucket_id = 'documents'::text
+    AND (
+        ((auth.uid())::text = owner_id)
+        OR ((auth.uid())::text = (storage.foldername(name))[1])
+        OR ((auth.uid())::text = (storage.foldername(name))[2])
+        OR public.is_app_admin(auth.uid())
+    )
+);
+
+DROP POLICY IF EXISTS "Candidates can insert own documents" ON storage.objects;
+CREATE POLICY "Candidates can insert own documents"
+ON storage.objects FOR INSERT TO authenticated
+WITH CHECK (
+    bucket_id = 'documents'::text
+    AND ((owner_id IS NULL) OR ((auth.uid())::text = owner_id))
+    AND (
+        ((auth.uid())::text = (storage.foldername(name))[1])
+        OR ((auth.uid())::text = (storage.foldername(name))[2])
+        OR public.is_app_admin(auth.uid())
+    )
+);
+
+DROP POLICY IF EXISTS "Candidates can update own documents" ON storage.objects;
+CREATE POLICY "Candidates can update own documents"
+ON storage.objects FOR UPDATE TO authenticated
+USING (
+    bucket_id = 'documents'::text
+    AND (
+        (
+            ((auth.uid())::text = owner_id)
+            AND (
+                ((auth.uid())::text = (storage.foldername(name))[1])
+                OR ((auth.uid())::text = (storage.foldername(name))[2])
+            )
+        )
+        OR public.is_app_admin(auth.uid())
+    )
+)
+WITH CHECK (
+    bucket_id = 'documents'::text
+    AND (
+        (
+            ((auth.uid())::text = owner_id)
+            AND (
+                ((auth.uid())::text = (storage.foldername(name))[1])
+                OR ((auth.uid())::text = (storage.foldername(name))[2])
+            )
+        )
+        OR public.is_app_admin(auth.uid())
+    )
+);
+
+DROP POLICY IF EXISTS "Candidates can delete own documents" ON storage.objects;
+CREATE POLICY "Candidates can delete own documents"
+ON storage.objects FOR DELETE TO authenticated
+USING (
+    bucket_id = 'documents'::text
+    AND (
+        (
+            ((auth.uid())::text = owner_id)
+            AND (
+                ((auth.uid())::text = (storage.foldername(name))[1])
+                OR ((auth.uid())::text = (storage.foldername(name))[2])
+            )
+        )
+        OR public.is_app_admin(auth.uid())
+    )
+);
+
+COMMIT;

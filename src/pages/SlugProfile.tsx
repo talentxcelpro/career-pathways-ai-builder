@@ -48,10 +48,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
 const SlugProfile = () => {
-  const { username } = useParams<{ username: string }>();
+  const { username, id } = useParams<{ username?: string; id?: string }>();
+  const rawSlug = (username || id || '').trim();
   const navigate = useNavigate();
 
-  const cleanUsername = username?.startsWith('@') ? username.slice(1).trim() : username?.trim();
+  const cleanUsername = rawSlug.startsWith('@') ? rawSlug.slice(1).trim() : rawSlug;
   const lowerUsername = cleanUsername?.toLowerCase() || '';
 
   const isFeedKeyword = lowerUsername === 'feed';
@@ -59,7 +60,7 @@ const SlugProfile = () => {
   const { user, session, loading: authLoading, isAuthenticated } = useOptimizedAuth();
   const [aboutExpanded, setAboutExpanded] = useState(false);
 
-  const { data: profile, isLoading, error } = useSlugProfile(username);
+  const { data: profile, isLoading, error } = useSlugProfile(rawSlug || cleanUsername);
   const { data: stats } = useAccurateProfileStats(profile?.id);
   const { sendConnectionRequest, isSending } = useConnectionRequests();
 
@@ -159,7 +160,7 @@ const SlugProfile = () => {
   const isIndexable = indexabilityDecision.isIndexable;
 
   const isPassportRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/p');
-  const canonicalUrl = isPassportRoute ? `https://talentxcel.in/p/${profileSlug}` : `https://talentxcel.in/profile/${profileSlug}`;
+  const canonicalUrl = `https://talentxcel.in/profile/${profileSlug}`;
 
   const profileSchema = profile ? JSON.stringify({
     "@context": "https://schema.org",
@@ -866,6 +867,7 @@ const handleMessage = async () => {
                   candidateSlug={profileSlug}
                   candidateName={profile?.full_name || 'TalentXcel Professional'}
                   verifiedSkillsCount={((profile as any)?.skills || []).length || 6}
+                  isOwnProfile={isOwnProfile}
                   className="shadow-md border-border/60"
                 />
 
