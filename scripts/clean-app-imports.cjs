@@ -3,6 +3,11 @@ const fs = require('fs');
 function cleanApp(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
 
+  // Remove missing RegionProvider
+  content = content.replace(/import\s*\{\s*RegionProvider\s*\}\s*from\s*["']@\/contexts\/RegionContext["'];\r?\n?/, '');
+  content = content.replace(/<RegionProvider>\r?\n?/, '');
+  content = content.replace(/<\/RegionProvider>\r?\n?/, '');
+
   // Remove missing lazy imports
   content = content.replace(/const WhatsAppAlertsAdmin\s*=\s*lazy\(\(\)\s*=>\s*import\([^\)]+\)\);\r?\n?/, '');
   content = content.replace(/const DistributionCommandCentre\s*=\s*lazy\(\(\)\s*=>\s*import\([^\)]+\)\);\r?\n?/, '');
