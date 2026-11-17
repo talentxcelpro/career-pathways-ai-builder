@@ -6,7 +6,7 @@ const helper = require('./db-audit-helper.cjs');
 helper.setLinkedTarget('production');
 
 const SEED_AUTHORS = [
-  '0951f595-abd6-4463-9d8b-58a6d0548fc7', // Arshid Hussain Wani
+  '9aebe002-fa04-4f7f-af4d-a588de663ac3', // Sanobar Khan (Founder at TalentXcel)
   '61b6d8bb-bbea-41c5-8ca4-152c4bc5d599', // TalentXcel SERVICES
   'ad20dfcb-bbbd-45d6-ac25-38b473e73eaf'  // talentxcelpro1
 ];

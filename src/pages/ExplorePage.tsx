@@ -34,7 +34,7 @@ export const ExplorePage: React.FC = () => {
   ];
 
   const FEATURED_TALENT = [
-    { username: 'arshidwani', name: 'Arshid Hussain Wani', role: 'Business Strategist & Growth Specialist', score: 98, skills: ['Distributed Systems', 'Growth Engineering', 'Product Strategy'], avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop&crop=face' },
+    { username: 'sanobarkhan', name: 'Sanobar Khan', role: 'Founder at TalentXcel & HR Leader', score: 99, skills: ['Executive Recruitment', 'Talent Strategy', 'People Leadership', 'HR Tech'], avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop&crop=face' },
     { username: 'sarah_ai', name: 'Sarah Chen', role: 'Staff AI Systems Architect', score: 95, skills: ['RAG Architectures', 'Vector Databases', 'Python', 'LLMOps'], avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face' },
     { username: 'david_k', name: 'David Kim', role: 'VP of Product Engineering', score: 94, skills: ['Engineering Leadership', 'Distributed Systems', 'Go', 'Cloud'], avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face' },
     { username: 'priya_cloud', name: 'Priya Sharma', role: 'Principal Cloud Architect', score: 92, skills: ['Kubernetes', 'AWS', 'Terraform', 'FinOps'], avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face' }
