@@ -557,15 +557,47 @@ function privateRouteResponse(): Response {
   });
 }
 
+const RESERVED_VERIFY_ROUTES = new Set([
+  'email',
+  'email-verification',
+  'identity',
+  'passport',
+  'account',
+  'auth',
+  'token',
+  'session',
+  'phone',
+  'kyc',
+  'otp',
+  'success',
+  'failed',
+]);
+
 export function isCandidateProfileRoute(cleanPath: string): boolean {
   const normalized = (cleanPath || '').trim().toLowerCase();
+
+  // Root /verify landing or system verification tools are not candidate profiles
+  if (normalized === 'verify') {
+    return false;
+  }
+
+  // Subpaths of /verify/
+  if (normalized.startsWith('verify/')) {
+    const sub = normalized.slice(7).trim().replace(/^@/, '');
+    const firstSegment = sub.split('/')[0];
+    // If it's a known transactional verification path, do NOT treat as candidate profile
+    if (!firstSegment || RESERVED_VERIFY_ROUTES.has(firstSegment)) {
+      return false;
+    }
+    // Candidate profile endorsement / verification route (/verify/@username or /verify/:username)
+    return true;
+  }
+
   return (
     normalized === 'p' ||
     normalized.startsWith('p/') ||
     normalized === 'u' ||
     normalized.startsWith('u/') ||
-    normalized === 'verify' ||
-    normalized.startsWith('verify/') ||
     normalized === 'profile' ||
     normalized.startsWith('profile/') ||
     normalized === 'candidate' ||
@@ -1133,7 +1165,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   }
   // 1E. Public Profiles & Candidates (/profile/:slug, /profile/public/:slug, /candidate/:id, /candidates/:id, /p/:slug)
   else if (isCandidateProfileRoute(cleanPath)) {
-    const rawIdentifier = cleanPath.replace(/^(profile\/public|profile|candidates|candidate|p)\/?/i, '');
+    const rawIdentifier = cleanPath.replace(/^(profile\/public|profile|candidates|candidate|p|u|verify)\/?/i, '');
     const identifier = decodeURIComponent(rawIdentifier).trim().replace(/^@/, '');
 
     if (!identifier) {

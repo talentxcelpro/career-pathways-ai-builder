@@ -492,6 +492,29 @@ $$;
 REVOKE ALL ON FUNCTION public.can_manage_company_job(uuid, uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.can_manage_company_job(uuid, uuid) TO authenticated, service_role;
 
+-- Authoritative 1-argument overload deriving identity strictly from auth.uid()
+CREATE OR REPLACE FUNCTION public.can_manage_company_job(p_company_id uuid)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $
+DECLARE
+    v_user_id uuid;
+BEGIN
+    v_user_id := auth.uid();
+    IF v_user_id IS NULL OR p_company_id IS NULL THEN
+        RETURN false;
+    END IF;
+
+    RETURN public.can_manage_company_job(p_company_id, v_user_id);
+END;
+$;
+
+REVOKE ALL ON FUNCTION public.can_manage_company_job(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.can_manage_company_job(uuid) TO authenticated, service_role;
+
 DROP VIEW IF EXISTS public.applicant_profiles;
 
 CREATE VIEW public.applicant_profiles
@@ -607,20 +630,31 @@ COMMENT ON VIEW public.public_profiles IS 'Affirmative-consent protected public 
 -- ----------------------------------------------------------------------------
 -- Helper function to check if caller has active hiring authority for the candidate's applied job
 -- and that the requested document matches the exact resume path attached to that job application.
-CREATE OR REPLACE FUNCTION public.can_employer_access_document(p_object_name text, p_object_owner uuid, p_auth_uid uuid)
+CREATE OR REPLACE FUNCTION public.can_employer_access_document(
+    p_object_name text,
+    p_object_owner uuid,
+    p_bucket_id text DEFAULT 'documents',
+    p_auth_uid uuid DEFAULT auth.uid()
+)
 RETURNS boolean
 LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = ''
-AS $$
+AS $
 BEGIN
     -- 1. Anti-oracle caller binding: caller can only query for their own auth.uid() unless app admin
     IF p_auth_uid IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
         RETURN false;
     END IF;
 
+    -- 2. Guard against null inputs
     IF p_auth_uid IS NULL OR p_object_name IS NULL OR p_object_owner IS NULL THEN
+        RETURN false;
+    END IF;
+
+    -- 3. Strict bucket enforcement: object must belong to the approved 'documents' bucket
+    IF p_bucket_id IS DISTINCT FROM 'documents' THEN
         RETURN false;
     END IF;
 
@@ -629,7 +663,7 @@ BEGIN
         RETURN true;
     END IF;
 
-    -- 2. Verify applicant authorization with exact canonical path matching (NO basename matching)
+    -- 4. Authorized recruiter document access predicate
     RETURN EXISTS (
         SELECT 1
         FROM public.job_applications ja
@@ -638,17 +672,34 @@ BEGIN
             -- A. Active job requirement (job is active and not expired)
             j.is_active = true
             AND (j.expires_at IS NULL OR j.expires_at > pg_catalog.now())
-            -- B. Active application requirement (not withdrawn, archived, or null)
+
+            -- B. Positive allowlist for application lifecycle:
+            -- ONLY active hiring statuses permit document access.
+            -- Explicitly excludes: rejected, withdrawn, archived, deleted, draft, or any unknown status.
             AND ja.status IS NOT NULL
-            AND ja.status NOT IN ('rejected', 'withdrawn', 'archived')
+            AND ja.status IN (
+                'applied',
+                'submitted',
+                'reviewing',
+                'under_review',
+                'interviewing',
+                'shortlisted',
+                'accepted',
+                'offered',
+                'hired'
+            )
+
             -- C. Authorized hiring authority for the job's company
             AND (
                 (j.company_id IS NOT NULL AND public.can_manage_company_job(j.company_id, p_auth_uid))
                 OR (j.company_id IS NULL AND j.posted_by = p_auth_uid)
             )
-            -- D. Correct candidate identity & document owner verification
+
+            -- D. Explicit Storage owner validation:
+            -- Storage owner MUST equal the application candidate ID (user_id).
             AND ja.user_id = p_object_owner
             AND (ja.user_id)::text = (storage.foldername(p_object_name))[1]
+
             -- E. Exact canonical Storage object key comparison (strictly full path, NO basename matching)
             AND ja.resume_url IS NOT NULL
             AND p_object_name = (
@@ -660,10 +711,51 @@ BEGIN
             )
     );
 END;
-$$;
+$;
+
+-- 3-argument backward-compatibility overload:
+CREATE OR REPLACE FUNCTION public.can_employer_access_document(
+    p_object_name text,
+    p_object_owner uuid,
+    p_auth_uid uuid
+)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $
+BEGIN
+    RETURN public.can_employer_access_document(p_object_name, p_object_owner, 'documents', p_auth_uid);
+END;
+$;
+
+-- Also define in non-exposed extensions schema for internal storage policy binding
+CREATE OR REPLACE FUNCTION extensions.can_employer_access_document(
+    p_object_name text,
+    p_object_owner uuid,
+    p_bucket_id text DEFAULT 'documents',
+    p_auth_uid uuid DEFAULT auth.uid()
+)
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE
+SECURITY DEFINER
+SET search_path = ''
+AS $
+BEGIN
+    RETURN public.can_employer_access_document(p_object_name, p_object_owner, p_bucket_id, p_auth_uid);
+END;
+$;
+
+REVOKE ALL ON FUNCTION public.can_employer_access_document(text, uuid, text, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.can_employer_access_document(text, uuid, text, uuid) TO authenticated, service_role;
 
 REVOKE ALL ON FUNCTION public.can_employer_access_document(text, uuid, uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.can_employer_access_document(text, uuid, uuid) TO authenticated, service_role;
+
+REVOKE ALL ON FUNCTION extensions.can_employer_access_document(text, uuid, text, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_employer_access_document(text, uuid, text, uuid) TO authenticated, service_role;
 
 -- Drop existing over-permissive employer policy
 DROP POLICY IF EXISTS "Employers can view applicant documents" ON storage.objects;
@@ -672,7 +764,7 @@ CREATE POLICY "Employers can view applicant documents"
 ON storage.objects FOR SELECT TO authenticated
 USING (
     bucket_id = 'documents'
-    AND public.can_employer_access_document(name, owner, auth.uid())
+    AND public.can_employer_access_document(name, owner, bucket_id, auth.uid())
 );
 
 COMMIT;
