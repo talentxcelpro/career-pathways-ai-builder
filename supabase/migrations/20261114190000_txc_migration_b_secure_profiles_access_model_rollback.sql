@@ -40,14 +40,22 @@ DROP FUNCTION IF EXISTS public.validate_candidate_document_mapping();
 
 DO $$
 BEGIN
+    -- Fail-safe check: Do not drop existing backup tables. If a backup table already exists,
+    -- halt rollback with error 55000 to prevent catastrophic data loss until manual reconciliation occurs.
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings_rollback_backup') THEN
+        RAISE EXCEPTION 'Rollback halted: public.candidate_document_mappings_rollback_backup already exists. Manual reconciliation or export required before proceeding.' USING errcode = '55000';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit_rollback_backup') THEN
+        RAISE EXCEPTION 'Rollback halted: public.candidate_document_mapping_audit_rollback_backup already exists. Manual reconciliation or export required before proceeding.' USING errcode = '55000';
+    END IF;
+
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings') THEN
-        DROP TABLE IF EXISTS public.candidate_document_mappings_rollback_backup;
         ALTER TABLE public.candidate_document_mappings RENAME TO candidate_document_mappings_rollback_backup;
         REVOKE ALL ON TABLE public.candidate_document_mappings_rollback_backup FROM PUBLIC, anon, authenticated;
     END IF;
 
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit') THEN
-        DROP TABLE IF EXISTS public.candidate_document_mapping_audit_rollback_backup;
         ALTER TABLE public.candidate_document_mapping_audit RENAME TO candidate_document_mapping_audit_rollback_backup;
         REVOKE ALL ON TABLE public.candidate_document_mapping_audit_rollback_backup FROM PUBLIC, anon, authenticated;
     END IF;

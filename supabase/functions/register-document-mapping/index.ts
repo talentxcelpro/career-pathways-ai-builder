@@ -79,19 +79,36 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // 3. Authorization check: Non-service-role callers can ONLY register for their own candidateId
-    if (!isServiceRole && callingUserId !== candidateId) {
+    // 3. Authorization check & candidate identity derivation:
+    // Candidate identity is strictly derived from the verified JWT caller user.id.
+    // Untrusted payload candidateId is never accepted for non-service-role callers.
+    const effectiveCandidateId = isServiceRole ? (candidateId || callingUserId) : callingUserId!;
+    if (!effectiveCandidateId) {
+      return new Response(JSON.stringify({ error: 'Missing candidate identity' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (!isServiceRole && candidateId && candidateId !== callingUserId) {
       return new Response(JSON.stringify({ error: 'Forbidden: candidates can only register mappings for own documents' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    // 4. Folder depth containment verification
+    // 4. Strict canonical object key enforcement: resumes/<candidate_id>/<filename>
+    const expectedCanonicalPrefix = `resumes/${effectiveCandidateId}/`;
+    if (!objectName.startsWith(expectedCanonicalPrefix)) {
+      return new Response(JSON.stringify({ error: `Canonical object key must follow resumes/${effectiveCandidateId}/<filename>` }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
     const segments = objectName.split('/').filter(Boolean);
-    const candidateSegment = segments[1] || segments[0];
-    if (candidateSegment !== candidateId) {
-      return new Response(JSON.stringify({ error: `Object path prefix does not match candidate identity ${candidateId}` }), {
+    if (segments.length < 3 || segments[0] !== 'resumes' || segments[1] !== effectiveCandidateId) {
+      return new Response(JSON.stringify({ error: `Invalid canonical document path structure: ${objectName}` }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
@@ -101,11 +118,11 @@ Deno.serve(async (req: Request) => {
     const { data: profile, error: profileErr } = await adminClient
       .from('profiles')
       .select('id')
-      .eq('id', candidateId)
+      .eq('id', effectiveCandidateId)
       .maybeSingle();
 
     if (profileErr || !profile) {
-      return new Response(JSON.stringify({ error: `Candidate profile not found: ${candidateId}` }), {
+      return new Response(JSON.stringify({ error: `Candidate profile not found: ${effectiveCandidateId}` }), {
         status: 404,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
@@ -125,14 +142,15 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    // 7. Perform privileged upsert via service_role client
+    // 7. Perform privileged upsert via service_role client with validated actor_id
     const { data, error: upsertErr } = await adminClient
       .from('candidate_document_mappings')
       .upsert(
         {
           bucket_id: bucketId,
           object_name: objectName,
-          candidate_id: candidateId,
+          candidate_id: effectiveCandidateId,
+          actor_id: callingUserId,
           verified_by_service_role: true
         },
         { onConflict: 'bucket_id,object_name' }

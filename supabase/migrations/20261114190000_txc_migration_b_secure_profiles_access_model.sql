@@ -646,8 +646,8 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings') THEN
             ALTER TABLE public.candidate_document_mappings_rollback_backup RENAME TO candidate_document_mappings;
         ELSE
-            INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, created_at, verified_by_service_role)
-            SELECT bucket_id, object_name, candidate_id, created_at, verified_by_service_role
+            INSERT INTO public.candidate_document_mappings (bucket_id, object_name, candidate_id, created_at, verified_by_service_role, actor_id)
+            SELECT bucket_id, object_name, candidate_id, created_at, verified_by_service_role, actor_id
             FROM public.candidate_document_mappings_rollback_backup
             ON CONFLICT (bucket_id, object_name) DO NOTHING;
             DROP TABLE public.candidate_document_mappings_rollback_backup CASCADE;
@@ -658,8 +658,8 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit') THEN
             ALTER TABLE public.candidate_document_mapping_audit_rollback_backup RENAME TO candidate_document_mapping_audit;
         ELSE
-            INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, recorded_at)
-            SELECT mapping_id, action, bucket_id, object_name, candidate_id, performed_by, recorded_at
+            INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id, recorded_at)
+            SELECT mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id, recorded_at
             FROM public.candidate_document_mapping_audit_rollback_backup;
             DROP TABLE public.candidate_document_mapping_audit_rollback_backup CASCADE;
         END IF;
@@ -673,8 +673,11 @@ CREATE TABLE IF NOT EXISTS public.candidate_document_mappings (
     candidate_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     created_at timestamptz NOT NULL DEFAULT pg_catalog.now(),
     verified_by_service_role boolean NOT NULL DEFAULT true,
+    actor_id uuid,
     CONSTRAINT candidate_document_mappings_bucket_object_key UNIQUE (bucket_id, object_name)
 );
+
+ALTER TABLE public.candidate_document_mappings ADD COLUMN IF NOT EXISTS actor_id uuid;
 
 ALTER TABLE public.candidate_document_mappings ENABLE ROW LEVEL SECURITY;
 
@@ -750,8 +753,11 @@ CREATE TABLE IF NOT EXISTS public.candidate_document_mapping_audit (
     object_name text NOT NULL,
     candidate_id uuid NOT NULL,
     performed_by text NOT NULL DEFAULT coalesce(nullif(auth.role(), ''), session_user, 'unknown'),
+    actor_id uuid,
     recorded_at timestamptz NOT NULL DEFAULT pg_catalog.now()
 );
+
+ALTER TABLE public.candidate_document_mapping_audit ADD COLUMN IF NOT EXISTS actor_id uuid;
 
 ALTER TABLE public.candidate_document_mapping_audit ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.candidate_document_mapping_audit FROM PUBLIC, anon, authenticated;
@@ -765,19 +771,23 @@ SET search_path = ''
 AS $$
 DECLARE
     v_actor text;
+    v_actor_id uuid;
 BEGIN
     v_actor := coalesce(nullif(auth.role(), ''), session_user, 'unknown');
     IF TG_OP = 'INSERT' THEN
-        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by)
-        VALUES (NEW.id, 'INSERT', NEW.bucket_id, NEW.object_name, NEW.candidate_id, v_actor);
+        v_actor_id := coalesce(auth.uid(), NEW.actor_id);
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id)
+        VALUES (NEW.id, 'INSERT', NEW.bucket_id, NEW.object_name, NEW.candidate_id, v_actor, v_actor_id);
         RETURN NEW;
     ELSIF TG_OP = 'UPDATE' THEN
-        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by)
-        VALUES (NEW.id, 'UPDATE', NEW.bucket_id, NEW.object_name, NEW.candidate_id, v_actor);
+        v_actor_id := coalesce(auth.uid(), NEW.actor_id);
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id)
+        VALUES (NEW.id, 'UPDATE', NEW.bucket_id, NEW.object_name, NEW.candidate_id, v_actor, v_actor_id);
         RETURN NEW;
     ELSIF TG_OP = 'DELETE' THEN
-        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by)
-        VALUES (OLD.id, 'DELETE', OLD.bucket_id, OLD.object_name, OLD.candidate_id, v_actor);
+        v_actor_id := coalesce(auth.uid(), OLD.actor_id);
+        INSERT INTO public.candidate_document_mapping_audit (mapping_id, action, bucket_id, object_name, candidate_id, performed_by, actor_id)
+        VALUES (OLD.id, 'DELETE', OLD.bucket_id, OLD.object_name, OLD.candidate_id, v_actor, v_actor_id);
         RETURN OLD;
     END IF;
     RETURN NULL;
@@ -917,9 +927,92 @@ USING (
 );
 
 -- ----------------------------------------------------------------------------
--- 10D. CANDIDATE STORAGE POLICIES: ALIGN WITH NON-DEPRECATED owner_id
+-- 10D. HARDENED ADMINISTRATOR AUTHORIZATION & USER ROLES PROTECTION
+-- Prevents unauthenticated probing or enumeration of administrative users.
+-- Replaces insecure SQL function with PL/pgSQL anti-probing guard.
+-- Ensures caller cannot test arbitrary user_uuids unless caller is already an admin.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.is_app_admin(user_uuid uuid DEFAULT auth.uid())
+RETURNS boolean
+LANGUAGE plpgsql
+STABLE SECURITY DEFINER
+SET search_path = ''
+AS $$
+DECLARE
+    v_caller_id uuid;
+    v_is_caller_admin boolean;
+BEGIN
+    -- 1. Privileged server context (postgres, service_role) can check arbitrary target uuid
+    IF session_user IN ('postgres', 'supabase_admin') OR coalesce(auth.role(), '') = 'service_role' THEN
+        IF user_uuid IS NULL THEN
+            RETURN false;
+        END IF;
+        RETURN EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_id = user_uuid
+              AND role IN ('super_admin', 'admin')
+              AND is_active = true
+        );
+    END IF;
+
+    -- 2. Client context: unauthenticated callers fail closed immediately
+    v_caller_id := auth.uid();
+    IF v_caller_id IS NULL THEN
+        RETURN false;
+    END IF;
+
+    IF user_uuid IS NULL THEN
+        RETURN false;
+    END IF;
+
+    -- 3. Self-check: Caller checking their own administrative status
+    IF user_uuid = v_caller_id THEN
+        RETURN EXISTS (
+            SELECT 1 FROM public.user_roles
+            WHERE user_id = v_caller_id
+              AND role IN ('super_admin', 'admin')
+              AND is_active = true
+        );
+    END IF;
+
+    -- 4. Anti-probing guard: Caller checking someone else's administrative status.
+    -- Non-admin callers CANNOT probe or discover whether other users are admins.
+    SELECT EXISTS (
+        SELECT 1 FROM public.user_roles
+        WHERE user_id = v_caller_id
+          AND role IN ('super_admin', 'admin')
+          AND is_active = true
+    ) INTO v_is_caller_admin;
+
+    IF NOT v_is_caller_admin THEN
+        RETURN false;
+    END IF;
+
+    -- 5. Authorized admin caller inspecting another user
+    RETURN EXISTS (
+        SELECT 1 FROM public.user_roles
+        WHERE user_id = user_uuid
+          AND role IN ('super_admin', 'admin')
+          AND is_active = true
+    );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.is_app_admin(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.is_app_admin(uuid) TO authenticated, service_role;
+
+-- Ensure user_roles cannot be modified by authenticated users and has RLS enabled
+ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
+REVOKE INSERT, UPDATE, DELETE, TRUNCATE ON TABLE public.user_roles FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.user_roles TO authenticated, service_role;
+
+-- ----------------------------------------------------------------------------
+-- 10E. CANDIDATE STORAGE POLICIES: ALIGN WITH NON-DEPRECATED owner_id & LEAST PRIVILEGE
 -- Eliminates all dependencies on deprecated storage.objects.owner.
--- Authenticated users check (auth.uid())::text = owner_id.
+-- Candidates can read documents in their folder layout ([1] or [2]) or owned documents.
+-- Candidates CANNOT update or delete server-managed, ownerless documents (owner_id IS NULL).
+-- Candidates CAN update and delete documents they own within their folder layout.
+-- Administrators can manage documents via public.is_app_admin.
 -- ----------------------------------------------------------------------------
 DROP POLICY IF EXISTS "Candidates can read own documents" ON storage.objects;
 CREATE POLICY "Candidates can read own documents"
@@ -930,6 +1023,7 @@ USING (
         ((auth.uid())::text = owner_id)
         OR ((auth.uid())::text = (storage.foldername(name))[1])
         OR ((auth.uid())::text = (storage.foldername(name))[2])
+        OR public.is_app_admin(auth.uid())
     )
 );
 
@@ -942,6 +1036,7 @@ WITH CHECK (
     AND (
         ((auth.uid())::text = (storage.foldername(name))[1])
         OR ((auth.uid())::text = (storage.foldername(name))[2])
+        OR public.is_app_admin(auth.uid())
     )
 );
 
@@ -951,15 +1046,28 @@ ON storage.objects FOR UPDATE TO authenticated
 USING (
     bucket_id = 'documents'::text
     AND (
-        ((auth.uid())::text = owner_id)
-        OR ((auth.uid())::text = (storage.foldername(name))[1])
+        (
+            ((auth.uid())::text = owner_id)
+            AND (
+                ((auth.uid())::text = (storage.foldername(name))[1])
+                OR ((auth.uid())::text = (storage.foldername(name))[2])
+            )
+        )
+        OR public.is_app_admin(auth.uid())
     )
-    AND ((auth.uid())::text = (storage.foldername(name))[1])
 )
 WITH CHECK (
     bucket_id = 'documents'::text
-    AND ((owner_id IS NULL) OR ((auth.uid())::text = owner_id))
-    AND ((auth.uid())::text = (storage.foldername(name))[1])
+    AND (
+        (
+            ((auth.uid())::text = owner_id)
+            AND (
+                ((auth.uid())::text = (storage.foldername(name))[1])
+                OR ((auth.uid())::text = (storage.foldername(name))[2])
+            )
+        )
+        OR public.is_app_admin(auth.uid())
+    )
 );
 
 DROP POLICY IF EXISTS "Candidates can delete own documents" ON storage.objects;
@@ -968,8 +1076,13 @@ ON storage.objects FOR DELETE TO authenticated
 USING (
     bucket_id = 'documents'::text
     AND (
-        ((auth.uid())::text = owner_id)
-        OR ((auth.uid())::text = (storage.foldername(name))[1])
+        (
+            ((auth.uid())::text = owner_id)
+            AND (
+                ((auth.uid())::text = (storage.foldername(name))[1])
+                OR ((auth.uid())::text = (storage.foldername(name))[2])
+            )
+        )
         OR public.is_app_admin(auth.uid())
     )
 );
