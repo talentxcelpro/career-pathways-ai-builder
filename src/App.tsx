@@ -47,8 +47,6 @@ const BlogRedirect = lazy(() => import("@/pages/BlogRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ResourceDetail = lazy(() => import("@/pages/resources/ResourceDetail"));
 const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
-const WhatsAppAlertsAdmin = lazy(() => import("@/pages/admin/WhatsAppAlertsAdmin"));
-const DistributionCommandCentre = lazy(() => import("@/pages/admin/DistributionCommandCentre"));
 const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
 const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
 const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
@@ -111,7 +109,6 @@ const CareerInsightsPage              = lazy(() => import('./pages/CareerInsight
 const CareerAnalyticsPage             = lazy(() => import('./pages/learning/CareerAnalytics'));
 const PublicInterviewPrep             = lazy(() => import('./pages/tools/PublicInterviewPrep'));
 const ResumeChecker                   = lazy(() => import('./pages/tools/ResumeChecker'));
-const PublicAtsCheck                  = lazy(() => import('./pages/PublicAtsCheck'));
 const CoverLetterGenerator            = lazy(() => import('./pages/tools/CoverLetterGenerator'));
 const InterviewPrep                   = lazy(() => import('./pages/tools/InterviewPrep'));
 const ProfileOptimizer                = lazy(() => import('./pages/tools/ProfileOptimizer').then(m => ({ default: m.ProfileOptimizer })));
@@ -178,11 +175,6 @@ const ProviderPage                    = lazy(() => import('./pages/learning/Prov
 const CareerPassportDashboard         = lazy(() => import('./pages/passport/CareerPassportDashboard'));
 const PassportLayout                  = lazy(() => import('./pages/passport/PassportLayout'));
 const PublicPassport                  = lazy(() => import('./pages/passport/PublicPassport'));
-const PublicVanityPassport            = lazy(() => import('./pages/passport/PublicVanityPassport'));
-const PeerEndorsementPage             = lazy(() => import('./pages/passport/PeerEndorsementPage'));
-const PublicReelPage                  = lazy(() => import('./pages/reels/PublicReelPage'));
-const EmployerJobsEmbed               = lazy(() => import('./pages/embed/EmployerJobsEmbed'));
-const ExplorePage                     = lazy(() => import('./pages/ExplorePage'));
 const ProofRedirect                   = lazy(() => import('./pages/passport/components/ProofRedirect'));
 const CVDatabase                      = lazy(() => import('@/components/employer/CVDatabase').then(m => ({ default: m.CVDatabase })));
 const VideoCall                       = lazy(() => import('@/components/realtime/VideoCall').then(m => ({ default: m.VideoCall })));
@@ -681,7 +673,7 @@ const App = () => {
                                       <Route path="/build" element={<UnifiedResumeBuilder />} />
                                       <Route path="/build/:id" element={<UnifiedResumeBuilder />} />
                                       <Route path="/dashboard" element={<MyResumes />} />
-                                      <Route path="/ats-check" element={<PublicAtsCheck />} />
+                                      <Route path="/ats-check" element={<ATSChecker />} />
                                       <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
                                       <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                                       <Route path="/templates" element={<ResumeTemplates />} />
@@ -908,7 +900,7 @@ const App = () => {
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
                 {/* Free Un-Gated Public ATS Resume Checker */}
-                <Route path="/ats-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading ATS Checker...</div>}><PublicAtsCheck /></Suspense>} />
+                <Route path="/ats-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading ATS Checker...</div>}><ATSChecker /></Suspense>} />
                 <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
                 <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                 {/* Core Candidate & Career Tools (Explicit Precedence over /tools/:tool generic fallback) */}
@@ -1130,14 +1122,10 @@ const App = () => {
                                  {/* Vanity Career Passport & Viral Peer Endorsements (High-Converting PLG Engine) */}
                                  <Route path="/u/:username" element={<UniversalProfileRouteHandler />} />
   <Route path="/u/@:username" element={<UniversalProfileRouteHandler />} />
-                                 <Route path="/verify/:username" element={<Suspense fallback={null}><PeerEndorsementPage /></Suspense>} />
-                                 <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
+                                                                  <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
 
                                   {/* Phase 2 Ecosystem Loops: Public Reels, Recruiter OS Embeds & Explore Hub */}
-                                  <Route path="/reels/:id" element={<Suspense fallback={null}><PublicReelPage /></Suspense>} />
-                                  <Route path="/embed/jobs/:employerSlug" element={<Suspense fallback={null}><EmployerJobsEmbed /></Suspense>} />
-                                  <Route path="/explore" element={<Suspense fallback={null}><ExplorePage /></Suspense>} />
-
+                                                                                                      
                                  <Route path="/profile/:username" element={<UniversalProfileRouteHandler />} />
 
                                 {/* Legacy UUID-based profile redirects */}
@@ -1294,10 +1282,7 @@ const App = () => {
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
-                                 <Route path="/admin/whatsapp-alerts" element={<AdminLayout><WhatsAppAlertsAdmin /></AdminLayout>} />
-                                 <Route path="/admin/distribution-command-centre" element={<AdminLayout><DistributionCommandCentre /></AdminLayout>} />
-                                 <Route path="/admin/distribution" element={<AdminLayout><DistributionCommandCentre /></AdminLayout>} />
-                                 <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
+                                                                                                                                    <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />
                                  {/* Explicit Public Learning Provider Directory Routes */}

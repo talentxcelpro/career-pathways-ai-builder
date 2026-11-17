@@ -108,38 +108,124 @@ export function useSlugProfile(slug?: string) {
         
       }
 
-      let { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .or(conditions.join(','))
-        .limit(1)
-        .maybeSingle();
+      const underscoreSlug = cleanSlug.replace(/-/g, '_');
+      const publicConditions = [
+        `username.ilike.${cleanSlug}`,
+        `username.ilike.${underscoreSlug}`,
+        `username.ilike.${compactUsername}`,
+        `full_name.ilike.${nameQuery}`
+      ];
+
+      if (isUUID) {
+        publicConditions.push(`id.eq.${cleanSlug}`);
+      }
+      if (matchSuffix) {
+        const prefix = matchSuffix[1];
+        const hex = matchSuffix[2];
+        publicConditions.push(`username.ilike.${prefix}_${hex}`);
+        publicConditions.push(`username.ilike.${prefix}${hex}`);
+      }
+
+      let data: any = null;
+
+      // 1. Primary lookup via public_profiles view (accessible by anon and authenticated callers)
+      try {
+        const { data: pubData } = await supabase
+          .from('public_profiles')
+          .select('*')
+          .or(publicConditions.join(','))
+          .limit(1)
+          .maybeSingle();
+
+        if (pubData) {
+          data = pubData;
+        }
+      } catch (err) {
+        console.warn('public_profiles query notice:', err);
+      }
+
+      // 2. Secondary fallback via profiles table
+      if (!data) {
+        try {
+          const { data: privData } = await supabase
+            .from('profiles')
+            .select('*')
+            .or(conditions.join(','))
+            .limit(1)
+            .maybeSingle();
+          if (privData) {
+            data = privData;
+          }
+        } catch {
+          // ignore RLS 42501 for unauthenticated requests
+        }
+      }
 
       // Robust fallback if user profile has non-standard slug or partial email/name matching
       if (!data) {
         const firstWord = cleanSlug.split(/[-_]/)[0];
         if (firstWord && firstWord.length >= 3) {
-          const { data: fbData } = await supabase
-            .from('profiles')
-            .select('*')
-            .or(`email.ilike.${firstWord}%,full_name.ilike.%${firstWord}%,username.ilike.%${firstWord}%`)
-            .limit(1)
-            .maybeSingle();
-          if (fbData) {
-            data = fbData;
+          try {
+            const { data: fbPub } = await supabase
+              .from('public_profiles')
+              .select('*')
+              .or(`full_name.ilike.%${firstWord}%,username.ilike.%${firstWord}%`)
+              .limit(1)
+              .maybeSingle();
+            if (fbPub) {
+              data = fbPub;
+            }
+          } catch {
+            // ignore
+          }
+
+          if (!data) {
+            try {
+              const { data: fbData } = await supabase
+                .from('profiles')
+                .select('*')
+                .or(`email.ilike.${firstWord}%,full_name.ilike.%${firstWord}%,username.ilike.%${firstWord}%`)
+                .limit(1)
+                .maybeSingle();
+              if (fbData) {
+                data = fbData;
+              }
+            } catch {
+              // ignore
+            }
           }
         }
       }
 
       if (!data && cleanSlug.length >= 4) {
-        const { data: fbData2 } = await supabase
-          .from('profiles')
-          .select('*')
-          .or(`username.ilike.%${cleanSlug}%,slug.ilike.%${cleanSlug}%,email.ilike.%${cleanSlug}%`)
-          .limit(1)
-          .maybeSingle();
-        if (fbData2) {
-          data = fbData2;
+        try {
+          const { data: fbPub2 } = await supabase
+            .from('public_profiles')
+            .select('*')
+            .or(`username.ilike.%${cleanSlug}%,full_name.ilike.%${cleanSlug}%`)
+            .limit(1)
+            .maybeSingle();
+          if (fbPub2) {
+            data = fbPub2;
+          }
+        } catch {
+          // ignore
+        }
+
+        if (!data) {
+          try {
+            const { data: fbData2 } = await supabase
+              .from('profiles')
+              .select('*')
+              .or(`username.ilike.%${cleanSlug}%,slug.ilike.%${cleanSlug}%,email.ilike.%${cleanSlug}%`)
+              .limit(1)
+              .maybeSingle();
+            if (fbData2) {
+              data = fbData2;
+            }
+          } catch {
+            // ignore
+          }
         }
       }
 
@@ -147,10 +233,14 @@ export function useSlugProfile(slug?: string) {
         const d = data as any;
         return {
           ...d,
+          slug: d.slug || d.username || d.custom_url_slug || cleanSlug,
+          username: d.username || cleanSlug,
           title: d.title || d.current_job_title || (d.headline ? d.headline.split(/[-–|•]/)[0].trim() : 'Verified Professional'),
           headline: d.headline || d.current_job_title || d.title || 'Verified Professional & Industry Specialist',
           location: d.location || 'Global Remote',
           about: d.about || d.bio || `${d.full_name || 'This member'} is a verified professional on the TalentXcel Global Network. Connect to explore career opportunities, projects, and collaboration.`,
+          profile_picture_url: d.profile_picture_url || d.profile_photo_url,
+          cover_image_url: d.cover_image_url,
           skills: (Array.isArray(d.skills) && d.skills.length > 0)
             ? d.skills
             : (Array.isArray(d.verified_skills) && d.verified_skills.length > 0)

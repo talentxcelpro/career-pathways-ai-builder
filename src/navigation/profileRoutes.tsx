@@ -63,6 +63,18 @@ export const profileRoutes = [
     isPublic: true,
   },
   {
+    title: "Career Passport by Username",
+    to: "/u/:username",
+    page: <UniversalProfileRouteHandler />,
+    isPublic: true,
+  },
+  {
+    title: "Passport by Username",
+    to: "/p/:username",
+    page: <UniversalProfileRouteHandler />,
+    isPublic: true,
+  },
+  {
     title: "Profile Edit",
     to: "/profile/edit",
     page: <Suspense fallback={null}><ProfileEdit /></Suspense>,

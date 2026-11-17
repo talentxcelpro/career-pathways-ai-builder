@@ -171,20 +171,10 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
         </div>
       </div>
 
-      {/* 3. PEOPLE YOU MAY KNOW CARD - DYNAMICALLY POPULATED & INTERACTIVE */}
+      {/* 3. PEOPLE YOU MAY KNOW CARD - REAL AVATARS ONLY */}
       <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-3">
         <div className="flex items-center justify-between mb-2 px-1">
-          <div className="flex items-center gap-1.5">
-            <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>
-            <button
-              type="button"
-              onClick={handleShuffleSuggestions}
-              title="Show more recommendations"
-              className="p-1 text-muted-foreground hover:text-foreground rounded-full hover:bg-slate-100 dark:hover:bg-muted transition-colors"
-            >
-              <RotateCw className={`h-3 w-3 ${suggestionsLoading ? 'animate-spin' : ''}`} />
-            </button>
-          </div>
+          <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>
           <Button variant="link" size="sm" onClick={() => navigate('/network/discover')} className="text-[11px] font-bold text-primary p-0 h-auto">
             View All
           </Button>
@@ -242,7 +232,7 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
             })
           ) : (
             <div className="text-center py-4 text-[11px] text-muted-foreground">
-              {suggestionsLoading ? 'Finding professionals...' : 'No new connection suggestions'}
+              No new connection suggestions
             </div>
           )}
         </div>
