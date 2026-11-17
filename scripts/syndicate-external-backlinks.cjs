@@ -345,29 +345,29 @@ If you use this dataset in your research, academic publications, or blog posts, 
     'https://talentxcel.in/feeds/feed-government.xml'
   ];
 
-  for (const feedUrl of feedsToPing) {
-    try {
-      const postData = `hub.mode=publish&hub.url=${encodeURIComponent(feedUrl)}`;
-      const options = {
-        hostname: 'pubsubhubbub.appspot.com',
-        port: 443,
-        path: '/',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Content-Length': Buffer.byteLength(postData),
-          'User-Agent': 'TalentXcel-WebSub-Publisher/1.0'
-        },
-        timeout: 8000
-      };
+  await Promise.all(feedsToPing.map((feedUrl) => {
+    return new Promise((resolve) => {
+      try {
+        const postData = `hub.mode=publish&hub.url=${encodeURIComponent(feedUrl)}`;
+        const options = {
+          hostname: 'pubsubhubbub.appspot.com',
+          port: 443,
+          path: '/',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': Buffer.byteLength(postData),
+            'User-Agent': 'TalentXcel-WebSub-Publisher/1.0'
+          },
+          timeout: 3000
+        };
 
-      await new Promise((resolve) => {
         const req = https.request(options, (res) => {
           console.log(`  ✓ WebSub Ping: ${feedUrl} -> HTTP ${res.statusCode} ${res.statusMessage}`);
           resolve(true);
         });
         req.on('error', (err) => {
-          console.warn(`  ⚠️ WebSub Ping Warning for ${feedUrl}:`, err.message);
+          console.warn(`  ⚠️ WebSub Ping Notice for ${feedUrl}:`, err.message);
           resolve(false);
         });
         req.on('timeout', () => {
@@ -377,11 +377,12 @@ If you use this dataset in your research, academic publications, or blog posts, 
         });
         req.write(postData);
         req.end();
-      });
-    } catch (e) {
-      console.warn(`  ⚠️ WebSub Dispatch Error:`, e.message);
-    }
-  }
+      } catch (e) {
+        console.warn(`  ⚠️ WebSub Dispatch Error:`, e.message);
+        resolve(false);
+      }
+    });
+  }));
 
   console.log('\n================================================================');
   console.log('✅ EXTERNAL BACKLINK & SYNDICATION ENGINE COMPLETE!');
