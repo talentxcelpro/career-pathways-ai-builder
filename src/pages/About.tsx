@@ -16,9 +16,10 @@ import {
   Network,
   Compass
 } from "lucide-react";
-import { PLATFORM_METRICS } from "@/config/platformMetrics";
+import { usePlatformMetrics } from "@/config/platformMetrics";
 
 export const About = () => {
+  const { metrics } = usePlatformMetrics();
   const pillars = [
     {
       icon: <Award className="h-7 w-7 text-blue-600 dark:text-blue-400" />,
@@ -132,22 +133,22 @@ export const About = () => {
         {/* GLOBAL STATS BAR */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8">
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400">{PLATFORM_METRICS.totalProfessionalsDisplay}</p>
+            <p className="text-2xl sm:text-3xl font-black text-blue-600 dark:text-blue-400">{metrics.totalProfessionalsDisplay}</p>
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">Global Professionals</p>
             <p className="text-[11px] text-slate-400">Indexed in Talent Graph</p>
           </div>
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400">{PLATFORM_METRICS.hiringTeamsDisplay}</p>
+            <p className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400">{metrics.hiringTeamsDisplay}</p>
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">Hiring Teams</p>
             <p className="text-[11px] text-slate-400">Active Recruiter OS Workspaces</p>
           </div>
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">{PLATFORM_METRICS.activeJobsDisplay}</p>
+            <p className="text-2xl sm:text-3xl font-black text-purple-600 dark:text-purple-400">{metrics.activeJobsDisplay}</p>
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">Verified Opportunities</p>
             <p className="text-[11px] text-slate-400">Remote & Regional Roles</p>
           </div>
           <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{PLATFORM_METRICS.matchSuccessRateDisplay}</p>
+            <p className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{metrics.matchSuccessRateDisplay}</p>
             <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mt-1">Match Accuracy</p>
             <p className="text-[11px] text-slate-400">Proof-Backed Verification</p>
           </div>

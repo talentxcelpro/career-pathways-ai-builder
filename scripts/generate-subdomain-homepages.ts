@@ -74,15 +74,16 @@ export function generateSubdomainHomepages() {
       html = html.replace('</head>', `<meta name="description" content="${identity.description}">\n</head>`);
     }
 
-    // 3. Remove all existing canonical tags and inject single authoritative self-referencing canonical
+    // 3. Remove all existing canonical tags and inject single authoritative apex canonical
     html = html.replace(/<link[^>]*rel=["']canonical["'][^>]*>\s*/gi, '');
-    const canonicalTag = `<link rel="canonical" href="${identity.canonical}" />\n`;
+    const apexCanonical = `https://talentxcel.in/${sub === 'careers' ? 'career-paths' : sub}`;
+    const canonicalTag = `<link rel="canonical" href="${apexCanonical}" />\n`;
     html = html.replace('</head>', `${canonicalTag}</head>`);
 
     // 4. Update Open Graph tags
     html = html.replace(/(<meta\s+property=["']og:title["']\s+content=")[^"]*(")/gi, `$1${identity.title}$2`);
     html = html.replace(/(<meta\s+property=["']og:description["']\s+content=")[^"]*(")/gi, `$1${identity.description}$2`);
-    html = html.replace(/(<meta\s+property=["']og:url["']\s+content=")[^"]*(")/gi, `$1${identity.canonical}$2`);
+    html = html.replace(/(<meta\s+property=["']og:url["']\s+content=")[^"]*(")/gi, `$1${apexCanonical}$2`);
 
     // 5. Update Twitter Card tags
     html = html.replace(/(<meta\s+name=["']twitter:title["']\s+content=")[^"]*(")/gi, `$1${identity.title}$2`);

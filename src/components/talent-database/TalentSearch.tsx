@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Search, Filter, MapPin, Briefcase, GraduationCap, Star, Download, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { usePlatformMetrics } from '@/config/platformMetrics';
 
 interface TalentProfile {
   id: string;
@@ -24,6 +25,7 @@ interface TalentProfile {
 }
 
 export const TalentSearch = () => {
+  const { metrics } = usePlatformMetrics();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     location: '',
@@ -321,13 +323,13 @@ export const TalentSearch = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">1,247</div>
+            <div className="text-2xl font-bold text-blue-600">{metrics.totalProfessionalsDisplay}</div>
             <div className="text-sm text-muted-foreground">Total Profiles</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">892</div>
+            <div className="text-2xl font-bold text-green-600">{metrics.activeCandidatesDisplay}</div>
             <div className="text-sm text-muted-foreground">Active Candidates</div>
           </CardContent>
         </Card>

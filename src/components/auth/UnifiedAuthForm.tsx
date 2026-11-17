@@ -11,7 +11,7 @@ import { SocialLogin } from './SocialLogin';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import talentxcelLogo from '@/assets/talentxcel-logo.png';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
-import { PLATFORM_METRICS } from '@/config/platformMetrics';
+import { usePlatformMetrics } from '@/config/platformMetrics';
 import { trackAuthSession } from '@/lib/analytics/conversionTracker';
 
 interface UnifiedAuthFormProps {

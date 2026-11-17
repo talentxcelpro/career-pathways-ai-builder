@@ -90,3 +90,5 @@ supabase/.temp/
 claude-seo/
 *.db-shm
 *.db-wal
+
+backups/
