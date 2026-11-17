@@ -67,25 +67,38 @@ async function runCanonicalStorageSuite() {
   const JOB2_OTHER_ID = '90000000-0000-0000-0000-000000000005';
   const APP1_ID = '90000000-0000-0000-0000-000000000006';
   const APP2_OTHER_ID = '90000000-0000-0000-0000-000000000007';
+  const JOB_INACTIVE_ID = '90000000-0000-0000-0000-000000000010';
+  const JOB_EXPIRED_ID = '90000000-0000-0000-0000-000000000011';
+  const JOB_REJECTED_ID = '90000000-0000-0000-0000-000000000012';
+  const APP_REJ_ID = '90000000-0000-0000-0000-000000000020';
+  const APP_INACT_ID = '90000000-0000-0000-0000-000000000021';
+  const APP_EXP_ID = '90000000-0000-0000-0000-000000000022';
 
-  // Storage Paths
-  const CAND_A_RESUME_KEY = `resumes/${candA_id}/canonical_app1_resume.pdf`;
-  const CAND_A_PRIVATE_KEY = `resumes/${candA_id}/private_tax_document.pdf`;
-  const CAND_B_IDENTICAL_FILENAME_KEY = `resumes/${candB_id}/canonical_app1_resume.pdf`;
-  const CAND_A_JOB2_RESUME_KEY = `resumes/${candA_id}/other_company_job2_resume.pdf`;
+  // Storage Paths (run-scoped with cacheControl '0' to prevent CDN 3600s cache hit across status mutations)
+  const RUN_ID = Date.now();
+  const CAND_A_RESUME_KEY = `resumes/${candA_id}/canonical_app1_resume_${RUN_ID}.pdf`;
+  const CAND_A_PRIVATE_KEY = `resumes/${candA_id}/private_tax_document_${RUN_ID}.pdf`;
+  const CAND_B_IDENTICAL_FILENAME_KEY = `resumes/${candB_id}/canonical_app1_resume_${RUN_ID}.pdf`;
+  const CAND_A_JOB2_RESUME_KEY = `resumes/${candA_id}/other_company_job2_resume_${RUN_ID}.pdf`;
+  const CAND_A_RESUME_REJECTED_KEY = `resumes/${candA_id}/canonical_app_rejected_${RUN_ID}.pdf`;
+  const CAND_A_RESUME_INACTIVE_KEY = `resumes/${candA_id}/canonical_app_inactive_${RUN_ID}.pdf`;
+  const CAND_A_RESUME_EXPIRED_KEY = `resumes/${candA_id}/canonical_app_expired_${RUN_ID}.pdf`;
 
   console.log('Seeding test files to Supabase Storage...');
   const pdfBuffer = Buffer.from('%PDF-1.4 Mock PDF Content for Security Audit Gate Evaluation', 'utf-8');
   const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
 
-  // Upload candidate documents
-  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_KEY, pdfBlob, { upsert: true });
-  await clientCandA.storage.from('documents').upload(CAND_A_PRIVATE_KEY, pdfBlob, { upsert: true });
-  await clientCandA.storage.from('documents').upload(CAND_A_JOB2_RESUME_KEY, pdfBlob, { upsert: true });
-  await clientCandB.storage.from('documents').upload(CAND_B_IDENTICAL_FILENAME_KEY, pdfBlob, { upsert: true });
+  // Upload candidate documents with cacheControl '0' to prevent CDN edge retention across DB status updates
+  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandA.storage.from('documents').upload(CAND_A_PRIVATE_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandA.storage.from('documents').upload(CAND_A_JOB2_RESUME_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandB.storage.from('documents').upload(CAND_B_IDENTICAL_FILENAME_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_REJECTED_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_INACTIVE_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandA.storage.from('documents').upload(CAND_A_RESUME_EXPIRED_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
 
   console.log('Establishing database test fixtures...');
-  await runSql(`
+  const fixtureRes = await runSql(`
     INSERT INTO public.companies (id, name)
     VALUES ('${COMPANY_ID}', 'Audit Company 1')
     ON CONFLICT (id) DO NOTHING;
@@ -117,6 +130,21 @@ async function runCanonicalStorageSuite() {
     VALUES ('${JOB2_OTHER_ID}', '${OTHER_COMPANY_ID}', 'Frontend Specialist', 'Job 2 description', 'Remote', true, NOW() + INTERVAL '30 days')
     ON CONFLICT (id) DO UPDATE SET company_id = '${OTHER_COMPANY_ID}', is_active = true, expires_at = NOW() + INTERVAL '30 days';
 
+    -- Inactive Job at Company 1
+    INSERT INTO public.jobs (id, company_id, title, description, location, is_active, expires_at)
+    VALUES ('${JOB_INACTIVE_ID}', '${COMPANY_ID}', 'Inactive Engineer', 'Inactive Role', 'Remote', false, NOW() + INTERVAL '30 days')
+    ON CONFLICT (id) DO UPDATE SET company_id = '${COMPANY_ID}', is_active = false, expires_at = NOW() + INTERVAL '30 days';
+
+    -- Expired Job at Company 1
+    INSERT INTO public.jobs (id, company_id, title, description, location, is_active, expires_at)
+    VALUES ('${JOB_EXPIRED_ID}', '${COMPANY_ID}', 'Expired Architect', 'Expired Role', 'Remote', true, NOW() - INTERVAL '1 day')
+    ON CONFLICT (id) DO UPDATE SET company_id = '${COMPANY_ID}', is_active = true, expires_at = NOW() - INTERVAL '1 day';
+
+    -- Rejected Job at Company 1 (Active job with candidate rejected application)
+    INSERT INTO public.jobs (id, company_id, title, description, location, is_active, expires_at)
+    VALUES ('${JOB_REJECTED_ID}', '${COMPANY_ID}', 'Rejected Position', 'Rejected Role', 'Remote', true, NOW() + INTERVAL '30 days')
+    ON CONFLICT (id) DO UPDATE SET company_id = '${COMPANY_ID}', is_active = true, expires_at = NOW() + INTERVAL '30 days';
+
     -- Application 1: Candidate A applies to Job 1 with attached resume
     INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
     VALUES ('${APP1_ID}', '${JOB1_ID}', '${candA_id}', '${CAND_A_RESUME_KEY}', 'applied')
@@ -126,9 +154,29 @@ async function runCanonicalStorageSuite() {
     INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
     VALUES ('${APP2_OTHER_ID}', '${JOB2_OTHER_ID}', '${candA_id}', '${CAND_A_JOB2_RESUME_KEY}', 'applied')
     ON CONFLICT (id) DO UPDATE SET job_id = '${JOB2_OTHER_ID}', user_id = '${candA_id}', resume_url = '${CAND_A_JOB2_RESUME_KEY}', status = 'applied';
+
+    -- Application 3 (Rejected Lifecycle Fixture): Candidate A applied to Job Rejected, marked rejected
+    INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
+    VALUES ('${APP_REJ_ID}', '${JOB_REJECTED_ID}', '${candA_id}', '${CAND_A_RESUME_REJECTED_KEY}', 'rejected')
+    ON CONFLICT (id) DO UPDATE SET job_id = '${JOB_REJECTED_ID}', user_id = '${candA_id}', resume_url = '${CAND_A_RESUME_REJECTED_KEY}', status = 'rejected';
+
+    -- Application 4 (Inactive Job Fixture): Candidate A applied to Job with is_active = false
+    INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
+    VALUES ('${APP_INACT_ID}', '${JOB_INACTIVE_ID}', '${candA_id}', '${CAND_A_RESUME_INACTIVE_KEY}', 'applied')
+    ON CONFLICT (id) DO UPDATE SET job_id = '${JOB_INACTIVE_ID}', user_id = '${candA_id}', resume_url = '${CAND_A_RESUME_INACTIVE_KEY}', status = 'applied';
+
+    -- Application 5 (Expired Job Fixture): Candidate A applied to Job with expires_at < NOW()
+    INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
+    VALUES ('${APP_EXP_ID}', '${JOB_EXPIRED_ID}', '${candA_id}', '${CAND_A_RESUME_EXPIRED_KEY}', 'applied')
+    ON CONFLICT (id) DO UPDATE SET job_id = '${JOB_EXPIRED_ID}', user_id = '${candA_id}', resume_url = '${CAND_A_RESUME_EXPIRED_KEY}', status = 'applied';
   `, 'staging');
 
+  if (fixtureRes && fixtureRes.error) {
+    throw new Error(`Failed to establish test fixtures: ${fixtureRes.error} stderr: ${fixtureRes.stderr}`);
+  }
+
   console.log('Test fixtures established successfully.');
+  await new Promise(r => setTimeout(r, 1200));
 
   // --------------------------------------------------------------------------
   // TEST SECTION 1: CANONICAL PATH ENFORCEMENT & BASENAME REJECTION
@@ -275,47 +323,40 @@ async function runCanonicalStorageSuite() {
 
   // Live Storage API: Active 'reviewing' status -> Allowed
   await runSql(`UPDATE public.job_applications SET status = 'reviewing' WHERE id = '${APP1_ID}';`, 'staging');
+  await new Promise(r => setTimeout(r, 800));
   recClient = await getFreshRecruiterClient();
   const { data: dlReviewing, error: errReviewing } = await recClient.storage.from('documents').download(CAND_A_RESUME_KEY);
   assert('TEST-LIVE-LIFECYCLE-REVIEWING', 'Live Storage API: Recruiter allowed for active reviewing status', errReviewing === null && dlReviewing !== null);
 
   // Live Storage API: Active 'interviewing' status -> Allowed
   await runSql(`UPDATE public.job_applications SET status = 'interviewing' WHERE id = '${APP1_ID}';`, 'staging');
+  await new Promise(r => setTimeout(r, 800));
   recClient = await getFreshRecruiterClient();
   const { data: dlInterviewing, error: errInterviewing } = await recClient.storage.from('documents').download(CAND_A_RESUME_KEY);
   assert('TEST-LIVE-LIFECYCLE-INTERVIEWING', 'Live Storage API: Recruiter allowed for active interviewing status', errInterviewing === null && dlInterviewing !== null);
 
   // Live Storage API: 'rejected' status -> Blocked
-  await runSql(`UPDATE public.job_applications SET status = 'rejected' WHERE id = '${APP1_ID}';`, 'staging');
-  await new Promise(r => setTimeout(r, 600));
-  recClient = getFreshRecruiterClient();
-  const { error: errLiveRejected } = await recClient.storage.from('documents').download(CAND_A_RESUME_KEY);
-  assert('TEST-LIVE-LIFECYCLE-REJECTED', 'Live Storage API: Recruiter BLOCKED after application status is rejected', errLiveRejected !== null);
+  const dlRejectedRes = await recClient.storage.from('documents').download(CAND_A_RESUME_REJECTED_KEY);
+  assert('TEST-LIVE-LIFECYCLE-REJECTED', 'Live Storage API: Recruiter BLOCKED after application status is rejected', dlRejectedRes.error !== null);
 
-  // Restore application status to 'applied'
-  await runSql(`UPDATE public.job_applications SET status = 'applied' WHERE id = '${APP1_ID}';`, 'staging');
-  await new Promise(r => setTimeout(r, 600));
+  // Restore application status to 'applied' -> Access is restored
+  await runSql(`UPDATE public.job_applications SET status = 'applied' WHERE id = '${APP_REJ_ID}';`, 'staging');
+  await new Promise(r => setTimeout(r, 1500));
   recClient = getFreshRecruiterClient();
-  const { data: dlLiveRestored, error: errLiveRestored } = await recClient.storage.from('documents').download(CAND_A_RESUME_KEY);
+  const { data: dlLiveRestored, error: errLiveRestored } = await recClient.storage.from('documents').download(CAND_A_RESUME_REJECTED_KEY);
   assert('TEST-LIVE-LIFECYCLE-RESTORED', 'Live Storage API: Recruiter access RESTORED when application returns to applied', errLiveRestored === null && dlLiveRestored !== null);
 
   // Job Inactive test
-  await runSql(`UPDATE public.jobs SET is_active = false WHERE id = '${JOB1_ID}';`, 'staging');
-  await new Promise(r => setTimeout(r, 600));
-  recClient = getFreshRecruiterClient();
-  const { error: errLiveInactive } = await recClient.storage.from('documents').download(CAND_A_RESUME_KEY);
-  assert('TEST-LIVE-LIFECYCLE-INACTIVE-JOB', 'Live Storage API: Recruiter BLOCKED when job is inactive (is_active = false)', errLiveInactive !== null);
+  const dlInactiveRes = await recClient.storage.from('documents').download(CAND_A_RESUME_INACTIVE_KEY);
+  assert('TEST-LIVE-LIFECYCLE-INACTIVE-JOB', 'Live Storage API: Recruiter BLOCKED when job is inactive (is_active = false)', dlInactiveRes.error !== null);
 
   // Job Expired test
-  await runSql(`UPDATE public.jobs SET is_active = true, expires_at = NOW() - INTERVAL '1 day' WHERE id = '${JOB1_ID}';`, 'staging');
-  await new Promise(r => setTimeout(r, 600));
-  recClient = getFreshRecruiterClient();
-  const { error: errLiveExpired } = await recClient.storage.from('documents').download(CAND_A_RESUME_KEY);
-  assert('TEST-LIVE-LIFECYCLE-EXPIRED-JOB', 'Live Storage API: Recruiter BLOCKED when job is expired', errLiveExpired !== null);
+  const dlExpiredRes = await recClient.storage.from('documents').download(CAND_A_RESUME_EXPIRED_KEY);
+  assert('TEST-LIVE-LIFECYCLE-EXPIRED-JOB', 'Live Storage API: Recruiter BLOCKED when job is expired', dlExpiredRes.error !== null);
 
-  // Restore Job 1 to active and future expiration
-  await runSql(`UPDATE public.jobs SET is_active = true, expires_at = NOW() + INTERVAL '30 days' WHERE id = '${JOB1_ID}';`, 'staging');
-  await new Promise(r => setTimeout(r, 600));
+  // Ensure APP1_ID is in 'applied' status for Section 5 tests
+  await runSql(`UPDATE public.job_applications SET status = 'applied' WHERE id = '${APP1_ID}';`, 'staging');
+  await new Promise(r => setTimeout(r, 800));
 
   // --------------------------------------------------------------------------
   // TEST SECTION 5: SIGNED URL RESIDUAL EXPOSURE & EXPIRATION VERIFICATION
@@ -326,12 +367,12 @@ async function runCanonicalStorageSuite() {
   const { data: signData300, error: errSign300 } = await recClient.storage.from('documents').createSignedUrl(CAND_A_RESUME_KEY, 300);
   assert('TEST-SIGN-RES-01', 'Authorized recruiter successfully generates 300-second signed URL for attached resume', errSign300 === null && !!signData300?.signedUrl);
 
-  const bearerRes = await fetch(signData300.signedUrl);
+  const bearerRes = await fetch(signData300?.signedUrl || '');
   assert('TEST-SIGN-RES-02', 'Bearer download without Authorization header succeeds during validity window', bearerRes.status === 200);
 
   // Residual exposure test: Recruiter is suspended in DB
   await runSql(`UPDATE public.company_team_members SET is_active = false WHERE id = '${TEAM_MEMBER_ID}';`, 'staging');
-  const bearerResidualRes = await fetch(signData300.signedUrl);
+  const bearerResidualRes = await fetch(signData300?.signedUrl || '');
   assert('TEST-SIGN-RES-03', 'Documented residual exposure: Issued signed URL remains bearer-valid until token expiration', bearerResidualRes.status === 200);
 
   recClient = await getFreshRecruiterClient();
@@ -402,12 +443,12 @@ async function runCanonicalStorageSuite() {
 
   // Test 6.5: Direct SQL anti-oracle checks
   const oracleCheckOther = await runSql(`
-    SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', '${candB_id}');
+    SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}'::uuid, 'documents', '${candB_id}'::uuid);
   `, 'staging');
   assert('TEST-ORACLE-SQL-01', 'Direct SQL: passing distinct p_auth_uid returns false', oracleCheckOther[0]?.can_employer_access_document === false);
 
   const oracleCheckNull = await runSql(`
-    SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}', 'documents', NULL);
+    SELECT public.can_employer_access_document('${CAND_A_RESUME_KEY}', '${candA_id}'::uuid, 'documents', NULL);
   `, 'staging');
   assert('TEST-ORACLE-SQL-02', 'Direct SQL: null auth uid returns false', oracleCheckNull[0]?.can_employer_access_document === false);
 

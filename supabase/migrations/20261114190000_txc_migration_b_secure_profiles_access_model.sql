@@ -499,7 +499,7 @@ LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 DECLARE
     v_user_id uuid;
 BEGIN
@@ -510,7 +510,7 @@ BEGIN
 
     RETURN public.can_manage_company_job(p_company_id, v_user_id);
 END;
-$;
+$$;
 
 REVOKE ALL ON FUNCTION public.can_manage_company_job(uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.can_manage_company_job(uuid) TO authenticated, service_role;
@@ -641,7 +641,7 @@ LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 BEGIN
     -- 1. Anti-oracle caller binding: caller can only query for their own auth.uid() unless app admin
     IF p_auth_uid IS DISTINCT FROM auth.uid() AND NOT public.is_app_admin(auth.uid()) THEN
@@ -714,24 +714,10 @@ BEGIN
             )
     );
 END;
-$;
+$$;
 
--- 3-argument backward-compatibility overload:
-CREATE OR REPLACE FUNCTION public.can_employer_access_document(
-    p_object_name text,
-    p_object_owner uuid,
-    p_auth_uid uuid
-)
-RETURNS boolean
-LANGUAGE plpgsql
-STABLE
-SECURITY DEFINER
-SET search_path = ''
-AS $
-BEGIN
-    RETURN public.can_employer_access_document(p_object_name, p_object_owner, 'documents', p_auth_uid);
-END;
-$;
+-- Drop ambiguous 3-argument overload to ensure unambiguous PostgREST Data API RPC routing
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, uuid);
 
 -- Also define in non-exposed extensions schema for internal storage policy binding
 CREATE OR REPLACE FUNCTION extensions.can_employer_access_document(
@@ -745,17 +731,14 @@ LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = ''
-AS $
+AS $$
 BEGIN
     RETURN public.can_employer_access_document(p_object_name, p_object_owner, p_bucket_id, p_auth_uid);
 END;
-$;
+$$;
 
 REVOKE ALL ON FUNCTION public.can_employer_access_document(text, uuid, text, uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.can_employer_access_document(text, uuid, text, uuid) TO authenticated, service_role;
-
-REVOKE ALL ON FUNCTION public.can_employer_access_document(text, uuid, uuid) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.can_employer_access_document(text, uuid, uuid) TO authenticated, service_role;
 
 REVOKE ALL ON FUNCTION extensions.can_employer_access_document(text, uuid, text, uuid) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION extensions.can_employer_access_document(text, uuid, text, uuid) TO authenticated, service_role;
