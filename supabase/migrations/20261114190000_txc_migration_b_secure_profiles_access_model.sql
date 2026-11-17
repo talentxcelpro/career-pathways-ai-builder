@@ -930,9 +930,9 @@ USING (
 -- 10D. HARDENED ADMINISTRATOR AUTHORIZATION & USER ROLES PROTECTION
 -- Prevents unauthenticated probing or enumeration of administrative users.
 -- Replaces insecure SQL function with PL/pgSQL anti-probing guard.
--- Ensures caller cannot test arbitrary user_uuids unless caller is already an admin.
+-- Ensures caller cannot test arbitrary _user_ids unless caller is already an admin.
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION public.is_app_admin(user_uuid uuid DEFAULT auth.uid())
+CREATE OR REPLACE FUNCTION public.is_app_admin(_user_id uuid DEFAULT auth.uid())
 RETURNS boolean
 LANGUAGE plpgsql
 STABLE SECURITY DEFINER
@@ -944,12 +944,12 @@ DECLARE
 BEGIN
     -- 1. Privileged server context (postgres, service_role) can check arbitrary target uuid
     IF session_user IN ('postgres', 'supabase_admin') OR coalesce(auth.role(), '') = 'service_role' THEN
-        IF user_uuid IS NULL THEN
+        IF _user_id IS NULL THEN
             RETURN false;
         END IF;
         RETURN EXISTS (
             SELECT 1 FROM public.user_roles
-            WHERE user_id = user_uuid
+            WHERE user_id = _user_id
               AND role IN ('super_admin', 'admin')
               AND is_active = true
         );
@@ -961,12 +961,12 @@ BEGIN
         RETURN false;
     END IF;
 
-    IF user_uuid IS NULL THEN
+    IF _user_id IS NULL THEN
         RETURN false;
     END IF;
 
     -- 3. Self-check: Caller checking their own administrative status
-    IF user_uuid = v_caller_id THEN
+    IF _user_id = v_caller_id THEN
         RETURN EXISTS (
             SELECT 1 FROM public.user_roles
             WHERE user_id = v_caller_id
@@ -991,7 +991,7 @@ BEGIN
     -- 5. Authorized admin caller inspecting another user
     RETURN EXISTS (
         SELECT 1 FROM public.user_roles
-        WHERE user_id = user_uuid
+        WHERE user_id = _user_id
           AND role IN ('super_admin', 'admin')
           AND is_active = true
     );
