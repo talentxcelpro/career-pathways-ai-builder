@@ -2,9 +2,10 @@
 import React from 'react';
 import { UnifiedAuthForm } from '../auth/UnifiedAuthForm';
 import { HeroImage } from '../ui/OptimizedImage';
-import { PLATFORM_METRICS } from '@/config/platformMetrics';
+import { usePlatformMetrics } from '@/config/platformMetrics';
 
 export const HeroSection = () => {
+  const { metrics } = usePlatformMetrics();
   return (
     <div className="relative overflow-hidden bg-background">
       {/* Apple-style clean background */}
@@ -38,15 +39,15 @@ export const HeroSection = () => {
               {/* Apple-style metrics */}
               <div className="flex items-center justify-center lg:justify-start space-x-8 text-apple-caption">
                 <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-apple-large font-apple-bold text-foreground">{PLATFORM_METRICS.totalProfessionalsDisplay}</span>
+                  <span className="text-apple-large font-apple-bold text-foreground">{metrics.totalProfessionalsDisplay}</span>
                   <span className="text-muted-foreground font-apple-regular">Professionals</span>
                 </div>
                 <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-apple-large font-apple-bold text-foreground">{PLATFORM_METRICS.hiringTeamsDisplay}</span>
+                  <span className="text-apple-large font-apple-bold text-foreground">{metrics.hiringTeamsDisplay}</span>
                   <span className="text-muted-foreground font-apple-regular">Hiring Teams</span>
                 </div>
                 <div className="flex flex-col items-center lg:items-start">
-                  <span className="text-apple-large font-apple-bold text-foreground">{PLATFORM_METRICS.matchSuccessRateDisplay}</span>
+                  <span className="text-apple-large font-apple-bold text-foreground">{metrics.matchSuccessRateDisplay}</span>
                   <span className="text-muted-foreground font-apple-regular">Success Rate</span>
                 </div>
               </div>

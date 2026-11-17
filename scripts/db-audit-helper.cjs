@@ -66,13 +66,53 @@ function runSql(sql, target = 'production') {
           stdio: ['pipe', 'pipe', 'pipe'],
           maxBuffer: 50 * 1024 * 1024
         });
-        const startIdx = output.indexOf('{');
-        const endIdx = output.lastIndexOf('}');
-        if (startIdx !== -1 && endIdx !== -1) {
-          const jsonStr = output.slice(startIdx, endIdx + 1);
-          const parsed = JSON.parse(jsonStr);
-          return parsed.rows || [];
+        const lastBracket = output.lastIndexOf(']');
+        const lastBrace = output.lastIndexOf('}');
+
+        if (lastBracket !== -1 && (lastBrace === -1 || lastBracket > lastBrace)) {
+          let depth = 0;
+          let startBracket = -1;
+          for (let i = lastBracket; i >= 0; i--) {
+            if (output[i] === ']') depth++;
+            else if (output[i] === '[') {
+              depth--;
+              if (depth === 0) {
+                startBracket = i;
+                break;
+              }
+            }
+          }
+          if (startBracket !== -1) {
+            const jsonStr = output.slice(startBracket, lastBracket + 1);
+            try {
+              return JSON.parse(jsonStr);
+            } catch (e) {}
+          }
         }
+
+        if (lastBrace !== -1) {
+          let depth = 0;
+          let startBrace = -1;
+          for (let i = lastBrace; i >= 0; i--) {
+            if (output[i] === '}') depth++;
+            else if (output[i] === '{') {
+              depth--;
+              if (depth === 0) {
+                startBrace = i;
+                break;
+              }
+            }
+          }
+          if (startBrace !== -1) {
+            const jsonStr = output.slice(startBrace, lastBrace + 1);
+            try {
+              const parsed = JSON.parse(jsonStr);
+              if (parsed.rows) return parsed.rows;
+              return parsed;
+            } catch (e) {}
+          }
+        }
+
         return { raw: output };
       } catch (err) {
         if (attempt < 2) {

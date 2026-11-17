@@ -148,9 +148,9 @@ async function runStorageSecuritySuite() {
 
   console.log('\n--- 2. ROLE 1: AUTHORIZED RECRUITER (Active hiring authority) ---');
   await runSql(`
-    UPDATE public.company_team_members 
-    SET role = 'recruiter', is_active = true, permissions = '{}'::jsonb, company_id = '${REAL_COMPANY_ID}', user_id = '${rec_id}'
-    WHERE id = '${TEAM_MEMBER_ID}';
+    DELETE FROM public.company_team_members WHERE id = '${TEAM_MEMBER_ID}' OR user_id = '${rec_id}';
+    INSERT INTO public.company_team_members (id, company_id, user_id, role, is_active, permissions)
+    VALUES ('${TEAM_MEMBER_ID}', '${REAL_COMPANY_ID}', '${rec_id}', 'recruiter', true, '{}'::jsonb);
   `, 'staging');
   const clientAuthRec = await getFreshRecruiterClient();
 
@@ -250,16 +250,17 @@ async function runStorageSecuritySuite() {
   console.log('========================================================================\n');
 
   // Restore authorized recruiter on REAL_COMPANY_ID
-  await runSql(`
-    UPDATE public.company_team_members 
-    SET company_id = '${REAL_COMPANY_ID}', role = 'recruiter', is_active = true, user_id = '${rec_id}'
-    WHERE id = '${TEAM_MEMBER_ID}';
+  const restoreRes = await runSql(`
+    DELETE FROM public.company_team_members WHERE user_id = '${rec_id}';
+    INSERT INTO public.company_team_members (id, company_id, user_id, role, is_active, permissions)
+    VALUES ('${TEAM_MEMBER_ID}', '${REAL_COMPANY_ID}', '${rec_id}', 'recruiter', true, '{"manage_jobs": true}'::jsonb);
   `, 'staging');
+  if (restoreRes.error) console.error('Restore error:', restoreRes.error);
   const clientFinalRec = await getFreshRecruiterClient();
 
   // Test 2.1: Authorized recruiter can create signed URL for attached resume (Doc 1)
   const signRecDoc1 = await testSignedUrl(clientFinalRec, doc1Path, 300);
-  assert('TEST-SIGN-01', 'Authorized recruiter CAN generate signed URL for attached resume', signRecDoc1.success === true && signRecDoc1.signedUrl.includes('token='));
+  assert('TEST-SIGN-01', 'Authorized recruiter CAN generate signed URL for attached resume', signRecDoc1.success === true && signRecDoc1.signedUrl?.includes('token='), signRecDoc1.error || '');
 
   // Test 2.2: Authorized recruiter CANNOT create signed URL for unrelated private document (Doc 2)
   const signRecDoc2 = await testSignedUrl(clientFinalRec, doc2Path, 300);

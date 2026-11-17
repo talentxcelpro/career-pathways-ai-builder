@@ -7,6 +7,8 @@ import {
   Sparkles, 
   Trophy, 
   Gift, 
+  Store,
+  ExternalLink,
   Users, 
   UserPlus, 
   TrendingUp, 
@@ -73,6 +75,16 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
       iconColor: 'text-pink-500',
       description: 'Invite peers & earn TXC',
       badge: null
+    },
+    {
+      id: 'affiliate-marketplace',
+      label: 'Affiliate Marketplace',
+      icon: Store,
+      iconColor: 'text-cyan-600',
+      description: 'Promote TalentXcel & earn cash',
+      badge: 'Earn Cash',
+      to: '/affiliate',
+      openInNewTab: true
     },
     {
       id: 'connections',
@@ -176,7 +188,7 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
           Network Modules
         </h3>
         <Badge variant="outline" className="text-[9px] font-bold py-0 h-4 border-blue-200 text-blue-600 dark:border-blue-800 dark:text-blue-400">
-          9 Hubs
+          10 Hubs
         </Badge>
       </div>
 
@@ -184,16 +196,32 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
+          const itemHref = item.to || (item.isLiveLink ? '/gamification' : `/network?tab=${item.id}`);
 
           return (
-            <button
+            <a
               key={item.id}
-              onClick={() => {
-                onNavigate?.();
-                if (item.isLiveLink) {
-                  navigate('/gamification');
-                } else {
-                  onTabChange(item.id);
+              href={itemHref}
+              target={item.openInNewTab ? "_blank" : undefined}
+              rel={item.openInNewTab ? "noopener noreferrer" : undefined}
+              onClick={(e) => {
+                if (item.openInNewTab) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.open(item.to || itemHref, '_blank', 'noopener,noreferrer');
+                  onNavigate?.();
+                  return;
+                }
+                if (!e.ctrlKey && !e.metaKey && e.button === 0) {
+                  e.preventDefault();
+                  onNavigate?.();
+                  if (item.to) {
+                    navigate(item.to);
+                  } else if (item.isLiveLink) {
+                    navigate('/gamification');
+                  } else {
+                    onTabChange(item.id);
+                  }
                 }
               }}
               className={`w-full flex items-center justify-between p-2 rounded-xl text-left transition-all group cursor-pointer ${
@@ -239,20 +267,26 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
                 {item.badge && (
                   <Badge 
                     variant={isActive ? "default" : "secondary"} 
-                    className={`text-[10px] font-bold px-1.5 py-0 h-4 ${
-                      isActive ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-300'
+                    className={`text-[9px] font-bold px-1.5 py-0 h-4 transition-colors ${
+                      item.openInNewTab
+                        ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/60'
+                        : isActive ? 'bg-blue-600 text-white' : 'text-slate-600 dark:text-slate-300'
                     }`}
                   >
                     {item.badge}
                   </Badge>
                 )}
-                <ChevronRight className={`h-3 w-3 transition-transform ${
-                  isActive 
-                    ? 'text-blue-600 dark:text-blue-400 translate-x-0.5' 
-                    : 'text-muted-foreground/60 group-hover:text-foreground group-hover:translate-x-0.5'
-                }`} />
+                {item.openInNewTab ? (
+                  <ExternalLink className="h-3 w-3 text-cyan-600 dark:text-cyan-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                ) : (
+                  <ChevronRight className={`h-3 w-3 transition-transform ${
+                    isActive 
+                      ? 'text-blue-600 dark:text-blue-400 translate-x-0.5' 
+                      : 'text-muted-foreground/60 group-hover:text-foreground group-hover:translate-x-0.5'
+                  }`} />
+                )}
               </div>
-            </button>
+            </a>
           );
         })}
       </div>

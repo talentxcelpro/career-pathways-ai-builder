@@ -241,9 +241,9 @@ async function runAllGates() {
 
   // Case 3.1: Active Recruiter of Company -> ALLOWED
   await runSql(`
-    UPDATE public.company_team_members 
-    SET role = 'recruiter', is_active = true, permissions = '{}'::jsonb, company_id = '${REAL_COMPANY_ID}'
-    WHERE id = '${TEAM_MEMBER_ID}';
+    DELETE FROM public.company_team_members WHERE id = '${TEAM_MEMBER_ID}' OR user_id = '${rec_id}';
+    INSERT INTO public.company_team_members (id, company_id, user_id, role, is_active, permissions)
+    VALUES ('${TEAM_MEMBER_ID}', '${REAL_COMPANY_ID}', '${rec_id}', 'recruiter', true, '{}'::jsonb);
   `, 'staging');
   const { data: appRecruiter } = await clientRec
     .from('applicant_profiles')
@@ -490,8 +490,12 @@ async function runAllGates() {
   assert('Rollback does NOT grant DELETE on consents to service_role', !rollbackSql.includes('GRANT DELETE') || !rollbackSql.includes('candidate_privacy_consents TO service_role'));
   assert('Rollback does NOT grant TRUNCATE on profiles to service_role', !rollbackSql.includes('GRANT TRUNCATE ON TABLE public.profiles TO service_role'));
 
-  // Execute Rollback on Staging
+  // Execute Rollback on Staging (clean up any prior simulation backup table so rollback can proceed)
   console.log('Executing Rollback on Staging...');
+  await runSql(`
+    DROP TABLE IF EXISTS public.candidate_document_mappings_rollback_backup;
+    DROP TABLE IF EXISTS public.candidate_document_mapping_audit_rollback_backup;
+  `, 'staging');
   await runSql(rollbackSql, 'staging');
 
   // Check state after rollback

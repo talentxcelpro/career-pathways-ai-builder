@@ -47,7 +47,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { PLATFORM_METRICS } from '@/config/platformMetrics';
+import { usePlatformMetrics } from '@/config/platformMetrics';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -143,6 +143,7 @@ export default function RecruiterLandingPage() {
     closeUpgradeModal,
     refreshEntitlements 
   } = useCentralEntitlements();
+  const { metrics } = usePlatformMetrics();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
   const [targetActionText, setTargetActionText] = useState('unlock candidate discovery');
@@ -278,7 +279,7 @@ export default function RecruiterLandingPage() {
         productName="Recruiter Workspace" 
         activeNav="employers"
         badgeLabel="Recruiter OS Portal"
-        topBannerText={`Access ${PLATFORM_METRICS.totalProfessionalsDisplay} verified candidates • Proactive Talent Intelligence`}
+        topBannerText={`Access ${metrics.totalProfessionalsDisplay} verified candidates • Proactive Talent Intelligence`}
         primaryActionLabel="Post a Job (Hire) →"
         primaryActionTo="/hire"
       />
@@ -300,7 +301,7 @@ export default function RecruiterLandingPage() {
           </h1>
 
           <p className="text-sm sm:text-base text-[#64748B] max-w-2xl mx-auto leading-relaxed">
-            Define your hiring requirement. TalentXcel instantly discovers, ranks by proof-backed skills, and engages {PLATFORM_METRICS.totalProfessionalsDisplay} candidates in one unified hiring operating system.
+            Define your hiring requirement. TalentXcel instantly discovers, ranks by proof-backed skills, and engages {metrics.totalProfessionalsDisplay} candidates in one unified hiring operating system.
           </p>
 
           {/* Interactive Live Search Bar (Product Value Before Signup) */}
@@ -320,7 +321,7 @@ export default function RecruiterLandingPage() {
                 onClick={() => handleSearch()}
                 className="w-full sm:w-auto bg-gradient-to-r from-[#2563EB] to-[#7138E8] hover:opacity-95 text-white font-bold text-xs px-6 py-2.5 rounded-xl h-11 shrink-0 shadow-xs"
               >
-                Search {PLATFORM_METRICS.totalProfessionalsDisplay} Talent →
+                Search {metrics.totalProfessionalsDisplay} Talent →
               </Button>
             </div>
 
@@ -352,7 +353,7 @@ export default function RecruiterLandingPage() {
           {/* Live Metric Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-4xl mx-auto pt-8 border-t border-[#E2E8F0]">
             {[
-              { label: 'Active Candidates', val: PLATFORM_METRICS.totalProfessionalsDisplay, sub: 'Indexed in Talent Graph' },
+              { label: 'Active Candidates', val: metrics.activeCandidatesDisplay, sub: 'Indexed in Talent Graph' },
               { label: 'Verified Skills', val: '4,218+', sub: 'Proof-backed profiles' },
               { label: 'Immediate Joiners', val: '1,420+', sub: 'Available within 15 days' },
               { label: 'Average Time-to-Hire', val: '18 Days', sub: 'vs 45 days industry avg' }
@@ -494,7 +495,7 @@ export default function RecruiterLandingPage() {
               {
                 icon: BrainCircuitIcon,
                 title: 'The Database Works For You',
-                desc: `Instead of posting jobs and hoping candidates apply, TalentXcel continuously cross-matches your active requirements against ${PLATFORM_METRICS.totalProfessionalsDisplay} pre-vetted profiles.`
+                desc: `Instead of posting jobs and hoping candidates apply, TalentXcel continuously cross-matches your active requirements against ${metrics.totalProfessionalsDisplay} pre-vetted profiles.`
               },
               {
                 icon: Sparkles,

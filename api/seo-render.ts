@@ -830,7 +830,7 @@ export default async function handler(req: Request) {
     ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
   };
 
-  if (isCandidateRoute && result.status === 404) {
+  if (isCandidateRoute && (result.status as number) === 404) {
     responseHeaders['CDN-Cache-Control'] = 'no-store';
     responseHeaders['Vercel-CDN-Cache-Control'] = 'no-store';
     responseHeaders['Pragma'] = 'no-cache';
@@ -2019,6 +2019,16 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         return null; // Genuine 404 for non-existent job posting (Soft-404 eliminated!)
       }
 
+      const jobTitle = (job.title || formatTitle(secondary)).trim();
+      let company = (job.company_name || 'TalentXcel Services').trim();
+      if ((company === 'TalentXcel Services' || company === 'TalentXcel') && jobTitle.includes('Chatr')) {
+        company = 'Chatr';
+      }
+      const loc = (job.location || 'India').trim();
+      const locParts = loc.split(',').map((p: string) => p.trim());
+      const cityLoc = locParts[0] || loc;
+      const stateLoc = locParts[1] || undefined;
+
       // Check if job is closed or expired
       const isPastExpiry = job.expires_at && !isNaN(new Date(job.expires_at).getTime()) && new Date(job.expires_at) < new Date();
       const isInactive = job.is_active === false || isPastExpiry;
@@ -2096,16 +2106,6 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
 </html>`
         };
       }
-
-      const jobTitle = (job.title || formatTitle(secondary)).trim();
-      let company = (job.company_name || 'TalentXcel Services').trim();
-      if ((company === 'TalentXcel Services' || company === 'TalentXcel') && jobTitle.includes('Chatr')) {
-        company = 'Chatr';
-      }
-      const loc = (job.location || 'India').trim();
-      const locParts = loc.split(',').map((p: string) => p.trim());
-      const cityLoc = locParts[0] || loc;
-      const stateLoc = locParts[1] || undefined;
 
       // Base Salary resolution & formatted CTC
       let baseSalarySchema: any = undefined;

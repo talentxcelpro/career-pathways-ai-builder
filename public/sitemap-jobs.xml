@@ -48,12 +48,6 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/jobs/junior-backend-developer-node-python-amazon-bangalore-karnataka-india</loc>
-    <lastmod>2026-10-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
     <loc>https://talentxcel.in/jobs/associate-data-analyst-razorpay-bangalore-karnataka-india</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>daily</changefreq>
@@ -132,7 +126,7 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/jobs/software-development-engineer-ii-full-stack-amazon-bangalore-karnataka-india</loc>
+    <loc>https://talentxcel.in/jobs/software-development-engineer-ii-full-stack-amazon-bangalore-karnataka-india-1</loc>
     <lastmod>2026-10-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
@@ -2558,12 +2552,6 @@
   <url>
     <loc>https://talentxcel.in/jobs/associate-data-analyst-lt-chennai-tamil-nadu-india</loc>
     <lastmod>2026-10-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/jobs/junior-associate-clinical-research-associate-cra-talentxcel-services-client-partner-kolkata-west-ben</loc>
-    <lastmod>2026-09-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
@@ -7374,14 +7362,14 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/jobs/junior-qa-test-automation-engineer-rishabh-software-vadodara-gujarat-india</loc>
-    <lastmod>2026-10-18</lastmod>
+    <loc>https://talentxcel.in/jobs/junior-qa-test-automation-engineer-alembic-pharma-vadodara-gujarat-india</loc>
+    <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/jobs/junior-qa-test-automation-engineer-alembic-pharma-vadodara-gujarat-india</loc>
-    <lastmod>2026-10-19</lastmod>
+    <loc>https://talentxcel.in/jobs/junior-qa-test-automation-engineer-rishabh-software-vadodara-gujarat-india-1</loc>
+    <lastmod>2026-10-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
@@ -9894,12 +9882,6 @@
     <priority>0.95</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/jobs/associate-data-analyst-south-east-central-railway-bilaspur-chhattisgarh-india</loc>
-    <lastmod>2026-10-21</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
     <loc>https://talentxcel.in/jobs/junior-qa-test-automation-engineer-south-eastern-coalfields-limited-secl-bilaspur-chhattisgarh-india</loc>
     <lastmod>2026-10-19</lastmod>
     <changefreq>daily</changefreq>
@@ -9907,6 +9889,12 @@
   </url>
   <url>
     <loc>https://talentxcel.in/jobs/management-trainee-operations-associate-south-east-central-railway-bilaspur-chhattisgarh-india</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/jobs/associate-data-analyst-south-east-central-railway-bilaspur-chhattisgarh-india-1</loc>
     <lastmod>2026-10-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
@@ -12032,12 +12020,6 @@
   <url>
     <loc>https://talentxcel.in/jobs/junior-qa-test-automation-engineer-harrison-locks-aligarh-uttar-pradesh-india</loc>
     <lastmod>2026-10-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.95</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/jobs/management-trainee-operations-associate-link-locks-aligarh-uttar-pradesh-india</loc>
-    <lastmod>2026-10-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
@@ -16268,6 +16250,24 @@
   <url>
     <loc>https://talentxcel.in/jobs/intermediate-backend-engineer-authorization-gitlab-bangalore-india-1</loc>
     <lastmod>2026-11-06</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/jobs/management-trainee-operations-associate-link-locks-aligarh-uttar-pradesh-india-1</loc>
+    <lastmod>2026-10-20</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/jobs/junior-backend-developer-node-python-amazon-bangalore-karnataka-india-1</loc>
+    <lastmod>2026-10-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/jobs/junior-associate-clinical-research-associate-cra-talentxcel-services-client-partner-kolkata-west-ben-1</loc>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>

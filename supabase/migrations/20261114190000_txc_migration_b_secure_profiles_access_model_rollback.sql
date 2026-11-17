@@ -21,14 +21,45 @@ DROP VIEW IF EXISTS public.connection_profiles;
 -- 2. Drop dependent storage policy before dropping helper function
 DROP POLICY IF EXISTS "Employers can view applicant documents" ON storage.objects;
 
--- 2B. Drop candidate document mappings audit and table
+-- 2B. PRESERVE candidate document mappings and audit history (Non-destructive rollback)
+-- DATA PRESERVATION NOTICE:
+-- Destructive DROPs of candidate_document_mappings or audit logs would destroy verified mapping records
+-- for resumes uploaded without storage.objects.owner_id metadata.
+-- Tables are preserved via rename to backup tables with client privileges revoked to maintain forensic integrity.
+-- Recommended pre-rollback CSV export commands:
+--   COPY public.candidate_document_mappings TO '/var/backups/candidate_document_mappings_pre_rollback.csv' WITH CSV HEADER;
+--   COPY public.candidate_document_mapping_audit TO '/var/backups/candidate_document_mapping_audit_pre_rollback.csv' WITH CSV HEADER;
+-- Recruiter Access Impact:
+--   Rollback restores baseline storage policy (matching objects.owner or folder prefix [1]).
+--   Documents lacking owner_id or using 2-segment folder depth will lose recruiter access
+--   until remapped or restored upon forward migration reapplication.
 DROP TRIGGER IF EXISTS trg_log_candidate_document_mapping_audit ON public.candidate_document_mappings;
-DROP FUNCTION IF EXISTS public.log_candidate_document_mapping_audit();
-DROP TABLE IF EXISTS public.candidate_document_mapping_audit;
-
 DROP TRIGGER IF EXISTS trg_validate_candidate_document_mapping ON public.candidate_document_mappings;
+DROP FUNCTION IF EXISTS public.log_candidate_document_mapping_audit();
 DROP FUNCTION IF EXISTS public.validate_candidate_document_mapping();
-DROP TABLE IF EXISTS public.candidate_document_mappings;
+
+DO $$
+BEGIN
+    -- Fail-safe check: Do not drop existing backup tables. If a backup table already exists,
+    -- halt rollback with error 55000 to prevent catastrophic data loss until manual reconciliation occurs.
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings_rollback_backup') THEN
+        RAISE EXCEPTION 'Rollback halted: public.candidate_document_mappings_rollback_backup already exists. Manual reconciliation or export required before proceeding.' USING errcode = '55000';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit_rollback_backup') THEN
+        RAISE EXCEPTION 'Rollback halted: public.candidate_document_mapping_audit_rollback_backup already exists. Manual reconciliation or export required before proceeding.' USING errcode = '55000';
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mappings') THEN
+        ALTER TABLE public.candidate_document_mappings RENAME TO candidate_document_mappings_rollback_backup;
+        REVOKE ALL ON TABLE public.candidate_document_mappings_rollback_backup FROM PUBLIC, anon, authenticated;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'candidate_document_mapping_audit') THEN
+        ALTER TABLE public.candidate_document_mapping_audit RENAME TO candidate_document_mapping_audit_rollback_backup;
+        REVOKE ALL ON TABLE public.candidate_document_mapping_audit_rollback_backup FROM PUBLIC, anon, authenticated;
+    END IF;
+END $$;
 
 -- 3. Drop Migration B functions and triggers
 DROP TRIGGER IF EXISTS trg_protect_profile_system_columns ON public.profiles;
