@@ -75,7 +75,7 @@ export const INTERNATIONAL_HUBS: Record<string, InternationalHubConfig> = {
     currency: 'AED',
     metaTitle: 'Data Analyst Jobs in Dubai, UAE (2026) — Verified Vacancies in AED | TalentXcel Jobs',
     metaDescription: 'Explore verified Data Analyst and Analytics Engineer jobs in Dubai, UAE. Direct employer routing to Tabby FinTech, Careem, and Dubai tech firms with verified AED compensation and UAE visa sponsorship.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/data-analyst-dubai-uae',
+    canonicalUrl: 'https://talentxcel.in/jobs/data-analyst-dubai-uae',
     regionalMarketHighlights: [
       '100% Tax-free compensation packages benchmarked in AED (UAE Dirhams).',
       'UAE Labour Law & MOHRE compliant employment residence visa sponsorship provided by verified employers.',
@@ -104,7 +104,7 @@ export const INTERNATIONAL_HUBS: Record<string, InternationalHubConfig> = {
     currency: 'AED',
     metaTitle: 'Software Engineer Jobs in Abu Dhabi, UAE (2026) — Verified Vacancies in AED | TalentXcel Jobs',
     metaDescription: 'Apply for verified Software Engineer and Systems Analyst roles in Abu Dhabi, UAE. Official vacancies at First Abu Dhabi Bank (FAB), ADNOC, and Cleveland Clinic Abu Dhabi with verified AED salaries.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/software-engineer-abu-dhabi-uae',
+    canonicalUrl: 'https://talentxcel.in/jobs/software-engineer-abu-dhabi-uae',
     regionalMarketHighlights: [
       'Competitive tax-free AED salaries with comprehensive family health coverage and schooling allowances.',
       'Prominent sovereign and financial enterprise hubs: Abu Dhabi Global Market (ADGM), Hub71 tech ecosystem, and Masdar City.',
@@ -133,7 +133,7 @@ export const INTERNATIONAL_HUBS: Record<string, InternationalHubConfig> = {
     currency: 'SAR',
     metaTitle: 'Cloud Engineer Jobs in Riyadh, Saudi Arabia (2026) — Verified SAR Vacancies | TalentXcel Jobs',
     metaDescription: 'Discover verified Cloud Engineer and Sovereign Cloud Architect positions in Riyadh, Saudi Arabia. Explore tier-1 openings at Aramco Digital and Saudi enterprise hubs with verified SAR compensation.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/cloud-engineer-riyadh-saudi-arabia',
+    canonicalUrl: 'https://talentxcel.in/jobs/cloud-engineer-riyadh-saudi-arabia',
     regionalMarketHighlights: [
       'High-growth compensation packages benchmarked in Saudi Riyals (SAR) with substantial relocation bonuses.',
       'Driven by Saudi Vision 2030 digital infrastructure initiatives, sovereign cloud frameworks, and industrial AI expansion.',
@@ -162,7 +162,7 @@ export const INTERNATIONAL_HUBS: Record<string, InternationalHubConfig> = {
     currency: 'USD',
     metaTitle: 'Data Analyst Remote Jobs in USA (2026) — Verified USD Compensation | TalentXcel Jobs',
     metaDescription: 'Browse verified remote Data Analyst jobs based in the United States. Direct applications to JPMorgan Chase, Capital One, and US employers. Verified USD salary benchmarks and clear US work authorization terms.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/data-analyst-remote-usa',
+    canonicalUrl: 'https://talentxcel.in/jobs/data-analyst-remote-usa',
     regionalMarketHighlights: [
       'Transparent USD compensation benchmarks ranging from $95,000 to $145,000+ with 401(k) matching and equity.',
       'Remote work eligibility within US domestic timezones (EST, CST, PST).',
@@ -190,7 +190,7 @@ export const INTERNATIONAL_HUBS: Record<string, InternationalHubConfig> = {
     currency: 'USD',
     metaTitle: 'Remote Software Engineer Jobs USA & Global (2026) — Verified USD Salaries | TalentXcel Jobs',
     metaDescription: 'Verified remote Software Engineer openings with top US and global all-remote employers including Microsoft, AWS, Snowflake, GitLab, and Automattic. Filter by US-only and international remote eligibility.',
-    canonicalUrl: 'https://jobs.talentxcel.in/jobs/software-engineer-remote-us',
+    canonicalUrl: 'https://talentxcel.in/jobs/software-engineer-remote-us',
     regionalMarketHighlights: [
       'Verified compensation benchmarked in USD ($110,000 to $205,000+ base) with generous equity grants and wellness stipends.',
       'Pioneering all-remote engineering cultures with asynchronous collaboration across North America, Europe, and Asia-Pacific.',

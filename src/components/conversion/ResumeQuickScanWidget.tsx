@@ -54,6 +54,18 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
     topStrengths: string[];
   } | null>(null);
 
+  const displayTitle = React.useMemo(() => {
+    const locLower = (location || '').toLowerCase().trim();
+    let r = (role || '').trim();
+    if (locLower && r.toLowerCase().includes(locLower)) {
+      r = r.replace(new RegExp(`\\s*(?:in|for)\\s*${locLower}`, 'gi'), '').trim();
+    }
+    if (!r || r.toLowerCase() === 'jobs') {
+      return `Check Your Match For Jobs in ${location}`;
+    }
+    return `Check Your Match For ${r} in ${location}`;
+  }, [role, location]);
+
   const toggleSkill = (skill: string) => {
     if (selectedSkills.includes(skill)) {
       setSelectedSkills(selectedSkills.filter(s => s !== skill));
@@ -148,21 +160,21 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
   };
 
   return (
-    <Card className={`border-2 border-blue-500/30 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-blue-950/40 text-slate-100 shadow-xl rounded-2xl overflow-hidden ${className}`}>
-      <CardHeader className="pb-3 border-b border-slate-800/80 bg-slate-900/50">
+    <Card className={`border-2 border-blue-200/90 bg-white text-slate-900 shadow-sm hover:shadow-md transition-all rounded-2xl overflow-hidden ${className}`}>
+      <CardHeader className="pb-3 border-b border-slate-100 bg-slate-50/50">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-          <Badge className="bg-blue-600/20 text-blue-400 border-blue-500/30 text-xs font-semibold gap-1">
-            <Zap className="w-3.5 h-3.5 text-blue-400" />
+          <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs font-semibold gap-1 px-2.5 py-0.5 rounded-full">
+            <Zap className="w-3.5 h-3.5 text-blue-600" />
             <span>Instant ATS Match</span>
           </Badge>
-          <span className="text-xs font-mono text-emerald-400 flex items-center gap-1">
+          <span className="text-xs font-semibold text-emerald-600 flex items-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5" /> Ungated • No Login Required
           </span>
         </div>
-        <CardTitle className="text-xl sm:text-2xl font-extrabold text-white">
-          Check Your Match For {role} in {location}
+        <CardTitle className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          {displayTitle}
         </CardTitle>
-        <CardDescription className="text-sm text-slate-300">
+        <CardDescription className="text-sm text-slate-600">
           Drop your resume or click 3 skills below to reveal your live ATS ranking against {matchingJobsCount}+ verified openings.
         </CardDescription>
       </CardHeader>
@@ -175,7 +187,7 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
               onDragOver={(e) => e.preventDefault()}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-slate-700 hover:border-blue-500/80 rounded-xl p-6 text-center cursor-pointer bg-slate-950/40 hover:bg-blue-950/20 transition-all group"
+              className="border-2 border-dashed border-slate-300 hover:border-blue-500 rounded-xl p-6 text-center cursor-pointer bg-slate-50/70 hover:bg-blue-50/30 transition-all group"
             >
               <input
                 ref={fileInputRef}
@@ -184,13 +196,13 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <div className="w-12 h-12 rounded-full bg-blue-600/10 text-blue-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-2.5 group-hover:scale-105 transition-transform">
                 <Upload className="w-6 h-6" />
               </div>
-              <p className="text-sm font-bold text-white mb-1">
+              <p className="text-sm font-bold text-slate-900 mb-0.5">
                 {fileName ? `Selected: ${fileName}` : 'Drop Resume PDF/DOCX Here'}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 or click to browse from device (Fast 2-second client evaluation)
               </p>
             </div>
@@ -198,8 +210,8 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
             {/* Quick Skills Alternative */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-300">Or select your top 3 capabilities:</span>
-                <span className="text-slate-400 font-mono">{selectedSkills.length}/3 selected</span>
+                <span className="font-semibold text-slate-700">Or select your top 3 capabilities:</span>
+                <span className="text-slate-500 font-mono">{selectedSkills.length}/3 selected</span>
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {DEFAULT_POPULAR_SKILLS.map((skill) => {
@@ -211,8 +223,8 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
                       onClick={() => toggleSkill(skill)}
                       className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
                         isSelected
-                          ? 'bg-blue-600 text-white border-blue-500 shadow-sm'
-                          : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:border-slate-600 hover:text-white'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-200'
                       }`}
                     >
                       {skill} {isSelected && '✓'}
@@ -227,15 +239,15 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
         {/* Scanning State */}
         {isScanning && (
           <div className="py-8 text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center mx-auto animate-spin">
+            <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto animate-spin">
               <Sparkles className="w-6 h-6" />
             </div>
             <div className="space-y-1">
-              <h4 className="text-base font-bold text-white">Analyzing ATS Match vs. Live {location} Requirements...</h4>
-              <p className="text-xs text-slate-400">Comparing keyword density, seniority criteria, and skills graph</p>
+              <h4 className="text-base font-bold text-slate-900">Analyzing ATS Match vs. Live {location} Requirements...</h4>
+              <p className="text-xs text-slate-500">Comparing keyword density, seniority criteria, and skills graph</p>
             </div>
             <div className="max-w-md mx-auto">
-              <Progress value={scanProgress} className="h-2 bg-slate-800" />
+              <Progress value={scanProgress} className="h-2 bg-slate-100" />
             </div>
           </div>
         )}
@@ -243,27 +255,27 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
         {/* Scan Result */}
         {scanResult && !isScanning && (
           <div className="space-y-4 animate-in fade-in-50 duration-300">
-            <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full bg-emerald-500/10 border-2 border-emerald-500/40 text-emerald-400 flex items-center justify-center font-extrabold text-lg">
+                <div className="w-14 h-14 rounded-full bg-emerald-50 border-2 border-emerald-500 text-emerald-700 flex items-center justify-center font-black text-lg shadow-2xs">
                   {scanResult.score}%
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-bold text-white">Strong Match Score</span>
-                    <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-400 border-emerald-500/30">
+                    <span className="text-sm font-bold text-slate-900">Strong Match Score</span>
+                    <Badge variant="outline" className="text-[10px] bg-emerald-50 text-emerald-700 border-emerald-200 font-semibold">
                       Tier 1 Applicant
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-300 mt-0.5">
-                    Your profile matches <strong className="text-emerald-400">{scanResult.matchingVacancies} active vacancies</strong> in {location}.
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    Your profile matches <strong className="text-emerald-700">{scanResult.matchingVacancies} active vacancies</strong> in {location}.
                   </p>
                 </div>
               </div>
 
               <Button
                 onClick={handle1ClickAutoApply}
-                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-extrabold px-5 py-2.5 rounded-xl shadow-lg shadow-blue-600/30 text-xs sm:text-sm gap-2"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl shadow-md shadow-blue-500/20 text-xs sm:text-sm gap-2"
               >
                 <span>1-Click Auto Apply to {scanResult.matchingVacancies} Jobs</span>
                 <ArrowRight className="w-4 h-4" />
@@ -272,22 +284,22 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
 
             {/* Keyword Delta */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800/80">
-                <span className="text-slate-400 font-semibold block mb-1">Recommended Keywords to Add:</span>
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <span className="text-slate-500 font-semibold block mb-1.5">Recommended Keywords to Add:</span>
                 <div className="flex flex-wrap gap-1">
                   {scanResult.missingKeywords.map(kw => (
-                    <span key={kw} className="px-2 py-0.5 rounded bg-blue-950/60 border border-blue-800/40 text-blue-300 text-[11px]">
+                    <span key={kw} className="px-2 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-medium">
                       + {kw}
                     </span>
                   ))}
                 </div>
               </div>
 
-              <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800/80">
-                <span className="text-slate-400 font-semibold block mb-1">Matched Strengths:</span>
+              <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
+                <span className="text-slate-500 font-semibold block mb-1.5">Matched Strengths:</span>
                 <div className="flex flex-wrap gap-1">
                   {scanResult.topStrengths.map(st => (
-                    <span key={st} className="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/40 text-emerald-300 text-[11px]">
+                    <span key={st} className="px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-medium">
                       ✓ {st}
                     </span>
                   ))}
@@ -303,11 +315,11 @@ export const ResumeQuickScanWidget: React.FC<ResumeQuickScanWidgetProps> = ({
               className="mt-3"
             />
 
-            <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="pt-1 flex items-center justify-between text-[11px] text-slate-500">
               <button
                 type="button"
                 onClick={() => setScanResult(null)}
-                className="hover:text-slate-200 underline cursor-pointer"
+                className="hover:text-blue-600 underline cursor-pointer"
               >
                 ← Scan another resume or update skills
               </button>

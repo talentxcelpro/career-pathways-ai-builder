@@ -116,13 +116,13 @@ export const RelatedHubsMesh: React.FC<RelatedHubsMeshProps> = ({
   const allSlots = [cityHubSlot, companyHubSlot, ...siblingCities, ...siblingRoles];
 
   return (
-    <nav aria-label="Related Career Hubs" className={`bg-slate-900/80 border border-slate-800 rounded-2xl p-6 ${className}`}>
-      <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+    <nav aria-label="Related Career Hubs" className={`bg-white border-2 border-slate-200/80 rounded-2xl p-6 shadow-sm ${className}`}>
+      <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
         <div>
-          <h3 className="text-base font-bold text-white tracking-tight">Explore Verified Career &amp; Location Hubs</h3>
-          <p className="text-xs text-slate-400 mt-0.5">Explore sibling hubs with active verified employer hiring</p>
+          <h3 className="text-base font-bold text-slate-900 tracking-tight">Explore Verified Career &amp; Location Hubs</h3>
+          <p className="text-xs text-slate-500 mt-0.5">Explore sibling hubs with active verified employer hiring</p>
         </div>
-        <span className="px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[11px] font-mono font-semibold">
+        <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-mono font-semibold">
           Verified Mesh
         </span>
       </div>
@@ -132,21 +132,21 @@ export const RelatedHubsMesh: React.FC<RelatedHubsMeshProps> = ({
           <Link
             key={idx}
             to={slot.url}
-            className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 hover:bg-slate-800/80 border border-slate-800/80 hover:border-slate-700 transition-all group"
+            className="flex items-center justify-between p-3 rounded-xl bg-slate-50/80 hover:bg-blue-50/50 border border-slate-200 hover:border-blue-300 transition-all group"
           >
             <div className="flex items-center gap-2.5 min-w-0">
               {slot.type === 'city' ? (
-                <MapPin className="w-4 h-4 text-emerald-400 shrink-0" />
+                <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
               ) : slot.type === 'company' ? (
-                <Building2 className="w-4 h-4 text-purple-400 shrink-0" />
+                <Building2 className="w-4 h-4 text-purple-600 shrink-0" />
               ) : (
-                <Briefcase className="w-4 h-4 text-blue-400 shrink-0" />
+                <Briefcase className="w-4 h-4 text-blue-600 shrink-0" />
               )}
-              <span className="text-xs font-medium text-slate-200 group-hover:text-white truncate">
+              <span className="text-xs font-semibold text-slate-800 group-hover:text-blue-600 truncate">
                 {slot.title}
               </span>
             </div>
-            <span className="text-[11px] font-mono font-semibold text-slate-500 group-hover:text-blue-400 shrink-0 ml-2">
+            <span className="text-[11px] font-mono font-semibold text-slate-500 group-hover:text-blue-600 shrink-0 ml-2">
               {slot.count}+
             </span>
           </Link>

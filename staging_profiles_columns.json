@@ -1,0 +1,194 @@
+[
+  {
+    "column_default": null,
+    "column_name": "id",
+    "data_type": "uuid",
+    "is_nullable": "NO"
+  },
+  {
+    "column_default": null,
+    "column_name": "full_name",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "title",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "location",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "email",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "phone",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "website",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "about",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "profile_picture_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "cover_image_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "skills",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "0",
+    "column_name": "experience_years",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "industry",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "current_company",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "linkedin_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "github_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "portfolio_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "resume_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "is_profile_public",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "false",
+    "column_name": "looking_for_job",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "true",
+    "column_name": "open_to_remote",
+    "data_type": "boolean",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "preferred_salary_min",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "preferred_salary_max",
+    "data_type": "integer",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "preferred_locations",
+    "data_type": "ARRAY",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "now()",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "now()",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'job_seeker'::user_role",
+    "column_name": "user_role",
+    "data_type": "USER-DEFINED",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "headline",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "username",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": null,
+    "column_name": "profile_photo_url",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'unverified'::text",
+    "column_name": "verification_status",
+    "data_type": "text",
+    "is_nullable": "YES"
+  },
+  {
+    "column_default": "'private'::text",
+    "column_name": "profile_visibility",
+    "data_type": "text",
+    "is_nullable": "YES"
+  }
+]

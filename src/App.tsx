@@ -46,6 +46,8 @@ const BlogRedirect = lazy(() => import("@/pages/BlogRedirect"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const ResourceDetail = lazy(() => import("@/pages/resources/ResourceDetail"));
 const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
+const WhatsAppAlertsAdmin = lazy(() => import("@/pages/admin/WhatsAppAlertsAdmin"));
+const DistributionCommandCentre = lazy(() => import("@/pages/admin/DistributionCommandCentre"));
 const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
 const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
 const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
@@ -108,6 +110,7 @@ const CareerInsightsPage              = lazy(() => import('./pages/CareerInsight
 const CareerAnalyticsPage             = lazy(() => import('./pages/learning/CareerAnalytics'));
 const PublicInterviewPrep             = lazy(() => import('./pages/tools/PublicInterviewPrep'));
 const ResumeChecker                   = lazy(() => import('./pages/tools/ResumeChecker'));
+const PublicAtsCheck                  = lazy(() => import('./pages/PublicAtsCheck'));
 const CoverLetterGenerator            = lazy(() => import('./pages/tools/CoverLetterGenerator'));
 const InterviewPrep                   = lazy(() => import('./pages/tools/InterviewPrep'));
 const ProfileOptimizer                = lazy(() => import('./pages/tools/ProfileOptimizer').then(m => ({ default: m.ProfileOptimizer })));
@@ -670,7 +673,9 @@ const App = () => {
                                       <Route path="/build" element={<UnifiedResumeBuilder />} />
                                       <Route path="/build/:id" element={<UnifiedResumeBuilder />} />
                                       <Route path="/dashboard" element={<MyResumes />} />
-                                      <Route path="/ats-check" element={<ATSChecker />} />
+                                      <Route path="/ats-check" element={<PublicAtsCheck />} />
+                                      <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
+                                      <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                                       <Route path="/templates" element={<ResumeTemplates />} />
                                       <Route path="/cover-letter" element={<CoverLetterStudio />} />
                                       <Route path="/interview-prep" element={<InterviewPrepSuite />} />
@@ -891,6 +896,10 @@ const App = () => {
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
+                {/* Free Un-Gated Public ATS Resume Checker */}
+                <Route path="/ats-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading ATS Checker...</div>}><PublicAtsCheck /></Suspense>} />
+                <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
+                <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                 {/* Core Candidate & Career Tools (Explicit Precedence over /tools/:tool generic fallback) */}
                 <Route path="/tools/resume-checker" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
                 <Route path="/tools/resume-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
@@ -1263,6 +1272,9 @@ const App = () => {
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
+                                 <Route path="/admin/whatsapp-alerts" element={<AdminLayout><WhatsAppAlertsAdmin /></AdminLayout>} />
+                                 <Route path="/admin/distribution-command-centre" element={<AdminLayout><DistributionCommandCentre /></AdminLayout>} />
+                                 <Route path="/admin/distribution" element={<AdminLayout><DistributionCommandCentre /></AdminLayout>} />
                                  <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />

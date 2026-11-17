@@ -1,0 +1,3020 @@
+[
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/jobs/apply.ts",
+    "line": 101,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/jobs/apply.ts",
+    "line": 152,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 170,
+    "select": "\"id, full_name, headline, bio, location, skills, experience_years, current_job_title, current_company\", { count: \"exact\" }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 198,
+    "select": "\"id, full_name, headline, bio, location, skills, experience_years, current_job_title, current_company, is_profile_public, looking_for_job, resume_url\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 210,
+    "select": "\"skills\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 224,
+    "select": "\"skills\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 242,
+    "select": "\"full_name, headline, bio, skills\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 274,
+    "select": "\"full_name, headline, skills, resume_url\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/api/mcp.ts",
+    "line": 449,
+    "select": "\"id, full_name, headline, skills, profile_completed\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/core/BusinessMemory.ts",
+    "line": 35,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/core/BusinessMemory.ts",
+    "line": 36,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/kernel/MemoryManager.ts",
+    "line": 39,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/kernel/ToolRegistry.ts",
+    "line": 56,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/shared/BusinessMemory.ts",
+    "line": 42,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/si/engines/CareerIntelligenceEngine.ts",
+    "line": 102,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/si/engines/GrowthFlywheelEngine.ts",
+    "line": 54,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/agents/si/engines/MCPGatewayEngine.ts",
+    "line": 209,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/activity/RecentActivity.tsx",
+    "line": 70,
+    "select": "'updated_at, created_at, full_name, profile_picture_url, last_login_at, login_count, profile_views_count'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/AdvancedLinkedInImporter.tsx",
+    "line": 169,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/AdvancedLinkedInImporter.tsx",
+    "line": 177,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/AdvancedLinkedInImporter.tsx",
+    "line": 190,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/BotAuthFixer.tsx",
+    "line": 16,
+    "select": "'email, is_ai_bot'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/BotIdentityManager.tsx",
+    "line": 52,
+    "select": "'id, email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/BotProfileManager.tsx",
+    "line": 375,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/BotProfileManager.tsx",
+    "line": 400,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/BotProfileManager.tsx",
+    "line": 821,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/DailyGrowthDashboard.tsx",
+    "line": 44,
+    "select": "'id, created_at, user_role, location, last_login_at, onboarding_completed, source'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/DataQualityManager.tsx",
+    "line": 116,
+    "select": "'id'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/GrowthFunnelDashboard.tsx",
+    "line": 51,
+    "select": "'id, created_at, user_role, onboarding_completed, profile_completed, login_count'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/LaunchStatusSummary.tsx",
+    "line": 33,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/learning/BulkEnrollmentDialog.tsx",
+    "line": 44,
+    "select": "'id, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/learning/BulkEnrollmentTool.tsx",
+    "line": 58,
+    "select": "'id, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/LinkedInImportManager.tsx",
+    "line": 122,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/LinkedInImportManager.tsx",
+    "line": 133,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/MegaSEODashboard.tsx",
+    "line": 33,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/ProUsersPage.tsx",
+    "line": 43,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/RealDataEmailTester.tsx",
+    "line": 140,
+    "select": "'email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/users/BulkActionsToolbar.tsx",
+    "line": 120,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/VerificationManagement.tsx",
+    "line": 79,
+    "select": "'verification_badges'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/admin/VerificationManagement.tsx",
+    "line": 88,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/AICareerAnalytics.tsx",
+    "line": 59,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/JobMatchGPT.tsx",
+    "line": 98,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/PredictiveJobRecommendations.tsx",
+    "line": 64,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/ProactiveNotificationSystem.tsx",
+    "line": 114,
+    "select": "'profile_views_count, last_profile_view_check'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/ProactiveNotificationSystem.tsx",
+    "line": 137,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/ProactiveNotificationSystem.tsx",
+    "line": 171,
+    "select": "'full_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/ProactiveNotificationSystem.tsx",
+    "line": 250,
+    "select": "'skills, target_roles'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/SmartNetworkAnalytics.tsx",
+    "line": 65,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai/TalentXcelAIChat.tsx",
+    "line": 58,
+    "select": "'id, full_name, title, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai-career/AICareerCoPilot.tsx",
+    "line": 65,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai-career/AICareerNavigator.tsx",
+    "line": 65,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/ai-career/JobMatchScoreEngine.tsx",
+    "line": 64,
+    "select": "` *, user_skills ( skill_id, proficiency_level, skills_master (name, category",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/company/dashboard/CompanySettings.tsx",
+    "line": 113,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/dashboard/AdminDashboard.tsx",
+    "line": 63,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/dashboard/AdminDashboard.tsx",
+    "line": 73,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/dashboard/AdminDashboard.tsx",
+    "line": 75,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/dashboard/AdminDashboard.tsx",
+    "line": 81,
+    "select": "'full_name, username, created_at'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/deployment/DeploymentChecklist.tsx",
+    "line": 30,
+    "select": "'id'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/enterprise/EnterpriseSolutions.tsx",
+    "line": 75,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/gamification/GamificationDashboard.tsx",
+    "line": 59,
+    "select": "'full_name, first_name, title, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/growth/GrowthCertificateModal.tsx",
+    "line": 80,
+    "select": "'full_name, username, achievement_score, skills'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/application-form/CompactApplicationForm.tsx",
+    "line": 83,
+    "select": "'id, full_name, email, phone, location, linkedin_url, portfolio_url'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/ComprehensiveJobApplicationForm.tsx",
+    "line": 91,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/FresherMode.tsx",
+    "line": 104,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/GuestJobApplyModal.tsx",
+    "line": 85,
+    "select": "'full_name, phone, location, linkedin_url, resume_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/JobApplicationDialog.tsx",
+    "line": 84,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/PersonalCareerDashboard.tsx",
+    "line": 47,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/QuickApplyButton.tsx",
+    "line": 64,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/jobs/SmartJobMatchingBar.tsx",
+    "line": 148,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/learning/MentorshipHub.tsx",
+    "line": 96,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/marketplace/EnhancedServiceForm.tsx",
+    "line": 485,
+    "select": "'full_name, title, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/marketplace/ServiceSetupForm.tsx",
+    "line": 145,
+    "select": "'full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/messaging/EnhancedChatArea.tsx",
+    "line": 49,
+    "select": "` id, full_name, profile_picture_url, title, current_company, location, is_online, last_seen `",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/ConnectionSuggestions.tsx",
+    "line": 48,
+    "select": "'id, full_name, profile_picture_url, headline, current_company, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobileCareerPassport.tsx",
+    "line": 89,
+    "select": "'id, username, full_name, headline, location, profile_picture_url, talentxcel_id, bio, current_company, current_position, years_of_experience, skills'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobileHeader.tsx",
+    "line": 34,
+    "select": "'id, full_name, username, profile_picture_url, user_role, primary_role'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobileNetworkingStats.tsx",
+    "line": 25,
+    "select": "'profile_views_count'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobilePostComments.tsx",
+    "line": 96,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobilePostLikes.tsx",
+    "line": 57,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobileProfileViews.tsx",
+    "line": 65,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/MobileSidebar.tsx",
+    "line": 44,
+    "select": "'id, full_name, username, profile_picture_url, user_role, primary_role'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/PeopleYouMayKnow.tsx",
+    "line": 32,
+    "select": "'id, full_name, headline, current_company, profile_picture_url, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/PostComments.tsx",
+    "line": 64,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/ReelsCommentsModal.tsx",
+    "line": 108,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/mobile/StoryBubbles.tsx",
+    "line": 79,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/modals/SkillsAnalysisModal.tsx",
+    "line": 49,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/monitoring/HealthMonitor.tsx",
+    "line": 29,
+    "select": "'id'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/navigation/Navbar.tsx",
+    "line": 77,
+    "select": "'id, full_name, username, profile_picture_url, user_role, primary_role'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/AdvertisingSidebar.tsx",
+    "line": 27,
+    "select": "'id, full_name, title, profile_picture_url, location, username, slug'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/AICommentGenerator.tsx",
+    "line": 50,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/AIPostAssistant.tsx",
+    "line": 78,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/AIPostNavigator.tsx",
+    "line": 76,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/AISuggestionEngine.tsx",
+    "line": 51,
+    "select": "'id, full_name, title, profile_picture_url, current_company, skills'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/AISuggestionEngine.tsx",
+    "line": 86,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ChatArea.tsx",
+    "line": 40,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/CollegeConnect.tsx",
+    "line": 68,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ConnectionRequests.tsx",
+    "line": 41,
+    "select": "'id, full_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ConnectionRequests.tsx",
+    "line": 82,
+    "select": "'email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ConnectionRequests.tsx",
+    "line": 88,
+    "select": "'full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ConnectionSuggestions.tsx",
+    "line": 51,
+    "select": "'id, full_name, title, profile_picture_url, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ConversationsList.tsx",
+    "line": 38,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/EnhancedTrendingTopics.tsx",
+    "line": 44,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ExecutiveMessenger.tsx",
+    "line": 106,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ExecutiveMessenger.tsx",
+    "line": 114,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ExecutiveMessenger.tsx",
+    "line": 169,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ExecutiveMessenger.tsx",
+    "line": 170,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/FloatingMessenger.tsx",
+    "line": 76,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/GlobalSearchDiscovery.tsx",
+    "line": 96,
+    "select": "'id, full_name, title, current_company, profile_picture_url, headline'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/GlobalSearchDiscovery.tsx",
+    "line": 151,
+    "select": "'current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ModernMessenger.tsx",
+    "line": 113,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ModernMessenger.tsx",
+    "line": 190,
+    "select": "'email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/NetworkAnalytics.tsx",
+    "line": 71,
+    "select": "'id, full_name, profile_picture_url, headline, title, profile_views_count, skills, career_goals, career_interests'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/NetworkAnalytics.tsx",
+    "line": 92,
+    "select": "'profile_views_count, skills, career_goals, career_interests'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/NetworkMessagingSidebar.tsx",
+    "line": 42,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/PeopleSearch.tsx",
+    "line": 91,
+    "select": "'location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/PeopleSearch.tsx",
+    "line": 108,
+    "select": "'industry'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/PeopleToKnow.tsx",
+    "line": 35,
+    "select": "'id, full_name, title, profile_picture_url, headline'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/ProPostCTA.tsx",
+    "line": 25,
+    "select": "'pro_status, pro_plan'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/RealTimePresence.tsx",
+    "line": 31,
+    "select": "'is_online, last_seen'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/SmartConnectAI.tsx",
+    "line": 53,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/SmartConnectAI.tsx",
+    "line": 69,
+    "select": "'id, full_name, title, profile_picture_url, career_goals, career_interests, career_stage'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/network/SmartConnectAI.tsx",
+    "line": 181,
+    "select": "'email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/passport/AIRecommendationEngine.tsx",
+    "line": 107,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/passport/FastPassportRedirect.tsx",
+    "line": 18,
+    "select": "'username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/passport/PassportRouteHandler.tsx",
+    "line": 36,
+    "select": "'username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/passport/PassportUrlRedirect.tsx",
+    "line": 33,
+    "select": "'username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/performance/OptimizedConnectionSuggestions.tsx",
+    "line": 149,
+    "select": "'id, full_name, title, profile_picture_url, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/posts/CommentsSection.tsx",
+    "line": 42,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/posts/EnhancedCommentsSection.tsx",
+    "line": 71,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/posts/TrendingTopicsWidget.tsx",
+    "line": 43,
+    "select": "'title, user_role'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/pro/ServiceBookingsList.tsx",
+    "line": 78,
+    "select": "'id, full_name, profile_picture_url, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/products/jobmatch/AIMatchWorkspace.tsx",
+    "line": 96,
+    "select": "'id, full_name, headline, title, skills, experience_years, years_of_experience, location, open_to_remote, preferred_salary_min, about, bio'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/products/jobmatch/AIMatchWorkspace.tsx",
+    "line": 137,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/products/jobmatch/RecruiterTalentSearch.tsx",
+    "line": 105,
+    "select": "'id, full_name, title, headline, location, skills, verified_skills, years_of_experience, experience_years, about, bio, achievement_score', { count: 'exact' }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/products/payscale/PayScaleHeader.tsx",
+    "line": 77,
+    "select": "'full_name, username, avatar_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/analytics/EnhancedCareerDashboard.tsx",
+    "line": 150,
+    "select": "'profile_views_count, skills, career_goals, career_interests, industry, title, connections_count'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/CustomBrandingSettings.tsx",
+    "line": 28,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/CustomLogoUpload.tsx",
+    "line": 41,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/CustomLogoUpload.tsx",
+    "line": 72,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/CustomThemeSettings.tsx",
+    "line": 97,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/VanityUrlSettings.tsx",
+    "line": 96,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/VanityUrlSettings.tsx",
+    "line": 127,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/VideoBioUpload.tsx",
+    "line": 45,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/VideoBioUpload.tsx",
+    "line": 77,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/branding/VideoBioUpload.tsx",
+    "line": 106,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/LinkedInStyleBanner.tsx",
+    "line": 42,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/media/ProfilePhotoUpload.tsx",
+    "line": 94,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/media/ProfilePhotoUpload.tsx",
+    "line": 127,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/media/VideoResumeUpload.tsx",
+    "line": 130,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/media/VideoResumeUpload.tsx",
+    "line": 163,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/NotificationControls.tsx",
+    "line": 91,
+    "select": "'preferences'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/NotificationControls.tsx",
+    "line": 135,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/ProfileBanner.tsx",
+    "line": 54,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/profile/ProfileUrlRedirect.tsx",
+    "line": 35,
+    "select": "'id, full_name, username, slug, custom_profile_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/progress/ProfileCompletionNudge.tsx",
+    "line": 39,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/Pulse/MobilePostComments.tsx",
+    "line": 96,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/Pulse/MobilePostLikes.tsx",
+    "line": 57,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/Pulse/ProfessionalPulse.tsx",
+    "line": 92,
+    "select": "'id, full_name, profile_picture_url, title, username, slug'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/Pulse/StoryBubbles.tsx",
+    "line": 79,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/Pulse/useInfiniteNetworkPulse.ts",
+    "line": 128,
+    "select": "'id, full_name, profile_picture_url, title, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/Pulse/useLinkedInPulse.ts",
+    "line": 123,
+    "select": "'id, full_name, profile_picture_url, title, headline, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/realtime/LiveNotificationSystem.tsx",
+    "line": 75,
+    "select": "'profile_picture_url, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/realtime/RealtimeTypingIndicators.tsx",
+    "line": 80,
+    "select": "'full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/realtime/UserPresence.tsx",
+    "line": 36,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/realtime/UserPresence.tsx",
+    "line": 71,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/referral/ViralGrowthEngineDashboard.tsx",
+    "line": 231,
+    "select": "'referral_code'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/roadmap/RealTimeCareerData.tsx",
+    "line": 62,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/roadmap/RealTimeCareerData.tsx",
+    "line": 121,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/roadmap/VisualRoadmapShowcase.tsx",
+    "line": 205,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/search/AdvancedSearch.tsx",
+    "line": 76,
+    "select": "` id, full_name, headline, profile_picture_url, current_company, location, bio, skills `",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/seo/ComprehensiveSEOGenerator.tsx",
+    "line": 32,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/CareerContentHub.tsx",
+    "line": 150,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/CareerContentHub.tsx",
+    "line": 177,
+    "select": "'full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/CareerContentHub.tsx",
+    "line": 295,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/CommentsSection.tsx",
+    "line": 82,
+    "select": "'id, full_name, profile_picture_url, headline'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/FollowingFollowersList.tsx",
+    "line": 112,
+    "select": "'id, full_name, profile_picture_url, title, location, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/FollowingFollowersList.tsx",
+    "line": 162,
+    "select": "'id, full_name, profile_picture_url, title, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/PostComments.tsx",
+    "line": 73,
+    "select": "'id, full_name, profile_picture_url, headline, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/social/ProfessionalFeed.tsx",
+    "line": 92,
+    "select": "'id, full_name, profile_picture_url, title, username, slug'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/sync/DataSynchronizationService.tsx",
+    "line": 247,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/CVFilesManager.tsx",
+    "line": 152,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/CVFilesManager.tsx",
+    "line": 179,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/CVFilesManager.tsx",
+    "line": 209,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/NameFixerTool.tsx",
+    "line": 39,
+    "select": "'id, full_name, email, created_at', { count: 'exact' }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/NameFixerTool.tsx",
+    "line": 70,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/NameFixerTool.tsx",
+    "line": 125,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/NameFixerTool.tsx",
+    "line": 213,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/talent-database/NameFixerTool.tsx",
+    "line": 262,
+    "select": "'id, full_name, email, created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/tools/ProfileIntegration.tsx",
+    "line": 76,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/components/tools/RealTimeCollaboration.tsx",
+    "line": 125,
+    "select": "'full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/contexts/AIContext.tsx",
+    "line": 112,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/contexts/OptimizedAuthContext.tsx",
+    "line": 59,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/contexts/OptimizedAuthContext.tsx",
+    "line": 73,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useAdminStats.ts",
+    "line": 20,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useAdminStats.ts",
+    "line": 28,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useAdminStats.ts",
+    "line": 45,
+    "select": "'created_at'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useAdvancedSearch.ts",
+    "line": 42,
+    "select": "'id, full_name, title, profile_picture_url, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useBulkUpload.ts",
+    "line": 314,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useBusinessModels.ts",
+    "line": 274,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useBusinessModels.ts",
+    "line": 501,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCareerMapManagement.ts",
+    "line": 67,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCareerMapManagement.ts",
+    "line": 97,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCareerMapManagement.ts",
+    "line": 125,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCareerPassport.ts",
+    "line": 80,
+    "select": "'id, full_name, headline, skills, bio, profile_picture_url, updated_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCollaborationMatching.ts",
+    "line": 55,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCommandCenterData.ts",
+    "line": 100,
+    "select": "'id, full_name, username, title, current_job_title, current_company, profile_picture_url, profile_photo_url, txc_coins, current_streak, achievement_score, skills, profile_completed'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useConnectionRequests.ts",
+    "line": 60,
+    "select": "'email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useConnectionRequests.ts",
+    "line": 65,
+    "select": "'full_name, headline, current_job_title, current_company, location, profile_picture_url, avatar_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useConnectionRequests.ts",
+    "line": 139,
+    "select": "'email, full_name'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useConnectionRequests.ts",
+    "line": 148,
+    "select": "'full_name, headline, current_job_title, current_company, location, profile_picture_url, avatar_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useConnectionSuggestions.ts",
+    "line": 156,
+    "select": "'id, full_name, headline, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useContentRecommendations.ts",
+    "line": 23,
+    "select": "'skills, interests, industry'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useContentRecommendations.ts",
+    "line": 104,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useCurrentUserProfile.ts",
+    "line": 29,
+    "select": "'full_name, username, headline, current_streak'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useEmployerAccess.ts",
+    "line": 39,
+    "select": "'is_employer, employer_status, user_type'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useEnhancedConnectionSuggestions.ts",
+    "line": 36,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useEnhancedConnectionSuggestions.ts",
+    "line": 72,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useGlobalSearch.ts",
+    "line": 73,
+    "select": "'id, full_name, title, profile_picture_url, username, slug'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useGlobalSearch.ts",
+    "line": 159,
+    "select": "'current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useInfiniteNetworkFeed.ts",
+    "line": 163,
+    "select": "'id, full_name, profile_picture_url, profile_photo_url, title, headline, location, current_company, username, verification_status'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInAnalytics.ts",
+    "line": 19,
+    "select": "'full_name, email, linkedin_url, title, about, location'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInBulkUpload.ts",
+    "line": 118,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInData.ts",
+    "line": 15,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInData.ts",
+    "line": 16,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInData.ts",
+    "line": 18,
+    "select": "'full_name, email, created_at'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInFeed.ts",
+    "line": 123,
+    "select": "'id, full_name, profile_picture_url, title, headline, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useLinkedInRealTime.ts",
+    "line": 132,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useMentorMatching.ts",
+    "line": 56,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useMentorMatching.ts",
+    "line": 77,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useNetworkData.ts",
+    "line": 46,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useNetworkNavigationMetrics.ts",
+    "line": 97,
+    "select": "'id, full_name, title, headline, current_company, location, profile_picture_url, profile_photo_url, cover_image_url, username, profile_views_count, verification_status'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useNetworkPosts.ts",
+    "line": 67,
+    "select": "'id, full_name, profile_picture_url, title, current_company, pro_plan, pro_status, pro_expires_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useOptimizedCareerData.ts",
+    "line": 64,
+    "select": "'full_name, headline, location, profile_picture_url, skills'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useOptimizedRegistration.ts",
+    "line": 299,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePlatformVideos.ts",
+    "line": 146,
+    "select": "'id, full_name, profile_picture_url, headline, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePredictiveSearch.ts",
+    "line": 261,
+    "select": "'id, full_name, professional_headline, username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePrefillData.ts",
+    "line": 37,
+    "select": "'full_name, email, headline, location, primary_role, industry'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfile.ts",
+    "line": 34,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileCompletion.ts",
+    "line": 31,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileLinking.ts",
+    "line": 64,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileLinking.ts",
+    "line": 117,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileUpdate.ts",
+    "line": 93,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileUpdate.ts",
+    "line": 111,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileUpdate.ts",
+    "line": 164,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useProfileUpdate.ts",
+    "line": 181,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePublicProfile.ts",
+    "line": 68,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePublicProfile.ts",
+    "line": 77,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePublicProfile.ts",
+    "line": 87,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/usePublicProfile.ts",
+    "line": 98,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealCareerData.ts",
+    "line": 42,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealTimeAchievements.ts",
+    "line": 136,
+    "select": "'full_name, headline, location, profile_picture_url, skills'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealtimeActivity.ts",
+    "line": 37,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealtimeActivity.ts",
+    "line": 72,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealtimeActivity.ts",
+    "line": 105,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealTimeCareerMetrics.ts",
+    "line": 44,
+    "select": "'full_name, headline, location, profile_picture_url, skills'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealtimeConnections.ts",
+    "line": 44,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealtimeNetworkManagement.ts",
+    "line": 236,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useRealToolsData.ts",
+    "line": 102,
+    "select": "'full_name, current_streak'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useReelsData.ts",
+    "line": 257,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useResumeCollaboration.ts",
+    "line": 138,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useResumeManagement.ts",
+    "line": 61,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useResumeManagement.ts",
+    "line": 91,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useResumeManagement.ts",
+    "line": 119,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useReverseJobMatch.ts",
+    "line": 122,
+    "select": "'skills, bio, title, industry'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSecurityLogs.ts",
+    "line": 18,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSecurityLogs.ts",
+    "line": 19,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSecurityLogs.ts",
+    "line": 20,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSecurityLogs.ts",
+    "line": 21,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSIOrchestrator.ts",
+    "line": 138,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSlugProfile.ts",
+    "line": 112,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSlugProfile.ts",
+    "line": 123,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSlugProfile.ts",
+    "line": 136,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSmartRecommendations.ts",
+    "line": 59,
+    "select": "'id, full_name, headline, company, location, profile_picture_url, skills'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useSocialTXCAward.ts",
+    "line": 37,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useTalentScore.ts",
+    "line": 127,
+    "select": "'id, full_name, headline, location, skills, education, experience, profile_picture_url, profile_completed, profile_completion_percentage'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useTeamPermissions.ts",
+    "line": 179,
+    "select": "'id, email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useTeamPermissions.ts",
+    "line": 269,
+    "select": "'id, email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useTXCRealtime.ts",
+    "line": 38,
+    "select": "'full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useTXCRealtime.ts",
+    "line": 59,
+    "select": "'full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserGrowthData.ts",
+    "line": 10,
+    "select": "'created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserImport.ts",
+    "line": 75,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 32,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 166,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 167,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 168,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 170,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 171,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 172,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 173,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 174,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUserManagement.ts",
+    "line": 194,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/hooks/useUsernameRouting.ts",
+    "line": 26,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/lib/analytics/conversionTracker.ts",
+    "line": 217,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/lib/graph/professionalEntityGraph.ts",
+    "line": 109,
+    "select": "'id, full_name, username, title, about, is_public'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/AdminManagement.tsx",
+    "line": 52,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/AdminManagement.tsx",
+    "line": 95,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/AdminManagement.tsx",
+    "line": 96,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/AutonomousGrowthOS.tsx",
+    "line": 173,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/GrowthFunnelDashboard.tsx",
+    "line": 14,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/RevenueCommandCenter.tsx",
+    "line": 123,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/admin/SoloFounderCommandCenter.tsx",
+    "line": 91,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/ai/JobMatch.tsx",
+    "line": 32,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/ai/NavigatorPage.tsx",
+    "line": 47,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 86,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 105,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 132,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 179,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 200,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 236,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 271,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/auth/OnboardingFlow.tsx",
+    "line": 309,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/CandidateGrowthPage.tsx",
+    "line": 117,
+    "select": "'full_name, username, achievement_score, skills, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/career-map/Generate.tsx",
+    "line": 33,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/career-map/SkillsGap.tsx",
+    "line": 22,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/CareerDashboard.tsx",
+    "line": 73,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/Dashboard.tsx",
+    "line": 86,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/employer/profile/CompanyProfileEdit.tsx",
+    "line": 147,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/employer/RequestAccess.tsx",
+    "line": 61,
+    "select": "'is_employer, employer_status'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/employer/Team.tsx",
+    "line": 195,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/employer/Team.tsx",
+    "line": 219,
+    "select": "'id, full_name, email, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/employer/Team.tsx",
+    "line": 430,
+    "select": "'id, full_name, email, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/employer/TeamManagement.tsx",
+    "line": 117,
+    "select": "'id, full_name, email, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/jobs/Analytics.tsx",
+    "line": 36,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/jobs/JobPost.tsx",
+    "line": 108,
+    "select": "'id, full_name, email, phone, location, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/learning/CommunityLearningPage.tsx",
+    "line": 46,
+    "select": "'id, full_name, title, profile_picture_url, skills, experience_years, is_mentor'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/marketplace/ServiceDetail.tsx",
+    "line": 52,
+    "select": "'id, full_name, profile_picture_url, location, verification_status'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/marketplace/ServicesIntegration.tsx",
+    "line": 37,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/marketplace/ServicesMarketplace.tsx",
+    "line": 91,
+    "select": "'id, full_name, profile_picture_url, location, verification_status'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/Marketplace.tsx",
+    "line": 75,
+    "select": "'id, full_name, profile_picture_url, location, verification_status'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/mobile/MobileProfile.tsx",
+    "line": 40,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/ArchivedMessages.tsx",
+    "line": 71,
+    "select": "'full_name, name, display_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/ArticleDetail.tsx",
+    "line": 131,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Articles.tsx",
+    "line": 130,
+    "select": "'id, full_name, profile_picture_url, title, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Articles.tsx",
+    "line": 168,
+    "select": "'id, full_name, profile_picture_url, title, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Articles.tsx",
+    "line": 220,
+    "select": "` id, full_name, profile_picture_url, title `",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Communities.tsx",
+    "line": 229,
+    "select": "'id, full_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Communities.tsx",
+    "line": 308,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Connections.tsx",
+    "line": 133,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Discover.tsx",
+    "line": 125,
+    "select": "'id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/EventDetail.tsx",
+    "line": 54,
+    "select": "'full_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/GroupDetail.tsx",
+    "line": 47,
+    "select": "'id, full_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/GroupDetail.tsx",
+    "line": 82,
+    "select": "'id, full_name, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/MessageConversation.tsx",
+    "line": 78,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/MessageRequests.tsx",
+    "line": 91,
+    "select": "'id, full_name, name, display_name, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/NetworkAnalytics.tsx",
+    "line": 41,
+    "select": "'profile_views_count, full_name, title, created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/NewMessage.tsx",
+    "line": 43,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/NewMessage.tsx",
+    "line": 75,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/NewMessage.tsx",
+    "line": 84,
+    "select": "'id, full_name, profile_picture_url, title, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/NewMessage.tsx",
+    "line": 103,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/People.tsx",
+    "line": 119,
+    "select": "'id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, profile_visibility, verification_status, created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/People.tsx",
+    "line": 291,
+    "select": "'email, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/People.tsx",
+    "line": 296,
+    "select": "'full_name, headline, current_job_title, current_company, location, profile_picture_url, avatar_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/PostDetail.tsx",
+    "line": 36,
+    "select": "'id, full_name, profile_picture_url, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/PublicUserProfile.tsx",
+    "line": 25,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/PublicUserProfile.tsx",
+    "line": 45,
+    "select": "'id, full_name'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Requests.tsx",
+    "line": 74,
+    "select": "'id, full_name, title, headline, profile_picture_url, profile_photo_url, location, username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/SkillSwap.tsx",
+    "line": 382,
+    "select": "'id, full_name, title, profile_picture_url, skills, about, location, username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/SkillSwap.tsx",
+    "line": 405,
+    "select": "'id', { count: 'exact' }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/UserProfile.tsx",
+    "line": 46,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/network/Verified.tsx",
+    "line": 77,
+    "select": "'id, full_name, title, headline, location, current_company, about, skills, profile_picture_url, slug, custom_profile_url, username, updated_at, created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/onboarding/OnboardingWizard.tsx",
+    "line": 117,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/components/CareerPassportHeader.tsx",
+    "line": 42,
+    "select": "'full_name, username, avatar_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/components/CopilotPanel.tsx",
+    "line": 167,
+    "select": "\"full_name, headline, title, about, location\"",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/PublicPassport.tsx",
+    "line": 65,
+    "select": "\"*\"",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/AICoach.tsx",
+    "line": 36,
+    "select": "\"full_name, headline, title, about, location\"",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/PassportOverview.tsx",
+    "line": 54,
+    "select": "\"*\"",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/PassportProfile.tsx",
+    "line": 20,
+    "select": "\"*\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/RecruiterView.tsx",
+    "line": 23,
+    "select": "\"*\"",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/SharePassport.tsx",
+    "line": 50,
+    "select": "\"id, username, custom_url_slug, slug, full_name, passport_visibility\"",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/SharePassport.tsx",
+    "line": 83,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/passport/sections/VerificationDashboard.tsx",
+    "line": 22,
+    "select": "\"*\"",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/PersonalizedReferral.tsx",
+    "line": 42,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/posts/PublicPostPage.tsx",
+    "line": 89,
+    "select": "'id, full_name, username, title, profile_picture_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/pro/ProProfile.tsx",
+    "line": 81,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/pro/ProProfile.tsx",
+    "line": 152,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileAnalytics.tsx",
+    "line": 106,
+    "select": "'profile_views_count'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileEdit.tsx",
+    "line": 68,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileEdit.tsx",
+    "line": 162,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileEdit.tsx",
+    "line": 244,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileEdit.tsx",
+    "line": 255,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileEdit.tsx",
+    "line": 291,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileEdit.tsx",
+    "line": 302,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileSettings.tsx",
+    "line": 118,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/profile/ProfileViewersList.tsx",
+    "line": 45,
+    "select": "'id, full_name, profile_picture_url, title, current_company'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/Profile.tsx",
+    "line": 33,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/recruiters/RecruiterLandingPage.tsx",
+    "line": 168,
+    "select": "'id, full_name, headline, bio, location, experience_level, skills, current_role, updated_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/resume/ATSOptimizer.tsx",
+    "line": 211,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/resume/ResumeSettings.tsx",
+    "line": 36,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/SEOSuite.tsx",
+    "line": 85,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/TalentScorePage.tsx",
+    "line": 66,
+    "select": "'achievement_score, full_name, username, title, current_company, profile_picture_url, skills'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/TalentXcelCore.tsx",
+    "line": 60,
+    "select": "'full_name, headline, title, current_job_title, current_company, location'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/AIJobMatchGPT.tsx",
+    "line": 58,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/AILearningPathGenerator.tsx",
+    "line": 63,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/AIOutreachGenerator.tsx",
+    "line": 64,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/CareerChangeNavigator.tsx",
+    "line": 64,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/CareerGrowthScore.tsx",
+    "line": 51,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/CoverLetterGenerator.tsx",
+    "line": 65,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/InterviewQABank.tsx",
+    "line": 55,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/InterviewReadinessScore.tsx",
+    "line": 54,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/MockInterviewSimulator.tsx",
+    "line": 54,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/NetworkGrowthTracker.tsx",
+    "line": 56,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/ProfessionalBioWriter.tsx",
+    "line": 53,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/ResumePerformanceInsights.tsx",
+    "line": 91,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/RoleFitEvaluator.tsx",
+    "line": 70,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/SalaryBenchmarkTool.tsx",
+    "line": 65,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/SkillGapAnalyzer.tsx",
+    "line": 57,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/SmartApplyTool.tsx",
+    "line": 58,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/tools/STARAnswerGenerator.tsx",
+    "line": 57,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/pages/UserProfile.tsx",
+    "line": 69,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/aiAgentService.ts",
+    "line": 114,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/aiSearchService.ts",
+    "line": 180,
+    "select": "'id, full_name, username, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/aiSearchService.ts",
+    "line": 209,
+    "select": "'id, full_name, username, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/aiSearchService.ts",
+    "line": 224,
+    "select": "'id, full_name, username, email, user_role, about, profile_photo_url, location, skills, current_company, headline, title', { count: 'exact' }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/analyticsService.ts",
+    "line": 55,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/analyticsService.ts",
+    "line": 56,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/analyticsService.ts",
+    "line": 111,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/analyticsService.ts",
+    "line": 196,
+    "select": "'created_at, user_type, location'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/careerverse/careerIntelligenceEngine.ts",
+    "line": 69,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/careerverse/careerSkillTreeService.ts",
+    "line": 74,
+    "select": "'skills'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/services/networkAutoPostEngine.ts",
+    "line": 178,
+    "select": "'role, is_super_admin'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/aiJobService.ts",
+    "line": 25,
+    "select": "'skills, experience_years, industry, title'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/aiJobService.ts",
+    "line": 153,
+    "select": "'skills, experience_years, industry, title, preferred_locations'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/cvActivation.ts",
+    "line": 86,
+    "select": "'id, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/cvActivation.ts",
+    "line": 121,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/enhancedWebsocketManager.ts",
+    "line": 41,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/launchMigration.ts",
+    "line": 70,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/megaSitemapGenerator.ts",
+    "line": 17,
+    "select": "'id, full_name, updated_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/productionDataCleanup.ts",
+    "line": 68,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/productionDataCleanup.ts",
+    "line": 77,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/productionDataCleanup.ts",
+    "line": 168,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/profileSlugs.ts",
+    "line": 26,
+    "select": "'id'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/queryOptimizer.ts",
+    "line": 78,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/supabaseOptimizations.ts",
+    "line": 19,
+    "select": "'id, full_name, username, profile_picture_url, user_role, primary_role'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/userProfileSlug.ts",
+    "line": 60,
+    "select": "'id, slug, custom_profile_url, username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/userProfileSlug.ts",
+    "line": 112,
+    "select": "'id, full_name, email, slug, custom_profile_url, username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/src/utils/userProfileSlug.ts",
+    "line": 144,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/ai-chat/index.ts",
+    "line": 92,
+    "select": "'*'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/award-joining-bonus/index.ts",
+    "line": 78,
+    "select": "'id, email, full_name'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/compute-talent-score/index.ts",
+    "line": 136,
+    "select": "\"id, full_name, headline, title, current_job_title, current_company, location, industry, skills, verified_skills, experience_years, years_of_experience, education_history, work_experiences, resume_url, portfolio_url, linkedin_url, github_url, profile_views_count, career_goals, onboarding_completed, profile_completed\"",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/generate-sitemap/index.ts",
+    "line": 185,
+    "select": "'id, username, updated_at'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/network-auto-post-worker/index.ts",
+    "line": 83,
+    "select": "'id'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/send-campaign/index.ts",
+    "line": 76,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/si-orchestrator/index.ts",
+    "line": 53,
+    "select": "'is_admin, role'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/si-orchestrator/index.ts",
+    "line": 148,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/supabase/functions/si-orchestrator/index.ts",
+    "line": 201,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/apply-security-remediations.cjs",
+    "line": 127,
+    "select": "'id, email, full_name'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/apply-security-remediations.cjs",
+    "line": 202,
+    "select": "'id, email, full_name'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/apply-security-remediations.cjs",
+    "line": 522,
+    "select": "'*'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/apply-security-remediations.cjs",
+    "line": 560,
+    "select": "'*'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/canary_marketplace_telemetry.cjs",
+    "line": 24,
+    "select": "'id, username, created_at'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/check-sample-skills.cjs",
+    "line": 28,
+    "select": "'id, full_name, skills, verified_skills, title, headline'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/check-user-skills.cjs",
+    "line": 27,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/diagnose-career-players.cjs",
+    "line": 31,
+    "select": "'id, full_name, username, created_at', { count: 'exact' }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/diagnose-db.cjs",
+    "line": 28,
+    "select": "'id, username, email, full_name'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/diagnose-db.cjs",
+    "line": 30,
+    "select": "'id, username, email, full_name'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/diagnose-db.cjs",
+    "line": 34,
+    "select": "'id, username, email, full_name'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/diagnose-db.cjs",
+    "line": 46,
+    "select": "'id, created_at, username, full_name', { count: 'exact' }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/domain-seo-command-center.cjs",
+    "line": 138,
+    "select": "'id, created_at'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/e2e-profile-image-upload.ts",
+    "line": 55,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/e2e-profile-image-upload.ts",
+    "line": 70,
+    "select": "field",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/e2e_test_candidate.cjs",
+    "line": 28,
+    "select": "unknown",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/e2e_test_employer.cjs",
+    "line": 28,
+    "select": "'id'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/full-readonly-audit.cjs",
+    "line": 57,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/full-readonly-audit.cjs",
+    "line": 113,
+    "select": "'id, email, username, full_name, created_at, updated_at, user_role'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/full_growth_os_cohort_audit.cjs",
+    "line": 79,
+    "select": "'*'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/growth-funnel-dashboard.cjs",
+    "line": 116,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/growth-funnel-dashboard.cjs",
+    "line": 141,
+    "select": "'id, created_at'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-column-names.cjs",
+    "line": 27,
+    "select": "'*'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-profiles-education.cjs",
+    "line": 29,
+    "select": "'id, full_name, username, title, location, primary_role, education, education_history, career_stage'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-profiles-education.cjs",
+    "line": 38,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-profiles-education.cjs",
+    "line": 45,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-profiles.cjs",
+    "line": 10,
+    "select": "'id, full_name, title, headline, current_job_title, skills, verified_skills, education_history, work_experiences, profile_picture_url, profile_photo_url'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-roles.cjs",
+    "line": 27,
+    "select": "'id, full_name, title, industry, primary_role'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-schema-definitions.cjs",
+    "line": 46,
+    "select": "'id, full_name, username, email, title, industry, profile_picture_url, created_at, location, primary_role, is_profile_public'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect-top-uids.cjs",
+    "line": 38,
+    "select": "'id, full_name, email, created_at'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/inspect_october_data.cjs",
+    "line": 31,
+    "select": "'id, created_at, user_role, onboarding_completed, profile_completed, login_count'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/payment_entitlement_test.cjs",
+    "line": 188,
+    "select": "unknown",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/phase3-commercial-reality-test.ts",
+    "line": 52,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/prerender-static-seo.ts",
+    "line": 976,
+    "select": "'id, full_name, username'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_monitoring_sentinel.cjs",
+    "line": 43,
+    "select": "'id'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_reality_test.cjs",
+    "line": 68,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_reality_test.cjs",
+    "line": 106,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_reality_test.cjs",
+    "line": 190,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_smoke_test.cjs",
+    "line": 75,
+    "select": "unknown",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_smoke_test.cjs",
+    "line": 183,
+    "select": "unknown",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_smoke_test.cjs",
+    "line": 287,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_smoke_test.cjs",
+    "line": 299,
+    "select": "'id, full_name, username, created_at'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_smoke_test.cjs",
+    "line": 343,
+    "select": "unknown",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/production_smoke_test.cjs",
+    "line": 348,
+    "select": "unknown",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/query_24h_telemetry.cjs",
+    "line": 94,
+    "select": "'*', { count: 'exact', head: true }",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/query_24h_telemetry.cjs",
+    "line": 95,
+    "select": "'id, created_at, full_name, email'",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/recalculate-cohort.cjs",
+    "line": 53,
+    "select": "'id, email, username, full_name, title, industry, created_at, is_profile_public'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/scan_profiles_reads.cjs",
+    "line": 29,
+    "select": "...",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/security-audit/audit_db_integrity.cjs",
+    "line": 27,
+    "select": "'id'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/staging/verify-staging-10-user-journeys.ts",
+    "line": 60,
+    "select": "unknown",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/subdomain-growth-audit.cjs",
+    "line": 210,
+    "select": "'id, user_role, created_at'",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/test-admin-client.cjs",
+    "line": 14,
+    "select": "'id', { count: 'exact', head: true }",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/test-careerverse-accounts.cjs",
+    "line": 77,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/test-jobmatch-e2e-suite.cjs",
+    "line": 63,
+    "select": "'id, full_name, headline, skills', { count: 'exact' }",
+    "keyUsed": "Frontend Client (anon if logged out, authenticated JWT if logged in)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/test-slug-anon.cjs",
+    "line": 55,
+    "select": "'*'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/test-workstream1-app-regression.cjs",
+    "line": 108,
+    "select": "'id, full_name, username, slug, email, phone, is_profile_public'",
+    "keyUsed": "Client (anon/user)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/test_razorpay_sandbox_e2e.cjs",
+    "line": 313,
+    "select": "unknown",
+    "keyUsed": "Service Role (backend)"
+  },
+  {
+    "file": "C:/Users/Arshid.Wani/talentxcel-local/scripts/verify-screenshot-uids.cjs",
+    "line": 40,
+    "select": "'id, full_name, email'",
+    "keyUsed": "Client (anon/user)"
+  }
+]

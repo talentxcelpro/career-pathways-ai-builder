@@ -100,6 +100,23 @@ const OAuthCallback = () => {
               searchParams: requestUrl.searchParams,
               userMetadata: exchangeData.session.user?.user_metadata,
             });
+
+            // Auto-claim any pending anonymous ATS scans
+            try {
+              const pendingScanStr = sessionStorage.getItem('tx_pending_ats_scan');
+              if (pendingScanStr) {
+                const pendingScan = JSON.parse(pendingScanStr);
+                if (pendingScan.scanId && pendingScan.sessionFingerprint) {
+                  await supabase.rpc('claim_ats_scan', {
+                    p_scan_id: pendingScan.scanId,
+                    p_session_fingerprint: pendingScan.sessionFingerprint
+                  });
+                }
+              }
+            } catch (claimErr) {
+              console.warn('[OAuthCallback] Scan claim notice:', claimErr);
+            }
+
             window.location.replace(dest);
             return;
           }

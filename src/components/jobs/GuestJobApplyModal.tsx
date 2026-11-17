@@ -169,33 +169,28 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
       return;
     }
 
-    // If user is NOT logged in: trigger 1-Click Google Auth so they become registered & authenticated
-    if (!user) {
-      toast.info('Sign in with Google in 1 click to submit your application');
-      await handleGoogleQuickAuth();
-      return;
-    }
-
     if (!resumeFile && !existingResumeUrl) {
       toast.error('Please upload your resume/CV (PDF or Word document)');
       return;
     }
 
-    // Prevent duplicate applications
-    try {
-      const { data: existingApp } = await supabase
-        .from('job_applications')
-        .select('id, status')
-        .eq('job_id', job.id)
-        .eq('user_id', user.id)
-        .maybeSingle();
+    // Prevent duplicate applications for authenticated candidates
+    if (user?.id) {
+      try {
+        const { data: existingApp } = await supabase
+          .from('job_applications')
+          .select('id, status')
+          .eq('job_id', job.id)
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      if (existingApp) {
-        toast.info(`You have already submitted an application for this vacancy (Status: ${existingApp.status || 'Applied'}). Your application is active with the hiring coordinator.`, { id: 'guest-apply' });
-        setIsSubmitting(false);
-        return;
-      }
-    } catch {}
+        if (existingApp) {
+          toast.info(`You have already submitted an application for this vacancy (Status: ${existingApp.status || 'Applied'}). Your application is active with the hiring coordinator.`, { id: 'guest-apply' });
+          setIsSubmitting(false);
+          return;
+        }
+      } catch {}
+    }
 
     setIsSubmitting(true);
     GrowthFunnelTracker.track('application_started', {

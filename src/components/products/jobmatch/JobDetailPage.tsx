@@ -201,7 +201,7 @@ export const JobDetailPage: React.FC = () => {
     (job.application_deadline && new Date(job.application_deadline) < new Date())
   ) : false;
 
-  const canonicalUrl = job ? `https://jobs.talentxcel.in/jobs/${generateSlug(job.title, job.id)}` : 'https://jobs.talentxcel.in/jobs';
+  const canonicalUrl = job ? `https://talentxcel.in/jobs/${generateSlug(job.title, job.id)}` : 'https://talentxcel.in/jobs';
 
   // Country Code and Regional Currency Resolution
   const getCountryCode = (location?: string, city?: string): string => {
