@@ -71,6 +71,9 @@ function runSql(sql, target = 'production') {
         if (startIdx !== -1 && endIdx !== -1) {
           const jsonStr = output.slice(startIdx, endIdx + 1);
           const parsed = JSON.parse(jsonStr);
+          if (parsed.error || parsed.message) {
+            return parsed;
+          }
           return parsed.rows || [];
         }
         return { raw: output };

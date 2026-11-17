@@ -235,6 +235,7 @@ async function runTests() {
 
   const rollbackHaltedWith55000 = (rollbackSim.stdout && rollbackSim.stdout.includes('55000')) ||
                                   (rollbackSim.error && rollbackSim.error.includes('55000')) ||
+                                  (rollbackSim.message && rollbackSim.message.includes('55000')) ||
                                   (rollbackSim.stderr && rollbackSim.stderr.includes('55000'));
   assert(rollbackHaltedWith55000, 'Staging test confirmed: existing rollback backup halts with SQLSTATE 55000');
 
