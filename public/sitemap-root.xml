@@ -16,9 +16,6 @@
     <loc>https://talentxcel.in/sitemap-government.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-employers.xml</loc>
-  </sitemap>
-  <sitemap>
     <loc>https://talentxcel.in/sitemap-colleges.xml</loc>
   </sitemap>
   <sitemap>
@@ -37,24 +34,12 @@
     <loc>https://talentxcel.in/sitemap-posts.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-blog.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-news.xml</loc>
-  </sitemap>
-  <sitemap>
     <loc>https://talentxcel.in/sitemap-companies.xml</loc>
   </sitemap>
   <sitemap>
     <loc>https://talentxcel.in/sitemap-locations.xml</loc>
   </sitemap>
   <sitemap>
-    <loc>https://talentxcel.in/sitemap-combos.xml</loc>
-  </sitemap>
-  <sitemap>
     <loc>https://talentxcel.in/sitemap-services.xml</loc>
-  </sitemap>
-  <sitemap>
-    <loc>https://talentxcel.in/sitemap-rankings.xml</loc>
   </sitemap>
 </sitemapindex>
