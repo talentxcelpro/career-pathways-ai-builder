@@ -66,15 +66,19 @@ function runSql(sql, target = 'production') {
           stdio: ['pipe', 'pipe', 'pipe'],
           maxBuffer: 50 * 1024 * 1024
         });
-        const startIdx = output.indexOf('{');
-        const endIdx = output.lastIndexOf('}');
-        if (startIdx !== -1 && endIdx !== -1) {
-          const jsonStr = output.slice(startIdx, endIdx + 1);
+        const firstBracket = output.indexOf('[');
+        const lastBracket = output.lastIndexOf(']');
+        const firstBrace = output.indexOf('{');
+        const lastBrace = output.lastIndexOf('}');
+
+        if (firstBracket !== -1 && lastBracket !== -1 && (firstBrace === -1 || firstBracket < firstBrace)) {
+          const jsonStr = output.slice(firstBracket, lastBracket + 1);
+          return JSON.parse(jsonStr);
+        } else if (firstBrace !== -1 && lastBrace !== -1) {
+          const jsonStr = output.slice(firstBrace, lastBrace + 1);
           const parsed = JSON.parse(jsonStr);
-          if (parsed.error || parsed.message) {
-            return parsed;
-          }
-          return parsed.rows || [];
+          if (parsed.rows) return parsed.rows;
+          return parsed;
         }
         return { raw: output };
       } catch (err) {

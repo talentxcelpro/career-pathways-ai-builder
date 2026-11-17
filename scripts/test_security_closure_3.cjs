@@ -153,9 +153,9 @@ async function runTests() {
     WHERE pr.proname = 'can_employer_access_document'
       AND n.nspname = 'extensions';
   `, 'staging');
-  assert(helperProc.length === 1, 'extensions.can_employer_access_document exists in extensions schema');
-  assert(helperProc[0].prosecdef === true, 'extensions.can_employer_access_document is SECURITY DEFINER');
-  assert(helperProc[0].owner === 'postgres', 'extensions.can_employer_access_document owned by postgres');
+  assert(Array.isArray(helperProc) && helperProc.length === 1, 'extensions.can_employer_access_document exists in extensions schema');
+  assert(helperProc[0]?.prosecdef === true, 'extensions.can_employer_access_document is SECURITY DEFINER');
+  assert(helperProc[0]?.owner === 'postgres', 'extensions.can_employer_access_document owned by postgres');
 
   // ------------------------------------------------------------------
   // GATE 2: SERVER-ONLY MAPPING WRITER & BROWSER SECRET AUDIT
