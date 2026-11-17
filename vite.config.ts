@@ -65,6 +65,10 @@ export default defineConfig(({ mode }) => ({
       'tailwind-merge',
     ],
   },
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+    legalComments: 'none',
+  },
   build: {
     emptyOutDir: false,
     rollupOptions: {
@@ -119,15 +123,7 @@ export default defineConfig(({ mode }) => ({
     },
     chunkSizeWarningLimit: 3000,
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: mode === 'production',
-        drop_debugger: true,
-        pure_funcs: mode === 'production' ? ['console.log', 'console.info', 'console.debug'] : [],
-      },
-      maxWorkers: 1,
-    },
+    minify: 'esbuild',
     cssCodeSplit: true,
     assetsInlineLimit: 4096,
   },
