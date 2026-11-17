@@ -720,9 +720,9 @@ async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
     if (isUuid) {
       filter = `id=eq.${encodeURIComponent(cleaned)}`;
     } else {
-      filter = `username=ilike.${encodeURIComponent(cleaned)}`;
+      filter = `or=(username.ilike.${encodeURIComponent(cleaned)},custom_profile_url.ilike.${encodeURIComponent(cleaned)},slug.ilike.${encodeURIComponent(cleaned)})`;
     }
-    const url = `${getSupabaseRestUrl()}/public_profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
+    const url = `${getSupabaseRestUrl()}/profiles?select=id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': getSupabaseAnonKey(),
