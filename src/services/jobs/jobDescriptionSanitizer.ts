@@ -29,6 +29,49 @@ export const TALENTXCEL_APPLICATION_NOTICE =
   "Interested in this opportunity? Submit your application through TalentXcel. Upload your latest CV and share your details. Your application will be securely recorded and made available to the hiring team.";
 
 /**
+ * Safe DOMPurify invocation helper across browser and SSR/build environments
+ */
+function purifyHtml(html: string, options: any): string {
+  try {
+    if (typeof DOMPurify?.sanitize === 'function') {
+      return DOMPurify.sanitize(html, options) as string;
+    }
+    if (typeof (DOMPurify as any)?.default?.sanitize === 'function') {
+      return (DOMPurify as any).default.sanitize(html, options) as string;
+    }
+  } catch (e) {
+    console.warn('DOMPurify sanitize failed or unavailable:', e);
+  }
+  return html;
+}
+
+/**
+ * Extract clean, human-readable plain text snippet without raw HTML or markdown tags.
+ * Safe for job cards, meta tags, and preview cards.
+ */
+export function cleanJobSnippet(rawContent?: string | null, maxLength: number = 140): string {
+  if (!rawContent || typeof rawContent !== 'string') return '';
+  
+  let text = rawContent
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/<[^>]*>/g, ' ') // Strip all HTML tags
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Convert markdown links [text](url) to text
+    .replace(/[*_#`~>]/g, '') // Strip markdown formatting symbols
+    .replace(/\s+/g, ' ') // Collapse multiple whitespace to single space
+    .trim();
+
+  // Remove internal tracking codes if at the start (e.g. GAQ226R75)
+  text = text.replace(/^[A-Z0-9]{6,12}\s+/, '');
+
+  if (text.length <= maxLength) return text;
+  return text.slice(0, maxLength).trim() + '...';
+}
+
+/**
  * Parse and convert Markdown / plain text job description into clean semantic HTML
  */
 export function sanitizeAndFormatJobDescription(rawContent: string, options: SanitizedJobDescriptionOptions = {}): string {
@@ -49,6 +92,32 @@ export function sanitizeAndFormatJobDescription(rawContent: string, options: San
     .replace(/Submit your verified profile on the employer website[^.\n]*/gi, TALENTXCEL_APPLICATION_NOTICE)
     .replace(/Apply on Employer Site/gi, 'Apply on TalentXcel')
     .trim();
+
+  // If text contains entity-encoded HTML tags like &lt;p&gt; or &lt;strong&gt;, decode them first
+  if (/&lt;\/?(p|div|span|h[1-6]|ul|ol|li|strong|b|em|i|br)\b/i.test(text)) {
+    text = text
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#039;/g, "'")
+      .replace(/&amp;/g, '&');
+  }
+
+  // If content is already rich HTML (contains common HTML block/inline tags), sanitize and return directly
+  const isAlreadyHtml = /<\/?(p|div|span|h[1-6]|ul|ol|li|strong|b|em|i|br|table|thead|tbody|tr|td|th|section|article)\b/i.test(text);
+
+  if (isAlreadyHtml) {
+    return purifyHtml(text, {
+      ALLOWED_TAGS: [
+        'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+        'ul', 'ol', 'li', 'strong', 'b', 'em', 'i', 
+        'span', 'br', 'hr', 'blockquote', 'code', 'pre',
+        'table', 'thead', 'tbody', 'tr', 'td', 'th',
+        'a'
+      ],
+      ALLOWED_ATTR: ['class', 'style', 'href', 'target', 'rel'],
+    });
+  }
 
   // 2. Split into structural blocks (paragraphs, headings, lists)
   const lines = text.split('\n');
@@ -156,7 +225,7 @@ export function sanitizeAndFormatJobDescription(rawContent: string, options: San
   const fullHtml = blocks.join('\n');
 
   // 3. Sanitize with DOMPurify to guarantee zero XSS vulnerability
-  const cleanHtml = DOMPurify.sanitize(fullHtml, {
+  const cleanHtml = purifyHtml(fullHtml, {
     ALLOWED_TAGS: ['p', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'strong', 'em', 'span', 'br', 'a'],
     ALLOWED_ATTR: ['class', 'href', 'target', 'rel'],
   });

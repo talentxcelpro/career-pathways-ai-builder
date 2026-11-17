@@ -7,6 +7,7 @@ import { MapPin, IndianRupee, Clock, Users, Heart, Eye, Sparkles } from "lucide-
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
+import { cleanJobSnippet } from "@/services/jobs/jobDescriptionSanitizer";
 
 interface OptimizedJobCardProps {
   job: {
@@ -72,9 +73,7 @@ export const JobCardOptimized = memo<OptimizedJobCardProps>(({
   }, [job.posted_at, job.created_at]);
 
   const truncatedDescription = React.useMemo(() => {
-    return job.description?.length > 120 
-      ? job.description.substring(0, 120) + '...'
-      : job.description;
+    return cleanJobSnippet(job.description, 120);
   }, [job.description]);
 
   return (

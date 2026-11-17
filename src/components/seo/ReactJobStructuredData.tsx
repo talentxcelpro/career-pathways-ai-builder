@@ -2,6 +2,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { buildJobPostingSchema, RawJobData } from '@/lib/seo/jobPostingSchema';
 import { getPublicJobUrl } from '@/lib/seo/canonicalUrls';
+import { cleanJobSnippet } from '@/services/jobs/jobDescriptionSanitizer';
 
 interface ReactJobStructuredDataProps {
   job: RawJobData;
@@ -11,7 +12,7 @@ export const ReactJobStructuredData: React.FC<ReactJobStructuredDataProps> = ({ 
   const structuredData = buildJobPostingSchema(job);
   const companyName = job.companies?.name || job.company_name || 'TalentXcel Services';
   const seoTitle = `${job.title} at ${companyName} | TalentXcel`;
-  const seoDescription = (job.description || '').slice(0, 160);
+  const seoDescription = cleanJobSnippet(job.description, 160);
   const canonicalUrl = getPublicJobUrl(job.seo_slug || job.id);
   const logoUrl = job.companies?.logo_url || 'https://talentxcel.in/talentxcel-official-logo.png';
 

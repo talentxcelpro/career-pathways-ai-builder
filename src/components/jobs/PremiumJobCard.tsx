@@ -14,6 +14,8 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { formatSalaryRange } from "@/utils/currencyUtils";
+import { cleanJobSnippet } from "@/services/jobs/jobDescriptionSanitizer";
+import { JobDescriptionRenderer } from "@/components/jobs/JobDescriptionRenderer";
 
 interface PremiumJobCardProps {
   job: {
@@ -280,9 +282,13 @@ export const PremiumJobCard: React.FC<PremiumJobCardProps> = ({
 
             {job.description && (
               <div>
-                <p className="text-gray-600 leading-relaxed">
-                  {isExpanded ? job.description : `${job.description.slice(0, 200)}${job.description.length > 200 ? '...' : ''}`}
-                </p>
+                {isExpanded ? (
+                  <JobDescriptionRenderer content={job.description} />
+                ) : (
+                  <p className="text-gray-600 leading-relaxed">
+                    {cleanJobSnippet(job.description, 200)}
+                  </p>
+                )}
                 {job.description.length > 200 && (
                   <Button
                     variant="ghost"

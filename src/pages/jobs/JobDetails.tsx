@@ -32,6 +32,7 @@ import {
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';
 import { JobDescriptionRenderer } from '@/components/jobs/JobDescriptionRenderer';
+import { cleanJobSnippet } from '@/services/jobs/jobDescriptionSanitizer';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
 import { ReactJobStructuredData } from '@/components/seo/ReactJobStructuredData';
 import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
@@ -499,7 +500,7 @@ export default function JobDetails() {
       {!isExpired && <ReactJobStructuredData job={job} />}
       <SocialMetaHead
         title={`${job.title} at ${companyName} (${job.location || 'India'}) | TalentXcel`}
-        description={job.description ? job.description.slice(0, 160) : `Apply for ${job.title} at ${companyName}. Verified compensation and fast direct application on TalentXcel.`}
+        description={cleanJobSnippet(job.description, 160) || `Apply for ${job.title} at ${companyName}. Verified compensation and fast direct application on TalentXcel.`}
         category="jobs"
         ogType="article"
         canonicalUrl={getPublicJobUrl(job.seo_slug || slugOrId)}

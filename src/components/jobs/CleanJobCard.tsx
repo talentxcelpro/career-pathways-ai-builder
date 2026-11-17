@@ -19,6 +19,7 @@ import { formatSalaryRange } from "@/utils/currencyUtils";
 import { useNavigate } from "react-router-dom";
 import { navigateToJobDetail } from "@/utils/crossDomainJobRouting";
 import { toast } from "sonner";
+import { cleanJobSnippet } from "@/services/jobs/jobDescriptionSanitizer";
 
 interface CleanJobCardProps {
   job: {
@@ -223,7 +224,7 @@ export const CleanJobCard: React.FC<CleanJobCardProps> = ({
           <div className="text-sm text-muted-foreground">
             <span>📝 Description:</span>
             <p className="mt-1 text-foreground line-clamp-2">
-              {job.description || `${getCompanyName()} is looking for a ${job.title} to join their team...`}
+              {cleanJobSnippet(job.description, 160) || `${getCompanyName()} is looking for a ${job.title} to join their team...`}
             </p>
           </div>
 
