@@ -66,12 +66,13 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
           .from('connections')
           .select('requester_id, recipient_id')
           .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`)
-          .eq('status', 'accepted');
+          .eq('status', 'accepted')
+          .limit(80);
 
         connectedAuthorIds = Array.from(new Set([
           userId,
           ...(conns || []).flatMap(c => [c.requester_id, c.recipient_id])
-        ].filter(Boolean)));
+        ].filter(Boolean))).slice(0, 80);
 
         if (connectedAuthorIds.length === 0) {
           return { data: [], nextPage: undefined, hasMore: false };
@@ -87,11 +88,11 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       if (filters.type === 'connections' && connectedAuthorIds) {
         query = query
           .in('author_id', connectedAuthorIds)
-          .eq('status', 'published');
+          .or('is_deleted.is.null,is_deleted.eq.false');
       } else {
         query = query
-          .eq('status', 'published')
-          .or('is_public.eq.true,visibility.eq.public,visibility.is.null');
+          .or('is_deleted.is.null,is_deleted.eq.false')
+          .or('is_public.is.null,is_public.eq.true');
       }
 
       // Apply search filter if provided
@@ -159,10 +160,29 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       ]));
 
       if (allUserIds.length > 0) {
-        const { data: profilesData } = await supabase
-          .from('profiles')
-          .select('id, full_name, profile_picture_url, profile_photo_url, title, headline, location, current_company, username, verification_status')
-          .in('id', allUserIds);
+        const batchIds = allUserIds.slice(0, 60);
+        let profilesData: any[] = [];
+        try {
+          const { data: pubData } = await supabase
+            .from('public_profiles')
+            .select('id, full_name, profile_picture_url, profile_photo_url, title, headline, location, current_company, username, verification_status')
+            .in('id', batchIds);
+          if (pubData) profilesData = pubData;
+        } catch {
+          // ignore
+        }
+
+        if (profilesData.length === 0) {
+          try {
+            const { data: privData } = await supabase
+              .from('profiles')
+              .select('id, full_name, profile_picture_url, profile_photo_url, title, headline, location, current_company, username, verification_status')
+              .in('id', batchIds);
+            if (privData) profilesData = privData;
+          } catch {
+            // ignore
+          }
+        }
 
         if (profilesData) {
           profilesMap = new Map(profilesData.map((p: any) => [p.id, {

@@ -36,13 +36,13 @@ interface JobComparisonPanelProps {
 }
 
 export const JobComparisonPanel: React.FC<JobComparisonPanelProps> = ({
-  const navigate = useNavigate();
   jobs,
   onRemoveJob,
   onClearAll,
   isOpen,
   onClose
 }) => {
+  const navigate = useNavigate();
   if (!isOpen || jobs.length === 0) return null;
 
   const formatSalary = (min?: number, max?: number) => {
@@ -198,3 +198,4 @@ export const JobComparisonPanel: React.FC<JobComparisonPanelProps> = ({
     </div>
   );
 };
+

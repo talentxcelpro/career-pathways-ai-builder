@@ -15,6 +15,7 @@ import { PageFallbackSkeleton } from '@/components/navigation/PageFallbackSkelet
 import { RouteTransition } from '@/components/navigation/RouteTransition';
 import { FooterWrapper } from "./components/layout/FooterWrapper";
 import { OptimizedAuthProvider } from "./contexts/OptimizedAuthContext";
+import { RegionProvider } from "@/contexts/RegionContext";
 import { VoicePlayerProvider } from "@/contexts/VoicePlayerContext";
 import { VoiceMiniPlayer } from "@/components/voice/VoiceMiniPlayer";
 import { TXCAutoMiner } from '@/components/txc/TXCAutoMiner';
@@ -384,6 +385,7 @@ const App = () => {
             <TopLoadingBar />
             <ScrollRestoration />
             <OptimizedAuthProvider>
+            <RegionProvider>
               <GoogleOneTapLogin autoSelect={true} />
               <VoicePlayerProvider>
               <NotificationProvider>
@@ -672,6 +674,8 @@ const App = () => {
                                       <Route path="/build/:id" element={<UnifiedResumeBuilder />} />
                                       <Route path="/dashboard" element={<MyResumes />} />
                                       <Route path="/ats-check" element={<ATSChecker />} />
+                                      <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
+                                      <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                                       <Route path="/templates" element={<ResumeTemplates />} />
                                       <Route path="/cover-letter" element={<CoverLetterStudio />} />
                                       <Route path="/interview-prep" element={<InterviewPrepSuite />} />
@@ -895,6 +899,10 @@ const App = () => {
                 <Route path="/tools" element={<Tools />} />
                 <Route path="/tools/skill-assessment-engine" element={<SkillAssessmentEngine />} />
                 <Route path="/tools/skill-assessment" element={<SkillAssessmentEngine />} />
+                {/* Free Un-Gated Public ATS Resume Checker */}
+                <Route path="/ats-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading ATS Checker...</div>}><ATSChecker /></Suspense>} />
+                <Route path="/ats-score" element={<Navigate to="/ats-check" replace />} />
+                <Route path="/free-ats-check" element={<Navigate to="/ats-check" replace />} />
                 {/* Core Candidate & Career Tools (Explicit Precedence over /tools/:tool generic fallback) */}
                 <Route path="/tools/resume-checker" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
                 <Route path="/tools/resume-check" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Resume Scanner...</div>}><ResumeChecker /></Suspense>} />
@@ -1111,6 +1119,13 @@ const App = () => {
                                 })}
 
                                  {/* First-class Public Profile route (e.g. /profile/first-middle-last or /profile/first-last) */}
+                                 {/* Vanity Career Passport & Viral Peer Endorsements (High-Converting PLG Engine) */}
+                                 <Route path="/u/:username" element={<UniversalProfileRouteHandler />} />
+  <Route path="/u/@:username" element={<UniversalProfileRouteHandler />} />
+                                                                  <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
+
+                                  {/* Phase 2 Ecosystem Loops: Public Reels, Recruiter OS Embeds & Explore Hub */}
+                                                                                                      
                                  <Route path="/profile/:username" element={<UniversalProfileRouteHandler />} />
 
                                 {/* Legacy UUID-based profile redirects */}
@@ -1267,7 +1282,7 @@ const App = () => {
                                 <Route path="/admin/email-automation" element={<AdminLayout><EmailAutomation /></AdminLayout>} />
                                 <Route path="/admin/populate-courses" element={<AdminLayout><PopulateCoursesAdmin /></AdminLayout>} />
                                 <Route path="/admin/video-manager" element={<AdminLayout><AdminVideoManager /></AdminLayout>} />
-                                 <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
+                                                                                                                                    <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />
                                  {/* Explicit Public Learning Provider Directory Routes */}
@@ -1356,6 +1371,7 @@ const App = () => {
                     </NotificationProvider>
                     <VoiceMiniPlayer />
                   </VoicePlayerProvider>
+                  </RegionProvider>
                   </OptimizedAuthProvider>
               </BrowserRouter>
            </HelmetProvider>
