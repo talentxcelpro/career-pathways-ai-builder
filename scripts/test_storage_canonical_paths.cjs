@@ -70,9 +70,11 @@ async function runCanonicalStorageSuite() {
   const JOB_INACTIVE_ID = '90000000-0000-0000-0000-000000000010';
   const JOB_EXPIRED_ID = '90000000-0000-0000-0000-000000000011';
   const JOB_REJECTED_ID = '90000000-0000-0000-0000-000000000012';
+  const JOB_SR_ID = '90000000-0000-0000-0000-000000000013';
   const APP_REJ_ID = '90000000-0000-0000-0000-000000000020';
   const APP_INACT_ID = '90000000-0000-0000-0000-000000000021';
   const APP_EXP_ID = '90000000-0000-0000-0000-000000000022';
+  const APP_SR_ID = '90000000-0000-0000-0000-000000000030';
 
   // Storage Paths (run-scoped with cacheControl '0' to prevent CDN 3600s cache hit across status mutations)
   const RUN_ID = Date.now();
@@ -83,6 +85,7 @@ async function runCanonicalStorageSuite() {
   const CAND_A_RESUME_REJECTED_KEY = `resumes/${candA_id}/canonical_app_rejected_${RUN_ID}.pdf`;
   const CAND_A_RESUME_INACTIVE_KEY = `resumes/${candA_id}/canonical_app_inactive_${RUN_ID}.pdf`;
   const CAND_A_RESUME_EXPIRED_KEY = `resumes/${candA_id}/canonical_app_expired_${RUN_ID}.pdf`;
+  const CAND_A_SERVICE_ROLE_KEY = `resumes/${candA_id}/service_role_uploaded_${RUN_ID}.pdf`;
 
   console.log('Seeding test files to Supabase Storage...');
   const pdfBuffer = Buffer.from('%PDF-1.4 Mock PDF Content for Security Audit Gate Evaluation', 'utf-8');
@@ -96,9 +99,16 @@ async function runCanonicalStorageSuite() {
   await clientCandA.storage.from('documents').upload(CAND_A_RESUME_REJECTED_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
   await clientCandA.storage.from('documents').upload(CAND_A_RESUME_INACTIVE_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
   await clientCandA.storage.from('documents').upload(CAND_A_RESUME_EXPIRED_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
+  await clientCandA.storage.from('documents').upload(CAND_A_SERVICE_ROLE_KEY, pdfBlob, { upsert: true, cacheControl: '0' });
 
   console.log('Establishing database test fixtures...');
   const fixtureRes = await runSql(`
+    -- Simulate service-role upload by setting owner = NULL and owner_id = NULL on service-role uploaded file
+    UPDATE storage.objects SET owner = NULL, owner_id = NULL WHERE name = '${CAND_A_SERVICE_ROLE_KEY}';
+
+    -- Clear any residual mappings for service-role key
+    DELETE FROM public.candidate_document_mappings WHERE bucket_id = 'documents' AND object_name = '${CAND_A_SERVICE_ROLE_KEY}';
+
     INSERT INTO public.companies (id, name)
     VALUES ('${COMPANY_ID}', 'Audit Company 1')
     ON CONFLICT (id) DO NOTHING;
@@ -145,6 +155,11 @@ async function runCanonicalStorageSuite() {
     VALUES ('${JOB_REJECTED_ID}', '${COMPANY_ID}', 'Rejected Position', 'Rejected Role', 'Remote', true, NOW() + INTERVAL '30 days')
     ON CONFLICT (id) DO UPDATE SET company_id = '${COMPANY_ID}', is_active = true, expires_at = NOW() + INTERVAL '30 days';
 
+    -- Service-Role Uploaded Job at Company 1 (Active)
+    INSERT INTO public.jobs (id, company_id, title, description, location, is_active, expires_at)
+    VALUES ('${JOB_SR_ID}', '${COMPANY_ID}', 'Backend Architect', 'Service Role Upload Role', 'Remote', true, NOW() + INTERVAL '30 days')
+    ON CONFLICT (id) DO UPDATE SET company_id = '${COMPANY_ID}', is_active = true, expires_at = NOW() + INTERVAL '30 days';
+
     -- Application 1: Candidate A applies to Job 1 with attached resume
     INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
     VALUES ('${APP1_ID}', '${JOB1_ID}', '${candA_id}', '${CAND_A_RESUME_KEY}', 'applied')
@@ -169,6 +184,11 @@ async function runCanonicalStorageSuite() {
     INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
     VALUES ('${APP_EXP_ID}', '${JOB_EXPIRED_ID}', '${candA_id}', '${CAND_A_RESUME_EXPIRED_KEY}', 'applied')
     ON CONFLICT (id) DO UPDATE SET job_id = '${JOB_EXPIRED_ID}', user_id = '${candA_id}', resume_url = '${CAND_A_RESUME_EXPIRED_KEY}', status = 'applied';
+
+    -- Application 6 (Service-Role Upload Fixture): Candidate A applied with service-role file
+    INSERT INTO public.job_applications (id, job_id, user_id, resume_url, status)
+    VALUES ('${APP_SR_ID}', '${JOB_SR_ID}', '${candA_id}', '${CAND_A_SERVICE_ROLE_KEY}', 'applied')
+    ON CONFLICT (id) DO UPDATE SET job_id = '${JOB_SR_ID}', user_id = '${candA_id}', resume_url = '${CAND_A_SERVICE_ROLE_KEY}', status = 'applied';
   `, 'staging');
 
   if (fixtureRes && fixtureRes.error) {

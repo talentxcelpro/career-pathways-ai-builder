@@ -452,7 +452,9 @@ COMMENT ON VIEW public.connection_profiles IS 'Dedicated 1st-degree connection p
 -- ----------------------------------------------------------------------------
 -- 7. INTERFACE D: RECRUITER / EMPLOYER APPLICANT PROFILE INTERFACE
 -- ----------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION public.can_manage_company_job(p_company_id uuid, p_user_id uuid)
+-- Authoritative company job management helpers reside in non-exposed extensions schema
+-- to prevent exposure via PostgREST Data API RPC endpoints.
+CREATE OR REPLACE FUNCTION extensions.can_manage_company_job(p_company_id uuid, p_user_id uuid)
 RETURNS boolean
 LANGUAGE plpgsql
 STABLE
@@ -489,11 +491,11 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.can_manage_company_job(uuid, uuid) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.can_manage_company_job(uuid, uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION extensions.can_manage_company_job(uuid, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_manage_company_job(uuid, uuid) TO authenticated, service_role;
 
 -- Authoritative 1-argument overload deriving identity strictly from auth.uid()
-CREATE OR REPLACE FUNCTION public.can_manage_company_job(p_company_id uuid)
+CREATE OR REPLACE FUNCTION extensions.can_manage_company_job(p_company_id uuid)
 RETURNS boolean
 LANGUAGE plpgsql
 STABLE
@@ -508,14 +510,19 @@ BEGIN
         RETURN false;
     END IF;
 
-    RETURN public.can_manage_company_job(p_company_id, v_user_id);
+    RETURN extensions.can_manage_company_job(p_company_id, v_user_id);
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.can_manage_company_job(uuid) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.can_manage_company_job(uuid) TO authenticated, service_role;
+REVOKE ALL ON FUNCTION extensions.can_manage_company_job(uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_manage_company_job(uuid) TO authenticated, service_role;
 
+-- Drop legacy view before dropping dependent function
 DROP VIEW IF EXISTS public.applicant_profiles;
+
+-- Drop legacy public functions to ensure zero exposed Data API RPC surface
+DROP FUNCTION IF EXISTS public.can_manage_company_job(uuid);
+DROP FUNCTION IF EXISTS public.can_manage_company_job(uuid, uuid);
 
 CREATE VIEW public.applicant_profiles
 WITH (security_barrier = true) AS
@@ -545,7 +552,7 @@ JOIN public.jobs j ON j.id = ja.job_id
 JOIN public.profiles p ON p.id = ja.user_id
 WHERE (
     public.is_app_admin(auth.uid())
-    OR (j.company_id IS NOT NULL AND public.can_manage_company_job(j.company_id, auth.uid()))
+    OR (j.company_id IS NOT NULL AND extensions.can_manage_company_job(j.company_id, auth.uid()))
     OR (j.company_id IS NULL AND j.posted_by = auth.uid())
 );
 
@@ -628,12 +635,44 @@ COMMENT ON VIEW public.public_profiles IS 'Affirmative-consent protected public 
 -- ----------------------------------------------------------------------------
 -- 10. STORAGE RLS: RESTRICT EMPLOYER ACCESS TO EXPLICIT APPLICATION RESUMES
 -- ----------------------------------------------------------------------------
--- Helper function to check if caller has active hiring authority for the candidate's applied job
--- and that the requested document matches the exact resume path attached to that job application.
-CREATE OR REPLACE FUNCTION public.can_employer_access_document(
+-- 10A. TRUSTED SERVER CANDIDATE DOCUMENT MAPPINGS
+-- Maintains verified document-to-candidate ownership for documents uploaded
+-- via service-role or administrative tooling where storage.objects.owner_id is NULL.
+-- Authenticated and anonymous roles are strictly REVOKED from mutating this table.
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.candidate_document_mappings (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    bucket_id text NOT NULL DEFAULT 'documents',
+    object_name text NOT NULL,
+    candidate_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    created_at timestamptz NOT NULL DEFAULT pg_catalog.now(),
+    verified_by_service_role boolean NOT NULL DEFAULT true,
+    CONSTRAINT candidate_document_mappings_bucket_object_key UNIQUE (bucket_id, object_name)
+);
+
+ALTER TABLE public.candidate_document_mappings ENABLE ROW LEVEL SECURITY;
+
+REVOKE ALL ON TABLE public.candidate_document_mappings FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.candidate_document_mappings TO authenticated, service_role;
+GRANT INSERT, UPDATE, DELETE ON TABLE public.candidate_document_mappings TO service_role;
+
+DROP POLICY IF EXISTS "Candidates can read own document mappings" ON public.candidate_document_mappings;
+CREATE POLICY "Candidates can read own document mappings"
+ON public.candidate_document_mappings FOR SELECT TO authenticated
+USING (candidate_id = auth.uid());
+
+COMMENT ON TABLE public.candidate_document_mappings IS 'Trusted server-maintained mapping between storage documents and candidate identity for service-role uploads lacking object owner_id.';
+
+-- ----------------------------------------------------------------------------
+-- 10B. AUTHORITATIVE STORAGE AUTHORIZATION HELPER
+-- Defined strictly in non-exposed extensions schema with owner_id text matching.
+-- Strictly evaluates the employer-candidate application authorization predicate.
+-- No blanket administrative wildcard bypass (administrative reads use dedicated policy).
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION extensions.can_employer_access_document(
     p_object_name text,
-    p_object_owner uuid,
-    p_bucket_id text DEFAULT 'documents',
+    p_object_owner_id text,
+    p_bucket_id text DEFAULT 'documents'::text,
     p_auth_uid uuid DEFAULT auth.uid()
 )
 RETURNS boolean
@@ -649,18 +688,13 @@ BEGIN
     END IF;
 
     -- 2. Guard against null inputs
-    IF p_auth_uid IS NULL OR p_object_name IS NULL OR p_object_owner IS NULL THEN
+    IF p_auth_uid IS NULL OR p_object_name IS NULL THEN
         RETURN false;
     END IF;
 
     -- 3. Strict bucket enforcement: object must belong to the approved 'documents' bucket
     IF p_bucket_id IS DISTINCT FROM 'documents' THEN
         RETURN false;
-    END IF;
-
-    -- App admins have global administrative access
-    IF public.is_app_admin(p_auth_uid) THEN
-        RETURN true;
     END IF;
 
     -- 4. Authorized recruiter document access predicate
@@ -691,19 +725,33 @@ BEGIN
 
             -- C. Authorized hiring authority for the job's company
             AND (
-                (j.company_id IS NOT NULL AND public.can_manage_company_job(j.company_id, p_auth_uid))
+                (j.company_id IS NOT NULL AND extensions.can_manage_company_job(j.company_id, p_auth_uid))
                 OR (j.company_id IS NULL AND j.posted_by = p_auth_uid)
             )
 
             -- D. Explicit Storage owner validation:
-            -- Storage owner MUST equal the application candidate ID (user_id).
-            AND ja.user_id = p_object_owner
+            -- Uses modern owner_id (text) with fallback to trusted server mapping for service-role uploads.
+            AND (
+                -- D1. Standard candidate-authenticated upload: object owner_id matches application candidate ID
+                (p_object_owner_id IS NOT NULL AND p_object_owner_id = (ja.user_id)::text)
+                OR
+                -- D2. Trusted server-maintained mapping for service-role uploads (where owner_id is NULL)
+                (p_object_owner_id IS NULL AND EXISTS (
+                    SELECT 1 FROM public.candidate_document_mappings cdm
+                    WHERE cdm.bucket_id = p_bucket_id
+                      AND cdm.object_name = p_object_name
+                      AND cdm.candidate_id = ja.user_id
+                      AND cdm.verified_by_service_role = true
+                ))
+            )
+
+            -- E. Folder depth containment (candidate folder prefix)
             AND (
                 (ja.user_id)::text = (storage.foldername(p_object_name))[1]
                 OR (ja.user_id)::text = (storage.foldername(p_object_name))[2]
             )
 
-            -- E. Exact canonical Storage object key comparison (strictly full path, NO basename matching)
+            -- F. Exact canonical Storage object key comparison (strictly full path, NO basename matching)
             AND ja.resume_url IS NOT NULL
             AND p_object_name = (
                 CASE 
@@ -716,41 +764,41 @@ BEGIN
 END;
 $$;
 
--- Drop ambiguous 3-argument overload to ensure unambiguous PostgREST Data API RPC routing
-DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, uuid);
+REVOKE ALL ON FUNCTION extensions.can_employer_access_document(text, text, text, uuid) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION extensions.can_employer_access_document(text, text, text, uuid) TO authenticated, service_role;
 
--- Also define in non-exposed extensions schema for internal storage policy binding
-CREATE OR REPLACE FUNCTION extensions.can_employer_access_document(
-    p_object_name text,
-    p_object_owner uuid,
-    p_bucket_id text DEFAULT 'documents',
-    p_auth_uid uuid DEFAULT auth.uid()
-)
-RETURNS boolean
-LANGUAGE plpgsql
-STABLE
-SECURITY DEFINER
-SET search_path = ''
-AS $$
-BEGIN
-    RETURN public.can_employer_access_document(p_object_name, p_object_owner, p_bucket_id, p_auth_uid);
-END;
-$$;
-
-REVOKE ALL ON FUNCTION public.can_employer_access_document(text, uuid, text, uuid) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION public.can_employer_access_document(text, uuid, text, uuid) TO authenticated, service_role;
-
-REVOKE ALL ON FUNCTION extensions.can_employer_access_document(text, uuid, text, uuid) FROM PUBLIC, anon;
-GRANT EXECUTE ON FUNCTION extensions.can_employer_access_document(text, uuid, text, uuid) TO authenticated, service_role;
-
--- Drop existing over-permissive employer policy
+-- ----------------------------------------------------------------------------
+-- 10C. STORAGE RLS POLICY BINDING
+-- Explicitly binds to extensions.can_employer_access_document and owner_id.
+-- ----------------------------------------------------------------------------
+-- Drop legacy dependent storage policy first before dropping legacy public helper
 DROP POLICY IF EXISTS "Employers can view applicant documents" ON storage.objects;
+
+-- Drop legacy public helper overloads to guarantee 0 exposed Data API RPC endpoints
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, text, uuid);
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, text, text, uuid);
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, uuid);
 
 CREATE POLICY "Employers can view applicant documents"
 ON storage.objects FOR SELECT TO authenticated
 USING (
-    bucket_id = 'documents'
-    AND public.can_employer_access_document(name, owner, bucket_id, auth.uid())
+    bucket_id = 'documents'::text
+    AND extensions.can_employer_access_document(name, owner_id, bucket_id, auth.uid())
+);
+
+-- Update candidate read policy to support both owner_id and owner
+DROP POLICY IF EXISTS "Candidates can read own documents" ON storage.objects;
+
+CREATE POLICY "Candidates can read own documents"
+ON storage.objects FOR SELECT TO authenticated
+USING (
+    bucket_id = 'documents'::text
+    AND (
+        ((auth.uid())::text = owner_id)
+        OR (auth.uid() = owner)
+        OR ((auth.uid())::text = (storage.foldername(name))[1])
+        OR ((auth.uid())::text = (storage.foldername(name))[2])
+    )
 );
 
 COMMIT;

@@ -21,14 +21,21 @@ DROP VIEW IF EXISTS public.connection_profiles;
 -- 2. Drop dependent storage policy before dropping helper function
 DROP POLICY IF EXISTS "Employers can view applicant documents" ON storage.objects;
 
+-- 2B. Drop candidate document mappings table
+DROP TABLE IF EXISTS public.candidate_document_mappings;
+
 -- 3. Drop Migration B functions and triggers
 DROP TRIGGER IF EXISTS trg_protect_profile_system_columns ON public.profiles;
 DROP FUNCTION IF EXISTS public.protect_profile_system_columns();
+DROP FUNCTION IF EXISTS extensions.can_manage_company_job(uuid);
+DROP FUNCTION IF EXISTS extensions.can_manage_company_job(uuid, uuid);
+DROP FUNCTION IF EXISTS extensions.can_employer_access_document(text, text, text, uuid);
+DROP FUNCTION IF EXISTS extensions.can_employer_access_document(text, uuid, text, uuid);
 DROP FUNCTION IF EXISTS public.can_manage_company_job(uuid);
 DROP FUNCTION IF EXISTS public.can_manage_company_job(uuid, uuid);
+DROP FUNCTION IF EXISTS public.can_employer_access_document(text, text, text, uuid);
 DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, text, uuid);
 DROP FUNCTION IF EXISTS public.can_employer_access_document(text, uuid, uuid);
-DROP FUNCTION IF EXISTS extensions.can_employer_access_document(text, uuid, text, uuid);
 
 -- 3. Restore table-level privileges on public.profiles for authenticated role
 GRANT SELECT, INSERT, UPDATE ON TABLE public.profiles TO authenticated;
