@@ -1,6 +1,13 @@
 -- ============================================================================
--- ROLLBACK: 20261117150000_txc_strict_affirmative_consent_public_profiles_rollback.sql
--- Restores previous permissive public_profiles view definition if needed.
+-- SAFE ROLLBACK: 20261117150000_txc_strict_affirmative_consent_public_profiles_rollback.sql
+-- Priority: P0 Privacy Protection Invariant
+-- Description: Safe rollback definition that NEVER restores the permissive
+-- 'c.consent_status IS NULL' condition, preventing reintroduction of the
+-- 53-profile privacy exposure flaw.
+--
+-- If this migration must be rolled back, it safely rolls back to an explicit
+-- fail-closed affirmative consent view using the base LEFT JOIN architecture
+-- but STRICTLY requiring c.consent_status = 'granted'.
 -- ============================================================================
 
 CREATE OR REPLACE VIEW public.public_profiles
@@ -28,13 +35,16 @@ SELECT
     p.is_profile_public,
     p.created_at
 FROM public.profiles p
-LEFT JOIN public.candidate_privacy_consents c 
+JOIN public.candidate_privacy_consents c 
     ON c.user_id = p.id 
    AND c.consent_type = 'public_profile_indexing'
-WHERE (c.consent_status IS NULL OR c.consent_status = 'granted')
+WHERE c.consent_status = 'granted'
   AND c.revocation_timestamp IS NULL
-  AND COALESCE(p.profile_visibility, 'public') = 'public'
+  AND COALESCE(p.profile_visibility, 'private') = 'public'
   AND p.is_profile_public = true;
 
+-- Ensure view ownership
 ALTER VIEW public.public_profiles OWNER TO postgres;
+
+-- Ensure SELECT privileges
 GRANT SELECT ON public.public_profiles TO anon, authenticated, service_role;
