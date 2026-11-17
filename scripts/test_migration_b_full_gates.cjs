@@ -241,9 +241,9 @@ async function runAllGates() {
 
   // Case 3.1: Active Recruiter of Company -> ALLOWED
   await runSql(`
-    UPDATE public.company_team_members 
-    SET role = 'recruiter', is_active = true, permissions = '{}'::jsonb, company_id = '${REAL_COMPANY_ID}'
-    WHERE id = '${TEAM_MEMBER_ID}';
+    DELETE FROM public.company_team_members WHERE id = '${TEAM_MEMBER_ID}' OR user_id = '${rec_id}';
+    INSERT INTO public.company_team_members (id, company_id, user_id, role, is_active, permissions)
+    VALUES ('${TEAM_MEMBER_ID}', '${REAL_COMPANY_ID}', '${rec_id}', 'recruiter', true, '{}'::jsonb);
   `, 'staging');
   const { data: appRecruiter } = await clientRec
     .from('applicant_profiles')
