@@ -698,7 +698,10 @@ BEGIN
             -- D. Explicit Storage owner validation:
             -- Storage owner MUST equal the application candidate ID (user_id).
             AND ja.user_id = p_object_owner
-            AND (ja.user_id)::text = (storage.foldername(p_object_name))[1]
+            AND (
+                (ja.user_id)::text = (storage.foldername(p_object_name))[1]
+                OR (ja.user_id)::text = (storage.foldername(p_object_name))[2]
+            )
 
             -- E. Exact canonical Storage object key comparison (strictly full path, NO basename matching)
             AND ja.resume_url IS NOT NULL

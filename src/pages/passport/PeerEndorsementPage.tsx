@@ -105,8 +105,11 @@ export const PeerEndorsementPage: React.FC = () => {
       if (profile?.id) {
         await supabase.from('referral_credits').insert({
           referrer_id: profile.id,
+          credits: 50,
+          credit_type: 'peer_endorsement',
           credit_amount: 50,
-          reason: `peer_endorsement:${finalSkill}`
+          reason: `peer_endorsement:${finalSkill}`,
+          status: 'credited'
         }).then(() => {}).catch(() => {});
       }
 
