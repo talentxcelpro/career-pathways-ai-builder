@@ -55,7 +55,7 @@ Allow: /
 
 
 # ------------------------------
-# Generative AI & Search Discovery Crawlers (Real-Time Citations & Search)
+# Generative AI & Search Discovery Crawlers (Real-Time Search Indexing & Citations)
 # Explicitly allowed across Career Passports, Network, Salary, Resume, Talent & Explore
 # ------------------------------
 
@@ -69,6 +69,7 @@ Allow: /resume
 Allow: /explore
 
 User-agent: OAI-SearchBot
+# ChatGPT Search live indexation crawler
 Allow: /
 Allow: /u/
 Allow: /talent
@@ -77,15 +78,8 @@ Allow: /salary
 Allow: /resume
 Allow: /explore
 
-User-agent: ChatGPT-User
-Allow: /u/
-Allow: /talent
-Allow: /network
-Allow: /salary
-Allow: /resume
-Allow: /explore
-
 User-agent: PerplexityBot
+# Perplexity AI live search engine crawler
 Allow: /
 Allow: /u/
 Allow: /talent
@@ -95,6 +89,7 @@ Allow: /resume
 Allow: /explore
 
 User-agent: ClaudeBot
+# Anthropic search and real-time retrieval crawler
 Allow: /u/
 Allow: /talent
 Allow: /network
@@ -122,7 +117,23 @@ Allow: /explore
 
 
 # ------------------------------
-# Generative AI & Model Training Crawlers (Restricted to preserve crawl budget & bandwidth)
+# User-Triggered Interactive Fetchers (ChatGPT User On-Demand Browsing)
+# Treated independently from search engine indexers; permitted for authenticated user requests
+# ------------------------------
+
+User-agent: ChatGPT-User
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
+
+
+# ------------------------------
+# Foundation Model Pre-Training & Bulk Scraping Crawlers
+# Explicitly DISALLOWED to protect candidate career passport data and edge crawl budget from bulk LLM training.
+# Decision on GPTBot is strictly independent of OAI-SearchBot (Searchbot is allowed, GPTBot training is blocked).
 # ------------------------------
 
 User-agent: GPTBot

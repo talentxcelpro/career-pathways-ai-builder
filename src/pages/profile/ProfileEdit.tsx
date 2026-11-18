@@ -264,6 +264,18 @@ const ProfileEdit = () => {
         throw updateError;
       }
 
+      // Synchronize affirmative consent record with profile_visibility
+      try {
+        const isPublicConsent = (data.profile_visibility || 'public') === 'public';
+        await supabase.rpc('set_public_profile_consent', {
+          p_granted: isPublicConsent,
+          p_visibility: data.profile_visibility || 'public',
+          p_source: 'profile_settings'
+        });
+      } catch (_) {
+        // Non-blocking fallback if RPC not installed
+      }
+
       if (updated) {
         return updated;
       }
@@ -319,17 +331,25 @@ const ProfileEdit = () => {
         description: "Your profile has been successfully updated.",
       });
 
-      // Async auto-ping search engines (Google Indexing API + IndexNow) & purge edge cache
+      // Trigger authenticated edge cache purge & IndexNow search discovery webhook
       try {
         const username = savedData?.username || profile?.username;
         const userId = currentUser?.id || savedData?.id;
-        if (username || userId) {
-          fetch('/api/notify-search-engines', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, userId }),
-          }).catch(() => {});
-        }
+        const isPublic = formData.profile_visibility === 'public';
+        const action = isPublic ? 'update' : 'revoke';
+
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.access_token && (username || userId)) {
+            fetch('/api/notify-search-engines', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({ username, userId, action }),
+            }).catch(() => {});
+          }
+        }).catch(() => {});
       } catch {
         // non-blocking background notification
       }

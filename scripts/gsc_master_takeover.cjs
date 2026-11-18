@@ -231,22 +231,18 @@ async function run() {
     }
   }
 
-  // 4. Google Indexing API Broadcast for Live Critical URLs
-  console.log('\n--- Step 4: Broadcasting Live Career Passports & Core Hubs to Google Indexing API ---');
-  const criticalUrls = [
-    'https://talentxcel.in/u/saketsauravsharma',
-    'https://talentxcel.in/u/talentxcelservices',
-    'https://talentxcel.in/u/arsh_wani_0951f5',
-    'https://talentxcel.in/u/sanobar',
-    'https://talentxcel.in/u/subramanianjana8_5dae00',
-    'https://talentxcel.in/network',
+  // 4. Google Indexing API Broadcast strictly for eligible JobPosting URLs (Google Webmaster Policy Compliance)
+  // Note: Per official Google Indexing API policy, ONLY JobPosting and BroadcastEvent structured data pages
+  // are eligible. Candidate ProfilePage/Person URLs are strictly excluded and discovered via dynamic sitemaps.
+  console.log('\n--- Step 4: Broadcasting Eligible JobPosting Vacancies to Google Indexing API ---');
+  const eligibleJobPostingUrls = [
     'https://talentxcel.in/jobs',
-    'https://talentxcel.in/salary',
-    'https://talentxcel.in/resume',
-    'https://talentxcel.in/colleges'
+    'https://jobs.talentxcel.in/jobs/delhi/software-engineer',
+    'https://jobs.talentxcel.in/jobs/bangalore/cloud-architect',
+    'https://jobs.talentxcel.in/jobs/mumbai/data-analyst'
   ];
 
-  for (const url of criticalUrls) {
+  for (const url of eligibleJobPostingUrls) {
     try {
       const idxRes = await gscRequest('https://indexing.googleapis.com/v3/urlNotifications:publish', 'POST', token, {
         url,
