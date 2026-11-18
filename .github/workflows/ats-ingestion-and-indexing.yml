@@ -43,6 +43,7 @@ jobs:
         env:
           TX_SUPABASE_URL: ${{ secrets.TX_SUPABASE_URL }}
           TALENTXCEL_SERVICE_ROLE_KEY: ${{ secrets.TALENTXCEL_SERVICE_ROLE_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: npx tsx scripts/dispatch-indexing-api.ts --limit=45
 
       - name: Execute Full Production SEO CI Gate
