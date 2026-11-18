@@ -1,11 +1,13 @@
 // api/sitemap-passport.ts
-// Dynamic Supabase-Driven Sitemap for all qualifying Career Passports (isIndexReady === true)
+// Dynamic Supabase-Driven Sitemap & Sitemap Index for all qualifying Career Passports (isIndexReady === true)
 // Serves real-time XML with zero static build steps or GitHub commits.
 // Fully compliant with Google & Schema sitemap protocol:
 // - Strictly includes profiles with active affirmative consent and index completeness
 // - Accurate lastmod timestamps from updated_at / created_at
 // - Canonical URLs strictly on https://talentxcel.in/u/:username
-// - XML escaped and supports page pagination (?page=1)
+// - XML escaped and supports pagination (?page=1)
+// - Exposes sitemapindex if total profiles exceed segment capacity or when view=index is requested
+// - Guarantees every qualifying profile appears in exactly one segment (shard)
 
 export const config = {
   runtime: 'edge',
@@ -50,10 +52,66 @@ function formatDateIso(dateStr?: string | null): string {
 
 export default async function handler(req: Request): Promise<Response> {
   const reqUrl = new URL(req.url);
+  const viewParam = reqUrl.searchParams.get('view');
+  const hasExplicitPage = reqUrl.searchParams.has('page');
   const pageParam = parseInt(reqUrl.searchParams.get('page') || '1', 10);
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
   const offset = (page - 1) * PAGE_SIZE;
 
+  const authHeaders = {
+    'apikey': getSupabaseAnonKey(),
+    'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+  };
+
+  // If view=index is requested or no page is provided, check total count to decide if an index is required
+  let totalCount = 0;
+  try {
+    const countRes = await fetch(`${getSupabaseRestUrl()}/public_profiles?select=id`, {
+      method: 'HEAD',
+      headers: {
+        ...authHeaders,
+        'Prefer': 'count=exact',
+      },
+    });
+    if (countRes.ok) {
+      const cr = countRes.headers.get('content-range');
+      if (cr && cr.includes('/')) {
+        totalCount = parseInt(cr.split('/')[1], 10) || 0;
+      }
+    }
+  } catch {
+    // Non-fatal count check
+  }
+
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  // If view=index OR (totalCount > PAGE_SIZE and caller requested root /sitemap-passport.xml without ?page=)
+  if (viewParam === 'index' || (!hasExplicitPage && totalPages > 1)) {
+    let xmlIndex = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xmlIndex += '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    const today = new Date().toISOString().split('T')[0];
+    for (let p = 1; p <= totalPages; p++) {
+      xmlIndex += `  <sitemap>\n`;
+      xmlIndex += `    <loc>${escapeXml(`https://talentxcel.in/sitemap-passport.xml?page=${p}`)}</loc>\n`;
+      xmlIndex += `    <lastmod>${today}</lastmod>\n`;
+      xmlIndex += `  </sitemap>\n`;
+    }
+    xmlIndex += '</sitemapindex>';
+
+    return new Response(xmlIndex, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Tag': 'sitemap,sitemap-passport',
+        'Surrogate-Key': 'sitemap,sitemap-passport',
+        'X-Robots-Tag': 'noindex, follow',
+        'X-Render-Engine': 'TalentXcel-Dynamic-Passport-Sitemap-Index',
+      },
+    });
+  }
+
+  // Otherwise serve the URL set for the requested page
   // Query public_profiles view (automatically enforces affirmative consent security barrier)
   const url = `${getSupabaseRestUrl()}/public_profiles?select=username,skills,headline,about,title,experience_years,current_company,created_at&order=created_at.desc&limit=${PAGE_SIZE}&offset=${offset}`;
 
@@ -61,12 +119,7 @@ export default async function handler(req: Request): Promise<Response> {
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
   try {
-    const res = await fetch(url, {
-      headers: {
-        'apikey': getSupabaseAnonKey(),
-        'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-      },
-    });
+    const res = await fetch(url, { headers: authHeaders });
 
     if (res.ok) {
       const profiles = await res.json();
@@ -107,6 +160,8 @@ export default async function handler(req: Request): Promise<Response> {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+      'Cache-Tag': 'sitemap,sitemap-passport',
+      'Surrogate-Key': 'sitemap,sitemap-passport',
       'X-Robots-Tag': 'noindex, follow',
       'X-Render-Engine': 'TalentXcel-Dynamic-Passport-Sitemap',
     },
