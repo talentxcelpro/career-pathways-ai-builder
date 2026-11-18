@@ -103,6 +103,7 @@ export default async function handler(req: Request): Promise<Response> {
       headers: {
         'Content-Type': 'application/xml; charset=utf-8',
         'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+        'Vercel-Cache-Tag': 'sitemap-passport,sitemaps',
         'Cache-Tag': 'sitemap,sitemap-passport',
         'Surrogate-Key': 'sitemap,sitemap-passport',
         'X-Robots-Tag': 'noindex, follow',
@@ -160,6 +161,7 @@ export default async function handler(req: Request): Promise<Response> {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+      'Vercel-Cache-Tag': 'sitemap-passport,sitemaps',
       'Cache-Tag': 'sitemap,sitemap-passport',
       'Surrogate-Key': 'sitemap,sitemap-passport',
       'X-Robots-Tag': 'noindex, follow',
