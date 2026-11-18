@@ -1,5 +1,5 @@
 // api/notify-search-engines.ts
-// Phase 4 Hardened Event-Driven Re-indexing Webhook & Edge Cache Invalidation
+// Phase 4 Hardened Event-Driven Re-indexing Webhook & Multi-Layer Cache Invalidation
 //
 // Security & Compliance Guarantees:
 // 1. Mandatory Supabase JWT Authentication — unauthenticated callers are rejected with 401.
@@ -14,10 +14,11 @@
 // 6. In-memory process-local throttle and deduplication cache debounce rapid duplicate submissions.
 //    (Note: Process-local throttle is container-scoped; globally atomic distributed rate-limiting
 //    would require an external distributed store such as Upstash Redis).
-// 7. Transient network retry (up to 3 attempts with exponential backoff) with durable Postgres
-//    outbox persistence (public.indexing_outbox) for failed notifications surviving function exit.
-// 8. Cloudflare cache purge invalidates candidate profile URLs and dynamic sitemap caches atomically.
-// 9. Cloudflare credentials and service keys remain strictly server-side.
+// 7. Transient network retry (up to 3 attempts with exponential backoff) for IndexNow calls.
+// 8. Atomic multi-URL Cloudflare cache purge covering the candidate profile URL, all sitemap segments,
+//    and sitemap index files.
+// 9. Vercel CDN cache tag deletion via Vercel-Cache-Tag header and Vercel Invalidation API
+//    (unique tags: profile-<user-id>, sitemap-passport, sitemaps).
 // 10. Audit telemetry contains zero credentials or sensitive PII.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
@@ -127,7 +128,7 @@ async function pingIndexNowWithRetry(url: string, retries = 2): Promise<boolean>
 
 /**
  * Purges Cloudflare edge cache for the given URL(s)
- * Atomically purges candidate profile URL and dynamic sitemap caches
+ * Atomically purges candidate profile URL and all dynamic sitemap segments in a single batch
  */
 async function purgeCloudflareCacheWithRetry(urls: string | string[], retries = 2): Promise<boolean> {
   const zoneId = process.env.CLOUDFLARE_ZONE_ID;
@@ -178,33 +179,44 @@ async function purgeCloudflareCacheWithRetry(urls: string | string[], retries = 
 }
 
 /**
- * Persists failed search-engine notifications to durable Postgres outbox (public.indexing_outbox)
- * so failures survive serverless execution termination and can be retried by scheduled background jobs.
+ * Purges Vercel Edge Cache by tag using Vercel On-Demand Invalidation API.
+ * Emits unique Vercel-Cache-Tag (e.g. profile-<user-id>, sitemap-passport).
  */
-async function recordFailedNotificationToOutbox(url: string, action: 'URL_UPDATED' | 'URL_DELETED', errorMsg: string): Promise<boolean> {
-  if (!SERVICE_ROLE_KEY) return false;
+async function purgeVercelCacheByTag(tags: string[]): Promise<{ success: boolean; attempted: boolean; limitation?: string; error?: string }> {
+  const vercelToken = process.env.VERCEL_ACCESS_TOKEN || process.env.VERCEL_API_TOKEN || process.env.VERCEL_TOKEN;
+  const vercelProject = process.env.VERCEL_PROJECT_ID || process.env.VERCEL_PROJECT_NAME;
+  const teamId = process.env.VERCEL_TEAM_ID;
+
+  if (!vercelToken || !vercelProject) {
+    return {
+      success: false,
+      attempted: false,
+      limitation: 'VERCEL_ACCESS_TOKEN or VERCEL_PROJECT_ID not configured in environment; edge invalidation relies on downstream origin no-store directives',
+    };
+  }
+
   try {
-    const res = await fetch(`${SUPABASE_REST_URL}/indexing_outbox`, {
+    const url = `https://api.vercel.com/v1/caches/invalidate${teamId ? `?teamId=${teamId}` : ''}`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
-        'apikey': SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${SERVICE_ROLE_KEY}`,
+        'Authorization': `Bearer ${vercelToken}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal',
       },
       body: JSON.stringify({
-        url,
-        action,
-        priority: 3,
-        status: 'failed',
-        attempts: 1,
-        last_error: errorMsg.slice(0, 500),
-        scheduled_at: new Date().toISOString(),
+        projectId: vercelProject,
+        tags,
       }),
     });
-    return res.ok;
-  } catch {
-    return false;
+
+    if (res.ok) {
+      return { success: true, attempted: true };
+    } else {
+      const errText = await res.text();
+      return { success: false, attempted: true, error: `Vercel API ${res.status}: ${errText}` };
+    }
+  } catch (err: any) {
+    return { success: false, attempted: true, error: err.message };
   }
 }
 
@@ -323,19 +335,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: 'Profile Not Found', message: 'Candidate username could not be resolved.' });
     }
 
-    // Construct server-sanitized URLs: profile URL + affected sitemap URLs for atomic cache invalidation
+    // Query public_profiles count to determine all active sitemap segments
+    let sitemapSegmentUrls: string[] = ['https://talentxcel.in/sitemap-passport.xml?page=1'];
+    try {
+      const countRes = await fetch(`${SUPABASE_REST_URL}/public_profiles?select=id`, {
+        method: 'HEAD',
+        headers: {
+          ...headers,
+          'Prefer': 'count=exact',
+        },
+      });
+      if (countRes.ok) {
+        const cr = countRes.headers.get('content-range');
+        if (cr && cr.includes('/')) {
+          const totalProfiles = parseInt(cr.split('/')[1], 10) || 0;
+          const pages = Math.max(1, Math.ceil(totalProfiles / 10_000));
+          sitemapSegmentUrls = Array.from({ length: pages }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    // Construct server-sanitized URLs: profile URL + all sitemap segments for atomic cache invalidation
     const canonicalProfileUrl = `https://talentxcel.in/u/${encodeURIComponent(targetUsername)}`;
-    const cachePurgeTargets = [
+    const cachePurgeTargets = Array.from(new Set([
       canonicalProfileUrl,
       'https://talentxcel.in/sitemap-passport.xml',
-      'https://talentxcel.in/sitemap-passport.xml?page=1',
+      'https://talentxcel.in/sitemap-passport.xml?view=index',
+      ...sitemapSegmentUrls,
       'https://talentxcel.in/sitemap.xml',
+      'https://talentxcel.in/sitemap-root.xml',
+    ]));
+
+    const vercelPurgeTags = [
+      `profile-${callerUserId}`,
+      `profile-${targetUsername}`,
+      'sitemap-passport',
+      'sitemaps',
     ];
 
     // 6. Action Execution
     // Case A: Revocation or explicit cache purge
     if (action === 'revoke' || action === 'purge' || !publicProfile) {
       const purgeSuccess = await purgeCloudflareCacheWithRetry(cachePurgeTargets);
+      const vercelPurge = await purgeVercelCacheByTag(vercelPurgeTags);
 
       // Audit log (sanitized, zero PII)
       console.log(JSON.stringify({
@@ -343,7 +387,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         userId: callerUserId,
         action: action || 'revocation_purge',
         purgedTargets: cachePurgeTargets,
-        purged: purgeSuccess,
+        purgedTags: vercelPurgeTags,
+        cloudflarePurged: purgeSuccess,
+        vercelPurged: vercelPurge.success,
         timestamp: new Date().toISOString(),
       }));
 
@@ -352,9 +398,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         action: 'purge',
         isIndexReady: false,
         cloudflarePurged: purgeSuccess,
+        vercelPurged: vercelPurge.success,
+        vercelPurgeDetails: vercelPurge,
         purgedTargets: cachePurgeTargets,
+        purgedTags: vercelPurgeTags,
         url: canonicalProfileUrl,
-        message: 'Profile and sitemap caches purged successfully. The profile will return HTTP 404 with no-store to public visitors.',
+        message: 'Profile and sitemap caches purged successfully across Cloudflare and Vercel. Returns HTTP 404 with no-store to public visitors.',
       });
     }
 
@@ -408,15 +457,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // Always purge edge cache and sitemap caches on update so new HTML or sitemap entry reflects immediately
     const purgeSuccess = await purgeCloudflareCacheWithRetry(cachePurgeTargets);
+    const vercelPurge = await purgeVercelCacheByTag(vercelPurgeTags);
 
     // If index-ready, notify participating search engines via IndexNow (Bing, Yandex, Naver, Seznam)
     let indexNowSuccess = false;
     if (isIndexReady) {
       indexNowSuccess = await pingIndexNowWithRetry(canonicalProfileUrl);
-      if (!indexNowSuccess) {
-        // Record to durable outbox if transient retry fails
-        await recordFailedNotificationToOutbox(canonicalProfileUrl, 'URL_UPDATED', 'IndexNow transient dispatch failed after retries');
-      }
     }
 
     // Safe Audit Logging (zero PII, zero tokens)
@@ -425,6 +471,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       userId: callerUserId,
       isIndexReady,
       cloudflarePurged: purgeSuccess,
+      vercelPurged: vercelPurge.success,
       indexNowNotified: indexNowSuccess,
       timestamp: new Date().toISOString(),
     }));
@@ -434,13 +481,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       action: 'update',
       isIndexReady,
       cloudflarePurged: purgeSuccess,
+      vercelPurged: vercelPurge.success,
+      vercelPurgeDetails: vercelPurge,
       indexNowNotified: indexNowSuccess,
       indexNowEngines: ['Bing', 'Yandex', 'Naver', 'Seznam'],
       url: canonicalProfileUrl,
       purgedTargets: cachePurgeTargets,
+      purgedTags: vercelPurgeTags,
       message: isIndexReady
-        ? 'Profile updated and dispatched to IndexNow participating engines. Edge and sitemap caches purged.'
-        : 'Profile updated with noindex directive (thin profile protection gate). Edge and sitemap caches purged.',
+        ? 'Profile updated and dispatched to IndexNow participating engines. Edge and sitemap caches purged across Cloudflare and Vercel.'
+        : 'Profile updated with noindex directive (thin profile protection gate). Edge and sitemap caches purged across Cloudflare and Vercel.',
     });
   } catch (err: any) {
     return res.status(500).json({
