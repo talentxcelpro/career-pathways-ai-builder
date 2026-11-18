@@ -907,6 +907,14 @@ export default async function handler(req: Request) {
     ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
   };
 
+  if (isCandidateRoute && (!result.status || result.status === 200)) {
+    if (result.cacheTag) {
+      responseHeaders['Vercel-Cache-Tag'] = result.cacheTag;
+      responseHeaders['Cache-Tag'] = result.cacheTag;
+      responseHeaders['Surrogate-Key'] = result.cacheTag;
+    }
+  }
+
   if (isCandidateRoute && (result.status as number) === 404) {
     responseHeaders['CDN-Cache-Control'] = 'no-store';
     responseHeaders['Vercel-CDN-Cache-Control'] = 'no-store';
@@ -930,6 +938,7 @@ interface SeoRenderResult {
   status: 200 | 404 | 410;
   robotsDirective: string;
   cacheControl?: string;
+  cacheTag?: string;
 }
 
 
@@ -1051,6 +1060,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   let ogImage: string | null = null;
   let ogType = 'website';
   let cacheControl: string | undefined = undefined;
+  let cacheTag: string | undefined = undefined;
 
   // 1. Root Homepage
   if (!cleanPath || cleanPath === '') {
@@ -1508,6 +1518,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
           }
         ]
       };
+      cacheTag = `profile-${profile.id},profile-${canonicalUsername}`;
     } else {
       return {
         html: `<!DOCTYPE html>
@@ -2943,5 +2954,6 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     status: 200,
     robotsDirective,
     cacheControl,
+    cacheTag,
   };
 }
