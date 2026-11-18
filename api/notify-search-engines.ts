@@ -124,23 +124,49 @@ async function pingIndexNowWithRetry(url: string, retries = 2): Promise<boolean>
   return false;
 }
 
+interface CloudflarePurgeOptions {
+  files?: string[];
+  prefixes?: string[];
+  tags?: string[];
+}
+
 /**
- * Purges Cloudflare edge cache for the given URL(s)
- * Atomically purges candidate profile URL and all dynamic sitemap segments in a single batch
+ * Purges Cloudflare edge cache using exact URLs, URL-prefixes, or Cache-Tags.
+ * Employs official Cloudflare purge syntax:
+ * - files: exact URLs (supported on all Cloudflare tiers)
+ * - prefixes: URL-prefix format without protocol (e.g. talentxcel.in/sitemap-passport, talentxcel.in/u/:username)
+ * - tags: Cache-Tag purge
+ * Automatically falls back to files-only if prefixes/tags are rejected by non-Enterprise zones.
  */
-async function purgeCloudflareCacheWithRetry(urls: string | string[], retries = 2): Promise<boolean> {
+async function purgeCloudflareCacheWithRetry(
+  targets: string | string[] | CloudflarePurgeOptions,
+  retries = 2
+): Promise<boolean> {
   const zoneId = process.env.CLOUDFLARE_ZONE_ID;
   const token = process.env.CLOUDFLARE_API_TOKEN;
   if (!zoneId || !token) {
     return false; // Graceful skip if Cloudflare credentials are not configured in environment
   }
 
-  const fileList = Array.isArray(urls) ? urls : [urls];
-  const payload = JSON.stringify({ files: fileList });
+  let options: CloudflarePurgeOptions;
+  if (Array.isArray(targets)) {
+    options = { files: targets };
+  } else if (typeof targets === 'string') {
+    options = { files: [targets] };
+  } else {
+    options = targets;
+  }
+
+  const payloadObj: Record<string, any> = {};
+  if (options.files && options.files.length > 0) payloadObj.files = options.files;
+  if (options.prefixes && options.prefixes.length > 0) payloadObj.prefixes = options.prefixes;
+  if (options.tags && options.tags.length > 0) payloadObj.tags = options.tags;
+
+  const payload = JSON.stringify(payloadObj);
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      const success = await new Promise<boolean>((resolve) => {
+      const result = await new Promise<{ ok: boolean; status: number }>((resolve) => {
         const req = https.request(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
           method: 'POST',
           headers: {
@@ -153,19 +179,42 @@ async function purgeCloudflareCacheWithRetry(urls: string | string[], retries = 
           let d = '';
           res.on('data', (c) => (d += c));
           res.on('end', () => {
-            resolve(res.statusCode === 200);
+            resolve({ ok: res.statusCode === 200, status: res.statusCode || 200 });
           });
         });
-        req.on('error', () => resolve(false));
+        req.on('error', () => resolve({ ok: false, status: 500 }));
         req.on('timeout', () => {
           req.destroy();
-          resolve(false);
+          resolve({ ok: false, status: 408 });
         });
         req.write(payload);
         req.end();
       });
 
-      if (success) return true;
+      if (result.ok) return true;
+
+      // Graceful fallback: If zone rejects prefixes/tags (e.g. non-Enterprise 400), retry with files only
+      if (!result.ok && (options.prefixes || options.tags) && options.files && options.files.length > 0) {
+        const fallbackPayload = JSON.stringify({ files: options.files });
+        const fallbackOk = await new Promise<boolean>((resolve) => {
+          const req = https.request(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(fallbackPayload),
+            },
+            timeout: 4000,
+          }, (res) => {
+            res.on('data', () => {});
+            res.on('end', () => resolve(res.statusCode === 200));
+          });
+          req.on('error', () => resolve(false));
+          req.write(fallbackPayload);
+          req.end();
+        });
+        if (fallbackOk) return true;
+      }
     } catch {
       // Retry on transient failure
     }
@@ -356,9 +405,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Determine all active sitemap segments dynamically
-    // When a candidate revokes consent, the qualifying profile count may cross a 10,000-page boundary (e.g. 20,001 -> 20,000).
-    // To guarantee that any previously cached boundary segment (e.g. page=3) is purged from edge POPs even when the
-    // new profile count drops below that boundary, we purge both the current segments and the previous range.
+    // Rather than relying solely on (currentProfiles + 1), we use a multi-pronged approach:
+    // 1. Common cache-tag invalidation ('sitemap-passport', 'sitemaps') via Vercel Edge API
+    // 2. Cloudflare prefix purging ('talentxcel.in/sitemap-passport', 'talentxcel.in/u/:username')
+    // 3. Multi-segment URL coverage extending to Math.max(currentPages + 2, 5) to guarantee
+    //    that any dropped segment from concurrent revocations is evicted across all POPs.
     let sitemapSegmentUrls: string[] = ['https://talentxcel.in/sitemap-passport.xml?page=1'];
     try {
       const countRes = await fetch(`${SUPABASE_REST_URL}/public_profiles?select=id`, {
@@ -373,10 +424,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (cr && cr.includes('/')) {
           const currentProfiles = parseInt(cr.split('/')[1], 10) || 0;
           const currentPages = Math.max(1, Math.ceil(currentProfiles / 10_000));
-          // If revoking/purging, prior count was at least currentProfiles + 1. Include +1 buffer page to cover boundary drops.
-          const isRevocation = action === 'revoke' || action === 'purge';
-          const maxPages = isRevocation ? Math.max(currentPages, Math.ceil((currentProfiles + 1) / 10_000) + 1) : currentPages;
-          sitemapSegmentUrls = Array.from({ length: maxPages }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
+          const purgeCeiling = Math.max(currentPages + 2, 5);
+          sitemapSegmentUrls = Array.from({ length: purgeCeiling }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
         }
       }
     } catch {
@@ -393,6 +442,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       'https://talentxcel.in/sitemap-root.xml',
     ]));
 
+    const cloudflarePurgePayload: CloudflarePurgeOptions = {
+      files: cachePurgeTargets,
+      prefixes: [
+        `talentxcel.in/u/${encodeURIComponent(targetUsername)}`,
+        'talentxcel.in/sitemap-passport',
+      ],
+      tags: ['sitemap-passport', 'sitemaps'],
+    };
+
     const vercelProfileTags = [
       `profile-${callerUserId}`,
       `profile-${targetUsername}`,
@@ -402,7 +460,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 6. Action Execution
     // Case A: Revocation or explicit cache purge
     if (action === 'revoke' || action === 'purge' || !publicProfile) {
-      const purgeSuccess = await purgeCloudflareCacheWithRetry(cachePurgeTargets);
+      const purgeSuccess = await purgeCloudflareCacheWithRetry(cloudflarePurgePayload);
       // For privacy revocation: use dangerously-delete-by-tags so SWR never serves old profile HTML
       const vercelPurgeProfile = await purgeVercelCacheByTag(vercelProfileTags, 'delete');
       const vercelPurgeSitemap = await purgeVercelCacheByTag(vercelSitemapTags, 'invalidate');
@@ -483,7 +541,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const isIndexReady = hasEnoughSkills && hasRichContent;
 
     // Purge edge cache and sitemap caches on update
-    const purgeSuccess = await purgeCloudflareCacheWithRetry(cachePurgeTargets);
+    const purgeSuccess = await purgeCloudflareCacheWithRetry(cloudflarePurgePayload);
     const vercelPurge = await purgeVercelCacheByTag([...vercelProfileTags, ...vercelSitemapTags], 'invalidate');
 
     // If index-ready, notify participating search engines via IndexNow (Bing, Yandex, Naver, Seznam)
