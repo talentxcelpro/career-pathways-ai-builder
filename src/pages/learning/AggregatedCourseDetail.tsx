@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
+import { SocialMetaHead } from '@/components/seo/SocialMetaHead';
 import { learningAggregatorService } from '@/services/learningAggregatorService';
 import { learningStateService } from '@/services/learningStateService';
 import { AggregatedCourse } from '@/types/learningAggregator';
@@ -28,14 +30,15 @@ import {
 export const AggregatedCourseDetail: React.FC = () => {
   const { id, slug } = useParams<{ id?: string; slug?: string }>();
   const navigate = useNavigate();
-  const courseIdentifier = slug || id || 'microsoft-power-bi-data-analyst';
+  const courseIdentifier = slug || id || '';
 
   const [isSaved, setIsSaved] = useState(false);
 
   // Fetch course detail
   const { data: course, isLoading } = useQuery({
     queryKey: ['aggregated-course-detail', courseIdentifier],
-    queryFn: () => learningAggregatorService.getCourseBySlugOrId(courseIdentifier)
+    queryFn: () => courseIdentifier ? learningAggregatorService.getCourseBySlugOrId(courseIdentifier) : Promise.resolve(null),
+    enabled: !!courseIdentifier
   });
 
   // Fetch alternatives
@@ -58,9 +61,25 @@ export const AggregatedCourseDetail: React.FC = () => {
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-8 text-center">
-        <h2 className="text-xl font-bold text-foreground mb-4">Course Not Found</h2>
-        <Button onClick={() => navigate('/learning')}>Return to Learning Hub</Button>
+      <div className="min-h-[60vh] bg-slate-50 dark:bg-slate-950 p-8 flex flex-col items-center justify-center text-center space-y-4">
+        <SocialMetaHead
+          title="Course Not Found | TalentXcel"
+          description="The requested course could not be found in our verified curriculum catalog."
+          noindex={true}
+          robotsDirective="noindex, follow"
+        />
+        <h1 className="text-3xl font-bold text-foreground">Course Not Found</h1>
+        <p className="text-sm text-muted-foreground max-w-md">
+          The requested course identifier does not match any active verified course in our curriculum directory.
+        </p>
+        <div className="flex gap-3 pt-2">
+          <Button onClick={() => navigate('/learning/courses')} className="bg-blue-600 hover:bg-blue-500 text-white font-bold">
+            Browse All Courses
+          </Button>
+          <Button variant="outline" onClick={() => navigate('/learning')}>
+            Return to Learning Hub
+          </Button>
+        </div>
       </div>
     );
   }
@@ -81,8 +100,60 @@ export const AggregatedCourseDetail: React.FC = () => {
     window.open(monetizedUrl, '_blank', 'noopener,noreferrer');
   };
 
+  const canonicalCourseUrl = `https://talentxcel.in/courses/${course.slug || course.id}`;
+  const courseDescription = course.short_description || `Learn ${course.title} from ${course.provider_name}. Verified syllabus, ${course.duration_text || 'self-paced'}, certification details, and career pathways.`;
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-16 text-slate-900 dark:text-slate-100 pt-2">
+      <SocialMetaHead
+        title={`${course.title} — Syllabus, Duration & Certification | TalentXcel`}
+        description={courseDescription}
+        canonicalUrl={canonicalCourseUrl}
+        ogType="article"
+        category="default"
+      />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://talentxcel.in' },
+              { '@type': 'ListItem', position: 2, name: 'Learning', item: 'https://talentxcel.in/learning' },
+              { '@type': 'ListItem', position: 3, name: 'Courses', item: 'https://talentxcel.in/courses' },
+              { '@type': 'ListItem', position: 4, name: course.title, item: canonicalCourseUrl }
+            ]
+          })}
+        </script>
+        {course.provider_name && course.title && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Course',
+              name: course.title,
+              description: courseDescription,
+              provider: {
+                '@type': 'Organization',
+                name: course.provider_name,
+                ...(course.source_url && { sameAs: course.source_url })
+              },
+              ...(course.duration_text && {
+                hasCourseInstance: {
+                  '@type': 'CourseInstance',
+                  courseMode: 'online',
+                  courseWorkload: course.duration_text
+                }
+              }),
+              offers: {
+                '@type': 'Offer',
+                price: course.free_type === 'FREE' ? '0' : (course.price || '0'),
+                priceCurrency: 'INR',
+                category: course.free_type === 'FREE' ? 'Free' : 'Paid'
+              }
+            })}
+          </script>
+        )}
+      </Helmet>
       
       {/* Container Wrapper with Compact Padding */}
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 space-y-6">
@@ -341,45 +412,41 @@ export const AggregatedCourseDetail: React.FC = () => {
             <Card className="rounded-3xl border-slate-200 dark:border-border shadow-sm p-6 space-y-4 bg-white dark:bg-card">
               <div className="flex items-center gap-2">
                 <Building2 className="h-5 w-5 text-blue-600" />
-                <h3 className="text-base font-extrabold text-foreground">Matching TalentXcel Jobs</h3>
+                <h3 className="text-base font-extrabold text-foreground">Matching Career Opportunities</h3>
               </div>
 
               <p className="text-xs text-muted-foreground font-medium">
-                Open jobs requiring skills taught in this course:
+                Live job opportunities requiring competencies taught in this course:
               </p>
 
               <div className="space-y-3">
-                {[
-                  { title: 'Junior Data Analyst', company: 'Savantis Solutions', location: 'India (Remote)', salary: '₹8 - ₹12 LPA', skills: ['SQL', 'Power BI'] },
-                  { title: 'BI Specialist', company: 'Nexgenn Services', location: 'Hyderabad', salary: '₹10 - ₹16 LPA', skills: ['Power BI', 'Data Modeling'] },
-                  { title: 'Analytics Associate', company: 'Global Tech Corp', location: 'Bengaluru', salary: '₹9 - ₹14 LPA', skills: ['Excel', 'SQL'] }
-                ].map((job, i) => (
+                {course.skills.slice(0, 4).map((skill, i) => (
                   <div 
                     key={i} 
-                    onClick={() => navigate(`/jobs?q=${encodeURIComponent(job.title)}`)}
-                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/30 hover:bg-blue-50 dark:hover:bg-muted/60 transition-colors cursor-pointer border border-slate-200/80 dark:border-border/40 space-y-2"
+                    onClick={() => navigate(`/jobs?q=${encodeURIComponent(skill)}`)}
+                    className="p-3.5 rounded-2xl bg-slate-50 dark:bg-muted/30 hover:bg-blue-50 dark:hover:bg-muted/60 transition-colors cursor-pointer border border-slate-200/80 dark:border-border/40 space-y-1.5"
                   >
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs font-extrabold text-foreground">{job.title}</h4>
-                      <Badge variant="secondary" className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">{job.salary}</Badge>
+                      <h4 className="text-xs font-extrabold text-foreground flex items-center gap-1.5">
+                        <Briefcase className="h-3.5 w-3.5 text-blue-600" />
+                        <span>{skill} Roles</span>
+                      </h4>
+                      <Badge variant="secondary" className="text-[9px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200">
+                        Search Jobs
+                      </Badge>
                     </div>
-                    <p className="text-[11px] text-muted-foreground font-medium">{job.company} • {job.location}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {job.skills.map((s, idx) => (
-                        <span key={idx} className="text-[9px] font-bold px-2 py-0.5 rounded-md bg-white dark:bg-card border border-slate-200 text-slate-700">
-                          {s}
-                        </span>
-                      ))}
-                    </div>
+                    <p className="text-[11px] text-muted-foreground font-medium">
+                      Search active positions requiring {skill} expertise
+                    </p>
                   </div>
                 ))}
               </div>
 
               <Button 
-                onClick={() => navigate('/jobs')}
+                onClick={() => navigate(`/jobs?q=${encodeURIComponent(course.skills?.[0] || course.title)}`)}
                 className="w-full rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white cursor-pointer"
               >
-                Explore All Jobs Requiring These Skills
+                Search Openings for {course.skills?.[0] || course.title}
               </Button>
             </Card>
 

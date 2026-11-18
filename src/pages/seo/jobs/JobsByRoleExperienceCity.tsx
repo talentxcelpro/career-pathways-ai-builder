@@ -61,6 +61,10 @@ export const JobsByRoleExperienceCity: React.FC = () => {
   if (!resolved) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center p-8 text-center space-y-4">
+        <Helmet>
+          <title>Job Category Not Found | TalentXcel</title>
+          <meta name="robots" content="noindex, follow" />
+        </Helmet>
         <h1 className="text-2xl font-bold text-foreground">Job Discovery Category Not Found</h1>
         <p className="text-sm text-muted-foreground max-w-md">
           The requested job role, experience level, or city combination could not be found in our global directory.

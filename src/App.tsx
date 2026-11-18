@@ -1042,6 +1042,11 @@ const App = () => {
                 <Route path="/jobs/post/multi-location" element={<Suspense fallback={null}><MultiLocationJobComposer /></Suspense>} />
                 <Route path="/about/talentxcel" element={<Suspense fallback={null}><AboutTalentXcelAI /></Suspense>} />
                 
+                {/* ── GSC Recovery Redirects: Resolving Historical Malformed / Dual-City URLs ── */}
+                <Route path="/jobs/software-engineer/freshers/bangalore/nagpur" element={<Navigate to="/jobs/software-engineer/freshers/bangalore" replace />} />
+                <Route path="/jobs/biomedical-engineer/chennai/bangalore" element={<Navigate to="/jobs/biomedical-engineer/bangalore" replace />} />
+                <Route path="/jobs/experience/entry-level/bangalore/pune" element={<Navigate to="/jobs/software-engineer/freshers/bangalore" replace />} />
+
                 {/* Global & India Jobs Matrix Engine (Role x Experience x City) */}
                 <Route path="/jobs/:role/:experience/:country/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />
                 <Route path="/jobs/:role/:experience/:city" element={<Suspense fallback={<div>Loading...</div>}><JobsByRoleExperienceCity /></Suspense>} />

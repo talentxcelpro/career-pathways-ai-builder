@@ -742847,10 +742847,7 @@
     "academics": {
       "programsCount": 29,
       "flagshipPrograms": [
-        "B.Tech in Computer Science",
-        "B.Tech in Electronics & Communication",
-        "B.Tech in Mechanical",
-        "B.Tech in Civil"
+        "Information Pending Verification"
       ],
       "disciplines": [
         "Engineering",
@@ -742865,52 +742862,35 @@
         "GATE"
       ],
       "degreesOffered": [
-        "B.Tech",
-        "B.E.",
-        "M.Tech",
-        "PhD"
+        "Information Pending Verification"
       ]
     },
     "costs": {
-      "annualTuition": 174527,
+      "annualTuition": 0,
       "hostelAnnual": 67900,
       "examinationFees": 2500,
       "otherMandatoryFees": 5000,
       "feePeriod": "annual",
       "scholarshipsAvailable": true,
-      "feeNotes": "State Government Fee Reimbursement (Post-Matric Scholarship) available for eligible categories."
+      "feeNotes": "Official fee schedule pending verification from regulatory authorities."
     },
     "outcomes": {
-      "placementRate": 94,
+      "placementRate": 0,
       "medianPackageLpa": 4.1,
       "highestPackageLpa": 13.9,
-      "placementVerified": true,
-      "topRecruiters": [
-        "TCS",
-        "Infosys",
-        "Wipro",
-        "Cognizant",
-        "Accenture",
-        "Tech Mahindra",
-        "L&T Technology"
-      ]
+      "placementVerified": false,
+      "topRecruiters": []
     },
     "verification": {
-      "status": "verified",
-      "confidenceScore": 98,
-      "lastVerifiedAt": "2026-08-19T20:00:00Z",
-      "sourceCount": 4,
-      "dataPoints": {
-        "fees": true,
-        "programs": true,
-        "location": true,
-        "admission": true,
-        "placements": "verified"
-      },
-      "officialSourceUrl": "https://www.annauniv.edu"
+      "status": "pending_verification",
+      "confidenceScore": 0,
+      "notes": "Unverified Anna University affiliation in Chennai flagged. Real institution is Govindammal Aditanar College for Women in Tiruchendur. Marked non-indexable."
     },
     "id": "in-edu-07834",
-    "slug": "govindammal-aditanar-engineering-college-chennai-2"
+    "slug": "govindammal-aditanar-engineering-college-chennai-2",
+    "isIndexable": false,
+    "is_indexable": false,
+    "noindex": true
   },
   {
     "name": "Mary Matha College of Arts, Commerce & Science, Chennai",
@@ -855663,10 +855643,7 @@
     "academics": {
       "programsCount": 16,
       "flagshipPrograms": [
-        "MBBS",
-        "MD / MS Clinical Specialties",
-        "B.Sc Nursing",
-        "B.Pharm"
+        "Information Pending Verification"
       ],
       "disciplines": [
         "Medical",
@@ -855681,51 +855658,35 @@
         "NEET PG"
       ],
       "degreesOffered": [
-        "MBBS",
-        "MD",
-        "MS",
-        "B.Sc Nursing",
-        "B.Pharm"
+        "Information Pending Verification"
       ]
     },
     "costs": {
-      "annualTuition": 1256056,
+      "annualTuition": 0,
       "hostelAnnual": 41200,
       "examinationFees": 2500,
       "otherMandatoryFees": 5000,
       "feePeriod": "annual",
       "scholarshipsAvailable": true,
-      "feeNotes": "State Government Fee Reimbursement (Post-Matric Scholarship) available for eligible categories."
+      "feeNotes": "Official fee schedule pending verification from regulatory authorities."
     },
     "outcomes": {
-      "placementRate": 91,
+      "placementRate": 0,
       "medianPackageLpa": 4.8,
       "highestPackageLpa": 18.2,
-      "placementVerified": true,
-      "topRecruiters": [
-        "Apollo Hospitals",
-        "Max Healthcare",
-        "Fortis",
-        "Manipal Hospitals",
-        "Narayana Health"
-      ]
+      "placementVerified": false,
+      "topRecruiters": []
     },
     "verification": {
-      "status": "verified",
-      "confidenceScore": 99,
-      "lastVerifiedAt": "2026-08-19T20:00:00Z",
-      "sourceCount": 4,
-      "dataPoints": {
-        "fees": true,
-        "programs": true,
-        "location": true,
-        "admission": true,
-        "placements": "verified"
-      },
-      "officialSourceUrl": "https://www.knruhs.telangana.gov.in"
+      "status": "pending_verification",
+      "confidenceScore": 0,
+      "notes": "Unverified medical/pharmacy claims flagged during audit. Marked non-indexable pending official regulatory verification."
     },
     "id": "in-edu-09025",
-    "slug": "cbit-college-of-pharmacy-health-sciences-hyderabad-2"
+    "slug": "cbit-college-of-pharmacy-health-sciences-hyderabad-2",
+    "isIndexable": false,
+    "is_indexable": false,
+    "noindex": true
   },
   {
     "name": "AV College Gaganmahal College of Arts, Commerce & Science, Secunderabad",

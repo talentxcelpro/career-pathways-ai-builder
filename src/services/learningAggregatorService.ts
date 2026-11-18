@@ -237,15 +237,18 @@ export const learningAggregatorService = {
       console.warn("Course DB lookup notice:", e);
     }
 
+    if (!identifier) return null;
     const found = INITIAL_AGGREGATED_COURSES.find(c => c.id === identifier || c.slug === identifier);
-    return found || INITIAL_AGGREGATED_COURSES[0];
+    return found || null;
   },
 
   /**
    * Get provider by Slug
    */
   async getProviderBySlug(slug: string): Promise<{ provider: LearningProvider; courses: AggregatedCourse[]; totalCount: number; categories: string[] } | null> {
-    const provider = VERIFIED_PROVIDERS.find(p => p.slug === slug || p.id === slug) || VERIFIED_PROVIDERS[0];
+    if (!slug) return null;
+    const provider = VERIFIED_PROVIDERS.find(p => p.slug === slug || p.id === slug);
+    if (!provider) return null;
     const courses = await this.getCourses({ providerId: provider.id });
     
     const categories = Array.from(new Set(courses.map(c => c.category)));
