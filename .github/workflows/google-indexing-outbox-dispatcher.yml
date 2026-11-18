@@ -1,0 +1,39 @@
+name: Google Indexing API Outbox Dispatcher
+
+on:
+  schedule:
+    # Runs every 6 hours staggered away from the top of the hour (00:17, 06:17, 12:17, 18:17 UTC)
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: google-indexing-outbox-dispatcher
+  cancel-in-progress: false
+
+jobs:
+  dispatch-indexing-outbox:
+    name: Dispatch Google Indexing API Outbox
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --prefer-offline
+
+      - name: Verify TypeScript Types
+        run: npx tsc --noEmit
+
+      - name: Execute Outbox Dispatcher
+        env:
+          TX_SUPABASE_URL: ${{ secrets.TX_SUPABASE_URL }}
+          TALENTXCEL_SERVICE_ROLE_KEY: ${{ secrets.TALENTXCEL_SERVICE_ROLE_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: npx tsx scripts/dispatch-indexing-api.ts --limit=45
