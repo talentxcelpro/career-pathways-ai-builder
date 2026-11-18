@@ -275,25 +275,33 @@ export async function runIndexingDispatcher(options: {
     throw new Error(`Failed to fetch indexing_outbox: ${fetchError.message}`);
   }
 
-  const items: OutboxItem[] = (queuedItems || []) as OutboxItem[];
+  const candidateItems: OutboxItem[] = (queuedItems || []) as OutboxItem[];
   console.log(`📦 Outbox Queue Depth: ${totalQueueDepth ?? 0} total queued items`);
-  console.log(`📋 Selected for Dispatch: ${items.length} items (limit: ${effectiveBatchLimit})\n`);
+  console.log(`📋 Candidate Items for Dispatch: ${candidateItems.length} items (limit: ${effectiveBatchLimit})\n`);
 
-  // Distributed Lease Lock:
-  // Advance scheduled_at by 15 minutes on the selected batch to prevent concurrent worker collisions
-  if (!dryRun && items.length > 0) {
+  // Atomic Distributed Lease Acquisition:
+  // Concurrently safe per-row claim: updates scheduled_at = now + 15 min WHERE id = item.id AND status = 'queued' AND scheduled_at <= now
+  // In Postgres, this update acquires an exclusive row lock; simultaneous workers will update 0 rows and be skipped.
+  const items: OutboxItem[] = [];
+  if (!dryRun && candidateItems.length > 0) {
     const leaseExpiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-    const itemIds = items.map((it) => it.id);
-    const { error: leaseError } = await supabase
-      .from('indexing_outbox')
-      .update({ scheduled_at: leaseExpiresAt })
-      .in('id', itemIds);
+    for (const cand of candidateItems) {
+      const { data: claimed, error: leaseError } = await supabase
+        .from('indexing_outbox')
+        .update({ scheduled_at: leaseExpiresAt })
+        .eq('id', cand.id)
+        .eq('status', 'queued')
+        .lte('scheduled_at', new Date().toISOString())
+        .select('id, url, action, priority, status, attempts, last_error, scheduled_at')
+        .maybeSingle();
 
-    if (leaseError) {
-      console.warn(`⚠️ Warning: Failed to acquire distributed lease lock: ${leaseError.message}`);
-    } else {
-      console.log(`🔒 Acquired 15-minute distributed lease lock on ${items.length} outbox items.\n`);
+      if (!leaseError && claimed) {
+        items.push(claimed as OutboxItem);
+      }
     }
+    console.log(`🔒 Atomically claimed 15-minute lease lock on ${items.length} of ${candidateItems.length} items.\n`);
+  } else if (dryRun) {
+    items.push(...candidateItems);
   }
 
   const telemetry: DispatcherTelemetry = {
@@ -313,14 +321,15 @@ export async function runIndexingDispatcher(options: {
   }
 
   // 5. Process Batch
-  const jobDetailRegex = /^https:\/\/(?:jobs\.)?talentxcel\.in\/jobs\/[a-zA-Z0-9_-]+$/;
+  const jobDetailRegex = /^https:\/\/(?:jobs\.)?talentxcel\.in\/jobs\/([a-zA-Z0-9_-]+)$/;
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
 
     // INVARIANT GUARD: Zero Hubs in Google Indexing API!
     // Google Indexing API is strictly reserved for JobPosting detail URLs.
-    if (!jobDetailRegex.test(item.url)) {
+    const urlMatch = item.url.match(jobDetailRegex);
+    if (!urlMatch) {
       console.warn(`  🚫 [DROPPED - NON-JOB URL] Item #${item.id}: ${item.url}`);
       telemetry.droppedInvalidCount++;
       if (!dryRun) {
@@ -334,6 +343,38 @@ export async function runIndexingDispatcher(options: {
           .eq('id', item.id);
       }
       continue;
+    }
+
+    const jobId = urlMatch[1];
+    // Verify job posting status in database before dispatch
+    const { data: jobRecord } = await supabase
+      .from('jobs')
+      .select('id, title, is_active, expires_at')
+      .eq('id', jobId)
+      .maybeSingle();
+
+    if (!jobRecord) {
+      console.warn(`  🚫 [DROPPED - MISSING JOB] Item #${item.id}: Job ${jobId} not found in jobs table`);
+      telemetry.droppedInvalidCount++;
+      if (!dryRun) {
+        await supabase
+          .from('indexing_outbox')
+          .update({
+            status: 'dropped',
+            attempts: item.attempts + 1,
+            last_error: `JOB NOT FOUND: Record ${jobId} does not exist in jobs table`,
+          })
+          .eq('id', item.id);
+      }
+      continue;
+    }
+
+    const isExpired = jobRecord.expires_at && new Date(jobRecord.expires_at).getTime() < Date.now();
+    if (!jobRecord.is_active || isExpired) {
+      if (item.action === 'URL_UPDATED') {
+        console.log(`  ℹ️ [JOB INACTIVE/EXPIRED] Item #${item.id} (${jobRecord.title}) is inactive/expired. Switching action to URL_DELETED.`);
+        item.action = 'URL_DELETED';
+      }
     }
 
     if (dryRun) {
