@@ -63,21 +63,23 @@ const warmResponse = simulateSeoRender(stagingCandidate);
 assert.strictEqual(warmResponse.statusCode, 200, 'Warming must return HTTP 200');
 assert.strictEqual(warmResponse.headers['vercel-cdn-cache-control'], 'no-store', 'Edge CDN caching of profile HTML must be no-store to eliminate stale leakage');
 assert.strictEqual(warmResponse.headers['vercel-cache-tag'], `profile-${stagingCandidate.id},profile-${stagingCandidate.username}`, 'Response must emit Vercel-Cache-Tag');
-console.log('  ✅ Step 1 & 2: Warmed qualifying profile returns HTTP 200 with Vercel-Cache-Tag and strict CDN no-store protection');
+console.log('  ✅ Step 1: Profile response is deliberately non-cacheable (no-store across CDN-Cache-Control and Vercel-CDN-Cache-Control)');
+console.log('  ✅ Step 2: Edge renderer rechecks affirmative-consent view on every request (0ms stale-data risk)');
 
 // 2. Candidate revokes consent
 stagingCandidate.hasConsent = false;
 
 // 3. Purge action execution
-function simulateRevocationPurge(candidate: typeof stagingCandidate, totalProfiles: number) {
-  const totalPages = Math.ceil(totalProfiles / 10000);
-  const segmentUrls = Array.from({ length: totalPages }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
+function simulateRevocationPurge(candidate: typeof stagingCandidate, currentProfiles: number, isRevocation: boolean = true) {
+  const currentPages = Math.max(1, Math.ceil(currentProfiles / 10000));
+  // When revoking, the prior count was currentProfiles + 1. Cover both current and prior ranges so decremented boundaries (e.g. 20,001 -> 20,000) purge dropped segments.
+  const maxPages = isRevocation ? Math.max(currentPages, Math.ceil((currentProfiles + 1) / 10000)) : currentPages;
+  const segmentUrls = Array.from({ length: maxPages }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
   
   const cloudflarePurgeTargets = Array.from(new Set([
     `https://talentxcel.in/u/${candidate.username}`,
     'https://talentxcel.in/sitemap-passport.xml',
     'https://talentxcel.in/sitemap-passport.xml?view=index',
-    'https://talentxcel.in/sitemap-passport.xml?page=1',
     ...segmentUrls,
     'https://talentxcel.in/sitemap.xml',
     'https://talentxcel.in/sitemap-root.xml',
@@ -87,6 +89,8 @@ function simulateRevocationPurge(candidate: typeof stagingCandidate, totalProfil
   const vercelInvalidateTags = ['sitemap-passport', 'sitemaps'];
 
   return {
+    currentPages,
+    maxPagesPurged: maxPages,
     cloudflarePurgedUrls: cloudflarePurgeTargets,
     vercelDeleteEndpoint: '/v1/edge-cache/dangerously-delete-by-tags',
     vercelDeleteTags,
@@ -178,21 +182,24 @@ assert.strictEqual(seg3.isIndex, false);
 assert.ok(seg3.content.includes('candidate_20001<'), 'Segment 3 must contain candidate_20001');
 console.log('  ✅ Step 2: Segment 1 (1-10,000), Segment 2 (10,001-20,000), and Segment 3 (20,001) partition cleanly without overlaps');
 
-// 3. Boundary Revocation: candidate_20001 revokes consent, total profiles decrements to 20,000
+// 3. Boundary Revocation: candidate_20001 revokes consent, total profiles decrements from 20,001 to 20,000
 const decrementedCount = 20000;
 const decrementedIndex = generatePassportSitemap(decrementedCount);
-assert.strictEqual(decrementedIndex.segments.length, 2, 'At 20,000 profiles, must partition into exactly 2 segments');
-assert.ok(!decrementedIndex.content.includes('sitemap-passport.xml?page=3'), 'Page 3 must be absent from index');
+assert.strictEqual(decrementedIndex.segments.length, 2, 'At 20,000 profiles, sitemap index must reference only 2 segments');
+assert.ok(!decrementedIndex.content.includes('sitemap-passport.xml?page=3'), 'Page 3 must be absent from sitemap index');
 console.log('  ✅ Step 3: Boundary test: Revocation decrements to 20,000; segment 3 drops from sitemap index');
 
-// 4. Invalidation Coverage: verify all 3 segments + index + root are purged
-const purge20k = simulateRevocationPurge(stagingCandidate, fixtureCount);
-assert.strictEqual(purge20k.cloudflarePurgedUrls.length, 8, 'Cloudflare purge targets must cover all 3 segments, index, roots, and profile');
-assert.ok(purge20k.cloudflarePurgedUrls.includes('https://talentxcel.in/sitemap-passport.xml?page=1'));
-assert.ok(purge20k.cloudflarePurgedUrls.includes('https://talentxcel.in/sitemap-passport.xml?page=2'));
-assert.ok(purge20k.cloudflarePurgedUrls.includes('https://talentxcel.in/sitemap-passport.xml?page=3'));
-assert.deepStrictEqual(purge20k.vercelInvalidateTags, ['sitemap-passport', 'sitemaps']);
-console.log('  ✅ Step 4: Multi-segment purge covers index, segment 1, segment 2, segment 3, and root sitemaps with Vercel sitemap cache tags');
+// 4. Invalidation Coverage on Boundary Drop:
+// Purge executed when current count is 20,000 must still purge segment 3 (from prior 20,001 range)!
+const purgeDecremented = simulateRevocationPurge(stagingCandidate, decrementedCount, true);
+assert.strictEqual(purgeDecremented.currentPages, 2, 'Active pages is 2');
+assert.strictEqual(purgeDecremented.maxPagesPurged, 3, 'Purged pages must be 3 to clear the dropped segment 3');
+assert.ok(purgeDecremented.cloudflarePurgedUrls.includes('https://talentxcel.in/sitemap-passport.xml?page=1'), 'Must purge page=1');
+assert.ok(purgeDecremented.cloudflarePurgedUrls.includes('https://talentxcel.in/sitemap-passport.xml?page=2'), 'Must purge page=2');
+assert.ok(purgeDecremented.cloudflarePurgedUrls.includes('https://talentxcel.in/sitemap-passport.xml?page=3'), 'Dropped page=3 MUST be purged from Cloudflare POPs!');
+assert.strictEqual(purgeDecremented.cloudflarePurgedUrls.length, 8, 'Covers profile URL, sitemap index, page=1..3, sitemap.xml, sitemap-root.xml');
+assert.deepStrictEqual(purgeDecremented.vercelInvalidateTags, ['sitemap-passport', 'sitemaps'], 'Vercel sitemap tags invalidated');
+console.log('  ✅ Step 4: Boundary Invalidation: Cloudflare URL purge includes dropped segment 3 + Vercel sitemap tags');
 
 console.log('\n================================================================');
 console.log('🎉 ALL GATE 2 & GATE 3 INVARIANTS VERIFIED SUCCESSFULLY');

@@ -356,6 +356,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Determine all active sitemap segments dynamically
+    // When a candidate revokes consent, the qualifying profile count may cross a 10,000-page boundary (e.g. 20,001 -> 20,000).
+    // To guarantee that any previously cached boundary segment (e.g. page=3) is purged from edge POPs even when the
+    // new profile count drops below that boundary, we purge both the current segments and the previous range.
     let sitemapSegmentUrls: string[] = ['https://talentxcel.in/sitemap-passport.xml?page=1'];
     try {
       const countRes = await fetch(`${SUPABASE_REST_URL}/public_profiles?select=id`, {
@@ -368,9 +371,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (countRes.ok) {
         const cr = countRes.headers.get('content-range');
         if (cr && cr.includes('/')) {
-          const totalProfiles = parseInt(cr.split('/')[1], 10) || 0;
-          const pages = Math.max(1, Math.ceil(totalProfiles / 10_000));
-          sitemapSegmentUrls = Array.from({ length: pages }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
+          const currentProfiles = parseInt(cr.split('/')[1], 10) || 0;
+          const currentPages = Math.max(1, Math.ceil(currentProfiles / 10_000));
+          // If revoking/purging, prior count was at least currentProfiles + 1. Include +1 buffer page to cover boundary drops.
+          const isRevocation = action === 'revoke' || action === 'purge';
+          const maxPages = isRevocation ? Math.max(currentPages, Math.ceil((currentProfiles + 1) / 10_000) + 1) : currentPages;
+          sitemapSegmentUrls = Array.from({ length: maxPages }, (_, i) => `https://talentxcel.in/sitemap-passport.xml?page=${i + 1}`);
         }
       }
     } catch {
