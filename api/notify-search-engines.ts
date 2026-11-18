@@ -29,8 +29,21 @@ export const config = {
 };
 
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || 'e8f4a1b2c3d54e6f9a0b1c2d3e4f5a6b';
-const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-const SUPABASE_BASE_URL = (process.env.SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co').replace(/\/$/, '');
+const SUPABASE_ANON_KEY = (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+
+function getSupabaseBaseUrl(): string {
+  const isPreview = (typeof process !== 'undefined' && (process.env?.VERCEL_ENV === 'preview' || process.env?.VITE_VERCEL_ENV === 'preview'));
+  const raw = (typeof process !== 'undefined' && (process.env?.SUPABASE_URL || process.env?.VITE_SUPABASE_URL))
+    ? (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!
+    : (isPreview ? '' : 'https://dthlgsnakhoftinssokm.supabase.co');
+
+  if (isPreview && (!raw || raw.includes('dthlgsnakhoftinssokm'))) {
+    throw new Error('FAIL-CLOSED GUARD: Vercel Preview environment cannot fall back to Production Supabase (dthlgsnakhoftinssokm). Set SUPABASE_URL or VITE_SUPABASE_URL to Preview project (pvwwtquuexhyydwihjbi).');
+  }
+  return raw.replace(/\/$/, '');
+}
+
+const SUPABASE_BASE_URL = getSupabaseBaseUrl();
 const SUPABASE_REST_URL = `${SUPABASE_BASE_URL}/rest/v1`;
 const SUPABASE_AUTH_URL = `${SUPABASE_BASE_URL}/auth/v1`;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';

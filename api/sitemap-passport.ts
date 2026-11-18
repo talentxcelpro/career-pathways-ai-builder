@@ -16,11 +16,18 @@ export const config = {
 const PAGE_SIZE = 10_000; // Strict sitemap shard limit (well within Google's 50,000 URL / 50MB limit)
 
 function getSupabaseAnonKey(): string {
-  return process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+  return (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 }
 
 function getSupabaseRestUrl(): string {
-  const base = process.env.SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
+  const isPreview = (typeof process !== 'undefined' && (process.env?.VERCEL_ENV === 'preview' || process.env?.VITE_VERCEL_ENV === 'preview'));
+  const base = (typeof process !== 'undefined' && (process.env?.SUPABASE_URL || process.env?.VITE_SUPABASE_URL))
+    ? (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL)!
+    : (isPreview ? '' : 'https://dthlgsnakhoftinssokm.supabase.co');
+
+  if (isPreview && (!base || base.includes('dthlgsnakhoftinssokm'))) {
+    throw new Error('FAIL-CLOSED GUARD: Vercel Preview environment cannot fall back to Production Supabase (dthlgsnakhoftinssokm). Set SUPABASE_URL or VITE_SUPABASE_URL to Preview project (pvwwtquuexhyydwihjbi).');
+  }
   return `${base.replace(/\/$/, '')}/rest/v1`;
 }
 
