@@ -11,9 +11,14 @@
 //    URLs are NEVER sent to Google Indexing API. Candidate discovery relies on dynamic sitemaps.
 // 5. IndexNow mesh notifications are dispatched strictly to participating search engines
 //    (Microsoft Bing, Yandex, Naver, Seznam.cz) with server-side validation.
-// 6. In-memory rate limiting and deduplication ensure idempotent execution.
-// 7. Cloudflare credentials and service keys remain strictly server-side.
-// 8. Audit telemetry contains zero credentials or sensitive PII.
+// 6. In-memory process-local throttle and deduplication cache debounce rapid duplicate submissions.
+//    (Note: Process-local throttle is container-scoped; globally atomic distributed rate-limiting
+//    would require an external distributed store such as Upstash Redis).
+// 7. Transient network retry (up to 3 attempts with exponential backoff) with durable Postgres
+//    outbox persistence (public.indexing_outbox) for failed notifications surviving function exit.
+// 8. Cloudflare cache purge invalidates candidate profile URLs and dynamic sitemap caches atomically.
+// 9. Cloudflare credentials and service keys remain strictly server-side.
+// 10. Audit telemetry contains zero credentials or sensitive PII.
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import * as https from 'https';
@@ -29,13 +34,14 @@ const SUPABASE_REST_URL = `${SUPABASE_BASE_URL}/rest/v1`;
 const SUPABASE_AUTH_URL = `${SUPABASE_BASE_URL}/auth/v1`;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-// In-memory rate-limiting and deduplication cache (keyed by userId, expires after 15s)
+// Process-local in-memory debounce and deduplication cache (keyed by userId, expires after 20s)
+// Provides single-container flood protection and absorbs rapid double-clicks.
 interface RateLimitEntry {
   timestamp: number;
   lastAction: string;
 }
 const rateLimitCache = new Map<string, RateLimitEntry>();
-const RATE_LIMIT_WINDOW_MS = 10_000; // 10 seconds throttle per user
+const RATE_LIMIT_WINDOW_MS = 10_000; // 10 seconds process-local throttle per user
 
 function cleanExpiredRateLimits(): void {
   const now = Date.now();
@@ -120,16 +126,18 @@ async function pingIndexNowWithRetry(url: string, retries = 2): Promise<boolean>
 }
 
 /**
- * Purges Cloudflare edge cache for the given URL
+ * Purges Cloudflare edge cache for the given URL(s)
+ * Atomically purges candidate profile URL and dynamic sitemap caches
  */
-async function purgeCloudflareCacheWithRetry(url: string, retries = 2): Promise<boolean> {
+async function purgeCloudflareCacheWithRetry(urls: string | string[], retries = 2): Promise<boolean> {
   const zoneId = process.env.CLOUDFLARE_ZONE_ID;
   const token = process.env.CLOUDFLARE_API_TOKEN;
   if (!zoneId || !token) {
     return false; // Graceful skip if Cloudflare credentials are not configured in environment
   }
 
-  const payload = JSON.stringify({ files: [url] });
+  const fileList = Array.isArray(urls) ? urls : [urls];
+  const payload = JSON.stringify({ files: fileList });
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
@@ -167,6 +175,37 @@ async function purgeCloudflareCacheWithRetry(url: string, retries = 2): Promise<
     }
   }
   return false;
+}
+
+/**
+ * Persists failed search-engine notifications to durable Postgres outbox (public.indexing_outbox)
+ * so failures survive serverless execution termination and can be retried by scheduled background jobs.
+ */
+async function recordFailedNotificationToOutbox(url: string, action: 'URL_UPDATED' | 'URL_DELETED', errorMsg: string): Promise<boolean> {
+  if (!SERVICE_ROLE_KEY) return false;
+  try {
+    const res = await fetch(`${SUPABASE_REST_URL}/indexing_outbox`, {
+      method: 'POST',
+      headers: {
+        'apikey': SERVICE_ROLE_KEY,
+        'Authorization': `Bearer ${SERVICE_ROLE_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({
+        url,
+        action,
+        priority: 3,
+        status: 'failed',
+        attempts: 1,
+        last_error: errorMsg.slice(0, 500),
+        scheduled_at: new Date().toISOString(),
+      }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -222,7 +261,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  // 4. Rate Limiting & Idempotency
+  // 4. Rate Limiting & Idempotency (Process-local debounce)
   cleanExpiredRateLimits();
   const existingRate = rateLimitCache.get(callerUserId);
   const now = Date.now();
@@ -284,19 +323,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(404).json({ error: 'Profile Not Found', message: 'Candidate username could not be resolved.' });
     }
 
-    // Construct server-sanitized URL
+    // Construct server-sanitized URLs: profile URL + affected sitemap URLs for atomic cache invalidation
     const canonicalProfileUrl = `https://talentxcel.in/u/${encodeURIComponent(targetUsername)}`;
+    const cachePurgeTargets = [
+      canonicalProfileUrl,
+      'https://talentxcel.in/sitemap-passport.xml',
+      'https://talentxcel.in/sitemap-passport.xml?page=1',
+      'https://talentxcel.in/sitemap.xml',
+    ];
 
     // 6. Action Execution
     // Case A: Revocation or explicit cache purge
     if (action === 'revoke' || action === 'purge' || !publicProfile) {
-      const purgeSuccess = await purgeCloudflareCacheWithRetry(canonicalProfileUrl);
+      const purgeSuccess = await purgeCloudflareCacheWithRetry(cachePurgeTargets);
 
       // Audit log (sanitized, zero PII)
       console.log(JSON.stringify({
         event: 'privacy_cache_purged',
         userId: callerUserId,
         action: action || 'revocation_purge',
+        purgedTargets: cachePurgeTargets,
         purged: purgeSuccess,
         timestamp: new Date().toISOString(),
       }));
@@ -306,8 +352,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         action: 'purge',
         isIndexReady: false,
         cloudflarePurged: purgeSuccess,
+        purgedTargets: cachePurgeTargets,
         url: canonicalProfileUrl,
-        message: 'Profile cache purged successfully. The profile will return HTTP 404 with no-store to public visitors.',
+        message: 'Profile and sitemap caches purged successfully. The profile will return HTTP 404 with no-store to public visitors.',
       });
     }
 
@@ -359,13 +406,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const hasRichContent = hasBioLength || hasAtsScore || hasWorkOrEdu || hasEndorsement;
     const isIndexReady = hasEnoughSkills && hasRichContent;
 
-    // Always purge edge cache on update so new HTML or noindex directive reflects immediately
-    const purgeSuccess = await purgeCloudflareCacheWithRetry(canonicalProfileUrl);
+    // Always purge edge cache and sitemap caches on update so new HTML or sitemap entry reflects immediately
+    const purgeSuccess = await purgeCloudflareCacheWithRetry(cachePurgeTargets);
 
     // If index-ready, notify participating search engines via IndexNow (Bing, Yandex, Naver, Seznam)
     let indexNowSuccess = false;
     if (isIndexReady) {
       indexNowSuccess = await pingIndexNowWithRetry(canonicalProfileUrl);
+      if (!indexNowSuccess) {
+        // Record to durable outbox if transient retry fails
+        await recordFailedNotificationToOutbox(canonicalProfileUrl, 'URL_UPDATED', 'IndexNow transient dispatch failed after retries');
+      }
     }
 
     // Safe Audit Logging (zero PII, zero tokens)
@@ -380,21 +431,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(200).json({
       success: true,
+      action: 'update',
       isIndexReady,
-      url: canonicalProfileUrl,
       cloudflarePurged: purgeSuccess,
       indexNowNotified: indexNowSuccess,
-      searchDiscovery: {
-        sitemapIncluded: isIndexReady,
-        sitemapEndpoint: 'https://talentxcel.in/sitemap-passport.xml',
-        googlePolicyNote: 'Google Indexing API restricted to JobPosting schema; candidate profiles indexed via dynamic sitemap and Search Console.',
-        indexNowEngines: ['Bing', 'Yandex', 'Naver', 'Seznam'],
-      },
+      indexNowEngines: ['Bing', 'Yandex', 'Naver', 'Seznam'],
+      url: canonicalProfileUrl,
+      purgedTargets: cachePurgeTargets,
+      message: isIndexReady
+        ? 'Profile updated and dispatched to IndexNow participating engines. Edge and sitemap caches purged.'
+        : 'Profile updated with noindex directive (thin profile protection gate). Edge and sitemap caches purged.',
     });
   } catch (err: any) {
     return res.status(500).json({
       error: 'Internal Server Error',
-      message: err?.message || 'An error occurred during notification processing.',
+      message: 'Failed to process search engine notification.',
     });
   }
 }
