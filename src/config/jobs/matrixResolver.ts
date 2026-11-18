@@ -26,19 +26,44 @@ export function resolveMatrixParams(
   const role = getRoleBySlug(roleSlug);
   const experience = getExperienceBySlug(experienceSlug);
   
+  if (!role || !experience) {
+    return null;
+  }
+
   // Resolve location
   let location: JobLocationConfig | undefined;
 
   if (countrySlug) {
-    // International lookup with country disambiguation
+    // International lookup with strict country disambiguation
     const cleanCountry = countrySlug.toLowerCase().trim();
     const cleanCity = citySlug.toLowerCase().trim();
+
+    // Defect DEF-001 / DEF-002: Dual-City Collision Prevention
+    // If countrySlug is actually a known city (e.g. /bangalore/nagpur), reject immediately
+    const isCityInCountrySlot = JOB_LOCATIONS.some(
+      l => l.slug === cleanCountry || l.cityName.toLowerCase() === cleanCountry
+    );
+    if (isCityInCountrySlot) {
+      return null;
+    }
+
+    // Validate that country parameter matches an authorized ISO country code or country name
+    const isValidCountry = JOB_LOCATIONS.some(
+      l => l.countryCode.toLowerCase() === cleanCountry || 
+           l.countryName.toLowerCase().replace(/\s+/g, '-') === cleanCountry
+    );
+    if (!isValidCountry) {
+      return null;
+    }
+
+    // City must strictly belong to the specified country - no blind fallbacks
     location = JOB_LOCATIONS.find(
       l => (l.slug === cleanCity || l.cityName.toLowerCase() === cleanCity) &&
            (l.countryCode.toLowerCase() === cleanCountry || l.countryName.toLowerCase().replace(/\s+/g, '-') === cleanCountry)
     );
+
     if (!location) {
-      location = getLocationBySlug(cleanCity);
+      return null;
     }
   } else {
     location = getLocationBySlug(citySlug);
