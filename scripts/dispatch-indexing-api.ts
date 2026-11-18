@@ -161,17 +161,52 @@ export async function runIndexingDispatcher(options: {
   console.log('================================================================\n');
 
   // 1. Locate credentials
-  const candidateKeys = [
-    resolve(process.cwd(), 'talentxcel-indexing.json'),
-    resolve(process.cwd(), 'gsc-service-account.json'),
-    resolve(process.cwd(), 'gcp-key.json'),
-  ];
-  const keyPath = candidateKeys.find((p) => existsSync(p));
-  if (!keyPath) {
-    throw new Error('No valid Google Service Account JSON key found in workspace root.');
+  let serviceAccount: ServiceAccountKey | null = null;
+  const envKey =
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON ||
+    process.env.GCP_SERVICE_ACCOUNT_JSON ||
+    process.env.GSC_SERVICE_ACCOUNT_KEY ||
+    process.env.GCP_KEY;
+
+  if (envKey) {
+    try {
+      serviceAccount = JSON.parse(envKey);
+    } catch {
+      try {
+        serviceAccount = JSON.parse(Buffer.from(envKey, 'base64').toString('utf-8'));
+      } catch {
+        // fallback to file search
+      }
+    }
   }
 
-  const serviceAccount: ServiceAccountKey = JSON.parse(readFileSync(keyPath, 'utf-8'));
+  if (!serviceAccount) {
+    const candidateKeys = [
+      resolve(process.cwd(), 'talentxcel-indexing.json'),
+      resolve(process.cwd(), 'gsc-service-account.json'),
+      resolve(process.cwd(), 'gcp-key.json'),
+    ];
+    const keyPath = candidateKeys.find((p) => existsSync(p));
+    if (keyPath) {
+      serviceAccount = JSON.parse(readFileSync(keyPath, 'utf-8'));
+    }
+  }
+
+  if (!serviceAccount) {
+    if (dryRun) {
+      console.warn('⚠️ No Google Service Account JSON key found; using mock credentials for dry-run.');
+      serviceAccount = {
+        client_email: 'mock-indexing-api@talentxcel-mock.iam.gserviceaccount.com',
+        private_key: '-----BEGIN PRIVATE KEY-----\nMOCK\n-----END PRIVATE KEY-----',
+        project_id: 'talentxcel-mock',
+      };
+    } else {
+      throw new Error(
+        'No valid Google Service Account JSON key found in environment (GOOGLE_SERVICE_ACCOUNT_JSON) or workspace root.'
+      );
+    }
+  }
+
   console.log(`✓ GCP IAM Key: ${serviceAccount.client_email}`);
   console.log(`✓ GCP Project ID: ${serviceAccount.project_id}`);
 
@@ -216,9 +251,14 @@ export async function runIndexingDispatcher(options: {
   }
 
   // 4. Generate Google OAuth2 Token
-  console.log('🔑 Acquiring Google OAuth2 Bearer Access Token...');
-  const accessToken = await getGoogleAccessToken(serviceAccount);
-  console.log('✅ Google OAuth2 Bearer Token Acquired!\n');
+  let accessToken = '';
+  if (!dryRun) {
+    console.log('🔑 Acquiring Google OAuth2 Bearer Access Token...');
+    accessToken = await getGoogleAccessToken(serviceAccount);
+    console.log('✅ Google OAuth2 Bearer Token Acquired!\n');
+  } else {
+    console.log('🔑 [DRY-RUN] Skipping OAuth2 token acquisition.\n');
+  }
 
   // 5. Fetch queued items (strictly ordered by priority ASC, scheduled_at ASC, id ASC)
   const { data: queuedItems, count: totalQueueDepth, error: fetchError } = await supabase
@@ -238,6 +278,23 @@ export async function runIndexingDispatcher(options: {
   const items: OutboxItem[] = (queuedItems || []) as OutboxItem[];
   console.log(`📦 Outbox Queue Depth: ${totalQueueDepth ?? 0} total queued items`);
   console.log(`📋 Selected for Dispatch: ${items.length} items (limit: ${effectiveBatchLimit})\n`);
+
+  // Distributed Lease Lock:
+  // Advance scheduled_at by 15 minutes on the selected batch to prevent concurrent worker collisions
+  if (!dryRun && items.length > 0) {
+    const leaseExpiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+    const itemIds = items.map((it) => it.id);
+    const { error: leaseError } = await supabase
+      .from('indexing_outbox')
+      .update({ scheduled_at: leaseExpiresAt })
+      .in('id', itemIds);
+
+    if (leaseError) {
+      console.warn(`⚠️ Warning: Failed to acquire distributed lease lock: ${leaseError.message}`);
+    } else {
+      console.log(`🔒 Acquired 15-minute distributed lease lock on ${items.length} outbox items.\n`);
+    }
+  }
 
   const telemetry: DispatcherTelemetry = {
     timestamp: new Date().toISOString(),
