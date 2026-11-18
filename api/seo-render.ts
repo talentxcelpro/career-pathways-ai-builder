@@ -219,8 +219,22 @@ function legacyGenericOkResponse(cleanPath: string, isDebug: boolean = false): R
   });
 }
 
-const getSupabaseRestUrl = () => (typeof process !== 'undefined' && process.env?.SUPABASE_REST_URL) ? process.env.SUPABASE_REST_URL : 'https://dthlgsnakhoftinssokm.supabase.co/rest/v1';
-const getSupabaseAnonKey = () => (typeof process !== 'undefined' && process.env?.SUPABASE_ANON_KEY) ? process.env.SUPABASE_ANON_KEY : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const getSupabaseRestUrl = () => {
+  const isPreview = (typeof process !== 'undefined' && (process.env?.VERCEL_ENV === 'preview' || process.env?.VITE_VERCEL_ENV === 'preview'));
+  const url = (typeof process !== 'undefined' && process.env?.SUPABASE_REST_URL)
+    ? process.env.SUPABASE_REST_URL
+    : (typeof process !== 'undefined' && process.env?.VITE_SUPABASE_URL)
+      ? `${process.env.VITE_SUPABASE_URL.replace(/\/$/, "")}/rest/v1`
+      : (isPreview ? '' : 'https://dthlgsnakhoftinssokm.supabase.co/rest/v1');
+
+  if (isPreview && (!url || url.includes('dthlgsnakhoftinssokm'))) {
+    throw new Error('FAIL-CLOSED GUARD: Vercel Preview environment cannot fall back to Production Supabase (dthlgsnakhoftinssokm). Set SUPABASE_REST_URL or VITE_SUPABASE_URL to Preview project (pvwwtquuexhyydwihjbi).');
+  }
+  return url;
+};
+const getSupabaseAnonKey = () => (typeof process !== 'undefined' && (process.env?.SUPABASE_ANON_KEY || process.env?.VITE_SUPABASE_PUBLISHABLE_KEY))
+  ? (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY)!
+  : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 
 const CANONICAL_ROLES_SET = new Set([
   'graduate-engineer-trainee', 'associate-data-analyst', 'management-trainee',
@@ -610,8 +624,8 @@ export function isCandidateProfileRoute(cleanPath: string): boolean {
 function notFoundResponse(cleanPath: string, isDebug: boolean = false, isProfile: boolean = false): Response {
   const isCandidate = isProfile || isCandidateProfileRoute(cleanPath);
   const title = isCandidate ? 'Profile Unavailable (404) | TalentXcel' : 'Page Not Found (404) | TalentXcel';
-  const description = isCandidate 
-    ? 'This professional profile is private, does not exist, or public consent has been revoked.' 
+  const description = isCandidate
+    ? 'This professional profile is private, does not exist, or public consent has been revoked.'
     : 'The requested resource does not exist on TalentXcel. Explore active jobs, colleges, career pathways, and salary intelligence.';
   const cacheControl = isCandidate
     ? 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0, s-maxage=0'
@@ -649,8 +663,8 @@ function notFoundResponse(cleanPath: string, isDebug: boolean = false, isProfile
           </span>
           <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight">${isCandidate ? 'Profile Unavailable' : 'Entity or Page Not Found'}</h1>
           <p class="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
-            ${isCandidate 
-              ? 'This professional profile is private, does not exist, or public consent has been revoked.' 
+            ${isCandidate
+              ? 'This professional profile is private, does not exist, or public consent has been revoked.'
               : `The resource at <code class="text-red-400 font-mono bg-slate-900 px-2 py-0.5 rounded">/${escapeHtml(cleanPath)}</code> does not exist on TalentXcel or has been retired.`}
           </p>
           <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -1088,12 +1102,12 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   }
   // 1B. Public Auth, Signup, Registration & Referral Onboarding (Essential for Social Crawlers)
   else if (
-    cleanPath === 'signup' || 
-    cleanPath === 'register' || 
-    cleanPath === 'join' || 
-    cleanPath === 'auth' || 
-    cleanPath.startsWith('signup') || 
-    cleanPath.startsWith('register') || 
+    cleanPath === 'signup' ||
+    cleanPath === 'register' ||
+    cleanPath === 'join' ||
+    cleanPath === 'auth' ||
+    cleanPath.startsWith('signup') ||
+    cleanPath.startsWith('register') ||
     cleanPath.startsWith('auth/')
   ) {
     title = 'Join TalentXcel — Global Career Platform, Jobs & Career Passport';
@@ -1161,7 +1175,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       const headline = profile.headline || profile.title || 'Verified Career Passport on TalentXcel';
       const location = profile.location ? ` in ${profile.location}` : '';
       const avatar = profile.profile_photo_url || profile.profile_picture_url || 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
-      
+
       title = `${fullName} — Verified Career Passport | TalentXcel`;
       description = `${fullName}'s verified skills, experience, and credentials${location} on TalentXcel. ${headline}`;
       canonical = `https://talentxcel.in/passport/public/${encodeURIComponent(identifier)}`;
@@ -1306,7 +1320,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       const headline = profile.headline || profile.title || 'Professional Profile on TalentXcel';
       const location = profile.location ? ` in ${profile.location}` : '';
       const avatar = profile.profile_photo_url || profile.profile_picture_url || 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
-      
+
       const canonicalUsername = profile.username || identifier;
       if (cleanPath.startsWith('u/') || cleanPath === 'u') {
         canonical = `https://talentxcel.in/u/${encodeURIComponent(canonicalUsername)}`;
@@ -1365,7 +1379,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         const jobTitle = job.title || 'Senior Software Engineer';
         const company = job.company_name || 'Enterprise Partner';
         const jobLoc = job.location || (isUae ? 'Dubai, UAE' : 'Bangalore, India');
-        const salaryText = job.salary_min && job.salary_max 
+        const salaryText = job.salary_min && job.salary_max
           ? `${job.salary_currency || '₹'}${job.salary_min.toLocaleString()} - ${job.salary_max.toLocaleString()}`
           : (isUae ? 'AED 20,000 - 35,000 / mo' : '₹15L - 28L / yr');
         return `
@@ -2410,7 +2424,7 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
 
       const salarySuffix = salaryDisplay ? ` (${salaryDisplay})` : '';
       const remoteBadge = job.is_remote ? ' (Remote)' : '';
-      
+
       // Refinement 3: 1-hour cache TTL on job postings for rapid soft-expiry
       cacheControl = 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400';
 

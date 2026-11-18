@@ -41,6 +41,9 @@ export interface DispatcherTelemetry {
  * Creates a JWT and exchanges it for a Google OAuth2 access token
  */
 async function getGoogleAccessToken(serviceAccount: ServiceAccountKey): Promise<string> {
+  if (serviceAccount.private_key === 'MOCK_KEY_FOR_LOCAL_DRY_RUN_ONLY') {
+    return 'mock-google-access-token';
+  }
   const now = Math.floor(Date.now() / 1000);
   const header = { alg: 'RS256', typ: 'JWT' };
   const claimSet = {
@@ -151,6 +154,20 @@ export async function runIndexingDispatcher(options: {
   batchLimit?: number;
   dryRun?: boolean;
 } = {}): Promise<DispatcherTelemetry> {
+  // Preview Environment Guard: Indexing Worker cannot execute against search engines in Vercel Preview
+  if (process.env.VERCEL_ENV === 'preview' || process.env.VITE_VERCEL_ENV === 'preview') {
+    console.log('🔒 Indexing worker is strictly disabled in Vercel Preview environment.');
+    return {
+      timestamp: new Date().toISOString(),
+      queueDepth: 0,
+      itemsProcessed: 0,
+      submittedSuccess: 0,
+      failedCount: 0,
+      droppedInvalidCount: 0,
+      quotaHit: false,
+      dryRun: true,
+    };
+  }
   const requestedLimit = Math.min(options.batchLimit ?? 45, 190);
   const dryRun = options.dryRun ?? false;
 
@@ -197,7 +214,7 @@ export async function runIndexingDispatcher(options: {
       console.warn('⚠️ No Google Service Account JSON key found; using mock credentials for dry-run.');
       serviceAccount = {
         client_email: 'mock-indexing-api@talentxcel-mock.iam.gserviceaccount.com',
-        private_key: '-----BEGIN PRIVATE KEY-----\nMOCK\n-----END PRIVATE KEY-----',
+        private_key: 'MOCK_KEY_FOR_LOCAL_DRY_RUN_ONLY',
         project_id: 'talentxcel-mock',
       };
     } else {

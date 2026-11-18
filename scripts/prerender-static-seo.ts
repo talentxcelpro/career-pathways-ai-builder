@@ -29,8 +29,12 @@ const __dirname = path.dirname(__filename);
 const DIST_DIR = path.resolve(__dirname, '../dist');
 const BASE_URL = 'https://talentxcel.in';
 
-const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const isPreview = (typeof process !== 'undefined' && (process.env?.VERCEL_ENV === 'preview' || process.env?.VITE_VERCEL_ENV === 'preview'));
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || (isPreview ? '' : 'https://dthlgsnakhoftinssokm.supabase.co');
+if (isPreview && (!SUPABASE_URL || SUPABASE_URL.includes('dthlgsnakhoftinssokm'))) {
+  throw new Error('FAIL-CLOSED GUARD: Vercel Preview build cannot connect to Production Supabase (dthlgsnakhoftinssokm). Set VITE_SUPABASE_URL to Preview project (pvwwtquuexhyydwihjbi).');
+}
+const SUPABASE_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 function escapeHtml(str: string): string {
