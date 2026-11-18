@@ -781,7 +781,7 @@ async function lookupProfileEnrichment(profileId: string, skills: string[] = [],
     if (!isUuid) return result;
 
     const [endorsementsRes, atsRes, careerSkillsRes, jobsRes] = await Promise.allSettled([
-      fetch(`${getSupabaseRestUrl()}/peer_endorsements?select=id,endorser_name,skill_name,feedback,created_at&target_user_id=eq.${encodeURIComponent(profileId)}&limit=5`, { headers }),
+      fetch(`${getSupabaseRestUrl()}/peer_endorsements?select=id,endorser_name,skill_name,feedback,created_at&target_user_id=eq.${encodeURIComponent(profileId)}&status=eq.approved&limit=5`, { headers }),
       fetch(`${getSupabaseRestUrl()}/ats_public_scans?select=id,ats_score,created_at&user_id=eq.${encodeURIComponent(profileId)}&order=created_at.desc&limit=1`, { headers }),
       fetch(`${getSupabaseRestUrl()}/career_skills?select=skill_name&user_id=eq.${encodeURIComponent(profileId)}&limit=15`, { headers }),
       fetch(`${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,salary_min,salary_max,salary_currency,employment_type,skills_required&is_active=eq.true&order=created_at.desc&limit=4`, { headers }),
@@ -1314,12 +1314,13 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
 
       // ── THIN-PAGE PROTECTION GATE ──────────────────────────────────────────
       // Indexing qualification requires >= 3 verified skills AND at least one rich signal:
-      // 1. Custom headline / bio (>= 40 chars)
+      // 1. Custom headline / bio (>= 40 chars, non-placeholder)
       // 2. ATS parsed / calibrated score (> 0)
       // 3. Documented work history or current employer
       // 4. At least 1 verified peer endorsement
       const headlineOrBio = (profile.headline || profile.about || profile.title || '').trim();
-      const hasBioLength = headlineOrBio.length >= 40;
+      const isPlaceholder = /^(test|fresher|n\/a|na|none|null|undefined|student|seeking opportunities|looking for job)$/i.test(headlineOrBio);
+      const hasBioLength = !isPlaceholder && headlineOrBio.length >= 40;
       const hasAtsScore = enrichment.atsScore !== null && enrichment.atsScore > 0;
       const hasWorkOrEdu = (profile.experience_years !== null && Number(profile.experience_years) > 0) ||
                            Boolean(profile.current_company && profile.current_company.trim().length > 0);
@@ -1333,20 +1334,16 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       cacheControl = 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400';
 
       // ── RICH CONTEXTUAL HYDRATION ──────────────────────────────────────────
-      // 1. Verified Skills & Market Demand Context (live matching job count per skill)
+      // 1. Verified Skills Context (genuine skill assertions, zero synthetic metrics)
       const skillsDemandMarkup = skills.length > 0
-        ? skills.slice(0, 8).map((skill: string) => {
-            const skillHash = Math.abs(skill.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0));
-            const liveOpenings = 140 + (skillHash % 520);
-            return `
-              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800">
-                <span class="text-xs sm:text-sm font-semibold text-slate-100">${escapeHtml(skill)}</span>
-                <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium border border-blue-500/30">
-                  ${liveOpenings}+ Live Openings
-                </span>
-              </div>
-            `;
-          }).join('')
+        ? skills.slice(0, 8).map((skill: string) => `
+            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950/70 border border-slate-800">
+              <span class="text-xs sm:text-sm font-semibold text-slate-100">${escapeHtml(skill)}</span>
+              <span class="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium border border-blue-500/30">
+                Verified Skill Assertion
+              </span>
+            </div>
+          `).join('')
         : `<p class="text-xs text-slate-400 italic">Core competencies in review &amp; live employer skill matching.</p>`;
 
       // 2. Regional Salary Benchmark

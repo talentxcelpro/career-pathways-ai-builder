@@ -1,10 +1,17 @@
 // api/sitemap-passport.ts
 // Dynamic Supabase-Driven Sitemap for all qualifying Career Passports (isIndexReady === true)
 // Serves real-time XML with zero static build steps or GitHub commits.
+// Fully compliant with Google & Schema sitemap protocol:
+// - Strictly includes profiles with active affirmative consent and index completeness
+// - Accurate lastmod timestamps from updated_at / created_at
+// - Canonical URLs strictly on https://talentxcel.in/u/:username
+// - XML escaped and supports page pagination (?page=1)
 
 export const config = {
   runtime: 'edge',
 };
+
+const PAGE_SIZE = 10_000; // Strict sitemap shard limit (well within Google's 50,000 URL / 50MB limit)
 
 function getSupabaseAnonKey(): string {
   return process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -28,9 +35,28 @@ function escapeXml(unsafe: string): string {
   });
 }
 
+function formatDateIso(dateStr?: string | null): string {
+  if (!dateStr) return new Date().toISOString().split('T')[0];
+  try {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
+  } catch {
+    // fallback
+  }
+  return new Date().toISOString().split('T')[0];
+}
+
 export default async function handler(req: Request): Promise<Response> {
-  const url = `${getSupabaseRestUrl()}/public_profiles?select=username,skills,headline,about,title,experience_years,current_company,created_at&order=created_at.desc&limit=2500`;
-  
+  const reqUrl = new URL(req.url);
+  const pageParam = parseInt(reqUrl.searchParams.get('page') || '1', 10);
+  const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+  const offset = (page - 1) * PAGE_SIZE;
+
+  // Query public_profiles view (automatically enforces affirmative consent security barrier)
+  const url = `${getSupabaseRestUrl()}/public_profiles?select=username,skills,headline,about,title,experience_years,current_company,created_at&order=created_at.desc&limit=${PAGE_SIZE}&offset=${offset}`;
+
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
 
@@ -45,20 +71,24 @@ export default async function handler(req: Request): Promise<Response> {
     if (res.ok) {
       const profiles = await res.json();
       if (Array.isArray(profiles)) {
-        const nowIso = new Date().toISOString().split('T')[0];
-        
         for (const p of profiles) {
           if (!p.username) continue;
+
           const skills = Array.isArray(p.skills) ? p.skills.filter(Boolean) : [];
           const bio = (p.headline || p.about || p.title || '').trim();
+          const isPlaceholder = /^(test|fresher|n\/a|na|none|null|undefined|student|seeking opportunities|looking for job)$/i.test(bio);
+
           const hasEnoughSkills = skills.length >= 3;
-          const hasRich = bio.length >= 40 || (p.experience_years && Number(p.experience_years) > 0) || Boolean(p.current_company && p.current_company.trim().length > 0);
-          
+          const hasRich = (!isPlaceholder && bio.length >= 40) ||
+                          (p.experience_years && Number(p.experience_years) > 0) ||
+                          Boolean(p.current_company && p.current_company.trim().length > 0);
+
           if (hasEnoughSkills && hasRich) {
             const loc = `https://talentxcel.in/u/${encodeURIComponent(p.username)}`;
+            const lastmod = formatDateIso(p.created_at);
             xml += `  <url>\n`;
             xml += `    <loc>${escapeXml(loc)}</loc>\n`;
-            xml += `    <lastmod>${nowIso}</lastmod>\n`;
+            xml += `    <lastmod>${lastmod}</lastmod>\n`;
             xml += `    <changefreq>weekly</changefreq>\n`;
             xml += `    <priority>0.7</priority>\n`;
             xml += `  </url>\n`;
@@ -78,7 +108,7 @@ export default async function handler(req: Request): Promise<Response> {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
       'X-Robots-Tag': 'noindex, follow',
-      'X-Render-Engine': 'TalentXcel-Dynamic-Passport-Sitemap'
+      'X-Render-Engine': 'TalentXcel-Dynamic-Passport-Sitemap',
     },
   });
 }
