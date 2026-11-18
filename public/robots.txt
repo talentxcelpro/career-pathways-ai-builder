@@ -55,20 +55,70 @@ Allow: /
 
 
 # ------------------------------
-# Generative AI Search Discovery Crawlers (Real-Time Citations & Search)
+# Generative AI & Search Discovery Crawlers (Real-Time Citations & Search)
+# Explicitly allowed across Career Passports, Network, Salary, Resume, Talent & Explore
 # ------------------------------
+
+User-agent: Googlebot
+Allow: /
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
 
 User-agent: OAI-SearchBot
 Allow: /
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
+
+User-agent: ChatGPT-User
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
 
 User-agent: PerplexityBot
 Allow: /
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
+
+User-agent: ClaudeBot
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
 
 User-agent: Claude-User
 Allow: /
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
 
 User-agent: Bingbot
 Allow: /
+Allow: /u/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
 
 
 # ------------------------------
@@ -76,12 +126,6 @@ Allow: /
 # ------------------------------
 
 User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: ClaudeBot
 Disallow: /
 
 User-agent: anthropic-ai

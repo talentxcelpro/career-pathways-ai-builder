@@ -311,13 +311,29 @@ const ProfileEdit = () => {
       }
       return inserted;
     },
-    onSuccess: () => {
+    onSuccess: (savedData: any) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
+
+      // Async auto-ping search engines (Google Indexing API + IndexNow) & purge edge cache
+      try {
+        const username = savedData?.username || profile?.username;
+        const userId = currentUser?.id || savedData?.id;
+        if (username || userId) {
+          fetch('/api/notify-search-engines', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, userId }),
+          }).catch(() => {});
+        }
+      } catch {
+        // non-blocking background notification
+      }
+
       navigate('/profile');
     },
     onError: (error: unknown) => {

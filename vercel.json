@@ -1653,7 +1653,7 @@
           "value": "passport.talentxcel.in"
         }
       ],
-      "destination": "/sitemap-passport.xml"
+      "destination": "/api/sitemap-passport"
     },
     {
       "source": "/robots.txt",
@@ -1931,10 +1931,14 @@
         {
           "type": "header",
           "key": "User-Agent",
-          "value": ".*(Googlebot|bingbot|Baiduspider|YandexBot|DuckDuckBot|Slurp|facebookexternalhit|LinkedInBot|Twitterbot|Applebot|WhatsApp|TelegramBot|ChatGPT|PerplexityBot|ClaudeBot).*"
+          "value": ".*(Googlebot|bingbot|Baiduspider|YandexBot|DuckDuckBot|Slurp|facebookexternalhit|LinkedInBot|Twitterbot|Applebot|WhatsApp|TelegramBot|ChatGPT|ChatGPT-User|OAI-SearchBot|PerplexityBot|ClaudeBot|Claude-User).*"
         }
       ],
       "destination": "/api/seo-render?path=$1"
+    },
+    {
+      "source": "/sitemap-passport.xml",
+      "destination": "/api/sitemap-passport"
     },
     {
       "source": "/(sitemap[^/]*\\.xml)",
