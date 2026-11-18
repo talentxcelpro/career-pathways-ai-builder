@@ -131,12 +131,78 @@ interface CloudflarePurgeOptions {
 }
 
 /**
- * Purges Cloudflare edge cache using exact URLs, URL-prefixes, or Cache-Tags.
- * Employs official Cloudflare purge syntax:
- * - files: exact URLs (supported on all Cloudflare tiers)
- * - prefixes: URL-prefix format without protocol (e.g. talentxcel.in/sitemap-passport, talentxcel.in/u/:username)
- * - tags: Cache-Tag purge
- * Automatically falls back to files-only if prefixes/tags are rejected by non-Enterprise zones.
+ * Executes a single-selector Cloudflare cache purge request.
+ * Cloudflare Purge API mandates strictly ONE selector type per request body (files, prefixes, or tags).
+ * Evaluates both HTTP status (200) and response JSON (success: true).
+ * Logs failure diagnostics if Cloudflare rejects the purge.
+ */
+async function sendCloudflarePurge(
+  zoneId: string,
+  token: string,
+  selectorType: 'files' | 'prefixes' | 'tags',
+  payload: Record<string, string[]>
+): Promise<{ ok: boolean; status: number; errors?: any[] }> {
+  const body = JSON.stringify(payload);
+  return new Promise((resolve) => {
+    const req = https.request(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body),
+      },
+      timeout: 4000,
+    }, (res) => {
+      let data = '';
+      res.on('data', (c) => (data += c));
+      res.on('end', () => {
+        try {
+          const parsed = JSON.parse(data);
+          const isSuccess = res.statusCode === 200 && parsed.success === true;
+          if (!isSuccess) {
+            console.error(JSON.stringify({
+              event: 'cloudflare_purge_failed',
+              selector: selectorType,
+              status: res.statusCode,
+              errors: parsed.errors || [],
+              messages: parsed.messages || [],
+            }));
+          }
+          resolve({ ok: isSuccess, status: res.statusCode || 200, errors: parsed.errors });
+        } catch {
+          const isHttpOk = res.statusCode === 200;
+          if (!isHttpOk) {
+            console.error(JSON.stringify({
+              event: 'cloudflare_purge_failed',
+              selector: selectorType,
+              status: res.statusCode,
+              rawBody: data.slice(0, 200),
+            }));
+          }
+          resolve({ ok: isHttpOk, status: res.statusCode || 200 });
+        }
+      });
+    });
+    req.on('error', (err) => {
+      console.error(JSON.stringify({ event: 'cloudflare_purge_error', selector: selectorType, error: err.message }));
+      resolve({ ok: false, status: 500 });
+    });
+    req.on('timeout', () => {
+      req.destroy();
+      console.error(JSON.stringify({ event: 'cloudflare_purge_timeout', selector: selectorType }));
+      resolve({ ok: false, status: 408 });
+    });
+    req.write(body);
+    req.end();
+  });
+}
+
+/**
+ * Purges Cloudflare edge cache using separate dedicated requests per selector type:
+ * 1. files: exact URLs (supported across all Cloudflare tiers)
+ * 2. prefixes: URL-prefix format without protocol (e.g. talentxcel.in/sitemap-passport, talentxcel.in/u/:username)
+ * 3. tags: Cache-Tag purge
+ * Never combines selector types into a single request body.
  */
 async function purgeCloudflareCacheWithRetry(
   targets: string | string[] | CloudflarePurgeOptions,
@@ -157,72 +223,50 @@ async function purgeCloudflareCacheWithRetry(
     options = targets;
   }
 
-  const payloadObj: Record<string, any> = {};
-  if (options.files && options.files.length > 0) payloadObj.files = options.files;
-  if (options.prefixes && options.prefixes.length > 0) payloadObj.prefixes = options.prefixes;
-  if (options.tags && options.tags.length > 0) payloadObj.tags = options.tags;
-
-  const payload = JSON.stringify(payloadObj);
-
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      const result = await new Promise<{ ok: boolean; status: number }>((resolve) => {
-        const req = https.request(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(payload),
-          },
-          timeout: 4000,
-        }, (res) => {
-          let d = '';
-          res.on('data', (c) => (d += c));
-          res.on('end', () => {
-            resolve({ ok: res.statusCode === 200, status: res.statusCode || 200 });
-          });
-        });
-        req.on('error', () => resolve({ ok: false, status: 500 }));
-        req.on('timeout', () => {
-          req.destroy();
-          resolve({ ok: false, status: 408 });
-        });
-        req.write(payload);
-        req.end();
-      });
-
-      if (result.ok) return true;
-
-      // Graceful fallback: If zone rejects prefixes/tags (e.g. non-Enterprise 400), retry with files only
-      if (!result.ok && (options.prefixes || options.tags) && options.files && options.files.length > 0) {
-        const fallbackPayload = JSON.stringify({ files: options.files });
-        const fallbackOk = await new Promise<boolean>((resolve) => {
-          const req = https.request(`https://api.cloudflare.com/client/v4/zones/${zoneId}/purge_cache`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-              'Content-Length': Buffer.byteLength(fallbackPayload),
-            },
-            timeout: 4000,
-          }, (res) => {
-            res.on('data', () => {});
-            res.on('end', () => resolve(res.statusCode === 200));
-          });
-          req.on('error', () => resolve(false));
-          req.write(fallbackPayload);
-          req.end();
-        });
-        if (fallbackOk) return true;
+  // 1. Files Purge (Exact URLs)
+  let filesSuccess = true;
+  if (options.files && options.files.length > 0) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const res = await sendCloudflarePurge(zoneId, token, 'files', { files: options.files });
+      if (res.ok) {
+        filesSuccess = true;
+        break;
       }
-    } catch {
-      // Retry on transient failure
-    }
-    if (attempt < retries) {
-      await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      filesSuccess = false;
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
     }
   }
-  return false;
+
+  // 2. Prefixes Purge (URL-prefix format: hostname/path without protocol)
+  if (options.prefixes && options.prefixes.length > 0) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const res = await sendCloudflarePurge(zoneId, token, 'prefixes', { prefixes: options.prefixes });
+      if (res.ok || (res.status === 400 && res.errors?.[0]?.code === 10023)) {
+        // Either success or non-Enterprise tier code 10023 (unsupported prefix tier)
+        break;
+      }
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
+    }
+  }
+
+  // 3. Tags Purge (Cache-Tags)
+  if (options.tags && options.tags.length > 0) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      const res = await sendCloudflarePurge(zoneId, token, 'tags', { tags: options.tags });
+      if (res.ok || (res.status === 400 && res.errors?.[0]?.code === 10023)) {
+        break;
+      }
+      if (attempt < retries) {
+        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+      }
+    }
+  }
+
+  return filesSuccess;
 }
 
 /**
