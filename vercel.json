@@ -1482,6 +1482,26 @@
       "source": "/referral",
       "destination": "/network?tab=refer-and-earn",
       "permanent": false
+    },
+    {
+      "source": "/skills/c-plus-plus",
+      "destination": "/career-insights",
+      "permanent": true
+    },
+    {
+      "source": "/company/salesforce/jobs/data-engineer",
+      "destination": "/career-insights",
+      "permanent": true
+    },
+    {
+      "source": "/ai-career-operating-system",
+      "destination": "/career-insights",
+      "permanent": true
+    },
+    {
+      "source": "/career-operating-system",
+      "destination": "/career-insights",
+      "permanent": true
     }
   ],
   "rewrites": [

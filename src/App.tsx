@@ -921,6 +921,7 @@ const App = () => {
                 <Route path="/resources" element={<BlogRedirect />} />
                 <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPost /></Suspense>} />
                 <Route path="/blog" element={<Suspense fallback={null}><Blog /></Suspense>} />
+                <Route path="/skills/c-plus-plus" element={<Navigate to="/career-insights" replace />} />
                 <Route path="/skills/:skill/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:p1/:p2/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:skill" element={<JobsBySkill />} />

@@ -786,6 +786,28 @@ async function prerender() {
   fs.writeFileSync(path.join(DIST_DIR, 'company', 'salesforce', 'jobs', 'data-engineer.html'), sfRedirectHtml, 'utf8');
   generatedCount++;
 
+  // 1d. Pre-render Google Sitelink Redirect: /skills/c-plus-plus -> /career-insights
+  console.log('Pre-rendering Google Sitelink Redirect: /skills/c-plus-plus -> /career-insights...');
+  const cppRedirectHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=https://talentxcel.in/career-insights">
+  <link rel="canonical" href="https://talentxcel.in/career-insights">
+  <title>AI Career Operating System & Career Insights — TalentXcel</title>
+</head>
+<body>
+  <p>Redirecting to <a href="https://talentxcel.in/career-insights">AI Career Operating System & Career Insights</a>...</p>
+  <script>window.location.replace("https://talentxcel.in/career-insights");</script>
+</body>
+</html>`;
+
+  const cppRedirectDir = path.join(DIST_DIR, 'skills', 'c-plus-plus');
+  fs.mkdirSync(cppRedirectDir, { recursive: true });
+  fs.writeFileSync(path.join(cppRedirectDir, 'index.html'), cppRedirectHtml, 'utf8');
+  fs.writeFileSync(path.join(DIST_DIR, 'skills', 'c-plus-plus.html'), cppRedirectHtml, 'utf8');
+  generatedCount++;
+
   // 2. Pre-render All 10 Strategic Services
   console.log('Pre-rendering 10 Strategic Service Pages...');
   const services = [
