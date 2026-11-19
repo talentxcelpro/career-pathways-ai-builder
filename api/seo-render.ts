@@ -714,11 +714,48 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
         'Authorization': `Bearer ${getSupabaseAnonKey()}`,
       },
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return data[0];
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data[0];
+      }
     }
+
+    // Fallback 1: If slug has no trailing suffix, check with '-1' suffix (reconciles GSC indexed ranking slugs)
+    if (!isUuid && !/-\d+$/.test(slugOrId)) {
+      const fallbackUrl1 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&seo_slug=eq.${encodeURIComponent(slugOrId + '-1')}&limit=1`;
+      const fbRes1 = await fetch(fallbackUrl1, {
+        headers: {
+          'apikey': getSupabaseAnonKey(),
+          'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+        },
+      });
+      if (fbRes1.ok) {
+        const fbData1 = await fbRes1.json();
+        if (Array.isArray(fbData1) && fbData1.length > 0) {
+          return fbData1[0];
+        }
+      }
+    }
+
+    // Fallback 2: If slug has trailing numeric suffix, check stripped base slug
+    if (!isUuid && /-\d+$/.test(slugOrId)) {
+      const stripped = slugOrId.replace(/-\d+$/, '');
+      const fallbackUrl2 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&seo_slug=eq.${encodeURIComponent(stripped)}&limit=1`;
+      const fbRes2 = await fetch(fallbackUrl2, {
+        headers: {
+          'apikey': getSupabaseAnonKey(),
+          'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+        },
+      });
+      if (fbRes2.ok) {
+        const fbData2 = await fbRes2.json();
+        if (Array.isArray(fbData2) && fbData2.length > 0) {
+          return fbData2[0];
+        }
+      }
+    }
+
     return null;
   } catch {
     return null;
@@ -903,8 +940,11 @@ export default async function handler(req: Request) {
     });
   }
 
+  const hostHeader = req?.headers?.get('x-forwarded-host') || req?.headers?.get('host') || url.hostname || '';
+  const cleanHost = hostHeader.split(':')[0].trim().toLowerCase();
+
   const isCandidateRoute = isCandidateProfileRoute(cleanPath);
-  const result = await generateDynamicSeoHtml(cleanPath);
+  const result = await generateDynamicSeoHtml(cleanPath, cleanHost);
   if (!result || result.status === 404) {
     if (isCandidateRoute || DEPLOYMENT_UNITS.SOFT_404_PROTECTION) {
       return notFoundResponse(cleanPath, isDebug, isCandidateRoute);
@@ -1057,7 +1097,7 @@ function generateProgrammaticLocalDataBlock(roleName: string, cityName: string) 
   return { htmlBlock, faqSchema };
 }
 
-async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResult | null> {
+async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = ''): Promise<SeoRenderResult | null> {
   const parts = cleanPath.split('/');
   const prefix = parts[0] || '';
   const secondary = parts[1] || '';
@@ -1076,29 +1116,286 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
   let cacheControl: string | undefined = undefined;
   let cacheTag: string | undefined = undefined;
 
-  // 1. Root Homepage
+  // 1. Root Homepage (Host-Aware Subdomain & Apex Routing)
   if (!cleanPath || cleanPath === '') {
-    title = 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
-    description = 'TalentXcel SI — Super Intelligence for Careers & Hiring. Context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.';
-    canonical = 'https://talentxcel.in';
-    h1 = 'Your Career. Your Talent. A Global Platform.';
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
-          TalentXcel SI — Super Intelligence for Careers &amp; Hiring
-        </span>
-        <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Your Career. Your Talent. <span class="text-blue-500">A Global Platform.</span></h1>
-        <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-          Powered by TalentXcel SI — context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <a href="/jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Global Opportunities &rarr;</a>
-          <a href="/career-insights" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold text-sm rounded-xl border border-slate-700 transition">AI-Powered Career Intelligence</a>
-          <a href="/hire" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Hire Talent (Recruiter OS)</a>
-        </div>
-      </section>
-    `;
-    robotsDirective = 'index, follow';
+    if (cleanHost.startsWith('jobs.') || cleanHost === 'jobs.talentxcel.in') {
+      title = 'Jobs in India & Remote Careers — Search 2,700+ Verified Vacancies | TalentXcel Jobs';
+      description = 'Explore verified tech, fresher, and enterprise jobs across Bangalore, Hyderabad, Pune, Mumbai, and remote. Direct employer application, transparent salary ranges, and ATS job matching.';
+      canonical = 'https://jobs.talentxcel.in/';
+      h1 = 'Search 2,700+ Verified Tech & Trainee Jobs in India & Remote';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Jobs — 2,700+ Active Verified Vacancies
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Find Your Next Tech &amp; Engineering Role.</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Verified listings from BHEL, ISRO, Apple, Jusco, Apollo, and top global enterprises. Filter by role, location, fresher eligibility, and salary.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Browse All 2,700+ Jobs &rarr;</a>
+            <a href="/jobs?filter=fresher" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold text-sm rounded-xl border border-slate-700 transition">Fresher Vacancies</a>
+            <a href="https://resume.talentxcel.in/resume/ats-check" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Check ATS Resume Match</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Jobs — Verified Tech & Career Opportunities",
+        "url": "https://jobs.talentxcel.in/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://jobs.talentxcel.in/jobs?search={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('colleges.') || cleanHost === 'colleges.talentxcel.in') {
+      title = 'Colleges & Universities in India — 900+ NIRF Rankings & Placement Reports | TalentXcel Colleges';
+      description = 'Explore verified NIRF-ranked engineering, MBA, and degree institutions across India. Compare placement statistics, annual tuition fees, and admission pathways.';
+      canonical = 'https://colleges.talentxcel.in/';
+      h1 = 'NIRF Ranked Colleges & Higher Education Intelligence 2026';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel College Intelligence — 902 NIRF-Accredited Institutions
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Explore Top NIRF-Ranked Colleges in India</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Objective placement data, fee breakdowns, accreditation tiers, and alumni career pathways for top Indian engineering and management institutes.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/colleges" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">View NIRF Top Colleges &rarr;</a>
+            <a href="/colleges/career-pathway" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold text-sm rounded-xl border border-slate-700 transition">College to Career Pathways</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Colleges — NIRF Ranked Universities & Admissions Intelligence",
+        "url": "https://colleges.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('salary.') || cleanHost === 'salary.talentxcel.in') {
+      title = 'Technology Salary Guides & Compensation Benchmarks (2026) | TalentXcel Salary';
+      description = 'Explore verified technology salary guides, compensation curves, and employer-provided compensation details on TalentXcel Salary Intelligence.';
+      canonical = 'https://salary.talentxcel.in/';
+      h1 = '2026 Verified Technology Salary Intelligence & Benchmarks';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Salary Intelligence — Verified 2026 Telemetry
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Verified Tech Compensation Curves &amp; Benchmarks</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Transparent compensation percentiles, in-hand tax calculators, and skill premiums across Bangalore, Hyderabad, Pune, Dubai, and Remote USA.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/salary" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Explore Salary Benchmarks &rarr;</a>
+            <a href="https://jobs.talentxcel.in/jobs" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">View High-Comp Tech Jobs</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "TalentXcel Salary Intelligence",
+        "url": "https://salary.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('resume.') || cleanHost === 'resume.talentxcel.in') {
+      title = 'ATS Resume Builder & Free CV Scanner — Recruiter-Approved CVs | TalentXcel Resume';
+      description = 'Build recruiter-approved ATS resumes online for free. Real-time ATS keyword matching, single-column formatting score (0-100), and instant vector PDF export.';
+      canonical = 'https://resume.talentxcel.in/';
+      h1 = 'Free ATS Resume Builder & Recruiter CV Optimization Studio';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Resume Studio — 100% Free ATS Optimization
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Build an ATS-Friendly Resume in Minutes</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Scan your CV against target job descriptions, discover missing technical keywords, and export recruiter-ready single-column PDF resumes without paywalls.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/resume/ats-check" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Scan Resume Free (0-100 Score) &rarr;</a>
+            <a href="/resume" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Open Resume Builder</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "TalentXcel Free ATS Resume Builder",
+        "url": "https://resume.talentxcel.in/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('employers.') || cleanHost.startsWith('employer.') || cleanHost === 'employers.talentxcel.in') {
+      title = 'TalentXcel Recruiter OS — Hire Pre-Screened Tech & Leadership Talent';
+      description = 'Enterprise hiring platform and candidate pipeline management. Access pre-screened talent with verified TalentScore, automate candidate screening, and hire with confidence.';
+      canonical = 'https://employers.talentxcel.in/';
+      h1 = 'Recruiter OS — Hire Pre-Screened Candidates with Verified Skills';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Recruiter OS — Enterprise Talent Acquisition
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Hire Pre-Screened Candidates with Verified Skills</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Accelerate your recruitment workflow with verified candidate Career Passports, TalentScore benchmarking, and structured interview pipelines.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/hire" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Post a Job Free &rarr;</a>
+            <a href="/recruiters" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Search Candidate Database</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Recruiter OS",
+        "url": "https://employers.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('government.') || cleanHost === 'government.talentxcel.in') {
+      title = 'Government & PSU Jobs in India — BHEL, ISRO, SSC & Banking Recruitment 2026 | TalentXcel';
+      description = 'Explore active Central and State Government vacancies, PSU recruitment notifications (BHEL, ISRO, DRDO, SSC CGL, RRB NTPC, IBPS PO), official exam syllabi, and eligibility criteria.';
+      canonical = 'https://government.talentxcel.in/';
+      h1 = 'Government & PSU Recruitment Intelligence 2026';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel PSU Intelligence — Verified Central &amp; State Opportunities
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Government &amp; PSU Recruitment Intelligence</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Official recruitment notifications from BHEL, ISRO, DRDO, SSC CGL, RRB NTPC, and IBPS with exam dates, syllabus breakdowns, and eligibility terms.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/government-jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Browse Government Vacancies &rarr;</a>
+            <a href="https://jobs.talentxcel.in/jobs" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">View Enterprise Jobs</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Government Jobs Intelligence",
+        "url": "https://government.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('learning.') || cleanHost === 'learning.talentxcel.in') {
+      title = 'Learning & Tech Skills Hub — In-Demand Courses & Certifications | TalentXcel Learning';
+      description = 'Upskill with industry-aligned modules in Full Stack Development, Cloud Architecture, DevOps, Data Engineering, and Generative AI. Bridge skill gaps for top tech careers.';
+      canonical = 'https://learning.talentxcel.in/';
+      h1 = 'Industry-Aligned Tech Courses & Practical Skill Modules';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Learning Intelligence — Practical Skill Modules
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Master In-Demand Software &amp; Data Skills</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Targeted learning paths mapped to live hiring requirements in Full Stack, DevOps, Cloud Architecture, and Generative AI.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/learning" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Browse All Courses &rarr;</a>
+            <a href="https://careers.talentxcel.in/career-map" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">View Career Pathways</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Learning Intelligence",
+        "url": "https://learning.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('careers.') || cleanHost === 'careers.talentxcel.in') {
+      title = 'AI Career Pathways & Transition Roadmaps — Skill Trees & Salary Uplift | TalentXcel Careers';
+      description = 'Explore 200+ interactive career transition pathways. Compare required skills, certification paths, salary uplifts, and live openings for tech, product, and leadership roles.';
+      canonical = 'https://careers.talentxcel.in/';
+      h1 = 'Multi-Dimensional Career Pathways & Skill Progression Maps';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Career Intelligence — 218 Interactive Pathways
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Map Your Next Career Move</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Understand exact skill gaps, salary delta, and step-by-step roadmaps to transition between engineering, data, and leadership roles.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/career-map" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Explore Career Pathways &rarr;</a>
+            <a href="https://salary.talentxcel.in/salary" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Compare Role Salaries</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Career Pathways",
+        "url": "https://careers.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else if (cleanHost.startsWith('passport.') || cleanHost === 'passport.talentxcel.in') {
+      title = 'Career Passport & Digital Professional Identity | TalentXcel Passport';
+      description = 'Your verified professional digital identity. Showcase cryptographically verified skill assessments, TalentScore, employment credentials, and portfolio projects to global employers.';
+      canonical = 'https://passport.talentxcel.in/';
+      h1 = 'Career Passport — Your Verified Professional Identity';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Career Passport — Verified Professional Identity
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Your Portable, Verified Career Identity</h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Prove your technical capabilities with TalentScore, verified credentials, and real project evidence that recruiters can trust instantly.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Claim Your Career Passport &rarr;</a>
+            <a href="https://jobs.talentxcel.in/jobs" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Find Matching Jobs</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "TalentXcel Career Passport",
+        "url": "https://passport.talentxcel.in/"
+      };
+      robotsDirective = 'index, follow';
+    } else {
+      // Apex Homepage Default
+      title = 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
+      description = 'TalentXcel SI — Super Intelligence for Careers & Hiring. Context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.';
+      canonical = 'https://talentxcel.in';
+      h1 = 'Your Career. Your Talent. A Global Platform.';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel SI — Super Intelligence for Careers &amp; Hiring
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight">Your Career. Your Talent. <span class="text-blue-500">A Global Platform.</span></h1>
+          <p class="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Powered by TalentXcel SI — context-aware career and talent intelligence from profile to placement. Select your goal to get started instantly.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/jobs" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Global Opportunities &rarr;</a>
+            <a href="/career-insights" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-blue-400 font-bold text-sm rounded-xl border border-slate-700 transition">AI-Powered Career Intelligence</a>
+            <a href="/hire" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-sm rounded-xl border border-slate-700 transition">Hire Talent (Recruiter OS)</a>
+          </div>
+        </section>
+      `;
+      robotsDirective = 'index, follow';
+    }
   }
   // 1B. Public Auth, Signup, Registration & Referral Onboarding (Essential for Social Crawlers)
   else if (

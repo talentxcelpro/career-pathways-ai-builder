@@ -222,3 +222,11 @@ Disallow: /*?*fbclid=
 
 Sitemap: https://talentxcel.in/sitemap.xml
 Sitemap: https://jobs.talentxcel.in/sitemap-jobs.xml
+Sitemap: https://colleges.talentxcel.in/sitemap-colleges.xml
+Sitemap: https://salary.talentxcel.in/sitemap-salary.xml
+Sitemap: https://resume.talentxcel.in/sitemap-resume.xml
+Sitemap: https://careers.talentxcel.in/sitemap-careers.xml
+Sitemap: https://government.talentxcel.in/sitemap-government.xml
+Sitemap: https://employers.talentxcel.in/sitemap-employers.xml
+Sitemap: https://learning.talentxcel.in/sitemap-learning.xml
+Sitemap: https://passport.talentxcel.in/sitemap-passport.xml
