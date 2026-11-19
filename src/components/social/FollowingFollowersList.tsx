@@ -1,419 +1,604 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Users, UserPlus, UserCheck, MessageCircle, Search, Loader2 } from "lucide-react";
-import { UserFollowButton } from "@/components/social/UserFollowButton";
+import { 
+  Users, 
+  UserPlus, 
+  UserCheck, 
+  MessageCircle, 
+  Search, 
+  Loader2, 
+  Clock, 
+  Check, 
+  X, 
+  Sparkles,
+  ExternalLink,
+  UserX
+} from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { useNetworkRelationships } from '@/hooks/useNetworkRelationships';
 import { formatDistanceToNow } from "date-fns";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getStandardAvatarUrl } from '@/utils/avatarUtils';
+import { getPublicProfilePath } from '@/utils/userProfileSlug';
 
-interface User {
+interface ProfileSummary {
   id: string;
   full_name: string;
-  profile_picture_url?: string;
-  title?: string;
-  location?: string;
-  followers_count?: number;
-  following_count?: number;
-}
-
-interface Follow {
-  id: string;
-  follower_id: string;
-  following_id: string;
-  created_at: string;
-  user?: User;
-}
-
-interface ConnectionItem {
-  id: string;
-  connected_at: string;
-  user: User;
+  profile_picture_url?: string | null;
+  title?: string | null;
+  headline?: string | null;
+  location?: string | null;
+  current_company?: string | null;
+  slug?: string | null;
+  custom_profile_url?: string | null;
+  username?: string | null;
+  is_online?: boolean | null;
 }
 
 export function FollowingFollowersList() {
-  const [currentUser, setCurrentUser] = useState<string | null>(null);
-  const [connections, setConnections] = useState<ConnectionItem[]>([]);
-  const [following, setFollowing] = useState<Follow[]>([]);
-  const [followers, setFollowers] = useState<Follow[]>([]);
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState<'connections' | 'received' | 'sent' | 'following' | 'followers'>('connections');
 
-  useEffect(() => {
-    loadUserData();
+  const {
+    currentUser,
+    isLoading: isRelLoading,
+    getRelationship,
+    accept,
+    decline,
+    withdraw,
+    removeConnection,
+    toggleFollow,
+    isAccepting,
+    isDeclining,
+    isWithdrawing,
+    isRemoving,
+    isTogglingFollow,
+    connectedCount,
+    pendingReceivedCount,
+    pendingSentCount,
+    followingCount,
+    followersCount
+  } = useNetworkRelationships();
 
-    const channel = supabase
-      .channel('connections-realtime-sync')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
-        loadUserData();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_follows' }, () => {
-        loadUserData();
-      })
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, async (payload) => {
-        const newProfile = payload.new as any;
-        const ADMIN_ID = '5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062';
-        if (newProfile?.id && newProfile.id !== ADMIN_ID) {
-          try {
-            await supabase.rpc('create_admin_connections', { target_user_id: newProfile.id });
-          } catch (e) {
-            console.warn('Realtime auto-connect handled:', e);
-          }
-        }
-        loadUserData();
-      })
-      .subscribe();
+  // 1. Fetch raw connections
+  const { data: rawConnections = [], isLoading: isConnectionsLoading } = useQuery({
+    queryKey: ['following-followers-connections', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return [];
+      const { data, error } = await supabase
+        .from('connections')
+        .select('id, requester_id, recipient_id, status, created_at, connected_at, message')
+        .or(`requester_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`);
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+      if (error) return [];
+      return data || [];
+    },
+    enabled: !!currentUser?.id
+  });
 
-  const loadUserData = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  // 2. Fetch raw follows
+  const { data: rawFollows = { following: [], followers: [] }, isLoading: isFollowsLoading } = useQuery({
+    queryKey: ['following-followers-follows', currentUser?.id],
+    queryFn: async () => {
+      if (!currentUser?.id) return { following: [], followers: [] };
+      const [followingRes, followersRes] = await Promise.all([
+        supabase
+          .from('user_follows')
+          .select('id, following_id, created_at')
+          .eq('follower_id', currentUser.id),
+        supabase
+          .from('user_follows')
+          .select('id, follower_id, created_at')
+          .eq('following_id', currentUser.id)
+      ]);
 
-      setCurrentUser(user.id);
+      return {
+        following: followingRes.data || [],
+        followers: followersRes.data || []
+      };
+    },
+    enabled: !!currentUser?.id
+  });
 
-      // 1. Get real connections from connections table
-      try {
-        const { data: connectionsData } = await supabase
-          .from('connections')
-          .select(`
-            id,
-            requester_id,
-            recipient_id,
-            status,
-            connected_at,
-            created_at
-          `)
-          .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted')
-          .order('connected_at', { ascending: false });
+  // 3. Batch fetch partner profiles
+  const partnerIds = useMemo(() => {
+    if (!currentUser?.id) return [];
+    const set = new Set<string>();
 
-        if (connectionsData && connectionsData.length > 0) {
-          const otherUserIds = connectionsData.map(c => 
-            c.requester_id === user.id ? c.recipient_id : c.requester_id
-          ).filter(Boolean);
+    for (const c of rawConnections) {
+      const other = c.requester_id === currentUser.id ? c.recipient_id : c.requester_id;
+      if (other) set.add(other);
+    }
+    for (const f of rawFollows.following) {
+      if (f.following_id) set.add(f.following_id);
+    }
+    for (const f of rawFollows.followers) {
+      if (f.follower_id) set.add(f.follower_id);
+    }
+    return Array.from(set);
+  }, [rawConnections, rawFollows, currentUser?.id]);
 
-          // Safe chunked profile fetch in batches of 100
-          const chunkSize = 100;
-          const allProfiles = [];
-          for (let i = 0; i < otherUserIds.length; i += chunkSize) {
-            const chunk = otherUserIds.slice(i, i + chunkSize);
-            const { data: profilesData } = await supabase
-              .from('profiles')
-              .select('id, full_name, profile_picture_url, title, location, current_company')
-              .in('id', chunk);
-            if (profilesData) allProfiles.push(...profilesData);
-          }
+  const { data: profilesMap = new Map<string, ProfileSummary>() } = useQuery({
+    queryKey: ['following-followers-partner-profiles', partnerIds],
+    queryFn: async () => {
+      if (partnerIds.length === 0) return new Map<string, ProfileSummary>();
 
-          const profileMap = new Map(allProfiles.map(p => [p.id, p]));
-
-          const mappedConnections: ConnectionItem[] = connectionsData.map(c => {
-            const otherId = c.requester_id === user.id ? c.recipient_id : c.requester_id;
-            const p = profileMap.get(otherId);
-            return {
-              id: c.id,
-              connected_at: c.connected_at || c.created_at,
-              user: {
-                id: otherId,
-                full_name: p?.full_name || 'Professional Member',
-                profile_picture_url: p?.profile_picture_url,
-                title: p?.title || (p?.current_company ? `Professional at ${p.current_company}` : 'TalentXcel Member'),
-                location: p?.location
-              }
-            };
-          });
-
-          setConnections(mappedConnections);
-        }
-      } catch (connErr) {
-        console.warn('Could not load connections table:', connErr);
-      }
-
-      // 2. Get following list
-      const { data: rawFollowing } = await supabase
-        .from('user_follows')
-        .select('id, follower_id, following_id, created_at')
-        .eq('follower_id', user.id);
-
-      // 3. Get followers list
-      const { data: rawFollowers } = await supabase
-        .from('user_follows')
-        .select('id, follower_id, following_id, created_at')
-        .eq('following_id', user.id);
-
-      const targetUserIds = Array.from(new Set([
-        ...(rawFollowing || []).map(f => f.following_id),
-        ...(rawFollowers || []).map(f => f.follower_id)
-      ].filter(Boolean)));
-
-      let profilesMap = new Map<string, any>();
-      if (targetUserIds.length > 0) {
-        const { data: profilesList } = await supabase
+      const chunkSize = 100;
+      const allProfiles: any[] = [];
+      for (let i = 0; i < partnerIds.length; i += chunkSize) {
+        const chunk = partnerIds.slice(i, i + chunkSize);
+        const { data } = await supabase
           .from('profiles')
-          .select('id, full_name, profile_picture_url, title, location')
-          .in('id', targetUserIds);
-        
-        (profilesList || []).forEach(p => profilesMap.set(p.id, p));
+          .select('id, full_name, profile_picture_url, title, headline, location, current_company, slug, custom_profile_url, username, is_online')
+          .in('id', chunk);
+        if (data) allProfiles.push(...data);
       }
 
-      setFollowing((rawFollowing || []).map(f => ({
-        ...f,
-        user: profilesMap.get(f.following_id) || {
-          id: f.following_id,
-          full_name: 'Professional Member',
-          title: 'Member'
-        }
-      })));
+      const map = new Map<string, ProfileSummary>();
+      for (const p of allProfiles) {
+        map.set(p.id, {
+          id: p.id,
+          full_name: p.full_name || 'TalentXcel Member',
+          title: p.title || p.headline || 'Professional',
+          headline: p.headline,
+          profile_picture_url: getStandardAvatarUrl(p.profile_picture_url),
+          location: p.location,
+          current_company: p.current_company,
+          slug: p.slug,
+          custom_profile_url: p.custom_profile_url,
+          username: p.username,
+          is_online: Boolean(p.is_online)
+        });
+      }
+      return map;
+    },
+    enabled: partnerIds.length > 0
+  });
 
-      setFollowers((rawFollowers || []).map(f => ({
-        ...f,
-        user: profilesMap.get(f.follower_id) || {
-          id: f.follower_id,
-          full_name: 'Professional Member',
-          title: 'Member'
-        }
-      })));
+  // Filtered lists
+  const {
+    connectionsList,
+    receivedList,
+    sentList,
+    followingList,
+    followersList
+  } = useMemo(() => {
+    if (!currentUser?.id) {
+      return { connectionsList: [], receivedList: [], sentList: [], followingList: [], followersList: [] };
+    }
 
-    } catch (error) {
-      console.error('Error loading follow data:', error);
-      // Non-blocking error handling
-    } finally {
-      setIsLoading(false);
+    const conn: any[] = [];
+    const rec: any[] = [];
+    const sent: any[] = [];
+
+    for (const c of rawConnections) {
+      const otherId = c.requester_id === currentUser.id ? c.recipient_id : c.requester_id;
+      const profile = profilesMap.get(otherId) || { id: otherId, full_name: 'Member', is_online: false };
+      const item = { ...c, profile };
+
+      if (c.status === 'accepted') {
+        conn.push(item);
+      } else if (c.status === 'pending') {
+        if (c.recipient_id === currentUser.id) rec.push(item);
+        else if (c.requester_id === currentUser.id) sent.push(item);
+      }
+    }
+
+    const following = rawFollows.following.map(f => ({
+      ...f,
+      profile: profilesMap.get(f.following_id) || { id: f.following_id, full_name: 'Member', is_online: false }
+    }));
+
+    const followers = rawFollows.followers.map(f => ({
+      ...f,
+      profile: profilesMap.get(f.follower_id) || { id: f.follower_id, full_name: 'Member', is_online: false }
+    }));
+
+    const searchFilter = (list: any[]) => {
+      if (!searchTerm.trim()) return list;
+      const q = searchTerm.toLowerCase().trim();
+      return list.filter(item => 
+        item.profile.full_name.toLowerCase().includes(q) ||
+        (item.profile.title && item.profile.title.toLowerCase().includes(q)) ||
+        (item.profile.location && item.profile.location.toLowerCase().includes(q))
+      );
+    };
+
+    return {
+      connectionsList: searchFilter(conn),
+      receivedList: searchFilter(rec),
+      sentList: searchFilter(sent),
+      followingList: searchFilter(following),
+      followersList: searchFilter(followers)
+    };
+  }, [rawConnections, rawFollows, profilesMap, currentUser?.id, searchTerm]);
+
+  const initials = (name?: string) => {
+    return (name || 'TX')
+      .split(' ')
+      .map(n => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+  };
+
+  const formatAgo = (dateStr?: string | null) => {
+    if (!dateStr) return 'recently';
+    try {
+      return formatDistanceToNow(new Date(dateStr)) + ' ago';
+    } catch {
+      return 'recently';
     }
   };
 
-  const filteredConnections = connections.filter(c =>
-    c.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.user?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.user?.location?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const isLoading = isRelLoading || isConnectionsLoading || isFollowsLoading;
 
-  const filteredFollowing = following.filter(f =>
-    f.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.user?.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const filteredFollowers = followers.filter(f =>
-    f.user?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.user?.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const ConnectionCard = ({ connection }: { connection: ConnectionItem }) => {
-    if (!connection.user) return null;
-
+  if (isLoading && !currentUser) {
     return (
-      <Card className="hover:border-blue-200 transition-colors">
-        <CardContent className="p-3.5 sm:p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              <Link to={`/network/people/${connection.user.id}`}>
-                <Avatar className="h-10 w-10 sm:h-11 sm:w-11 hover:scale-105 transition-transform shrink-0">
-                  <AvatarImage src={connection.user.profile_picture_url} />
-                  <AvatarFallback className="bg-blue-100 text-blue-700 font-bold text-xs">
-                    {connection.user.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-              </Link>
-              <div className="min-w-0">
-                <Link to={`/network/people/${connection.user.id}`} className="hover:text-blue-600 transition-colors">
-                  <h4 className="font-semibold text-xs sm:text-sm text-foreground truncate">{connection.user.full_name}</h4>
-                </Link>
-                {connection.user.title && (
-                  <p className="text-xs text-muted-foreground truncate">{connection.user.title}</p>
-                )}
-                <div className="flex items-center gap-2 mt-0.5 text-[11px] text-muted-foreground">
-                  {connection.user.location && <span className="truncate">{connection.user.location} &bull;</span>}
-                  <span className="shrink-0">Connected {formatDistanceToNow(new Date(connection.connected_at))} ago</span>
-                </div>
-              </div>
-            </div>
-            <Link to={`/network/messages/new?userId=${connection.user.id}`} className="shrink-0">
-              <Button size="sm" variant="outline" className="gap-1.5 text-xs text-blue-600 border-blue-200 hover:bg-blue-50 h-8">
-                <MessageCircle className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Message</span>
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const UserCard = ({ follow, isFollowing = false }: { follow: Follow; isFollowing?: boolean }) => {
-    if (!follow.user) return null;
-
-    return (
-      <Card>
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={follow.user.profile_picture_url} />
-                <AvatarFallback>
-                  {follow.user.full_name?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h4 className="font-semibold">{follow.user.full_name}</h4>
-                {follow.user.title && (
-                  <p className="text-sm text-muted-foreground">{follow.user.title}</p>
-                )}
-                {follow.user.location && (
-                  <p className="text-xs text-muted-foreground">{follow.user.location}</p>
-                )}
-                <p className="text-xs text-muted-foreground mt-1">
-                  {isFollowing ? 'Following since' : 'Follower since'} {formatDistanceToNow(new Date(follow.created_at))} ago
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-col items-end gap-2">
-              <UserFollowButton 
-                userId={follow.user.id} 
-                size="sm" 
-                followersCount={follow.user.followers_count}
-                showFollowersCount={false}
-              />
-              {(follow.user.followers_count || follow.user.following_count) && (
-                <div className="flex gap-2 text-xs text-muted-foreground">
-                  {follow.user.followers_count && (
-                    <span>{follow.user.followers_count} followers</span>
-                  )}
-                  {follow.user.following_count && (
-                    <span>{follow.user.following_count} following</span>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Your Network
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
+      <Card className="rounded-2xl border-slate-200/80 dark:border-border/60">
+        <CardContent className="p-8 text-center">
+          <Loader2 className="h-6 w-6 animate-spin mx-auto text-primary" />
+          <p className="text-xs text-muted-foreground mt-2 font-medium">Loading relationships...</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="h-5 w-5" />
-          Your Network
-        </CardTitle>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search your connections..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
+    <Card className="rounded-2xl border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card overflow-hidden">
+      <CardHeader className="p-4 pb-3 border-b border-slate-100 dark:border-border/40">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <CardTitle className="flex items-center gap-2 text-sm sm:text-base font-extrabold text-foreground">
+            <Users className="h-4.5 w-4.5 text-blue-600" />
+            <span>Connections &amp; Follower Graph</span>
+          </CardTitle>
+
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Filter by name, title, city..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8.5 h-8 text-xs bg-slate-50 dark:bg-muted/40 border-slate-200 dark:border-border rounded-xl"
+            />
+          </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <Tabs defaultValue="connections" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="connections" className="flex items-center gap-1.5 text-xs font-bold">
-              <UserCheck className="h-3.5 w-3.5 text-blue-600" />
-              <span>Connections ({filteredConnections.length})</span>
+
+      <CardContent className="p-3 sm:p-4">
+        <Tabs value={activeTab} onValueChange={(val: any) => setActiveTab(val)} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5 h-auto p-1 bg-slate-100 dark:bg-muted rounded-xl gap-1">
+            <TabsTrigger value="connections" className="text-xs font-bold py-1.5 px-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-xs">
+              <UserCheck className="h-3.5 w-3.5 mr-1 text-blue-600" />
+              <span>Connected ({connectionsList.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="following" className="flex items-center gap-1.5 text-xs font-bold">
-              <UserPlus className="h-3.5 w-3.5" />
-              <span>Following ({filteredFollowing.length})</span>
+
+            <TabsTrigger value="received" className="text-xs font-bold py-1.5 px-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-xs">
+              <Sparkles className="h-3.5 w-3.5 mr-1 text-emerald-600" />
+              <span>Wants to Connect ({receivedList.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="followers" className="flex items-center gap-1.5 text-xs font-bold">
-              <Users className="h-3.5 w-3.5" />
-              <span>Followers ({filteredFollowers.length})</span>
+
+            <TabsTrigger value="sent" className="text-xs font-bold py-1.5 px-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-xs">
+              <Clock className="h-3.5 w-3.5 mr-1 text-amber-600" />
+              <span>Pending ({sentList.length})</span>
+            </TabsTrigger>
+
+            <TabsTrigger value="following" className="text-xs font-bold py-1.5 px-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-xs">
+              <span>Following ({followingList.length})</span>
+            </TabsTrigger>
+
+            <TabsTrigger value="followers" className="text-xs font-bold py-1.5 px-2 rounded-lg data-[state=active]:bg-white data-[state=active]:shadow-xs">
+              <span>Followers ({followersList.length})</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="connections" className="space-y-3 mt-4">
-            {filteredConnections.length === 0 ? (
-              <div className="text-center py-8">
-                <UserCheck className="h-14 w-14 text-muted-foreground mx-auto mb-3" />
-                <h3 className="text-base font-semibold mb-1">
-                  {searchTerm ? 'No matching connections' : 'No connections yet'}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {searchTerm 
-                    ? 'Try adjusting your search terms'
-                    : 'Start connecting with people to build your executive network'
-                  }
-                </p>
+          {/* TAB 1: CONNECTIONS */}
+          <TabsContent value="connections" className="space-y-2.5 mt-3">
+            {connectionsList.length === 0 ? (
+              <div className="text-center py-10 space-y-2">
+                <UserCheck className="h-10 w-10 text-muted-foreground mx-auto opacity-50" />
+                <h4 className="text-sm font-bold text-foreground">No connections found</h4>
+                <p className="text-xs text-muted-foreground">Discover verified professionals to expand your circle.</p>
+                <Button size="sm" onClick={() => navigate('/network/discover')} className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-7.5 rounded-lg mt-1">
+                  Discover People
+                </Button>
               </div>
             ) : (
-              <div className="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
-                {filteredConnections.map((conn) => (
-                  <ConnectionCard key={conn.id} connection={conn} />
-                ))}
+              <div className="space-y-2 max-h-[550px] overflow-y-auto pr-1">
+                {connectionsList.map((item) => {
+                  const p = item.profile;
+                  const slug = p.slug || p.custom_profile_url || p.username || p.id;
+                  const profileLink = getPublicProfilePath(slug);
+
+                  return (
+                    <div key={item.id} className="p-3 bg-white dark:bg-card border border-slate-200/80 dark:border-border/60 rounded-xl flex items-center justify-between gap-3 hover:border-blue-300 transition-all">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Link to={profileLink} className="relative shrink-0">
+                          <Avatar className="h-10 w-10 ring-1 ring-slate-200">
+                            {p.profile_picture_url ? <AvatarImage src={p.profile_picture_url} /> : null}
+                            <AvatarFallback className="bg-blue-600 text-white font-bold text-xs">
+                              {initials(p.full_name)}
+                            </AvatarFallback>
+                          </Avatar>
+                          {p.is_online && (
+                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
+                          )}
+                        </Link>
+                        <div className="min-w-0">
+                          <Link to={profileLink} className="font-extrabold text-xs text-foreground hover:text-blue-600 truncate block">
+                            {p.full_name}
+                          </Link>
+                          <p className="text-[11px] text-muted-foreground truncate">{p.title}</p>
+                          <p className="text-[10px] text-slate-400 truncate">
+                            {p.location || 'India'} • Connected {formatAgo(item.connected_at)}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button
+                          size="sm"
+                          className="h-7 px-3 text-[11px] font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-lg"
+                          onClick={() => navigate(`/network/messages/new?userId=${p.id}`)}
+                        >
+                          <MessageCircle className="h-3 w-3 mr-1" />
+                          Message
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0 text-slate-400 hover:text-red-600 rounded-lg"
+                          onClick={() => removeConnection(item.id, p.full_name)}
+                          disabled={isRemoving}
+                          title="Remove connection"
+                        >
+                          <UserX className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </TabsContent>
 
-          <TabsContent value="following" className="space-y-3 mt-4">
-            {filteredFollowing.length === 0 ? (
-              <div className="text-center py-8">
-                <UserPlus className="h-14 w-14 text-muted-foreground mx-auto mb-3" />
-                <h3 className="text-base font-semibold mb-1">
-                  {searchTerm ? 'No matching people' : 'Not following anyone yet'}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {searchTerm 
-                    ? 'Try adjusting your search terms'
-                    : 'Follow leaders and innovators in your industry to stay updated'
-                  }
-                </p>
+          {/* TAB 2: WANTS TO CONNECT */}
+          <TabsContent value="received" className="space-y-2.5 mt-3">
+            {receivedList.length === 0 ? (
+              <div className="text-center py-10 space-y-2">
+                <Check className="h-10 w-10 text-emerald-500 mx-auto" />
+                <h4 className="text-sm font-bold text-foreground">No pending incoming invitations</h4>
+                <p className="text-xs text-muted-foreground">You are fully up to date on all requests.</p>
               </div>
             ) : (
-              filteredFollowing.map((follow) => (
-                <UserCard key={follow.id} follow={follow} isFollowing={true} />
-              ))
+              <div className="space-y-2">
+                {receivedList.map((item) => {
+                  const p = item.profile;
+                  const slug = p.slug || p.custom_profile_url || p.username || p.id;
+                  const profileLink = getPublicProfilePath(slug);
+
+                  return (
+                    <div key={item.id} className="p-3.5 bg-emerald-50/20 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/60 rounded-xl flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Link to={profileLink} className="relative shrink-0">
+                          <Avatar className="h-11 w-11 ring-2 ring-emerald-300">
+                            {p.profile_picture_url ? <AvatarImage src={p.profile_picture_url} /> : null}
+                            <AvatarFallback className="bg-emerald-600 text-white font-bold text-xs">
+                              {initials(p.full_name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <Link to={profileLink} className="font-extrabold text-xs text-foreground hover:text-emerald-600 truncate block">
+                              {p.full_name}
+                            </Link>
+                            <Badge variant="outline" className="text-[9px] font-bold px-1.5 py-0 bg-emerald-50 text-emerald-700 border-emerald-300">
+                              Wants to connect
+                            </Badge>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground truncate">{p.title}</p>
+                          <span className="text-[10px] text-slate-400">Invited {formatAgo(item.created_at)}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <Button
+                          size="sm"
+                          className="h-7 px-3 text-[11px] font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-2xs"
+                          onClick={() => accept(item.id, p.full_name)}
+                          disabled={isAccepting}
+                        >
+                          <Check className="h-3 w-3 mr-1" />
+                          Accept
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 px-2 text-[11px] font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-lg"
+                          onClick={() => decline(item.id, p.full_name)}
+                          disabled={isDeclining}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </TabsContent>
 
-          <TabsContent value="followers" className="space-y-3 mt-4">
-            {filteredFollowers.length === 0 ? (
-              <div className="text-center py-8">
-                <Users className="h-14 w-14 text-muted-foreground mx-auto mb-3" />
-                <h3 className="text-base font-semibold mb-1">
-                  {searchTerm ? 'No matching followers' : 'No followers yet'}
-                </h3>
-                <p className="text-xs text-muted-foreground">
-                  {searchTerm 
-                    ? 'Try adjusting your search terms'
-                    : 'Publish insightful articles and posts to attract followers'
-                  }
-                </p>
+          {/* TAB 3: PENDING SENT */}
+          <TabsContent value="sent" className="space-y-2.5 mt-3">
+            {sentList.length === 0 ? (
+              <div className="text-center py-10 space-y-2">
+                <Clock className="h-10 w-10 text-muted-foreground mx-auto opacity-50" />
+                <h4 className="text-sm font-bold text-foreground">No outgoing pending invitations</h4>
+                <p className="text-xs text-muted-foreground">Invitations you send will be tracked here until accepted.</p>
               </div>
             ) : (
-              filteredFollowers.map((follow) => (
-                <UserCard key={follow.id} follow={follow} isFollowing={false} />
-              ))
+              <div className="space-y-2">
+                {sentList.map((item) => {
+                  const p = item.profile;
+                  const slug = p.slug || p.custom_profile_url || p.username || p.id;
+                  const profileLink = getPublicProfilePath(slug);
+
+                  return (
+                    <div key={item.id} className="p-3 bg-amber-50/20 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/60 rounded-xl flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Link to={profileLink} className="shrink-0">
+                          <Avatar className="h-10 w-10 ring-1 ring-amber-300">
+                            {p.profile_picture_url ? <AvatarImage src={p.profile_picture_url} /> : null}
+                            <AvatarFallback className="bg-amber-600 text-white font-bold text-xs">
+                              {initials(p.full_name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <Link to={profileLink} className="font-extrabold text-xs text-foreground hover:text-blue-600 truncate block">
+                              {p.full_name}
+                            </Link>
+                            <Badge variant="outline" className="text-[9px] font-bold px-1.5 py-0 bg-amber-50 text-amber-800 border-amber-300">
+                              Pending
+                            </Badge>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground truncate">{p.title}</p>
+                          <span className="text-[10px] text-slate-400">Sent {formatAgo(item.created_at)}</span>
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 px-2.5 text-[11px] font-bold border-amber-300 text-amber-800 hover:bg-amber-100 rounded-lg shrink-0"
+                        onClick={() => withdraw(item.id, p.full_name)}
+                        disabled={isWithdrawing}
+                      >
+                        Withdraw
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* TAB 4: FOLLOWING */}
+          <TabsContent value="following" className="space-y-2.5 mt-3">
+            {followingList.length === 0 ? (
+              <div className="text-center py-10 space-y-2">
+                <Users className="h-10 w-10 text-muted-foreground mx-auto opacity-50" />
+                <h4 className="text-sm font-bold text-foreground">Not following anyone yet</h4>
+                <p className="text-xs text-muted-foreground">Follow industry leaders to see their updates.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {followingList.map((item) => {
+                  const p = item.profile;
+                  const slug = p.slug || p.custom_profile_url || p.username || p.id;
+                  const profileLink = getPublicProfilePath(slug);
+
+                  return (
+                    <div key={item.id} className="p-3 bg-white dark:bg-card border border-slate-200/80 rounded-xl flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Link to={profileLink} className="shrink-0">
+                          <Avatar className="h-10 w-10 ring-1 ring-slate-200">
+                            {p.profile_picture_url ? <AvatarImage src={p.profile_picture_url} /> : null}
+                            <AvatarFallback className="bg-purple-600 text-white font-bold text-xs">
+                              {initials(p.full_name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
+                        <div className="min-w-0">
+                          <Link to={profileLink} className="font-extrabold text-xs text-foreground hover:text-blue-600 truncate block">
+                            {p.full_name}
+                          </Link>
+                          <p className="text-[11px] text-muted-foreground truncate">{p.title}</p>
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-7 px-3 text-[11px] font-bold bg-slate-100 hover:bg-red-50 hover:text-red-600 rounded-lg group shrink-0"
+                        onClick={() => toggleFollow(p.id, p.full_name)}
+                        disabled={isTogglingFollow}
+                      >
+                        <span className="group-hover:hidden">Following ✓</span>
+                        <span className="hidden group-hover:inline">Unfollow</span>
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
+
+          {/* TAB 5: FOLLOWERS */}
+          <TabsContent value="followers" className="space-y-2.5 mt-3">
+            {followersList.length === 0 ? (
+              <div className="text-center py-10 space-y-2">
+                <Users className="h-10 w-10 text-muted-foreground mx-auto opacity-50" />
+                <h4 className="text-sm font-bold text-foreground">No followers yet</h4>
+                <p className="text-xs text-muted-foreground">Post articles and engage with peers to grow your followers.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {followersList.map((item) => {
+                  const p = item.profile;
+                  const slug = p.slug || p.custom_profile_url || p.username || p.id;
+                  const profileLink = getPublicProfilePath(slug);
+                  const rel = getRelationship(p.id);
+
+                  return (
+                    <div key={item.id} className="p-3 bg-white dark:bg-card border border-slate-200/80 rounded-xl flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <Link to={profileLink} className="shrink-0">
+                          <Avatar className="h-10 w-10 ring-1 ring-slate-200">
+                            {p.profile_picture_url ? <AvatarImage src={p.profile_picture_url} /> : null}
+                            <AvatarFallback className="bg-indigo-600 text-white font-bold text-xs">
+                              {initials(p.full_name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        </Link>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <Link to={profileLink} className="font-extrabold text-xs text-foreground hover:text-blue-600 truncate block">
+                              {p.full_name}
+                            </Link>
+                            <Badge variant="outline" className="text-[9px] font-bold px-1.5 py-0 bg-blue-50 text-blue-700 border-blue-200">
+                              Follows you
+                            </Badge>
+                          </div>
+                          <p className="text-[11px] text-muted-foreground truncate">{p.title}</p>
+                        </div>
+                      </div>
+
+                      <Button
+                        size="sm"
+                        className={`h-7 px-3 text-[11px] font-bold rounded-lg shrink-0 ${
+                          rel.isFollowing
+                            ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                            : 'bg-blue-600 hover:bg-blue-500 text-white'
+                        }`}
+                        onClick={() => toggleFollow(p.id, p.full_name)}
+                        disabled={isTogglingFollow}
+                      >
+                        {rel.isFollowing ? 'Following ✓' : 'Follow Back'}
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
             )}
           </TabsContent>
         </Tabs>
@@ -421,3 +606,5 @@ export function FollowingFollowersList() {
     </Card>
   );
 }
+
+export default FollowingFollowersList;

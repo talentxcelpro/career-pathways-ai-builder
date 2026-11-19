@@ -6,8 +6,13 @@
 -- 53-profile privacy exposure flaw.
 --
 -- If this migration must be rolled back, it safely rolls back to an explicit
--- fail-closed affirmative consent view using the base LEFT JOIN architecture
--- but STRICTLY requiring c.consent_status = 'granted'.
+-- fail-closed affirmative consent view using EXISTS (preventing duplicate rows
+-- if multiple consent records exist for a user) and STRICTLY requiring:
+--   - consent_type = 'public_profile_indexing'
+--   - consent_status = 'granted'
+--   - revocation_timestamp IS NULL
+--   - COALESCE(p.profile_visibility, 'private') = 'public'
+--   - p.is_profile_public = true
 -- ============================================================================
 
 CREATE OR REPLACE VIEW public.public_profiles
@@ -35,13 +40,16 @@ SELECT
     p.is_profile_public,
     p.created_at
 FROM public.profiles p
-JOIN public.candidate_privacy_consents c 
-    ON c.user_id = p.id 
-   AND c.consent_type = 'public_profile_indexing'
-WHERE c.consent_status = 'granted'
-  AND c.revocation_timestamp IS NULL
+WHERE p.is_profile_public = true
   AND COALESCE(p.profile_visibility, 'private') = 'public'
-  AND p.is_profile_public = true;
+  AND EXISTS (
+      SELECT 1 
+      FROM public.candidate_privacy_consents c
+      WHERE c.user_id = p.id
+        AND c.consent_type = 'public_profile_indexing'
+        AND c.consent_status = 'granted'
+        AND c.revocation_timestamp IS NULL
+  );
 
 -- Ensure view ownership
 ALTER VIEW public.public_profiles OWNER TO postgres;

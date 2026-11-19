@@ -33,6 +33,8 @@ import { toast } from 'sonner';
 import { CareerContentHub } from '@/components/social/CareerContentHub';
 import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import { SEOHead } from '@/components/seo/SEOHead';
+import { NetworkRelationshipControls, NetworkRelationshipBadge } from '@/components/network/NetworkRelationshipControls';
+import { useNetworkRelationships } from '@/hooks/useNetworkRelationships';
 
 interface ProfileRecord {
   id: string;
@@ -114,7 +116,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     queryKey: ['discover-total-member-count'],
     queryFn: async () => {
       const { count, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('id', { count: 'exact', head: true })
         .not('full_name', 'is', null);
       if (error || !count) return 591;
@@ -158,6 +160,8 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
   const { data: allProfiles = [], isLoading } = useQuery({
     queryKey: ['discover-professionals-ranked', user?.id],
     queryFn: async () => {
+      let rawProfiles: any[] = [];
+
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online')
@@ -165,13 +169,25 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
         .order('updated_at', { ascending: false })
         .limit(100);
 
-      if (error) {
-        console.error('Error fetching discover profiles:', error);
-        return [];
+      if (error || !data || data.length === 0) {
+        const { data: pubData } = await supabase
+          .from('public_profiles')
+          .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, username, created_at')
+          .not('full_name', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        rawProfiles = pubData ? pubData.map(p => ({
+          ...p,
+          updated_at: p.created_at,
+          last_seen: p.created_at,
+          is_online: false
+        })) : [];
+      } else {
+        rawProfiles = [...data];
       }
 
       const now = Date.now();
-      let rawProfiles = [...(data || [])];
 
       // If logged in, guarantee current user's profile is included
       if (user?.id) {
@@ -654,8 +670,8 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                     </div>
                                   )}
 
-                                  {/* Real-time freshness status pill */}
-                                  <div className="flex items-center justify-center gap-1 pt-1">
+                                  {/* Real-time freshness status & relationship pills */}
+                                  <div className="flex flex-wrap items-center justify-center gap-1 pt-1">
                                     <span className={`inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-full ${
                                       person.isSelf
                                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-300'
@@ -668,6 +684,9 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                       {person.isRecentActive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />}
                                       <span>{person.freshnessLabel}</span>
                                     </span>
+                                    {!person.isSelf && (
+                                      <NetworkRelationshipBadge targetUserId={person.id} />
+                                    )}
                                   </div>
 
                                   {person.skills && person.skills.length > 0 && (
@@ -690,34 +709,13 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                 </div>
                               </div>
 
-                              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-border/60 flex items-center gap-1.5">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="flex-1 text-[11px] h-7 px-2 rounded-lg font-bold hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/40 border-slate-200 dark:border-border cursor-pointer truncate"
-                                  onClick={() => navigate(profileLink)}
-                                >
-                                  View
-                                </Button>
-                                <Button
-                                  variant="secondary"
-                                  size="sm"
-                                  className="text-[11px] h-7 px-2.5 rounded-lg font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 shrink-0 cursor-pointer"
-                                  onClick={() => handleFollow(person.id, person.full_name)}
-                                  title={`Follow ${person.full_name}`}
-                                >
-                                  Follow
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  className="text-[11px] h-7 px-2.5 rounded-lg font-bold bg-blue-600 hover:bg-blue-500 text-white shrink-0 cursor-pointer shadow-2xs"
-                                  onClick={() => handleConnect(person.id, person.full_name)}
-                                  disabled={sendConnectionRequest.isPending}
-                                  title={`Connect with ${person.full_name}`}
-                                >
-                                  <UserPlus className="h-3 w-3 mr-1" />
-                                  Connect
-                                </Button>
+                              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-border/60">
+                                <NetworkRelationshipControls
+                                  targetUserId={person.id}
+                                  targetName={person.full_name}
+                                  profileLink={profileLink}
+                                  layout="card-bottom"
+                                />
                               </div>
                             </div>
                           );

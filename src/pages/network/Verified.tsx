@@ -12,6 +12,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getStandardAvatarUrl } from '@/utils/avatarUtils';
 import { generatePersonProfileSlug, getPublicProfilePath } from '@/utils/userProfileSlug';
+import { NetworkRelationshipControls, NetworkRelationshipBadge } from '@/components/network/NetworkRelationshipControls';
 import { 
   Shield, 
   Search, 
@@ -69,10 +70,12 @@ export const Verified: React.FC = () => {
     };
   }, [queryClient]);
 
-  // Fetch 100% Real Verified Profiles directly from Supabase
+  // Fetch 100% Real Verified Profiles directly from Supabase (with public_profiles view fallback for anon visitors)
   const { data: verifiedProfiles = [], isLoading } = useQuery({
-    queryKey: ['real-verified-professionals'],
+    queryKey: ['real-verified-professionals', user?.id],
     queryFn: async () => {
+      let rawData: any[] = [];
+
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, title, headline, location, current_company, about, skills, profile_picture_url, slug, custom_profile_url, username, updated_at, created_at')
@@ -80,15 +83,23 @@ export const Verified: React.FC = () => {
         .order('updated_at', { ascending: false })
         .limit(100);
 
-      if (error) {
-        console.error('Error fetching verified profiles:', error);
-        return [];
+      if (error || !data || data.length === 0) {
+        const { data: pubData } = await supabase
+          .from('public_profiles')
+          .select('id, full_name, title, headline, location, current_company, about, skills, profile_picture_url, username, created_at')
+          .not('full_name', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        rawData = pubData || [];
+      } else {
+        rawData = data;
       }
 
       const now = Date.now();
 
       // Filter real profiles and assign verified credentials
-      const realList: RealVerifiedProfile[] = (data || [])
+      const realList: RealVerifiedProfile[] = rawData
         .filter(p => p.full_name && p.full_name.trim().length >= 2 && p.full_name.toLowerCase() !== 'user' && p.full_name.toLowerCase() !== 'test user')
         .map(p => {
           const rawTitle = p.title || p.headline || 'Industry Professional';
@@ -370,7 +381,10 @@ export const Verified: React.FC = () => {
                           {profile.title}
                         </p>
 
-                        {getVerificationBadge(profile.verification_level)}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {getVerificationBadge(profile.verification_level)}
+                          <NetworkRelationshipBadge targetUserId={profile.id} />
+                        </div>
                       </div>
                     </div>
                     
@@ -415,23 +429,13 @@ export const Verified: React.FC = () => {
                     )}
                     
                     {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2 border-t mt-auto">
-                      <Button 
-                        size="sm" 
-                        className="flex-1 text-xs h-7 rounded-lg font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
-                        onClick={() => handleConnect(profile.id, profile.full_name)}
-                        disabled={sendConnectionRequest.isPending}
-                      >
-                        Connect
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs h-7 rounded-lg font-semibold hover:bg-emerald-50 hover:text-emerald-700"
-                        onClick={() => navigate(profileLink)}
-                      >
-                        View Profile
-                      </Button>
+                    <div className="pt-2 border-t mt-auto">
+                      <NetworkRelationshipControls
+                        targetUserId={profile.id}
+                        targetName={profile.full_name}
+                        profileLink={profileLink}
+                        layout="card-bottom"
+                      />
                     </div>
                   </CardContent>
                 </Card>

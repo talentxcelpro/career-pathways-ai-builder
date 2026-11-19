@@ -1155,11 +1155,9 @@ const App = () => {
 
                 {/* All other routes */}
                 <Route path="/career-dashboard" element={
-                  <ProtectedRoute>
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <CareerDashboard />
-                    </Suspense>
-                  </ProtectedRoute>
+                  <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-slate-500">Loading Career Pathfinder Hub...</div>}>
+                    <CareerDashboard />
+                  </Suspense>
                 } />
                 <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
                 <Route path="/ai-career-hub" element={<AICareerHub />} />
