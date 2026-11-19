@@ -376,13 +376,6 @@ export const CareerPathfinderProduct: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3 text-[11px] shrink-0 font-medium">
-            <button 
-              onClick={() => setPlatformSidebarOpen(true)}
-              className="text-[#2563EB] hover:text-[#7138E8] font-bold flex items-center gap-1 cursor-pointer bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-0.5 rounded-md transition-colors"
-            >
-              <Compass className="w-3 h-3 text-[#2563EB]" />
-              <span>12 Products Local Index</span>
-            </button>
             <a 
               href="https://passport.talentxcel.in" 
               className="text-[#475569] hover:text-[#111827] hidden md:inline transition-colors"
@@ -706,7 +699,7 @@ export const CareerPathfinderProduct: React.FC = () => {
                         }}
                         className="w-full text-center py-2 text-xs font-bold text-[#2563EB] hover:bg-blue-50 rounded-xl cursor-pointer transition-colors"
                       >
-                        View All 12 Products Local Index →
+                        Explore All Products & Platforms →
                       </button>
                     </div>
                   </div>

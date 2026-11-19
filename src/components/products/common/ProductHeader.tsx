@@ -82,10 +82,6 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
           </div>
 
           <div className="flex items-center gap-4 text-xs font-medium">
-            <Link to="/local-testing-index" className="text-[#2563EB] hover:underline font-bold flex items-center gap-1 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
-              <Sparkles className="h-3 w-3" />
-              <span>12 Products Local Index</span>
-            </Link>
             <a href="https://passport.talentxcel.in" className="hover:text-[#2563EB] transition-colors hidden md:inline">
               Career Passport
             </a>
