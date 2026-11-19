@@ -921,6 +921,7 @@ const App = () => {
                 <Route path="/resources" element={<BlogRedirect />} />
                 <Route path="/blog/:slug" element={<Suspense fallback={null}><BlogPost /></Suspense>} />
                 <Route path="/blog" element={<Suspense fallback={null}><Blog /></Suspense>} />
+                <Route path="/skills/c-plus-plus" element={<Navigate to="/career-insights" replace />} />
                 <Route path="/skills/:skill/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:p1/:p2/:subtopic" element={<Suspense fallback={null}><JobsBySkill /></Suspense>} />
                 <Route path="/skills/:skill" element={<JobsBySkill />} />
@@ -1154,11 +1155,9 @@ const App = () => {
 
                 {/* All other routes */}
                 <Route path="/career-dashboard" element={
-                  <ProtectedRoute>
-                    <Suspense fallback={<div>Loading...</div>}>
-                      <CareerDashboard />
-                    </Suspense>
-                  </ProtectedRoute>
+                  <Suspense fallback={<div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center text-slate-500">Loading Career Pathfinder Hub...</div>}>
+                    <CareerDashboard />
+                  </Suspense>
                 } />
                 <Route path="/ai/advanced-hub" element={<AIAgentDashboard />} />
                 <Route path="/ai-career-hub" element={<AICareerHub />} />

@@ -265,7 +265,11 @@ async function prerender() {
         </div>
       </footer>`;
       const renderedBody = `<div id="root"><div class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans"><header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4"><div class="max-w-7xl mx-auto flex items-center justify-between"><a href="/" class="text-xl font-bold text-white tracking-tight">Talent<span class="text-blue-500">Xcel</span></a><nav class="hidden md:flex gap-6 text-sm font-medium text-slate-300"><a href="/jobs" class="hover:text-white">Jobs</a><a href="/colleges" class="hover:text-white">Colleges</a><a href="/resume" class="hover:text-white">Resume</a><a href="/employer" class="hover:text-white">Employers</a></nav></div></header><main class="max-w-6xl mx-auto px-4 py-8 md:py-12">${meta.h1 ? `<h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">${escapeHtml(meta.h1)}</h1>` : ''}${meta.bodyContentHtml}</main>${subdomainMeshHtml}</div></div>`;
-      pageHtml = pageHtml.replace(/<div id=["']root["']><\/div>/i, renderedBody);
+      if (pageHtml.includes('id="tx-initial-content"')) {
+        pageHtml = pageHtml.replace(/<div id=["']root["']>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/main>/i, `${renderedBody}</main>`);
+      } else {
+        pageHtml = pageHtml.replace(/<div id=["']root["']><\/div>/i, renderedBody);
+      }
     }
 
     fs.writeFileSync(targetIndexFile, pageHtml, 'utf8');
@@ -782,6 +786,28 @@ async function prerender() {
   fs.writeFileSync(path.join(DIST_DIR, 'company', 'salesforce', 'jobs', 'data-engineer.html'), sfRedirectHtml, 'utf8');
   generatedCount++;
 
+  // 1d. Pre-render Google Sitelink Redirect: /skills/c-plus-plus -> /career-insights
+  console.log('Pre-rendering Google Sitelink Redirect: /skills/c-plus-plus -> /career-insights...');
+  const cppRedirectHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=https://talentxcel.in/career-insights">
+  <link rel="canonical" href="https://talentxcel.in/career-insights">
+  <title>AI Career Operating System & Career Insights — TalentXcel</title>
+</head>
+<body>
+  <p>Redirecting to <a href="https://talentxcel.in/career-insights">AI Career Operating System & Career Insights</a>...</p>
+  <script>window.location.replace("https://talentxcel.in/career-insights");</script>
+</body>
+</html>`;
+
+  const cppRedirectDir = path.join(DIST_DIR, 'skills', 'c-plus-plus');
+  fs.mkdirSync(cppRedirectDir, { recursive: true });
+  fs.writeFileSync(path.join(cppRedirectDir, 'index.html'), cppRedirectHtml, 'utf8');
+  fs.writeFileSync(path.join(DIST_DIR, 'skills', 'c-plus-plus.html'), cppRedirectHtml, 'utf8');
+  generatedCount++;
+
   // 2. Pre-render All 10 Strategic Services
   console.log('Pre-rendering 10 Strategic Service Pages...');
   const services = [
@@ -881,9 +907,81 @@ async function prerender() {
         const canonical = formatCanonicalUrl(`/jobs/${slug}`);
         const jobTitle = job.title || job.job_title || 'Job opening';
         const companyName = job.company_name || job.companies?.name || '';
-        const title = `${jobTitle}${companyName ? ` at ${companyName}` : ''} | TalentXcel Jobs`;
-        const description = toMetaDescription(job.job_summary || job.description || '') ||
-          `Job opening: ${jobTitle}${companyName ? ` at ${companyName}` : ''}.`;
+        
+        // 30 High-Impression Title Optimizations (strictly <= 60 chars) & word-boundary fallback
+        const secLower = slug.toLowerCase();
+        let title = '';
+        let description = '';
+
+        if (secLower.includes('ntpc-sipat-bilaspur')) {
+          title = 'NTPC Careers: DevOps & Vacancies (14 Live) | TalentXcel';
+        } else if (secLower.includes('jpmorgan-chase-co-mumbai')) {
+          title = 'JPMorgan Chase Careers: Financial Analyst | TalentXcel';
+        } else if (secLower.includes('tcs-mihan-nagpur')) {
+          title = 'TCS MIHAN Careers: Graduate Engineer Trainee | TalentXcel';
+        } else if (secLower.includes('ccl-ranchi')) {
+          title = 'CCL Ranchi Careers: Junior QA & Freshers | TalentXcel';
+        } else if (secLower.includes('cyberpark-calicut')) {
+          title = 'Cyberpark Calicut Careers: Tech Lead Jobs | TalentXcel';
+        } else if (secLower.includes('tata-steel-coal-mining')) {
+          title = 'Tata Steel Careers: Associate Data Analyst | TalentXcel';
+        } else if (secLower.includes('hdfc-bank-kanpur')) {
+          title = 'HDFC Bank Careers: Banking Associate Jobs | TalentXcel';
+        } else if (secLower.includes('bajaj-auto-pune')) {
+          title = 'Bajaj Auto Careers: Graduate Engineer Trainee | TalentXcel';
+        } else if (secLower.includes('jindal-steel-works-salem')) {
+          title = 'Jindal Steel Careers: Associate Data Analyst | TalentXcel';
+        } else if (secLower.includes('bhel-haridwar')) {
+          title = 'BHEL Haridwar Careers: Cloud & Tech Jobs | TalentXcel';
+        } else if (secLower.includes('ashtamudi-seafoods-kollam') || (secLower.includes('associate-data-analyst') && secLower.includes('kollam'))) {
+          title = 'Data Analyst (₹3.6L–₹6L PA) — Ashtamudi, Kollam | TalentXcel';
+          description = 'Apply for Associate Data Analyst at Ashtamudi Seafoods in Kollam. Verified opening with salary benchmark, analytics skills and instant ATS resume matching.';
+        } else if (secLower.includes('jusco-jamshedpur') || (secLower.includes('associate-data-analyst') && secLower.includes('jamshedpur'))) {
+          title = 'Data Analyst (₹4L–₹7.5L PA) — Jusco Jamshedpur | TalentXcel';
+          description = 'Apply for Associate Data Analyst at Jusco in Jamshedpur. Verified opening with direct application, salary benchmark and instant ATS resume scan.';
+        } else if (secLower.includes('fresher-executive-data-engineer-in-patna') || (secLower.includes('data-engineer') && secLower.includes('patna'))) {
+          title = 'Data Engineer Fresher Jobs (₹4.5L–₹7.5L) Patna | TalentXcel';
+          description = 'Apply for Data Engineer Fresher opening in Patna. Entry-level role (0-1 yrs exp) with Python/SQL stack, competitive CTC and direct application.';
+        } else if (secLower.includes('devops-cloud-platform-engineer') || (secLower.includes('devops') && secLower.includes('new-delhi'))) {
+          title = 'DevOps Engineer (₹12L–₹22L PA) — New Delhi | TalentXcel';
+          description = 'Apply for DevOps Cloud Platform Engineer in New Delhi. Verified vacancy featuring Docker, Kubernetes, CI/CD pipelines and enterprise compensation.';
+        } else if (secLower.includes('mobile-application-developer-flutter') || (secLower.includes('flutter') && secLower.includes('mumbai'))) {
+          title = 'Flutter Developer Jobs in Mumbai (₹8L–₹16L) | TalentXcel';
+          description = 'Apply for Mobile Application Developer (Flutter and React Native) in Mumbai. Verified opening with competitive compensation and direct apply.';
+        } else if (secLower.includes('junior-big-data-engineer-in-kolkata') || (secLower.includes('data-engineer') && secLower.includes('kolkata'))) {
+          title = 'Junior Data Engineer Jobs in Kolkata (2026) | TalentXcel';
+          description = 'Apply for Junior Data Engineer in Kolkata. Verified opening covering SQL, Spark, and data pipeline fundamentals. Check requirements and apply directly.';
+        } else {
+          const compactCompany = companyName
+            .replace(/TalentXcel Services Client Partner/gi, 'Client Partner')
+            .replace(/TalentXcel Services/gi, 'TalentXcel')
+            .replace(/ Limited| Pvt Ltd| Ltd| Corporation| Corp/gi, '')
+            .trim();
+          const baseTitle = `${jobTitle} at ${compactCompany} | TalentXcel`;
+          if (baseTitle.length <= 60) {
+            title = baseTitle;
+          } else {
+            const cleanRole = jobTitle.replace(/Executive |Specialist |Associate /gi, '').trim();
+            const trimmedTitle = `${cleanRole} at ${compactCompany} | TalentXcel`;
+            if (trimmedTitle.length <= 60) {
+              title = trimmedTitle;
+            } else {
+              const availableLen = 60 - ' | TalentXcel'.length;
+              let truncated = jobTitle.slice(0, availableLen);
+              const lastSpace = truncated.lastIndexOf(' ');
+              if (lastSpace > 15) {
+                truncated = truncated.slice(0, lastSpace);
+              }
+              title = `${truncated} | TalentXcel`;
+            }
+          }
+        }
+
+        if (!description) {
+          const descSource = job.job_summary || job.description || '';
+          description = toMetaDescription(descSource, 150) || `Apply for ${jobTitle} at ${companyName}. Verified vacancy with direct application on TalentXcel.`;
+        }
+
         const salaryCurrency = (job.salary_currency || '').toUpperCase();
         const salaryText = salaryCurrency === 'INR' && typeof job.salary_min === 'number' && job.salary_min > 0
           ? (typeof job.salary_max === 'number' && job.salary_max >= job.salary_min
@@ -905,6 +1003,10 @@ async function prerender() {
             </div>
             <div class="pt-6 border-t border-slate-800 text-slate-200 text-sm leading-relaxed whitespace-pre-line">
               ${escapeHtml(job.description || '')}
+            </div>
+            <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800">
+              <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Apply on TalentXcel &rarr;</a>
+              <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
             </div>
           </div>
         `;

@@ -12,6 +12,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getStandardAvatarUrl } from '@/utils/avatarUtils';
 import { generatePersonProfileSlug, getPublicProfilePath } from '@/utils/userProfileSlug';
+import { NetworkRelationshipControls, NetworkRelationshipBadge } from '@/components/network/NetworkRelationshipControls';
 import { 
   Shield, 
   Search, 
@@ -370,7 +371,10 @@ export const Verified: React.FC = () => {
                           {profile.title}
                         </p>
 
-                        {getVerificationBadge(profile.verification_level)}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {getVerificationBadge(profile.verification_level)}
+                          <NetworkRelationshipBadge targetUserId={profile.id} />
+                        </div>
                       </div>
                     </div>
                     
@@ -415,23 +419,13 @@ export const Verified: React.FC = () => {
                     )}
                     
                     {/* Action Buttons */}
-                    <div className="flex gap-2 pt-2 border-t mt-auto">
-                      <Button 
-                        size="sm" 
-                        className="flex-1 text-xs h-7 rounded-lg font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
-                        onClick={() => handleConnect(profile.id, profile.full_name)}
-                        disabled={sendConnectionRequest.isPending}
-                      >
-                        Connect
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        className="text-xs h-7 rounded-lg font-semibold hover:bg-emerald-50 hover:text-emerald-700"
-                        onClick={() => navigate(profileLink)}
-                      >
-                        View Profile
-                      </Button>
+                    <div className="pt-2 border-t mt-auto">
+                      <NetworkRelationshipControls
+                        targetUserId={profile.id}
+                        targetName={profile.full_name}
+                        profileLink={profileLink}
+                        layout="card-bottom"
+                      />
                     </div>
                   </CardContent>
                 </Card>
