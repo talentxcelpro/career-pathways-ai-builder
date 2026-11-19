@@ -107,7 +107,7 @@ const GlobalSearchDiscoveryComponent: React.FC<GlobalSearchDiscoveryProps> = ({
               description: `${profile.title || 'Professional'}${profile.current_company ? ` at ${profile.current_company}` : ''}`,
               metadata: profile,
               relevance_score: relevance,
-              url: `/p/${profile.id}`
+              url: `/u/${profile.username || profile.slug || profile.id}`
             });
           });
         }

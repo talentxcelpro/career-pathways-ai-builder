@@ -4,7 +4,10 @@ import { Helmet } from 'react-helmet-async';
 import { supabase } from '@/integrations/supabase/client';
 import { JobCard } from '@/components/jobs/JobCard';
 import { Button } from '@/components/ui/button';
-import { Search, Filter, MapPin, Building, TrendingUp, AlertCircle, Globe, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Search, Filter, MapPin, Building, TrendingUp, AlertCircle, Globe, Sparkles, CheckCircle2, IndianRupee, Bookmark } from 'lucide-react';
+import { formatSalaryRange } from '@/utils/currencyUtils';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { createSafeHtml } from '@/utils/sanitize';
 import { GrowthExperimentWrapper } from '@/components/conversion/GrowthExperimentWrapper';
@@ -13,6 +16,8 @@ import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainL
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 import { RelatedHubsMesh } from '@/components/seo/RelatedHubsMesh';
 import { getTier2LocationConfig } from '@/data/tier2LocationsData';
+import { JobAlertCaptureCard } from '@/components/jobs/JobAlertCaptureCard';
+import { WhatsAppChannelCard } from '@/components/jobs/WhatsAppChannelCard';
 
 interface JobLocationPageProps {}
 
@@ -190,53 +195,59 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
         </script>
       </Helmet>
 
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-900">
         {/* Hero Section */}
-        <section className="bg-gradient-to-br from-primary/5 to-secondary/5 py-12 sm:py-16">
-          <div className="container mx-auto px-4 max-w-6xl">
+        <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-50 py-10 sm:py-14 border-b border-slate-200/60">
+          {/* Ambient lighting matching homepage */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute -top-24 right-1/4 w-[600px] h-[350px] bg-gradient-to-br from-blue-400/10 via-indigo-400/5 to-purple-400/5 rounded-full blur-[130px]" />
+            <div className="absolute top-1/2 -left-20 w-[450px] h-[300px] bg-gradient-to-tr from-cyan-400/10 via-blue-500/5 to-indigo-500/5 rounded-full blur-[120px]" />
+          </div>
+
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
             {/* Breadcrumbs */}
-            <nav className="mb-6" aria-label="Breadcrumb">
-              <ol className="flex items-center space-x-2 text-xs sm:text-sm text-muted-foreground">
-                <li><a href="/" className="hover:text-foreground transition-colors">Home</a></li>
-                <li><span className="mx-2">/</span></li>
-                <li><a href="/jobs" className="hover:text-foreground transition-colors">Jobs</a></li>
-                <li><span className="mx-2">/</span></li>
-                <li className="text-foreground font-medium">{locationData.name}</li>
+            <nav className="mb-4" aria-label="Breadcrumb">
+              <ol className="flex items-center space-x-2 text-xs sm:text-sm text-slate-500">
+                <li><a href="/" className="hover:text-blue-600 transition-colors">Home</a></li>
+                <li><span className="mx-2 text-slate-300">/</span></li>
+                <li><a href="/jobs" className="hover:text-blue-600 transition-colors">Jobs</a></li>
+                <li><span className="mx-2 text-slate-300">/</span></li>
+                <li className="text-slate-900 font-semibold">{locationData.name}</li>
               </ol>
             </nav>
 
             <div className="max-w-4xl">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-800 text-blue-800 dark:text-blue-300 text-xs font-semibold mb-4">
-                <MapPin className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold shadow-2xs mb-4">
+                <MapPin className="w-3.5 h-3.5 text-blue-600 shrink-0" />
                 <span>Verified Local Openings &bull; {locationData.name}, India</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-foreground mb-4 tracking-tight">
-                {locationData.h1}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-[1.12] mb-3">
+                Job Vacancies in <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">{locationData.name}</span>
               </h1>
-              <p className="text-base sm:text-lg text-muted-foreground mb-8 leading-relaxed max-w-3xl">
+              <p className="text-sm sm:text-base text-slate-600 mb-6 leading-relaxed max-w-3xl">
                 {locationData.description}
               </p>
               
               <div className="flex flex-wrap gap-3 mb-8">
                 <Button 
                   size="lg" 
-                  className="gap-2 font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md"
+                  className="gap-2 font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md shadow-blue-500/20 rounded-xl h-11"
                   onClick={() => {
                     const jobsSection = document.getElementById('location-jobs-grid');
                     if (jobsSection) jobsSection.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  <Search className="h-5 w-5" />
+                  <Search className="h-4 w-4" />
                   View {totalJobsCount || realJobs.length} Verified Jobs
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="gap-2 font-semibold"
+                  className="gap-2 font-semibold border-slate-200 bg-white text-slate-800 hover:bg-slate-50 hover:text-blue-600 rounded-xl h-11 shadow-2xs"
                   onClick={() => navigate('/resume/ats-check')}
                 >
-                  <Sparkles className="h-5 w-5 text-indigo-500" />
+                  <Sparkles className="h-4 w-4 text-indigo-600" />
                   Free ATS Resume Score
                 </Button>
               </div>
@@ -244,34 +255,34 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
               {/* 1-Click ATS Match & Instant Apply Dropzone */}
               <div className="my-6">
                 <ResumeQuickScanWidget
-                  role={`Jobs in ${locationData.name}`}
+                  role="Verified Roles"
                   location={locationData.name}
-                  matchingJobsCount={totalJobsCount || realJobs.length || 10}
+                  matchingJobsCount={totalJobsCount || realJobs.length || 16}
                 />
               </div>
 
               {/* Location Stats */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-8">
-                <div className="bg-card p-5 sm:p-6 rounded-xl border shadow-sm">
-                  <div className="flex items-center gap-3 mb-1">
-                    <Building className="h-7 w-7 text-primary" />
-                    <span className="text-2xl font-black text-foreground">{verifiedCompaniesCount}+</span>
+                <div className="bg-white border-2 border-slate-200/80 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 mb-2">
+                    <Building className="h-5 w-5" />
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Companies Hiring</p>
+                  <div className="text-2xl sm:text-3xl font-black text-slate-900">{verifiedCompaniesCount}+</div>
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">Companies Hiring</p>
                 </div>
-                <div className="bg-card p-5 sm:p-6 rounded-xl border shadow-sm">
-                  <div className="flex items-center gap-3 mb-1">
-                    <MapPin className="h-7 w-7 text-primary" />
-                    <span className="text-2xl font-black text-foreground">{totalJobsCount || realJobs.length}+</span>
+                <div className="bg-white border-2 border-slate-200/80 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 mb-2">
+                    <MapPin className="h-5 w-5" />
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Active Verified Openings</p>
+                  <div className="text-2xl sm:text-3xl font-black text-slate-900">{totalJobsCount || realJobs.length}+</div>
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">Active Verified Openings</p>
                 </div>
-                <div className="bg-card p-5 sm:p-6 rounded-xl border shadow-sm">
-                  <div className="flex items-center gap-3 mb-1">
-                    <TrendingUp className="h-7 w-7 text-primary" />
-                    <span className="text-2xl font-black text-foreground">{locationData.stats.avgSalary}</span>
+                <div className="bg-white border-2 border-slate-200/80 p-5 sm:p-6 rounded-2xl shadow-sm hover:shadow-md transition-all">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600 mb-2">
+                    <TrendingUp className="h-5 w-5" />
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Average Salary Band</p>
+                  <div className="text-2xl sm:text-3xl font-black text-slate-900">{locationData.stats.avgSalary}</div>
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">Average Salary Band</p>
                 </div>
               </div>
             </div>
@@ -279,81 +290,141 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
         </section>
 
         {/* Content Section */}
-        <section className="py-12 sm:py-16">
+        <section className="py-12 sm:py-16 bg-white text-slate-900">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-10">
                 {/* Job Listings Anchor */}
                 <div id="location-jobs-grid" className="space-y-6">
-                  <div className="flex items-center justify-between pb-3 border-b">
+                  {/* High-Converting 1-Tap Job Alert Capture */}
+                  <WhatsAppChannelCard locationName={locationData.name} className="mb-6" />
+                  <JobAlertCaptureCard locationName={locationData.name} />
+                  
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-200">
                     <div>
-                      <h2 className="text-2xl font-black text-foreground">Verified Openings in {locationData.name}</h2>
-                      <p className="text-xs text-muted-foreground mt-0.5">Updated live &bull; 100% verified employer listings</p>
+                      <h2 className="text-2xl font-black text-slate-900">Verified Openings in {locationData.name}</h2>
+                      <p className="text-xs text-slate-500 mt-0.5">Updated live &bull; 100% verified employer listings</p>
                     </div>
                     {realJobs.length > 0 && (
-                      <span className="px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold">
+                      <span className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-mono font-bold">
                         {realJobs.length} Live Openings
                       </span>
                     )}
                   </div>
 
                   {loading ? (
-                    <div className="p-12 text-center text-sm font-mono text-muted-foreground animate-pulse">
+                    <div className="p-12 text-center text-sm font-mono text-slate-400 animate-pulse bg-slate-50 rounded-2xl border border-slate-200">
                       Loading verified jobs in {locationData.name}...
                     </div>
                   ) : realJobs.length > 0 ? (
-                    <div className="grid gap-4 sm:gap-6">
+                    <div className="grid gap-4 sm:gap-5">
                       {realJobs.map((job) => (
-                        <JobCard 
+                        <Card 
                           key={job.id} 
-                          job={{
-                            id: job.id,
-                            title: job.title || job.job_title,
-                            description: job.job_summary || job.job_description || job.description || '',
-                            location: job.location || `${job.location_city || ''}, ${job.location_state || ''}`.trim() || locationData.name,
-                            salary_min: job.salary_min,
-                            salary_max: job.salary_max,
-                            employment_type: job.employment_type || 'Full-time',
-                            experience_level: job.experience_level || `${job.min_experience || 0}-${job.max_experience || 3} yrs`,
-                            skills_required: job.skills_required || (job.ai_skill_tags ? job.ai_skill_tags.split(',') : []),
-                            is_remote: job.is_remote,
-                            is_featured: job.is_featured,
-                            company: {
-                              id: job.company_id || 'talentxcel',
-                              name: job.company_name || 'TalentXcel Partner',
-                              industry: job.industry_domain || job.industry || 'Technology'
-                            }
-                          }} 
-                        />
+                          className="bg-white border border-slate-200/90 hover:border-blue-400 hover:shadow-md transition-all p-5 rounded-2xl flex flex-col justify-between space-y-3.5 group text-left"
+                        >
+                          <div className="space-y-2">
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="space-y-1 min-w-0 flex-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {job.is_featured && (
+                                    <Badge className="bg-blue-50 border-blue-200 text-blue-700 text-[10px] font-semibold">
+                                      Featured
+                                    </Badge>
+                                  )}
+                                  {job.is_remote && (
+                                    <Badge className="bg-purple-50 border-purple-200 text-purple-700 text-[10px] font-semibold">
+                                      Remote
+                                    </Badge>
+                                  )}
+                                  <Badge variant="outline" className="border-slate-200 text-slate-600 text-[10px] shrink-0">
+                                    {job.employment_type || 'Full-time'}
+                                  </Badge>
+                                </div>
+                                <h3 
+                                  onClick={() => navigate(`/jobs/${job.seo_slug || job.id}`)}
+                                  className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors cursor-pointer line-clamp-1"
+                                >
+                                  {job.title || job.job_title}
+                                </h3>
+                                <p className="text-xs text-slate-600 font-medium">{job.company_name || 'TalentXcel Partner'}</p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 text-xs text-slate-600 pt-0.5 flex-wrap">
+                              {(job.location || locationData.name) && (
+                                <span className="flex items-center gap-1">
+                                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                                  {job.location || locationData.name}
+                                </span>
+                              )}
+                              {(job.salary_min || job.salary_max) && (
+                                <span className="flex items-center gap-1 text-emerald-700 font-semibold">
+                                  <IndianRupee className="w-3.5 h-3.5" />
+                                  {formatSalaryRange(job.salary_min, job.salary_max, job.salary_currency)}
+                                </span>
+                              )}
+                              {job.experience_level && (
+                                <span className="text-slate-400">
+                                  &bull; {job.experience_level}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Skills Tags */}
+                            {job.skills_required && job.skills_required.length > 0 && (
+                              <div className="flex flex-wrap gap-1.5 pt-1">
+                                {(Array.isArray(job.skills_required) ? job.skills_required : (job.ai_skill_tags ? job.ai_skill_tags.split(',') : [])).slice(0, 4).map((s: string, idx: number) => (
+                                  <span key={idx} className="bg-slate-100 text-slate-700 border border-slate-200 text-[11px] px-2 py-0.5 rounded-md font-medium">
+                                    {s.trim()}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="pt-3.5 mt-2 border-t border-slate-100 flex items-center justify-between">
+                            <span className="text-[11px] text-slate-500 flex items-center gap-1 font-medium">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Verified Opening
+                            </span>
+                            <Button 
+                              size="sm"
+                              onClick={() => navigate(`/jobs/${job.seo_slug || job.id}`)}
+                              className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold h-8 px-4 rounded-xl shadow-xs"
+                            >
+                              View &amp; Apply
+                            </Button>
+                          </div>
+                        </Card>
                       ))}
                     </div>
                   ) : (
-                    <div className="p-6 rounded-2xl border border-amber-500/30 bg-amber-50/20 dark:bg-amber-950/10 space-y-4">
+                    <div className="p-6 rounded-2xl border border-amber-200 bg-amber-50/40 space-y-4">
                       <div className="flex items-start gap-3">
-                        <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+                        <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                         <div>
-                          <h3 className="font-semibold text-foreground text-base">
+                          <h3 className="font-semibold text-slate-900 text-base">
                             Local Openings Currently Onboarding in {locationData.name}
                           </h3>
-                          <p className="text-sm text-muted-foreground mt-1">
+                          <p className="text-sm text-slate-600 mt-1">
                             TalentXcel verifies every opening to prevent ghost jobs. While new local employers in {locationData.name} are completing verification, explore immediate matching alternatives:
                           </p>
                         </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                        <Button variant="outline" onClick={() => navigate('/jobs')} className="justify-start gap-2 h-auto py-3">
-                          <Globe className="w-4 h-4 text-indigo-500 shrink-0" />
+                        <Button variant="outline" onClick={() => navigate('/jobs')} className="justify-start gap-2 h-auto py-3 border-slate-200 bg-white hover:bg-slate-50 text-slate-800">
+                          <Globe className="w-4 h-4 text-blue-600 shrink-0" />
                           <div className="text-left">
                             <div className="text-xs font-semibold">Browse Pan-India & Remote Jobs</div>
-                            <div className="text-[11px] text-muted-foreground">Work from {locationData.name} for verified employers</div>
+                            <div className="text-[11px] text-slate-500">Work from {locationData.name} for verified employers</div>
                           </div>
                         </Button>
-                        <Button variant="outline" onClick={() => navigate('/resume/ats-check')} className="justify-start gap-2 h-auto py-3">
-                          <Sparkles className="w-4 h-4 text-emerald-500 shrink-0" />
+                        <Button variant="outline" onClick={() => navigate('/resume/ats-check')} className="justify-start gap-2 h-auto py-3 border-slate-200 bg-white hover:bg-slate-50 text-slate-800">
+                          <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
                           <div className="text-left">
                             <div className="text-xs font-semibold">Instant ATS Skill Readiness Scan</div>
-                            <div className="text-[11px] text-muted-foreground">Benchmark profile & get matched automatically</div>
+                            <div className="text-[11px] text-slate-500">Benchmark profile & get matched automatically</div>
                           </div>
                         </Button>
                       </div>
@@ -363,12 +434,12 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
 
                 {/* Editorial Industry Guide */}
                 <div 
-                  className="prose prose-lg max-w-none pt-6 border-t"
+                  className="prose prose-slate max-w-none pt-8 border-t border-slate-200 text-slate-700 prose-headings:text-slate-900 prose-headings:font-bold prose-strong:text-slate-900 prose-li:text-slate-700"
                   dangerouslySetInnerHTML={createSafeHtml(locationData.content)}
                 />
 
                 {/* Controlled Cohort Experiment */}
-                <div className="mb-10">
+                <div className="mb-10 text-slate-900">
                   <GrowthExperimentWrapper
                     location={locationData.name}
                     sourcePage={`job_location_${derivedLocation}`}
@@ -379,14 +450,14 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
               {/* Sidebar */}
               <div className="space-y-8">
                 {/* Popular Job Categories */}
-                <div className="bg-card p-6 rounded-xl border shadow-sm">
-                  <h3 className="text-base font-bold mb-4 text-foreground">Popular Job Categories in {locationData.name}</h3>
-                  <div className="space-y-2 text-sm">
+                <div className="bg-white border-2 border-slate-200/80 p-6 rounded-2xl shadow-sm">
+                  <h3 className="text-base font-bold mb-4 text-slate-900">Popular Job Categories in {locationData.name}</h3>
+                  <div className="space-y-1.5 text-sm">
                     {['IT & Software Jobs', 'Fresher Jobs', 'Banking & Finance Jobs', 'Healthcare Jobs', 'Teaching & Academic Jobs', 'Sales & Marketing Jobs'].map((category) => (
                       <a 
                         key={category}
                         href={`/jobs?search=${encodeURIComponent(category + ' ' + locationData.name)}`}
-                        className="block text-muted-foreground hover:text-primary transition-colors py-1 border-b border-border/40 last:border-0"
+                        className="block text-slate-600 hover:text-blue-600 font-medium transition-colors py-2 border-b border-slate-100 last:border-0"
                       >
                         {category} in {locationData.name}
                       </a>
@@ -395,17 +466,17 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                 </div>
 
                 {/* Top Companies */}
-                <div className="bg-card p-6 rounded-xl border shadow-sm">
-                  <h3 className="text-base font-bold mb-4 text-foreground">Top Employers Hiring in {locationData.name}</h3>
+                <div className="bg-white border-2 border-slate-200/80 p-6 rounded-2xl shadow-sm">
+                  <h3 className="text-base font-bold mb-4 text-slate-900">Top Employers Hiring in {locationData.name}</h3>
                   <div className="space-y-2 text-sm">
                     {locationData.topCompanies.map((company: string) => (
                       <div 
                         key={company}
-                        className="flex items-center justify-between py-1.5 border-b border-border/40 last:border-0"
+                        className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"
                       >
-                        <span className="text-foreground font-medium">{company}</span>
-                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono flex items-center gap-1">
-                          <CheckCircle2 className="w-3 h-3" /> Hiring
+                        <span className="text-slate-900 font-medium">{company}</span>
+                        <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-mono flex items-center gap-1 font-semibold">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Hiring
                         </span>
                       </div>
                     ))}
@@ -413,17 +484,17 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                 </div>
 
                 {/* Job Alerts CTA */}
-                <div className="bg-gradient-to-br from-blue-500/10 via-indigo-500/10 to-purple-500/10 p-6 rounded-xl border border-blue-500/20 shadow-sm space-y-3">
-                  <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                <div className="bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/80 p-6 rounded-2xl border-2 border-blue-200/90 shadow-sm space-y-3">
+                  <div className="flex items-center gap-2 text-blue-600">
                     <Sparkles className="w-5 h-5" />
-                    <h3 className="text-base font-bold">Instant Job Alerts</h3>
+                    <h3 className="text-base font-bold text-slate-900">Instant Job Alerts</h3>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     Get real-time WhatsApp and email alerts when new verified jobs in {locationData.name} are posted.
                   </p>
                   <Button 
                     onClick={() => navigate(`/jobs?location=${encodeURIComponent(locationData.name)}&alert=true`)}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-10 shadow-sm"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs h-10 shadow-md shadow-blue-500/20 rounded-xl"
                   >
                     Subscribe to {locationData.name} Alerts
                   </Button>
@@ -435,16 +506,16 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
 
         {/* FAQ Section */}
         {locationData.faqs && (
-          <section className="py-16 bg-muted/30 border-t">
+          <section className="py-16 bg-slate-50 border-t border-slate-200/80">
             <div className="container mx-auto px-4 max-w-4xl">
-              <h2 className="text-2xl sm:text-3xl font-black text-foreground mb-8 text-center sm:text-left">
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-8 text-center sm:text-left">
                 Frequently Asked Questions &bull; Jobs in {locationData.name}
               </h2>
               <div className="space-y-4">
                 {locationData.faqs.map((faq: any, index: number) => (
-                  <div key={index} className="bg-card p-6 rounded-xl border shadow-sm">
-                    <h3 className="text-base font-bold text-foreground mb-2">{faq.question}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
+                  <div key={index} className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-base font-bold text-slate-900 mb-2">{faq.question}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">{faq.answer}</p>
                   </div>
                 ))}
               </div>
@@ -453,7 +524,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
         )}
 
         {/* Contextual Subdomain Discovery Mesh */}
-        <section className="py-12 bg-background border-t">
+        <section className="py-12 bg-white border-t border-slate-200/80">
           <div className="container mx-auto px-4 max-w-5xl">
             <RelatedHubsMesh currentCitySlug={derivedLocation} className="mb-8" />
             <RelatedSubdomainLinks role="Software Engineer" city={locationData.name} className="mb-8" />

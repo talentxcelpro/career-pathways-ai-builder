@@ -116,7 +116,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     queryKey: ['discover-total-member-count'],
     queryFn: async () => {
       const { count, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select('id', { count: 'exact', head: true })
         .not('full_name', 'is', null);
       if (error || !count) return 591;
@@ -160,6 +160,8 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
   const { data: allProfiles = [], isLoading } = useQuery({
     queryKey: ['discover-professionals-ranked', user?.id],
     queryFn: async () => {
+      let rawProfiles: any[] = [];
+
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online')
@@ -167,13 +169,25 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
         .order('updated_at', { ascending: false })
         .limit(100);
 
-      if (error) {
-        console.error('Error fetching discover profiles:', error);
-        return [];
+      if (error || !data || data.length === 0) {
+        const { data: pubData } = await supabase
+          .from('public_profiles')
+          .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, username, created_at')
+          .not('full_name', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        rawProfiles = pubData ? pubData.map(p => ({
+          ...p,
+          updated_at: p.created_at,
+          last_seen: p.created_at,
+          is_online: false
+        })) : [];
+      } else {
+        rawProfiles = [...data];
       }
 
       const now = Date.now();
-      let rawProfiles = [...(data || [])];
 
       // If logged in, guarantee current user's profile is included
       if (user?.id) {

@@ -1,3 +1,4 @@
+import UniversalProfileRouteHandler from '../components/profile/UniversalProfileRouteHandler';
 import { lazy, Suspense } from 'react';
 
 import { Users, Coins } from "lucide-react";
@@ -82,9 +83,26 @@ export const networkRoutes = [
     page: <Suspense fallback={null}><ProfileUrlRedirect /></Suspense>, // This will redirect to /profile/:username
   },
   {
-    title: "Public User Profile",
+    title: "Career Passport",
+    to: "/u/:username",
+    page: <UniversalProfileRouteHandler />,
+    isPublic: true,
+  },
+  {
+    title: "Career Passport Handle",
+    to: "/u/@:username",
+    page: <UniversalProfileRouteHandler />,
+    isPublic: true,
+  },
+  {
+    title: "Public User Profile (Redirect)",
+    to: "/p/:username",
+    page: <UniversalProfileRouteHandler />,
+  },
+  {
+    title: "Public User Profile (By ID)",
     to: "/p/:id",
-    page: <Suspense fallback={null}><PublicUserProfile /></Suspense>,
+    page: <UniversalProfileRouteHandler />,
   },
   {
     title: "Network Posts",

@@ -40,15 +40,21 @@ export const SkillDemandTrends = ({ trends }: SkillDemandTrendsProps) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Generate historical data for trending skills
-  const generateHistoricalData = (skill: string, currentDemand: number, growth: number) => {
+  // Deterministic historical data for trending skills
+  const generateHistoricalData = (skill: string, currentDemand: number, growth: number, baseSalary = 95000, baseOpenings = 1200) => {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return months.map((month, index) => ({
-      month,
-      demand: Math.max(0, currentDemand - ((11 - index) * growth / 12) + Math.random() * 5 - 2.5),
-      jobOpenings: Math.floor(Math.random() * 1000) + 500,
-      salary: Math.floor(Math.random() * 20000) + 80000
-    }));
+    return months.map((month, index) => {
+      const step = (index - 11) / 12;
+      const demandVal = Math.round(Math.max(10, currentDemand + (step * growth)));
+      const openingsVal = Math.round(Math.max(50, baseOpenings + (step * (growth * 15))));
+      const salaryVal = Math.round(baseSalary + (step * (growth * 200)));
+      return {
+        month,
+        demand: demandVal,
+        jobOpenings: openingsVal,
+        salary: salaryVal
+      };
+    });
   };
 
   const filteredTrends = trends.filter(trend => 
@@ -329,7 +335,13 @@ export const SkillDemandTrends = ({ trends }: SkillDemandTrendsProps) => {
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={generateHistoricalData('AI/ML', 95, 23)}>
+                  <LineChart data={generateHistoricalData(
+                    trends[0]?.skill || 'Core Tech',
+                    trends[0]?.demand || 85,
+                    trends[0]?.growth || 15,
+                    trends[0]?.marketData?.averageSalary || 95000,
+                    trends[0]?.marketData?.jobOpenings || 1200
+                  )}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />

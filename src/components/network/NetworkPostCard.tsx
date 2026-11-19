@@ -436,6 +436,43 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
                 headline={post.headline} 
               />
             ) : null}
+
+            {/* Interactive Career Milestone Card */}
+            {(() => {
+              const passportMatch = post.content ? post.content.match(/(?:talentxcel\.in\/u\/|\/u\/)([a-zA-Z0-9_.-]+)/i) : null;
+              const passportUsername = passportMatch ? passportMatch[1].replace(/[^a-zA-Z0-9_.-]/g, '') : null;
+              if (!passportUsername) return null;
+
+              return (
+                <div className="mt-3 p-3.5 rounded-xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-purple-50/50 dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-purple-950/30 border border-blue-200/90 dark:border-blue-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
+                      🛡️
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        Verified Career Passport • @{passportUsername}
+                      </div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                        Peer-verified credentials & ATS readiness
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Link to={`/verify/${passportUsername}`} onClick={(e) => e.stopPropagation()}>
+                      <Button size="sm" variant="outline" className="h-7 px-2.5 text-xs font-bold border-blue-300 text-blue-700 hover:bg-blue-100 dark:border-blue-700 dark:text-blue-300 rounded-lg">
+                        ⭐ Endorse Skill
+                      </Button>
+                    </Link>
+                    <Link to={`/u/${passportUsername}`} onClick={(e) => e.stopPropagation()}>
+                      <Button size="sm" className="h-7 px-3 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-xs rounded-lg">
+                        View Passport →
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              );
+            })()}
           </>
         )}
 

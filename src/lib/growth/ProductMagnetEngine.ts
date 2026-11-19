@@ -107,12 +107,12 @@ export class ProductMagnetEngine {
       primaryRoute: '/passport',
       embedRoute: '/embed/passport',
       apiRoute: '/api/tools/passport',
-      shareRoutePrefix: '/p/@',
+      shareRoutePrefix: '/u/@',
       supportedCurrencies: ['USD', 'GBP', 'EUR', 'CAD', 'AUD', 'SGD', 'AED', 'INR'],
       diagnosticType: 'VERIFIED_CREDENTIAL_MATRIX',
       valueProposition: 'Own your career reputation across employers and borders.',
       freeDiagnosticDeliverable: 'Public candidate score preview and skill credential verification summary.',
-      signupRetentionGate: 'Claim permanent public handle (/p/@handle) and activate direct recruiter discovery.'
+      signupRetentionGate: 'Claim permanent public handle (/u/@handle) and activate direct recruiter discovery.'
     },
     {
       id: 'magnet-college-roi',

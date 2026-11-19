@@ -465,6 +465,30 @@ export const Communities: React.FC = () => {
     }
   };
 
+  const handleInviteBatch = (circle: ProfessionalCommunity) => {
+    const refCode = user?.id ? user.id.slice(0, 8) : 'lead';
+    const inviteUrl = `https://talentxcel.in/communities?group=${circle.id}&ref=${refCode}`;
+    const inviteText = `🤝 Join our verified professional circle "${circle.name}" on TalentXcel! Connect with domain peers, participate in hiring referrals, and access exclusive mentors:\n👉 ${inviteUrl}`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: `Join ${circle.name} on TalentXcel`,
+        text: inviteText,
+        url: inviteUrl
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(inviteText);
+      toast.success('Batch invitation link & text copied to clipboard!');
+    }
+  };
+
+  const handleShareWhatsApp = (circle: ProfessionalCommunity) => {
+    const refCode = user?.id ? user.id.slice(0, 8) : 'lead';
+    const inviteUrl = `https://talentxcel.in/communities?group=${circle.id}&ref=${refCode}`;
+    const text = encodeURIComponent(`🤝 Join our verified professional circle "${circle.name}" on TalentXcel! Connect with peers & hiring leads:\n👉 ${inviteUrl}`);
+    window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  };
+
   // Filtered lists
   const filteredCommunities = useMemo(() => {
     return communities.filter(c => {
@@ -684,6 +708,16 @@ export const Communities: React.FC = () => {
                     </Button>
                     <Button
                       size="sm"
+                      variant="ghost"
+                      onClick={() => handleInviteBatch(circle)}
+                      className="h-8.5 px-2.5 rounded-xl text-xs font-bold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:hover:bg-indigo-950/40"
+                      title="Invite Batch / Colleagues"
+                    >
+                      <Share2 className="w-3.5 h-3.5 mr-1" />
+                      Invite
+                    </Button>
+                    <Button
+                      size="sm"
                       onClick={() => joinCircleMutation.mutate(circle)}
                       disabled={joinCircleMutation.isPending}
                       className={`h-8.5 px-3.5 rounded-xl text-xs font-bold shadow-xs transition-colors ${
@@ -727,6 +761,40 @@ export const Communities: React.FC = () => {
             </DialogHeader>
 
             <div className="space-y-4 pt-2">
+              {/* Batch / Colleague Onboarding Banner */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-blue-500/10 border border-indigo-500/20 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Invite Batch / Colleagues (1-Click Onboard)</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px] bg-indigo-50 dark:bg-indigo-950 text-indigo-700 border-indigo-200 font-bold">
+                    +50 AI Credits / Referral
+                  </Badge>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  College placement officers & tech leads: share this circle directly with your batch to onboard all members simultaneously.
+                </p>
+                <div className="flex items-center gap-2 pt-1">
+                  <Button
+                    size="sm"
+                    onClick={() => handleInviteBatch(selectedCircleForDetail)}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs h-8 rounded-xl shadow-xs gap-1.5"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                    Copy Invite Link
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleShareWhatsApp(selectedCircleForDetail)}
+                    className="h-8 px-3 rounded-xl border-emerald-600/30 text-emerald-700 hover:bg-emerald-50 text-xs font-bold gap-1.5"
+                  >
+                    WhatsApp Batch
+                  </Button>
+                </div>
+              </div>
+
               {/* Circle Info */}
               <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 dark:bg-muted/40 border border-slate-100 dark:border-border text-xs">
                 <div>

@@ -1,0 +1,2410 @@
+{
+  "totalRegisteredUsers": 703,
+  "handlesReservedOrVerified": 703,
+  "creditsIssuedPerUser": 10,
+  "txcIssuedPerUser": 100,
+  "generatedAt": "2026-11-17T04:16:26.609Z",
+  "campaigns": [
+    {
+      "userId": "5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062",
+      "fullName": "TalentXcel Services",
+      "firstName": "TalentXcel",
+      "email": "talentxcelpro@gmail.com",
+      "phone": null,
+      "reservedHandle": "talentxcelpro1",
+      "passportUrl": "https://talentxcel.in/u/talentxcelpro1",
+      "verifyUrl": "https://talentxcel.in/verify/talentxcelpro1",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "talentxcelpro@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@talentxcelpro1) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/talentxcelpro1?claim=talentxcelpro1&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi TalentXcel! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/talentxcelpro1*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/talentxcelpro1?claim=talentxcelpro1"
+      }
+    },
+    {
+      "userId": "e19b30cf-2fe5-4cbf-85f0-9e76c4182eb0",
+      "fullName": "Vishwajeet Nayak",
+      "firstName": "Vishwajeet",
+      "email": "vishwajeetnayak18@gmail.com",
+      "phone": "8933919177",
+      "reservedHandle": "vishwajeetnayak",
+      "passportUrl": "https://talentxcel.in/u/vishwajeetnayak",
+      "verifyUrl": "https://talentxcel.in/verify/vishwajeetnayak",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "vishwajeetnayak18@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@vishwajeetnayak) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/vishwajeetnayak?claim=vishwajeetnayak&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "8933919177",
+        "message": "Hi Vishwajeet! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/vishwajeetnayak*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/vishwajeetnayak?claim=vishwajeetnayak"
+      }
+    },
+    {
+      "userId": "ad20dfcb-bbbd-45d6-ac25-38b473e73eaf",
+      "fullName": "talentxcelpro1",
+      "firstName": "talentxcelpro1",
+      "email": "talentxcelpro12@gmail.com",
+      "phone": "",
+      "reservedHandle": "talentxcelpro",
+      "passportUrl": "https://talentxcel.in/u/talentxcelpro",
+      "verifyUrl": "https://talentxcel.in/verify/talentxcelpro",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "talentxcelpro12@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@talentxcelpro) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/talentxcelpro?claim=talentxcelpro&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi talentxcelpro1! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/talentxcelpro*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/talentxcelpro?claim=talentxcelpro"
+      }
+    },
+    {
+      "userId": "24d8c093-decd-4476-86c5-1c98a5448753",
+      "fullName": "Viralpay",
+      "firstName": "Viralpay",
+      "email": "viralpay2025@gmail.com",
+      "phone": "",
+      "reservedHandle": "viralpay",
+      "passportUrl": "https://talentxcel.in/u/viralpay",
+      "verifyUrl": "https://talentxcel.in/verify/viralpay",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "viralpay2025@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@viralpay) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/viralpay?claim=viralpay&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi Viralpay! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/viralpay*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/viralpay?claim=viralpay"
+      }
+    },
+    {
+      "userId": "c90ebb18-23cf-4f09-85c1-150091888b73",
+      "fullName": "Sanayah Arshid",
+      "firstName": "Sanayah",
+      "email": "sanayah.arshid@gmail.com",
+      "phone": "",
+      "reservedHandle": "sanayaharshid",
+      "passportUrl": "https://talentxcel.in/u/sanayaharshid",
+      "verifyUrl": "https://talentxcel.in/verify/sanayaharshid",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sanayah.arshid@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@sanayaharshid) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sanayaharshid?claim=sanayaharshid&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi Sanayah! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sanayaharshid*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sanayaharshid?claim=sanayaharshid"
+      }
+    },
+    {
+      "userId": "0951f595-abd6-4463-9d8b-58a6d0548fc7",
+      "fullName": "Arshid Hussain Wani",
+      "firstName": "Arshid",
+      "email": "arsh.wani@gmail.com",
+      "phone": "",
+      "reservedHandle": "arsh_wani_0951f5",
+      "passportUrl": "https://talentxcel.in/u/arsh_wani_0951f5",
+      "verifyUrl": "https://talentxcel.in/verify/arsh_wani_0951f5",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "arsh.wani@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@arsh_wani_0951f5) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/arsh_wani_0951f5?claim=arsh_wani_0951f5&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi Arshid! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/arsh_wani_0951f5*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/arsh_wani_0951f5?claim=arsh_wani_0951f5"
+      }
+    },
+    {
+      "userId": "5ff9310f-316c-464c-aeb3-9a606a07bb4d",
+      "fullName": "arsh wani",
+      "firstName": "arsh",
+      "email": "arsh.wani1@gmail.com",
+      "phone": "",
+      "reservedHandle": "arshwani",
+      "passportUrl": "https://talentxcel.in/u/arshwani",
+      "verifyUrl": "https://talentxcel.in/verify/arshwani",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "arsh.wani1@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@arshwani) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/arshwani?claim=arshwani&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi arsh! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/arshwani*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/arshwani?claim=arshwani"
+      }
+    },
+    {
+      "userId": "100b2ace-5de8-403f-ad4e-eedad15c47e8",
+      "fullName": "Muskan Kumar",
+      "firstName": "Muskan",
+      "email": "muskankumar172001@gmail.com",
+      "phone": "8950862476",
+      "reservedHandle": "muskankumar",
+      "passportUrl": "https://talentxcel.in/u/muskankumar",
+      "verifyUrl": "https://talentxcel.in/verify/muskankumar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "muskankumar172001@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@muskankumar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/muskankumar?claim=muskankumar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "8950862476",
+        "message": "Hi Muskan! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/muskankumar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/muskankumar?claim=muskankumar"
+      }
+    },
+    {
+      "userId": "1d0aa253-6579-4877-b5eb-142696ca3725",
+      "fullName": "Gaurav Bhatia",
+      "firstName": "Gaurav",
+      "email": "gbhatia671@gmail.com",
+      "phone": "+919953969216",
+      "reservedHandle": "gauravbhatia",
+      "passportUrl": "https://talentxcel.in/u/gauravbhatia",
+      "verifyUrl": "https://talentxcel.in/verify/gauravbhatia",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "gbhatia671@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@gauravbhatia) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/gauravbhatia?claim=gauravbhatia&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "+919953969216",
+        "message": "Hi Gaurav! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/gauravbhatia*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/gauravbhatia?claim=gauravbhatia"
+      }
+    },
+    {
+      "userId": "fd4c0f26-f8ec-43c9-bd1a-9cd8ce6ad877",
+      "fullName": "Jaismin maurya",
+      "firstName": "Jaismin",
+      "email": "jaisminmaurya@gmail.com",
+      "phone": "9411460368",
+      "reservedHandle": "jaisminmaurya",
+      "passportUrl": "https://talentxcel.in/u/jaisminmaurya",
+      "verifyUrl": "https://talentxcel.in/verify/jaisminmaurya",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "jaisminmaurya@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@jaisminmaurya) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/jaisminmaurya?claim=jaisminmaurya&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "9411460368",
+        "message": "Hi Jaismin! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/jaisminmaurya*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/jaisminmaurya?claim=jaisminmaurya"
+      }
+    },
+    {
+      "userId": "2818b6a6-2673-488c-b1c7-c3a8b2de08e0",
+      "fullName": "Priyanka Dhangar",
+      "firstName": "Priyanka",
+      "email": "ps2044942@gmail.com",
+      "phone": "9927262367",
+      "reservedHandle": "priyankadhangar",
+      "passportUrl": "https://talentxcel.in/u/priyankadhangar",
+      "verifyUrl": "https://talentxcel.in/verify/priyankadhangar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "ps2044942@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@priyankadhangar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/priyankadhangar?claim=priyankadhangar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "9927262367",
+        "message": "Hi Priyanka! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/priyankadhangar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/priyankadhangar?claim=priyankadhangar"
+      }
+    },
+    {
+      "userId": "61b6d8bb-bbea-41c5-8ca4-152c4bc5d599",
+      "fullName": "TalentXcel SERVICES",
+      "firstName": "TalentXcel",
+      "email": "talentxcelservices@gmail.com",
+      "phone": "",
+      "reservedHandle": "talentxcelservices",
+      "passportUrl": "https://talentxcel.in/u/talentxcelservices",
+      "verifyUrl": "https://talentxcel.in/verify/talentxcelservices",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "talentxcelservices@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@talentxcelservices) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/talentxcelservices?claim=talentxcelservices&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi TalentXcel! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/talentxcelservices*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/talentxcelservices?claim=talentxcelservices"
+      }
+    },
+    {
+      "userId": "887f9eba-02e9-477d-98b4-481ce259762c",
+      "fullName": "Viral cash",
+      "firstName": "Viral",
+      "email": "viralcash2026@gmail.com",
+      "phone": null,
+      "reservedHandle": "viralcash",
+      "passportUrl": "https://talentxcel.in/u/viralcash",
+      "verifyUrl": "https://talentxcel.in/verify/viralcash",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "viralcash2026@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@viralcash) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/viralcash?claim=viralcash&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Viral! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/viralcash*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/viralcash?claim=viralcash"
+      }
+    },
+    {
+      "userId": "19c60fd7-f0a0-439a-8dc0-f0ee106aed5d",
+      "fullName": "Nexgenn Services",
+      "firstName": "Nexgenn",
+      "email": "nexgennoline@gmail.com",
+      "phone": "",
+      "reservedHandle": "nexgennservices",
+      "passportUrl": "https://talentxcel.in/u/nexgennservices",
+      "verifyUrl": "https://talentxcel.in/verify/nexgennservices",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "nexgennoline@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@nexgennservices) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/nexgennservices?claim=nexgennservices&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi Nexgenn! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/nexgennservices*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/nexgennservices?claim=nexgennservices"
+      }
+    },
+    {
+      "userId": "62dd1a51-59e6-4902-bdfe-f25e067eceb3",
+      "fullName": "Saish Dilip Varma",
+      "firstName": "Saish",
+      "email": "saishdilipvarma2003@gmail.com",
+      "phone": null,
+      "reservedHandle": "saishdilipvarma",
+      "passportUrl": "https://talentxcel.in/u/saishdilipvarma",
+      "verifyUrl": "https://talentxcel.in/verify/saishdilipvarma",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "saishdilipvarma2003@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@saishdilipvarma) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/saishdilipvarma?claim=saishdilipvarma&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Saish! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/saishdilipvarma*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/saishdilipvarma?claim=saishdilipvarma"
+      }
+    },
+    {
+      "userId": "eba5f174-f64e-4c8d-b2dc-5f89f89485cd",
+      "fullName": "Sabirali ",
+      "firstName": "Sabirali",
+      "email": "sabirali824@gmail.com",
+      "phone": null,
+      "reservedHandle": "sabirali",
+      "passportUrl": "https://talentxcel.in/u/sabirali",
+      "verifyUrl": "https://talentxcel.in/verify/sabirali",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sabirali824@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@sabirali) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sabirali?claim=sabirali&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Sabirali! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sabirali*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sabirali?claim=sabirali"
+      }
+    },
+    {
+      "userId": "09bb4f52-0ab6-4046-8cb1-7bfc0c050005",
+      "fullName": "A.R.Mohamed Asif ",
+      "firstName": "A.R.Mohamed",
+      "email": "asifasif42617@gmail.com",
+      "phone": null,
+      "reservedHandle": "armohamedasif",
+      "passportUrl": "https://talentxcel.in/u/armohamedasif",
+      "verifyUrl": "https://talentxcel.in/verify/armohamedasif",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "asifasif42617@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@armohamedasif) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/armohamedasif?claim=armohamedasif&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi A.R.Mohamed! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/armohamedasif*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/armohamedasif?claim=armohamedasif"
+      }
+    },
+    {
+      "userId": "5e3a6cce-bfe0-4ebd-afe0-817dc0b33677",
+      "fullName": "kajal singha Mahata",
+      "firstName": "kajal",
+      "email": "kajalmahata@gmail.com",
+      "phone": null,
+      "reservedHandle": "kajalsinghamahata",
+      "passportUrl": "https://talentxcel.in/u/kajalsinghamahata",
+      "verifyUrl": "https://talentxcel.in/verify/kajalsinghamahata",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "kajalmahata@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kajalsinghamahata) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kajalsinghamahata?claim=kajalsinghamahata&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi kajal! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kajalsinghamahata*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kajalsinghamahata?claim=kajalsinghamahata"
+      }
+    },
+    {
+      "userId": "d4d04585-1935-4b2b-9cec-2dd25efcd5d5",
+      "fullName": "Navneet Kumar Chaudhary",
+      "firstName": "Navneet",
+      "email": "navneetkrch@gmail.com",
+      "phone": null,
+      "reservedHandle": "navneetkumarchaudhar",
+      "passportUrl": "https://talentxcel.in/u/navneetkumarchaudhar",
+      "verifyUrl": "https://talentxcel.in/verify/navneetkumarchaudhar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "navneetkrch@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@navneetkumarchaudhar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/navneetkumarchaudhar?claim=navneetkumarchaudhar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Navneet! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/navneetkumarchaudhar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/navneetkumarchaudhar?claim=navneetkumarchaudhar"
+      }
+    },
+    {
+      "userId": "d72eb7ed-7567-4028-b297-35b75689b94e",
+      "fullName": "abrarkhan",
+      "firstName": "abrarkhan",
+      "email": "abrarkhan09@gmail.com",
+      "phone": "+31683084299",
+      "reservedHandle": "abrarkhan",
+      "passportUrl": "https://talentxcel.in/u/abrarkhan",
+      "verifyUrl": "https://talentxcel.in/verify/abrarkhan",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "abrarkhan09@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@abrarkhan) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/abrarkhan?claim=abrarkhan&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "+31683084299",
+        "message": "Hi abrarkhan! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/abrarkhan*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/abrarkhan?claim=abrarkhan"
+      }
+    },
+    {
+      "userId": "f28c44e5-c7e9-4fbc-b1e3-128717d0d44c",
+      "fullName": "Anees ",
+      "firstName": "Anees",
+      "email": "anees16030507@gmail.com",
+      "phone": null,
+      "reservedHandle": "anees",
+      "passportUrl": "https://talentxcel.in/u/anees",
+      "verifyUrl": "https://talentxcel.in/verify/anees",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "anees16030507@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@anees) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/anees?claim=anees&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Anees! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/anees*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/anees?claim=anees"
+      }
+    },
+    {
+      "userId": "817e4d49-5e5c-441a-8197-7ed167b4e080",
+      "fullName": "Satoru Gojo",
+      "firstName": "Satoru",
+      "email": "tanishktiwari8085@gmail.com",
+      "phone": null,
+      "reservedHandle": "satorugojo",
+      "passportUrl": "https://talentxcel.in/u/satorugojo",
+      "verifyUrl": "https://talentxcel.in/verify/satorugojo",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "tanishktiwari8085@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@satorugojo) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/satorugojo?claim=satorugojo&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Satoru! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/satorugojo*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/satorugojo?claim=satorugojo"
+      }
+    },
+    {
+      "userId": "df9a66d0-f6e9-4f6d-96d5-af68d56d4dc1",
+      "fullName": "Shivam Tiwari",
+      "firstName": "Shivam",
+      "email": "sanut2657@gmail.com",
+      "phone": null,
+      "reservedHandle": "shivamtiwari",
+      "passportUrl": "https://talentxcel.in/u/shivamtiwari",
+      "verifyUrl": "https://talentxcel.in/verify/shivamtiwari",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sanut2657@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@shivamtiwari) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/shivamtiwari?claim=shivamtiwari&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Shivam! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/shivamtiwari*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/shivamtiwari?claim=shivamtiwari"
+      }
+    },
+    {
+      "userId": "43521ade-4a3c-4abf-80a4-462d4470f5fa",
+      "fullName": "Shafeeq Ahmed",
+      "firstName": "Shafeeq",
+      "email": "ahmedshafeeq13@gmail.com",
+      "phone": null,
+      "reservedHandle": "shafeeqahmed",
+      "passportUrl": "https://talentxcel.in/u/shafeeqahmed",
+      "verifyUrl": "https://talentxcel.in/verify/shafeeqahmed",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "ahmedshafeeq13@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@shafeeqahmed) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/shafeeqahmed?claim=shafeeqahmed&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Shafeeq! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/shafeeqahmed*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/shafeeqahmed?claim=shafeeqahmed"
+      }
+    },
+    {
+      "userId": "1432f3ea-03ce-409f-bf9a-acce42ab1647",
+      "fullName": "manish modi",
+      "firstName": "manish",
+      "email": "manish.modi.patna@gmail.com",
+      "phone": null,
+      "reservedHandle": "manishmodi",
+      "passportUrl": "https://talentxcel.in/u/manishmodi",
+      "verifyUrl": "https://talentxcel.in/verify/manishmodi",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "manish.modi.patna@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@manishmodi) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/manishmodi?claim=manishmodi&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi manish! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/manishmodi*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/manishmodi?claim=manishmodi"
+      }
+    },
+    {
+      "userId": "d6327448-19ea-406d-8554-8ec0e82a5f1d",
+      "fullName": "Technical Advise",
+      "firstName": "Technical",
+      "email": "gauravbhatia219@gmail.com",
+      "phone": null,
+      "reservedHandle": "technicaladvise",
+      "passportUrl": "https://talentxcel.in/u/technicaladvise",
+      "verifyUrl": "https://talentxcel.in/verify/technicaladvise",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "gauravbhatia219@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@technicaladvise) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/technicaladvise?claim=technicaladvise&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Technical! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/technicaladvise*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/technicaladvise?claim=technicaladvise"
+      }
+    },
+    {
+      "userId": "cede2bee-f167-43a2-bc23-d44ad8c2de83",
+      "fullName": "Sanobar Khan",
+      "firstName": "Sanobar",
+      "email": "sanobar.khan80@gmail.com",
+      "phone": null,
+      "reservedHandle": "sanobarkhan",
+      "passportUrl": "https://talentxcel.in/u/sanobarkhan",
+      "verifyUrl": "https://talentxcel.in/verify/sanobarkhan",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sanobar.khan80@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@sanobarkhan) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sanobarkhan?claim=sanobarkhan&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Sanobar! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sanobarkhan*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sanobarkhan?claim=sanobarkhan"
+      }
+    },
+    {
+      "userId": "b2b34230-7d49-4c22-b5f8-6faccbb2b1e2",
+      "fullName": "Dipti Rani Sahu ",
+      "firstName": "Dipti",
+      "email": "jayantibulbul@gmail.com",
+      "phone": null,
+      "reservedHandle": "diptiranisahu",
+      "passportUrl": "https://talentxcel.in/u/diptiranisahu",
+      "verifyUrl": "https://talentxcel.in/verify/diptiranisahu",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "jayantibulbul@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@diptiranisahu) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/diptiranisahu?claim=diptiranisahu&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Dipti! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/diptiranisahu*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/diptiranisahu?claim=diptiranisahu"
+      }
+    },
+    {
+      "userId": "d1c6d6ad-33b1-4ec6-a8ad-1adc3b6dbaee",
+      "fullName": "Sanobar ",
+      "firstName": "Sanobar",
+      "email": "arshid.wani@icloud.com",
+      "phone": null,
+      "reservedHandle": "sanobar",
+      "passportUrl": "https://talentxcel.in/u/sanobar",
+      "verifyUrl": "https://talentxcel.in/verify/sanobar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "arshid.wani@icloud.com",
+        "subject": "Your TalentXcel Career Passport handle (@sanobar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sanobar?claim=sanobar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Sanobar! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sanobar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sanobar?claim=sanobar"
+      }
+    },
+    {
+      "userId": "94a6a9f4-e2d4-4098-82c8-9a83af18d506",
+      "fullName": "Raj  Mishra",
+      "firstName": "Raj",
+      "email": "nexgennwelfare@gmail.com",
+      "phone": "",
+      "reservedHandle": "rajmishra",
+      "passportUrl": "https://talentxcel.in/u/rajmishra",
+      "verifyUrl": "https://talentxcel.in/verify/rajmishra",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "nexgennwelfare@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@rajmishra) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/rajmishra?claim=rajmishra&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": "",
+        "message": "Hi Raj! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/rajmishra*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/rajmishra?claim=rajmishra"
+      }
+    },
+    {
+      "userId": "8023c150-e3c0-478d-b676-7a4fc5562b03",
+      "fullName": "vishu ",
+      "firstName": "vishu",
+      "email": "nayakv134@gmail.com",
+      "phone": null,
+      "reservedHandle": "vishu",
+      "passportUrl": "https://talentxcel.in/u/vishu",
+      "verifyUrl": "https://talentxcel.in/verify/vishu",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "nayakv134@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@vishu) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/vishu?claim=vishu&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi vishu! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/vishu*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/vishu?claim=vishu"
+      }
+    },
+    {
+      "userId": "11a0bef3-b2e9-47fd-875a-a9fa062fd394",
+      "fullName": "Shamshul Huda",
+      "firstName": "Shamshul",
+      "email": "shamshulworkblaze@gmail.com",
+      "phone": null,
+      "reservedHandle": "shamshulhuda",
+      "passportUrl": "https://talentxcel.in/u/shamshulhuda",
+      "verifyUrl": "https://talentxcel.in/verify/shamshulhuda",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "shamshulworkblaze@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@shamshulhuda) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/shamshulhuda?claim=shamshulhuda&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Shamshul! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/shamshulhuda*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/shamshulhuda?claim=shamshulhuda"
+      }
+    },
+    {
+      "userId": "2b0fab62-f56a-433b-a1b1-f5b72b425777",
+      "fullName": "SHAMSHUL Huda",
+      "firstName": "SHAMSHUL",
+      "email": "shamshulhuda64000@gmail.com",
+      "phone": null,
+      "reservedHandle": "shamshulhuda1",
+      "passportUrl": "https://talentxcel.in/u/shamshulhuda1",
+      "verifyUrl": "https://talentxcel.in/verify/shamshulhuda1",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "shamshulhuda64000@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@shamshulhuda1) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/shamshulhuda1?claim=shamshulhuda1&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi SHAMSHUL! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/shamshulhuda1*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/shamshulhuda1?claim=shamshulhuda1"
+      }
+    },
+    {
+      "userId": "cf98d61b-0e7a-475e-847f-d8289bf7c7d5",
+      "fullName": "Test User",
+      "firstName": "Test",
+      "email": "test@example.com",
+      "phone": null,
+      "reservedHandle": "test",
+      "passportUrl": "https://talentxcel.in/u/test",
+      "verifyUrl": "https://talentxcel.in/verify/test",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "test@example.com",
+        "subject": "Your TalentXcel Career Passport handle (@test) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/test?claim=test&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Test! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/test*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/test?claim=test"
+      }
+    },
+    {
+      "userId": "13c0ce9c-0b2d-4240-a8a7-a361e8c2f44e",
+      "fullName": "Rahul Dheeman",
+      "firstName": "Rahul",
+      "email": "rahuldhi74@gmail.com",
+      "phone": null,
+      "reservedHandle": "rahuldheeman",
+      "passportUrl": "https://talentxcel.in/u/rahuldheeman",
+      "verifyUrl": "https://talentxcel.in/verify/rahuldheeman",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "rahuldhi74@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@rahuldheeman) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/rahuldheeman?claim=rahuldheeman&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Rahul! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/rahuldheeman*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/rahuldheeman?claim=rahuldheeman"
+      }
+    },
+    {
+      "userId": "333891d1-8605-4adb-b359-09b1b8429d3b",
+      "fullName": "Kumar Raja",
+      "firstName": "Kumar",
+      "email": "kumar.aug09@gmail.com",
+      "phone": null,
+      "reservedHandle": "kumarraja",
+      "passportUrl": "https://talentxcel.in/u/kumarraja",
+      "verifyUrl": "https://talentxcel.in/verify/kumarraja",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "kumar.aug09@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kumarraja) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kumarraja?claim=kumarraja&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Kumar! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kumarraja*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kumarraja?claim=kumarraja"
+      }
+    },
+    {
+      "userId": "718d76c0-fdca-4295-bc72-72e1308be5e2",
+      "fullName": "Abhijeet Panwar",
+      "firstName": "Abhijeet",
+      "email": "abhijeetpanwar0@gmail.com",
+      "phone": null,
+      "reservedHandle": "abhijeetpanwar",
+      "passportUrl": "https://talentxcel.in/u/abhijeetpanwar",
+      "verifyUrl": "https://talentxcel.in/verify/abhijeetpanwar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "abhijeetpanwar0@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@abhijeetpanwar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/abhijeetpanwar?claim=abhijeetpanwar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Abhijeet! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/abhijeetpanwar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/abhijeetpanwar?claim=abhijeetpanwar"
+      }
+    },
+    {
+      "userId": "c130093c-00c5-4da9-b639-6f1406483323",
+      "fullName": "Rokula Sai Krishna",
+      "firstName": "Rokula",
+      "email": "sai.rokula@gmail.com",
+      "phone": null,
+      "reservedHandle": "rokulasaikrishna",
+      "passportUrl": "https://talentxcel.in/u/rokulasaikrishna",
+      "verifyUrl": "https://talentxcel.in/verify/rokulasaikrishna",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sai.rokula@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@rokulasaikrishna) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/rokulasaikrishna?claim=rokulasaikrishna&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Rokula! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/rokulasaikrishna*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/rokulasaikrishna?claim=rokulasaikrishna"
+      }
+    },
+    {
+      "userId": "b86e7d63-b2c2-4f24-a035-fd8969076486",
+      "fullName": "Tummala Vamsi Abhishek",
+      "firstName": "Tummala",
+      "email": "vamsiabhishek77@gmail.com",
+      "phone": null,
+      "reservedHandle": "tummalavamsiabhishek",
+      "passportUrl": "https://talentxcel.in/u/tummalavamsiabhishek",
+      "verifyUrl": "https://talentxcel.in/verify/tummalavamsiabhishek",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "vamsiabhishek77@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@tummalavamsiabhishek) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/tummalavamsiabhishek?claim=tummalavamsiabhishek&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Tummala! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/tummalavamsiabhishek*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/tummalavamsiabhishek?claim=tummalavamsiabhishek"
+      }
+    },
+    {
+      "userId": "61276010-0ea1-4e62-8410-c5d4adf85c98",
+      "fullName": "Bibek Yadav",
+      "firstName": "Bibek",
+      "email": "yadavvivek776@gmail.com",
+      "phone": null,
+      "reservedHandle": "bibekyadav",
+      "passportUrl": "https://talentxcel.in/u/bibekyadav",
+      "verifyUrl": "https://talentxcel.in/verify/bibekyadav",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "yadavvivek776@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@bibekyadav) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/bibekyadav?claim=bibekyadav&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Bibek! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/bibekyadav*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/bibekyadav?claim=bibekyadav"
+      }
+    },
+    {
+      "userId": "f0b46065-5af0-4adf-b5aa-7b94e54d728f",
+      "fullName": "Vimal Kumar",
+      "firstName": "Vimal",
+      "email": "15995vimal@gmail.com",
+      "phone": null,
+      "reservedHandle": "vimalkumar",
+      "passportUrl": "https://talentxcel.in/u/vimalkumar",
+      "verifyUrl": "https://talentxcel.in/verify/vimalkumar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "15995vimal@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@vimalkumar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/vimalkumar?claim=vimalkumar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Vimal! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/vimalkumar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/vimalkumar?claim=vimalkumar"
+      }
+    },
+    {
+      "userId": "395e1293-939e-4491-a0dd-731775f36043",
+      "fullName": "Harshit",
+      "firstName": "Harshit",
+      "email": "harshittakhi1234@gmail.com",
+      "phone": null,
+      "reservedHandle": "harshit",
+      "passportUrl": "https://talentxcel.in/u/harshit",
+      "verifyUrl": "https://talentxcel.in/verify/harshit",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "harshittakhi1234@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@harshit) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/harshit?claim=harshit&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Harshit! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/harshit*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/harshit?claim=harshit"
+      }
+    },
+    {
+      "userId": "c5e8f820-38b3-4194-afec-00ab4a81fb22",
+      "fullName": "Kunika Sharma",
+      "firstName": "Kunika",
+      "email": "kunns151095@gmail.com",
+      "phone": null,
+      "reservedHandle": "kunikasharma",
+      "passportUrl": "https://talentxcel.in/u/kunikasharma",
+      "verifyUrl": "https://talentxcel.in/verify/kunikasharma",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "kunns151095@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kunikasharma) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kunikasharma?claim=kunikasharma&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Kunika! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kunikasharma*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kunikasharma?claim=kunikasharma"
+      }
+    },
+    {
+      "userId": "20038a33-d13f-4212-8e23-6c56fe06a498",
+      "fullName": "Palle Pavan Kumar Reddy",
+      "firstName": "Palle",
+      "email": "pavan231231@gmail.com",
+      "phone": null,
+      "reservedHandle": "pallepavankumarreddy",
+      "passportUrl": "https://talentxcel.in/u/pallepavankumarreddy",
+      "verifyUrl": "https://talentxcel.in/verify/pallepavankumarreddy",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "pavan231231@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@pallepavankumarreddy) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/pallepavankumarreddy?claim=pallepavankumarreddy&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Palle! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/pallepavankumarreddy*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/pallepavankumarreddy?claim=pallepavankumarreddy"
+      }
+    },
+    {
+      "userId": "58acbf3b-334c-4e99-9dd2-3d2d52078072",
+      "fullName": "Nityanand Bhardwaj",
+      "firstName": "Nityanand",
+      "email": "nbhj123@gmail.com",
+      "phone": null,
+      "reservedHandle": "nityanandbhardwaj",
+      "passportUrl": "https://talentxcel.in/u/nityanandbhardwaj",
+      "verifyUrl": "https://talentxcel.in/verify/nityanandbhardwaj",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "nbhj123@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@nityanandbhardwaj) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/nityanandbhardwaj?claim=nityanandbhardwaj&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Nityanand! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/nityanandbhardwaj*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/nityanandbhardwaj?claim=nityanandbhardwaj"
+      }
+    },
+    {
+      "userId": "97f99fec-d3da-414c-a768-17f5dcefcb98",
+      "fullName": "Sourabh Choudhary",
+      "firstName": "Sourabh",
+      "email": "sourabh_choudhary@yahoo.com",
+      "phone": null,
+      "reservedHandle": "sourabhchoudhary",
+      "passportUrl": "https://talentxcel.in/u/sourabhchoudhary",
+      "verifyUrl": "https://talentxcel.in/verify/sourabhchoudhary",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sourabh_choudhary@yahoo.com",
+        "subject": "Your TalentXcel Career Passport handle (@sourabhchoudhary) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sourabhchoudhary?claim=sourabhchoudhary&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Sourabh! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sourabhchoudhary*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sourabhchoudhary?claim=sourabhchoudhary"
+      }
+    },
+    {
+      "userId": "e0cbc3a0-bac7-40fe-9fbc-9e8a8a65a1ec",
+      "fullName": "Shubham Kumar Singh",
+      "firstName": "Shubham",
+      "email": "singhshubham950@gmail.com",
+      "phone": null,
+      "reservedHandle": "shubhamkumarsingh",
+      "passportUrl": "https://talentxcel.in/u/shubhamkumarsingh",
+      "verifyUrl": "https://talentxcel.in/verify/shubhamkumarsingh",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "singhshubham950@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@shubhamkumarsingh) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/shubhamkumarsingh?claim=shubhamkumarsingh&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Shubham! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/shubhamkumarsingh*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/shubhamkumarsingh?claim=shubhamkumarsingh"
+      }
+    },
+    {
+      "userId": "8096683f-7808-43c3-bdc1-ea5937e6a579",
+      "fullName": "Naveen Kumar K",
+      "firstName": "Naveen",
+      "email": "katakamnk@gmail.com",
+      "phone": null,
+      "reservedHandle": "naveenkumark",
+      "passportUrl": "https://talentxcel.in/u/naveenkumark",
+      "verifyUrl": "https://talentxcel.in/verify/naveenkumark",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "katakamnk@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@naveenkumark) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/naveenkumark?claim=naveenkumark&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Naveen! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/naveenkumark*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/naveenkumark?claim=naveenkumark"
+      }
+    },
+    {
+      "userId": "8774d93d-b20c-47fd-ab92-9a07ba75d682",
+      "fullName": "Anju V",
+      "firstName": "Anju",
+      "email": "luckyanju3120@gmail.com",
+      "phone": null,
+      "reservedHandle": "anjuv",
+      "passportUrl": "https://talentxcel.in/u/anjuv",
+      "verifyUrl": "https://talentxcel.in/verify/anjuv",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "luckyanju3120@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@anjuv) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/anjuv?claim=anjuv&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Anju! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/anjuv*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/anjuv?claim=anjuv"
+      }
+    },
+    {
+      "userId": "98f6e3f2-ce07-467c-92e2-ed5422e12279",
+      "fullName": "Mavuram Vamshi Krishna Reddy",
+      "firstName": "Mavuram",
+      "email": "mavuramvamshikrishna27@gmail.com",
+      "phone": null,
+      "reservedHandle": "mavuramvamshikrishna",
+      "passportUrl": "https://talentxcel.in/u/mavuramvamshikrishna",
+      "verifyUrl": "https://talentxcel.in/verify/mavuramvamshikrishna",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mavuramvamshikrishna27@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@mavuramvamshikrishna) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/mavuramvamshikrishna?claim=mavuramvamshikrishna&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Mavuram! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/mavuramvamshikrishna*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/mavuramvamshikrishna?claim=mavuramvamshikrishna"
+      }
+    },
+    {
+      "userId": "25343170-ca6a-4e6a-b110-ad43c4f30312",
+      "fullName": "Tadipatri Mohammed Rizwanulla",
+      "firstName": "Tadipatri",
+      "email": "mdpr8801@gmail.com",
+      "phone": null,
+      "reservedHandle": "tadipatrimohammedriz",
+      "passportUrl": "https://talentxcel.in/u/tadipatrimohammedriz",
+      "verifyUrl": "https://talentxcel.in/verify/tadipatrimohammedriz",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mdpr8801@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@tadipatrimohammedriz) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/tadipatrimohammedriz?claim=tadipatrimohammedriz&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Tadipatri! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/tadipatrimohammedriz*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/tadipatrimohammedriz?claim=tadipatrimohammedriz"
+      }
+    },
+    {
+      "userId": "7ef069c9-4449-44af-847d-921b5bf51a2a",
+      "fullName": "Arnab Maji",
+      "firstName": "Arnab",
+      "email": "arnabmaji95@gmail.com",
+      "phone": null,
+      "reservedHandle": "arnabmaji",
+      "passportUrl": "https://talentxcel.in/u/arnabmaji",
+      "verifyUrl": "https://talentxcel.in/verify/arnabmaji",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "arnabmaji95@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@arnabmaji) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/arnabmaji?claim=arnabmaji&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Arnab! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/arnabmaji*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/arnabmaji?claim=arnabmaji"
+      }
+    },
+    {
+      "userId": "ed0ca3fd-342b-4bb7-b62c-762c90084c5d",
+      "fullName": "Rangareddygari Ramaneeshkumar Reddy",
+      "firstName": "Rangareddygari",
+      "email": "ramanesh78@gmail.com",
+      "phone": null,
+      "reservedHandle": "rangareddygariramane",
+      "passportUrl": "https://talentxcel.in/u/rangareddygariramane",
+      "verifyUrl": "https://talentxcel.in/verify/rangareddygariramane",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "ramanesh78@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@rangareddygariramane) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/rangareddygariramane?claim=rangareddygariramane&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Rangareddygari! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/rangareddygariramane*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/rangareddygariramane?claim=rangareddygariramane"
+      }
+    },
+    {
+      "userId": "7e57a05a-2877-4216-a6ea-a72fb7a82883",
+      "fullName": "Aamir Ameen",
+      "firstName": "Aamir",
+      "email": "aamirameen79@gmail.com",
+      "phone": null,
+      "reservedHandle": "aamirameen",
+      "passportUrl": "https://talentxcel.in/u/aamirameen",
+      "verifyUrl": "https://talentxcel.in/verify/aamirameen",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "aamirameen79@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@aamirameen) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/aamirameen?claim=aamirameen&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Aamir! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/aamirameen*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/aamirameen?claim=aamirameen"
+      }
+    },
+    {
+      "userId": "e62e0c62-6959-4380-b578-f654b1f58514",
+      "fullName": "Balabhadruni Hemalatha",
+      "firstName": "Balabhadruni",
+      "email": "hbalabadruni@gmail.com",
+      "phone": null,
+      "reservedHandle": "balabhadrunihemalath",
+      "passportUrl": "https://talentxcel.in/u/balabhadrunihemalath",
+      "verifyUrl": "https://talentxcel.in/verify/balabhadrunihemalath",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "hbalabadruni@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@balabhadrunihemalath) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/balabhadrunihemalath?claim=balabhadrunihemalath&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Balabhadruni! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/balabhadrunihemalath*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/balabhadrunihemalath?claim=balabhadrunihemalath"
+      }
+    },
+    {
+      "userId": "ee0e18ca-548c-4351-a9e7-e1886ec02c61",
+      "fullName": "Anchal Sharma",
+      "firstName": "Anchal",
+      "email": "anchalcs11@gmail.com",
+      "phone": null,
+      "reservedHandle": "anchalsharma",
+      "passportUrl": "https://talentxcel.in/u/anchalsharma",
+      "verifyUrl": "https://talentxcel.in/verify/anchalsharma",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "anchalcs11@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@anchalsharma) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/anchalsharma?claim=anchalsharma&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Anchal! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/anchalsharma*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/anchalsharma?claim=anchalsharma"
+      }
+    },
+    {
+      "userId": "dd4b2344-28a8-4c9b-b8ac-d2d677c6c269",
+      "fullName": "Shivam Singhal",
+      "firstName": "Shivam",
+      "email": "singhalshivam313@gmail.com",
+      "phone": null,
+      "reservedHandle": "shivamsinghal",
+      "passportUrl": "https://talentxcel.in/u/shivamsinghal",
+      "verifyUrl": "https://talentxcel.in/verify/shivamsinghal",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "singhalshivam313@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@shivamsinghal) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/shivamsinghal?claim=shivamsinghal&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Shivam! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/shivamsinghal*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/shivamsinghal?claim=shivamsinghal"
+      }
+    },
+    {
+      "userId": "0fcacde8-3ef1-4dda-be43-038e094d25b3",
+      "fullName": "Pratishtha Saxena",
+      "firstName": "Pratishtha",
+      "email": "pratishthasaxena1997@gmail.com",
+      "phone": null,
+      "reservedHandle": "pratishthasaxena",
+      "passportUrl": "https://talentxcel.in/u/pratishthasaxena",
+      "verifyUrl": "https://talentxcel.in/verify/pratishthasaxena",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "pratishthasaxena1997@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@pratishthasaxena) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/pratishthasaxena?claim=pratishthasaxena&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Pratishtha! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/pratishthasaxena*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/pratishthasaxena?claim=pratishthasaxena"
+      }
+    },
+    {
+      "userId": "bbce761e-62ac-4963-ac63-15258a236efa",
+      "fullName": "Kasina Naga Sai Mounika",
+      "firstName": "Kasina",
+      "email": "mounika.kasina@gmail.com",
+      "phone": null,
+      "reservedHandle": "kasinanagasaimounika",
+      "passportUrl": "https://talentxcel.in/u/kasinanagasaimounika",
+      "verifyUrl": "https://talentxcel.in/verify/kasinanagasaimounika",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mounika.kasina@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kasinanagasaimounika) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kasinanagasaimounika?claim=kasinanagasaimounika&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Kasina! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kasinanagasaimounika*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kasinanagasaimounika?claim=kasinanagasaimounika"
+      }
+    },
+    {
+      "userId": "442f406f-b94c-4492-916e-ea79f8a8b3e3",
+      "fullName": "Ritika Sharma",
+      "firstName": "Ritika",
+      "email": "ritikacs406@gmail.com",
+      "phone": null,
+      "reservedHandle": "ritikasharma",
+      "passportUrl": "https://talentxcel.in/u/ritikasharma",
+      "verifyUrl": "https://talentxcel.in/verify/ritikasharma",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "ritikacs406@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@ritikasharma) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/ritikasharma?claim=ritikasharma&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Ritika! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/ritikasharma*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/ritikasharma?claim=ritikasharma"
+      }
+    },
+    {
+      "userId": "fb9dfafc-94b2-464c-86df-0115a9b10728",
+      "fullName": "Sanchita Pal",
+      "firstName": "Sanchita",
+      "email": "sanchitapal02@gmail.com",
+      "phone": null,
+      "reservedHandle": "sanchitapal",
+      "passportUrl": "https://talentxcel.in/u/sanchitapal",
+      "verifyUrl": "https://talentxcel.in/verify/sanchitapal",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sanchitapal02@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@sanchitapal) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sanchitapal?claim=sanchitapal&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Sanchita! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sanchitapal*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sanchitapal?claim=sanchitapal"
+      }
+    },
+    {
+      "userId": "974ad3f9-c83d-4f7b-97a2-cd907d6db4d0",
+      "fullName": "Chukka Sravan Kumar",
+      "firstName": "Chukka",
+      "email": "kumarsravan190@gmail.com",
+      "phone": null,
+      "reservedHandle": "chukkasravankumar",
+      "passportUrl": "https://talentxcel.in/u/chukkasravankumar",
+      "verifyUrl": "https://talentxcel.in/verify/chukkasravankumar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "kumarsravan190@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@chukkasravankumar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/chukkasravankumar?claim=chukkasravankumar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Chukka! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/chukkasravankumar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/chukkasravankumar?claim=chukkasravankumar"
+      }
+    },
+    {
+      "userId": "4b371560-a1b0-4d71-b5a0-bbc07d837b19",
+      "fullName": "Bhavna Saini",
+      "firstName": "Bhavna",
+      "email": "sainibhavna89@gmail.com",
+      "phone": null,
+      "reservedHandle": "bhavnasaini",
+      "passportUrl": "https://talentxcel.in/u/bhavnasaini",
+      "verifyUrl": "https://talentxcel.in/verify/bhavnasaini",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sainibhavna89@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@bhavnasaini) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/bhavnasaini?claim=bhavnasaini&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Bhavna! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/bhavnasaini*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/bhavnasaini?claim=bhavnasaini"
+      }
+    },
+    {
+      "userId": "db1c6e00-7f16-469a-9ee2-8ea5768387fa",
+      "fullName": "Mohammed Abdul Shukur",
+      "firstName": "Mohammed",
+      "email": "sajidrock36@gmail.com",
+      "phone": null,
+      "reservedHandle": "mohammedabdulshukur",
+      "passportUrl": "https://talentxcel.in/u/mohammedabdulshukur",
+      "verifyUrl": "https://talentxcel.in/verify/mohammedabdulshukur",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sajidrock36@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@mohammedabdulshukur) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/mohammedabdulshukur?claim=mohammedabdulshukur&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Mohammed! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/mohammedabdulshukur*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/mohammedabdulshukur?claim=mohammedabdulshukur"
+      }
+    },
+    {
+      "userId": "a4d3dfd3-50f1-4ffb-a545-9e7c3d8b34ff",
+      "fullName": "Mayank Tokas",
+      "firstName": "Mayank",
+      "email": "mayanktokas12091996@gmail.com",
+      "phone": null,
+      "reservedHandle": "mayanktokas",
+      "passportUrl": "https://talentxcel.in/u/mayanktokas",
+      "verifyUrl": "https://talentxcel.in/verify/mayanktokas",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mayanktokas12091996@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@mayanktokas) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/mayanktokas?claim=mayanktokas&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Mayank! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/mayanktokas*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/mayanktokas?claim=mayanktokas"
+      }
+    },
+    {
+      "userId": "07cb9aec-3e97-41b1-b955-1a181e32549a",
+      "fullName": "Abhinav Goel",
+      "firstName": "Abhinav",
+      "email": "abhinavgoel1996@gmail.com",
+      "phone": null,
+      "reservedHandle": "abhinavgoel",
+      "passportUrl": "https://talentxcel.in/u/abhinavgoel",
+      "verifyUrl": "https://talentxcel.in/verify/abhinavgoel",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "abhinavgoel1996@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@abhinavgoel) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/abhinavgoel?claim=abhinavgoel&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Abhinav! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/abhinavgoel*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/abhinavgoel?claim=abhinavgoel"
+      }
+    },
+    {
+      "userId": "57832a8e-05c9-4c3d-bed8-f8885ca14027",
+      "fullName": "Kanuboyina Hima Kavya",
+      "firstName": "Kanuboyina",
+      "email": "kavyakanuboyina123@gmail.com",
+      "phone": null,
+      "reservedHandle": "kanuboyinahimakavya",
+      "passportUrl": "https://talentxcel.in/u/kanuboyinahimakavya",
+      "verifyUrl": "https://talentxcel.in/verify/kanuboyinahimakavya",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "kavyakanuboyina123@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kanuboyinahimakavya) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kanuboyinahimakavya?claim=kanuboyinahimakavya&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Kanuboyina! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kanuboyinahimakavya*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kanuboyinahimakavya?claim=kanuboyinahimakavya"
+      }
+    },
+    {
+      "userId": "aae97874-e955-4f50-a5b7-59ddd7226770",
+      "fullName": "Padala Chamundeswari",
+      "firstName": "Padala",
+      "email": "chamupadala98@gmail.com",
+      "phone": null,
+      "reservedHandle": "padalachamundeswari",
+      "passportUrl": "https://talentxcel.in/u/padalachamundeswari",
+      "verifyUrl": "https://talentxcel.in/verify/padalachamundeswari",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "chamupadala98@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@padalachamundeswari) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/padalachamundeswari?claim=padalachamundeswari&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Padala! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/padalachamundeswari*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/padalachamundeswari?claim=padalachamundeswari"
+      }
+    },
+    {
+      "userId": "0ac2fd7f-1e99-4d39-ae88-9250200ef033",
+      "fullName": "Gowri Prasad Nakka",
+      "firstName": "Gowri",
+      "email": "ngprasad1994@gmail.com",
+      "phone": null,
+      "reservedHandle": "gowriprasadnakka",
+      "passportUrl": "https://talentxcel.in/u/gowriprasadnakka",
+      "verifyUrl": "https://talentxcel.in/verify/gowriprasadnakka",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "ngprasad1994@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@gowriprasadnakka) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/gowriprasadnakka?claim=gowriprasadnakka&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Gowri! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/gowriprasadnakka*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/gowriprasadnakka?claim=gowriprasadnakka"
+      }
+    },
+    {
+      "userId": "098bcc8c-f83b-4414-852f-b4ddf6e4e7ea",
+      "fullName": "M Nohitha",
+      "firstName": "M",
+      "email": "mummadinohitha@gmail.com",
+      "phone": null,
+      "reservedHandle": "mnohitha",
+      "passportUrl": "https://talentxcel.in/u/mnohitha",
+      "verifyUrl": "https://talentxcel.in/verify/mnohitha",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mummadinohitha@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@mnohitha) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/mnohitha?claim=mnohitha&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi M! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/mnohitha*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/mnohitha?claim=mnohitha"
+      }
+    },
+    {
+      "userId": "64dcc07f-c11a-4dbf-ae1c-3ddcb17e4c04",
+      "fullName": "Abhishek Chand Pandey",
+      "firstName": "Abhishek",
+      "email": "pandeyabhi0014@gmail.com",
+      "phone": null,
+      "reservedHandle": "abhishekchandpandey",
+      "passportUrl": "https://talentxcel.in/u/abhishekchandpandey",
+      "verifyUrl": "https://talentxcel.in/verify/abhishekchandpandey",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "pandeyabhi0014@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@abhishekchandpandey) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/abhishekchandpandey?claim=abhishekchandpandey&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Abhishek! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/abhishekchandpandey*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/abhishekchandpandey?claim=abhishekchandpandey"
+      }
+    },
+    {
+      "userId": "44a44f4b-9d51-4049-a689-76e4d46b6a84",
+      "fullName": "Sriram Vikas",
+      "firstName": "Sriram",
+      "email": "sriramvikas1996@gmail.com",
+      "phone": null,
+      "reservedHandle": "sriramvikas",
+      "passportUrl": "https://talentxcel.in/u/sriramvikas",
+      "verifyUrl": "https://talentxcel.in/verify/sriramvikas",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sriramvikas1996@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@sriramvikas) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/sriramvikas?claim=sriramvikas&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Sriram! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/sriramvikas*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/sriramvikas?claim=sriramvikas"
+      }
+    },
+    {
+      "userId": "b43eb143-e9b8-45fc-803a-748d953e307d",
+      "fullName": "Vasamsetti Bala Satya Teja",
+      "firstName": "Vasamsetti",
+      "email": "vbs.teja@gmail.com",
+      "phone": null,
+      "reservedHandle": "vasamsettibalasatyat",
+      "passportUrl": "https://talentxcel.in/u/vasamsettibalasatyat",
+      "verifyUrl": "https://talentxcel.in/verify/vasamsettibalasatyat",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "vbs.teja@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@vasamsettibalasatyat) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/vasamsettibalasatyat?claim=vasamsettibalasatyat&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Vasamsetti! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/vasamsettibalasatyat*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/vasamsettibalasatyat?claim=vasamsettibalasatyat"
+      }
+    },
+    {
+      "userId": "f75f2d63-6e56-43ca-9f84-581aa7b36174",
+      "fullName": "Reddy Muthyam Gunda",
+      "firstName": "Reddy",
+      "email": "muthyamreddy24@gmail.com",
+      "phone": null,
+      "reservedHandle": "reddymuthyamgunda",
+      "passportUrl": "https://talentxcel.in/u/reddymuthyamgunda",
+      "verifyUrl": "https://talentxcel.in/verify/reddymuthyamgunda",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "muthyamreddy24@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@reddymuthyamgunda) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/reddymuthyamgunda?claim=reddymuthyamgunda&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Reddy! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/reddymuthyamgunda*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/reddymuthyamgunda?claim=reddymuthyamgunda"
+      }
+    },
+    {
+      "userId": "188b995e-d87a-440a-adbb-15db4a3856a0",
+      "fullName": "Galla Naveen Srimannarayana",
+      "firstName": "Galla",
+      "email": "naveensmiling333@gmail.com",
+      "phone": null,
+      "reservedHandle": "gallanaveensrimannar",
+      "passportUrl": "https://talentxcel.in/u/gallanaveensrimannar",
+      "verifyUrl": "https://talentxcel.in/verify/gallanaveensrimannar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "naveensmiling333@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@gallanaveensrimannar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/gallanaveensrimannar?claim=gallanaveensrimannar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Galla! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/gallanaveensrimannar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/gallanaveensrimannar?claim=gallanaveensrimannar"
+      }
+    },
+    {
+      "userId": "99d68fa7-4cd4-457b-91e2-b7a3513b8b6c",
+      "fullName": "Siddhant Gupta",
+      "firstName": "Siddhant",
+      "email": "siddhantgupta335@gmail.com",
+      "phone": null,
+      "reservedHandle": "siddhantgupta",
+      "passportUrl": "https://talentxcel.in/u/siddhantgupta",
+      "verifyUrl": "https://talentxcel.in/verify/siddhantgupta",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "siddhantgupta335@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@siddhantgupta) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/siddhantgupta?claim=siddhantgupta&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Siddhant! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/siddhantgupta*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/siddhantgupta?claim=siddhantgupta"
+      }
+    },
+    {
+      "userId": "2c29de7d-070b-4ccc-8e25-1b18b3e41289",
+      "fullName": "Chikkala Eswar Uttej",
+      "firstName": "Chikkala",
+      "email": "eswar.uttej@gmail.com",
+      "phone": null,
+      "reservedHandle": "chikkalaeswaruttej",
+      "passportUrl": "https://talentxcel.in/u/chikkalaeswaruttej",
+      "verifyUrl": "https://talentxcel.in/verify/chikkalaeswaruttej",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "eswar.uttej@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@chikkalaeswaruttej) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/chikkalaeswaruttej?claim=chikkalaeswaruttej&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Chikkala! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/chikkalaeswaruttej*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/chikkalaeswaruttej?claim=chikkalaeswaruttej"
+      }
+    },
+    {
+      "userId": "6f5a38bf-b399-446b-8589-4981517d9d16",
+      "fullName": "Himanshu Malhotra",
+      "firstName": "Himanshu",
+      "email": "himans12345@gmail.com",
+      "phone": null,
+      "reservedHandle": "himanshumalhotra",
+      "passportUrl": "https://talentxcel.in/u/himanshumalhotra",
+      "verifyUrl": "https://talentxcel.in/verify/himanshumalhotra",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "himans12345@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@himanshumalhotra) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/himanshumalhotra?claim=himanshumalhotra&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Himanshu! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/himanshumalhotra*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/himanshumalhotra?claim=himanshumalhotra"
+      }
+    },
+    {
+      "userId": "a3e31f44-b10e-41e6-9d42-8a2938dd5bca",
+      "fullName": "Bollu Vishlesh Kumar",
+      "firstName": "Bollu",
+      "email": "vishleshkumar9665@gmail.com",
+      "phone": null,
+      "reservedHandle": "bolluvishleshkumar",
+      "passportUrl": "https://talentxcel.in/u/bolluvishleshkumar",
+      "verifyUrl": "https://talentxcel.in/verify/bolluvishleshkumar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "vishleshkumar9665@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@bolluvishleshkumar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/bolluvishleshkumar?claim=bolluvishleshkumar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Bollu! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/bolluvishleshkumar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/bolluvishleshkumar?claim=bolluvishleshkumar"
+      }
+    },
+    {
+      "userId": "5203a28d-69b8-4b49-8edd-97b09fe5dec0",
+      "fullName": "Eedara Srikar",
+      "firstName": "Eedara",
+      "email": "srikarur8@gmail.com",
+      "phone": null,
+      "reservedHandle": "eedarasrikar",
+      "passportUrl": "https://talentxcel.in/u/eedarasrikar",
+      "verifyUrl": "https://talentxcel.in/verify/eedarasrikar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "srikarur8@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@eedarasrikar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/eedarasrikar?claim=eedarasrikar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Eedara! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/eedarasrikar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/eedarasrikar?claim=eedarasrikar"
+      }
+    },
+    {
+      "userId": "a5d49959-afcf-4de4-995b-054e27e3266f",
+      "fullName": "Jangam Rajesh",
+      "firstName": "Jangam",
+      "email": "jangamrajesh.jr@gmail.com",
+      "phone": null,
+      "reservedHandle": "jangamrajesh",
+      "passportUrl": "https://talentxcel.in/u/jangamrajesh",
+      "verifyUrl": "https://talentxcel.in/verify/jangamrajesh",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "jangamrajesh.jr@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@jangamrajesh) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/jangamrajesh?claim=jangamrajesh&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Jangam! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/jangamrajesh*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/jangamrajesh?claim=jangamrajesh"
+      }
+    },
+    {
+      "userId": "de9652d1-c4bc-4ce8-945a-f23ec252b036",
+      "fullName": "Yamujala Priyanka",
+      "firstName": "Yamujala",
+      "email": "priyankayamujala@gmail.com",
+      "phone": null,
+      "reservedHandle": "yamujalapriyanka",
+      "passportUrl": "https://talentxcel.in/u/yamujalapriyanka",
+      "verifyUrl": "https://talentxcel.in/verify/yamujalapriyanka",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "priyankayamujala@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@yamujalapriyanka) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/yamujalapriyanka?claim=yamujalapriyanka&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Yamujala! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/yamujalapriyanka*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/yamujalapriyanka?claim=yamujalapriyanka"
+      }
+    },
+    {
+      "userId": "0777868a-7f56-4611-959e-4d00b8cb5010",
+      "fullName": "Kedaram Vinay Kumar Chary",
+      "firstName": "Kedaram",
+      "email": "kedaramvinay1996@gmail.com",
+      "phone": null,
+      "reservedHandle": "kedaramvinaykumarcha",
+      "passportUrl": "https://talentxcel.in/u/kedaramvinaykumarcha",
+      "verifyUrl": "https://talentxcel.in/verify/kedaramvinaykumarcha",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "kedaramvinay1996@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kedaramvinaykumarcha) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kedaramvinaykumarcha?claim=kedaramvinaykumarcha&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Kedaram! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kedaramvinaykumarcha*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kedaramvinaykumarcha?claim=kedaramvinaykumarcha"
+      }
+    },
+    {
+      "userId": "d719bee7-5e7a-424a-b41c-5f0427d521ab",
+      "fullName": "Konduru Mohan Chandu",
+      "firstName": "Konduru",
+      "email": "mohanchandu36@gmail.com",
+      "phone": null,
+      "reservedHandle": "kondurumohanchandu",
+      "passportUrl": "https://talentxcel.in/u/kondurumohanchandu",
+      "verifyUrl": "https://talentxcel.in/verify/kondurumohanchandu",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mohanchandu36@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kondurumohanchandu) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kondurumohanchandu?claim=kondurumohanchandu&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Konduru! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kondurumohanchandu*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kondurumohanchandu?claim=kondurumohanchandu"
+      }
+    },
+    {
+      "userId": "50471abd-53b5-48e2-968c-ccb3cdaf5372",
+      "fullName": "Jagbir Singh Tatley",
+      "firstName": "Jagbir",
+      "email": "jagbirsingh9953@gmail.com",
+      "phone": null,
+      "reservedHandle": "jagbirsinghtatley",
+      "passportUrl": "https://talentxcel.in/u/jagbirsinghtatley",
+      "verifyUrl": "https://talentxcel.in/verify/jagbirsinghtatley",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "jagbirsingh9953@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@jagbirsinghtatley) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/jagbirsinghtatley?claim=jagbirsinghtatley&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Jagbir! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/jagbirsinghtatley*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/jagbirsinghtatley?claim=jagbirsinghtatley"
+      }
+    },
+    {
+      "userId": "f5cf8a4b-32a5-4c00-a582-e348f13a2269",
+      "fullName": "Syed Muzahid",
+      "firstName": "Syed",
+      "email": "mujahid.syed20@gmail.com",
+      "phone": null,
+      "reservedHandle": "syedmuzahid",
+      "passportUrl": "https://talentxcel.in/u/syedmuzahid",
+      "verifyUrl": "https://talentxcel.in/verify/syedmuzahid",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mujahid.syed20@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@syedmuzahid) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/syedmuzahid?claim=syedmuzahid&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Syed! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/syedmuzahid*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/syedmuzahid?claim=syedmuzahid"
+      }
+    },
+    {
+      "userId": "dfd38a0d-dd3c-4031-a7d6-91d627316422",
+      "fullName": "Mohd Saarim Javed",
+      "firstName": "Mohd",
+      "email": "javedsaarim@gmail.com",
+      "phone": null,
+      "reservedHandle": "mohdsaarimjaved",
+      "passportUrl": "https://talentxcel.in/u/mohdsaarimjaved",
+      "verifyUrl": "https://talentxcel.in/verify/mohdsaarimjaved",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "javedsaarim@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@mohdsaarimjaved) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/mohdsaarimjaved?claim=mohdsaarimjaved&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Mohd! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/mohdsaarimjaved*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/mohdsaarimjaved?claim=mohdsaarimjaved"
+      }
+    },
+    {
+      "userId": "47be7460-0027-4999-9614-fd6aaf72d92b",
+      "fullName": "Siddenki Rajashekar Reddy",
+      "firstName": "Siddenki",
+      "email": "rajshekarreddysiddenki@gmail.com",
+      "phone": null,
+      "reservedHandle": "siddenkirajashekarre",
+      "passportUrl": "https://talentxcel.in/u/siddenkirajashekarre",
+      "verifyUrl": "https://talentxcel.in/verify/siddenkirajashekarre",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "rajshekarreddysiddenki@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@siddenkirajashekarre) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/siddenkirajashekarre?claim=siddenkirajashekarre&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Siddenki! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/siddenkirajashekarre*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/siddenkirajashekarre?claim=siddenkirajashekarre"
+      }
+    },
+    {
+      "userId": "cd042f48-2520-4678-9d39-5861b52b3144",
+      "fullName": "Rahul Aggarwal",
+      "firstName": "Rahul",
+      "email": "mittalrahul441@gmail.com",
+      "phone": null,
+      "reservedHandle": "rahulaggarwal",
+      "passportUrl": "https://talentxcel.in/u/rahulaggarwal",
+      "verifyUrl": "https://talentxcel.in/verify/rahulaggarwal",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "mittalrahul441@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@rahulaggarwal) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/rahulaggarwal?claim=rahulaggarwal&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Rahul! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/rahulaggarwal*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/rahulaggarwal?claim=rahulaggarwal"
+      }
+    },
+    {
+      "userId": "53f041ec-bf31-4c02-ba86-1afb50f3f299",
+      "fullName": "Aakansha Singhal",
+      "firstName": "Aakansha",
+      "email": "singhalaakanksha7@gmail.com",
+      "phone": null,
+      "reservedHandle": "aakanshasinghal",
+      "passportUrl": "https://talentxcel.in/u/aakanshasinghal",
+      "verifyUrl": "https://talentxcel.in/verify/aakanshasinghal",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "singhalaakanksha7@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@aakanshasinghal) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/aakanshasinghal?claim=aakanshasinghal&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Aakansha! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/aakanshasinghal*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/aakanshasinghal?claim=aakanshasinghal"
+      }
+    },
+    {
+      "userId": "0b80d235-cd72-4770-9721-5f2f1df5c62a",
+      "fullName": "Ankit Panwar",
+      "firstName": "Ankit",
+      "email": "ankitpanwar32@gmail.com",
+      "phone": null,
+      "reservedHandle": "ankitpanwar",
+      "passportUrl": "https://talentxcel.in/u/ankitpanwar",
+      "verifyUrl": "https://talentxcel.in/verify/ankitpanwar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "ankitpanwar32@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@ankitpanwar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/ankitpanwar?claim=ankitpanwar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Ankit! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/ankitpanwar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/ankitpanwar?claim=ankitpanwar"
+      }
+    },
+    {
+      "userId": "f3f1f3e6-cd6b-47ce-8ed2-9788c4de68b6",
+      "fullName": "Akash Kumar",
+      "firstName": "Akash",
+      "email": "akashkumar4444@gmail.com",
+      "phone": null,
+      "reservedHandle": "akashkumar",
+      "passportUrl": "https://talentxcel.in/u/akashkumar",
+      "verifyUrl": "https://talentxcel.in/verify/akashkumar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "akashkumar4444@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@akashkumar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/akashkumar?claim=akashkumar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Akash! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/akashkumar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/akashkumar?claim=akashkumar"
+      }
+    },
+    {
+      "userId": "29813a6a-f067-4b29-afa1-a7197a37a268",
+      "fullName": "Navneet Gupta",
+      "firstName": "Navneet",
+      "email": "navneetatgne@gmail.com",
+      "phone": null,
+      "reservedHandle": "navneetgupta",
+      "passportUrl": "https://talentxcel.in/u/navneetgupta",
+      "verifyUrl": "https://talentxcel.in/verify/navneetgupta",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "navneetatgne@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@navneetgupta) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/navneetgupta?claim=navneetgupta&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Navneet! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/navneetgupta*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/navneetgupta?claim=navneetgupta"
+      }
+    },
+    {
+      "userId": "ee77faf8-9ac4-4102-bf4f-38844be6ee83",
+      "fullName": "Kallagunta Sindhusha",
+      "firstName": "Kallagunta",
+      "email": "sindhusha.kallagunta@gmail.com",
+      "phone": null,
+      "reservedHandle": "kallaguntasindhusha",
+      "passportUrl": "https://talentxcel.in/u/kallaguntasindhusha",
+      "verifyUrl": "https://talentxcel.in/verify/kallaguntasindhusha",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sindhusha.kallagunta@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@kallaguntasindhusha) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/kallaguntasindhusha?claim=kallaguntasindhusha&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Kallagunta! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/kallaguntasindhusha*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/kallaguntasindhusha?claim=kallaguntasindhusha"
+      }
+    },
+    {
+      "userId": "750f9016-e2df-4afa-a6f1-63a38e80086b",
+      "fullName": "Ruchika Singh",
+      "firstName": "Ruchika",
+      "email": "sruchika501@gmail.com",
+      "phone": null,
+      "reservedHandle": "ruchikasingh",
+      "passportUrl": "https://talentxcel.in/u/ruchikasingh",
+      "verifyUrl": "https://talentxcel.in/verify/ruchikasingh",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sruchika501@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@ruchikasingh) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/ruchikasingh?claim=ruchikasingh&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Ruchika! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/ruchikasingh*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/ruchikasingh?claim=ruchikasingh"
+      }
+    },
+    {
+      "userId": "29a07b8d-8217-408e-856b-a646b2dd8be7",
+      "fullName": "Abhishek Kumar",
+      "firstName": "Abhishek",
+      "email": "abhishek.kr909@gmail.com",
+      "phone": null,
+      "reservedHandle": "abhishekkumar",
+      "passportUrl": "https://talentxcel.in/u/abhishekkumar",
+      "verifyUrl": "https://talentxcel.in/verify/abhishekkumar",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "abhishek.kr909@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@abhishekkumar) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/abhishekkumar?claim=abhishekkumar&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Abhishek! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/abhishekkumar*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/abhishekkumar?claim=abhishekkumar"
+      }
+    },
+    {
+      "userId": "1cb887c8-6434-4b3e-a70a-eb57ad64a234",
+      "fullName": "Katyayni Bhatt",
+      "firstName": "Katyayni",
+      "email": "katyaynibhatt586@gmail.com",
+      "phone": null,
+      "reservedHandle": "katyaynibhatt",
+      "passportUrl": "https://talentxcel.in/u/katyaynibhatt",
+      "verifyUrl": "https://talentxcel.in/verify/katyaynibhatt",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "katyaynibhatt586@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@katyaynibhatt) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/katyaynibhatt?claim=katyaynibhatt&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Katyayni! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/katyaynibhatt*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/katyaynibhatt?claim=katyaynibhatt"
+      }
+    },
+    {
+      "userId": "7696e8b1-39ca-4f8d-af5b-55530cb8c76d",
+      "fullName": "Mohammad Shoyab Nihal",
+      "firstName": "Mohammad",
+      "email": "shoyabnihal@gmail.com",
+      "phone": null,
+      "reservedHandle": "mohammadshoyabnihal",
+      "passportUrl": "https://talentxcel.in/u/mohammadshoyabnihal",
+      "verifyUrl": "https://talentxcel.in/verify/mohammadshoyabnihal",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "shoyabnihal@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@mohammadshoyabnihal) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/mohammadshoyabnihal?claim=mohammadshoyabnihal&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Mohammad! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/mohammadshoyabnihal*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/mohammadshoyabnihal?claim=mohammadshoyabnihal"
+      }
+    },
+    {
+      "userId": "4c44567b-2bce-4f88-beb9-0e3394b2c7c7",
+      "fullName": "Srirangam Vamshi Krishna",
+      "firstName": "Srirangam",
+      "email": "vamshikrishnasrirangam123@gmail.com",
+      "phone": null,
+      "reservedHandle": "srirangamvamshikrish",
+      "passportUrl": "https://talentxcel.in/u/srirangamvamshikrish",
+      "verifyUrl": "https://talentxcel.in/verify/srirangamvamshikrish",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "vamshikrishnasrirangam123@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@srirangamvamshikrish) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/srirangamvamshikrish?claim=srirangamvamshikrish&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Srirangam! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/srirangamvamshikrish*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/srirangamvamshikrish?claim=srirangamvamshikrish"
+      }
+    },
+    {
+      "userId": "c0a5172c-2c38-48f6-8ecf-c293a9378311",
+      "fullName": "Satya Phani Sandeep Ganapabattula",
+      "firstName": "Satya",
+      "email": "sandeep.uma222@gmail.com",
+      "phone": null,
+      "reservedHandle": "satyaphanisandeepgan",
+      "passportUrl": "https://talentxcel.in/u/satyaphanisandeepgan",
+      "verifyUrl": "https://talentxcel.in/verify/satyaphanisandeepgan",
+      "creditsGranted": 10,
+      "txcGranted": 100,
+      "neededReservation": false,
+      "emailPayload": {
+        "to": "sandeep.uma222@gmail.com",
+        "subject": "Your TalentXcel Career Passport handle (@satyaphanisandeepgan) has been reserved (+10 AI Credits)",
+        "headline": "Claim your verified career identity before public release",
+        "ctaText": "Claim Your Career Passport",
+        "ctaUrl": "https://talentxcel.in/u/satyaphanisandeepgan?claim=satyaphanisandeepgan&welcome_bonus=10"
+      },
+      "whatsappPayload": {
+        "to": null,
+        "message": "Hi Satya! 🛡️ Your verified Career Passport handle (*talentxcel.in/u/satyaphanisandeepgan*) has been reserved on TalentXcel, and *+10 Welcome AI Credits* have been added to your account.\n\nClaim your handle & post your 30s intro on /network to appear at the top of recruiter searches:\n👉 https://talentxcel.in/u/satyaphanisandeepgan?claim=satyaphanisandeepgan"
+      }
+    }
+  ],
+  "totalCampaignsCount": 703
+}

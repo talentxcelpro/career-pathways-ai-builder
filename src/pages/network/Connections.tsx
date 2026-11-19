@@ -187,8 +187,12 @@ export const Connections: React.FC = () => {
           .select('id, full_name, title, headline, profile_picture_url, location, current_company, slug, custom_profile_url, username, is_online, last_seen, skills')
           .in('id', chunk);
 
-        if (error) {
-          console.error('Error fetching partner profiles:', error);
+        if (error || !data || data.length === 0) {
+          const { data: pubData } = await supabase
+            .from('public_profiles')
+            .select('id, full_name, title, headline, profile_picture_url, location, current_company, username')
+            .in('id', chunk);
+          if (pubData) allProfiles.push(...pubData);
         } else if (data) {
           allProfiles.push(...data);
         }

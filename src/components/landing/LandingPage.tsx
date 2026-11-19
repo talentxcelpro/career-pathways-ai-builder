@@ -12,6 +12,7 @@ import { SEOLandingPageLinks } from '@/components/seo/SEOLandingPageLinks';
 import { ChatrServiceSection } from './ChatrServiceSection';
 import { LandingFooter } from './LandingFooter';
 import { AboutTalentXcelSEO } from './AboutTalentXcelSEO';
+import { PassportClaimWidget } from '@/pages/passport/components/PassportClaimWidget';
 
 // Lazy load news widget for faster initial load
 const NewsLatestWidget = React.lazy(() => 
@@ -26,6 +27,9 @@ export const LandingPage = () => {
       <FeaturesSection />
       <ProductVideoSection />
       <ChatrServiceSection />
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <PassportClaimWidget />
+      </div>
       <SEOJobCategories />
       <SEOLandingPageLinks />
       <div className="max-w-7xl mx-auto px-4 py-8">

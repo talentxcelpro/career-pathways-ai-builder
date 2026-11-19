@@ -150,15 +150,15 @@ async function run() {
   };
 
   const ctaLinks = {
-    'tech': 'https://resume.talentxcel.in?utm_source=social_digest&utm_medium=tech&utm_campaign=daily_' + dateIso,
-    'non-tech': 'https://salary.talentxcel.in?utm_source=social_digest&utm_medium=non_tech&utm_campaign=daily_' + dateIso,
-    'core-industry': 'https://passport.talentxcel.in?utm_source=social_digest&utm_medium=core&utm_campaign=daily_' + dateIso
+    'tech': 'https://talentxcel.in/ats-check?utm_source=social_digest&utm_medium=tech&utm_campaign=daily_' + dateIso,
+    'non-tech': 'https://talentxcel.in/passport?utm_source=social_digest&utm_medium=non_tech&utm_campaign=daily_' + dateIso,
+    'core-industry': 'https://talentxcel.in/passport?utm_source=social_digest&utm_medium=core&utm_campaign=daily_' + dateIso
   };
 
   const ctaTexts = {
-    'tech': '⚠️ Over 70% of tech resumes fail automated ATS screening. Scan your resume free in 10 seconds:\n👉 Free ATS Scanner: ' + ctaLinks['tech'],
-    'non-tech': '💡 Curious about true in-hand take-home salary in your city? Calculate under New Tax Regime:\n👉 Free PayScale Calculator: ' + ctaLinks['non-tech'],
-    'core-industry': '🛡️ Stand out to industrial and PSU hiring committees with a tamper-proof verified Career Passport:\n👉 Claim Career Passport: ' + ctaLinks['core-industry']
+    'tech': '⚡ Check if your resume passes ATS in 5 seconds (Free 1-Click Scan):\n👉 Free ATS Diagnostic: ' + ctaLinks['tech'] + '\n\n🛡️ Claim your verified Career Passport handle (talentxcel.in/u/yourname):\n👉 Claim Career Passport: https://talentxcel.in/passport?utm_source=social_digest&utm_campaign=daily_' + dateIso,
+    'non-tech': '🛡️ Claim your verified Career Passport handle (talentxcel.in/u/yourname):\n👉 Claim Free Vanity Passport: ' + ctaLinks['non-tech'] + '\n\n⚡ Check if your resume passes ATS in 5 seconds:\n👉 Free ATS Diagnostic: https://talentxcel.in/ats-check?utm_source=social_digest&utm_campaign=daily_' + dateIso,
+    'core-industry': '🛡️ Stand out to industrial & corporate hiring committees with a verified Career Passport:\n👉 Claim Career Passport: ' + ctaLinks['core-industry'] + '\n\n⚡ Check if your resume passes ATS in 5 seconds:\n👉 Free ATS Diagnostic: https://talentxcel.in/ats-check?utm_source=social_digest&utm_campaign=daily_' + dateIso
   };
 
   const TARGET_QUOTA = 20;

@@ -35,6 +35,9 @@ import {
   Zap
 } from "lucide-react";
 import { useResumeData } from "@/hooks/useResumeData";
+import { useAuth } from "@/contexts/AuthContext";
+import { trackFunnelEvent } from "@/services/telemetry/funnelTracker";
+import { supabase } from "@/integrations/supabase/client";
 import { useResumeBuilder } from "@/hooks/useResumeBuilder";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
@@ -100,6 +103,11 @@ const UnifiedResumeBuilder = () => {
   const [showBulletModal, setShowBulletModal] = useState(false);
   const [selectedBulletText, setSelectedBulletText] = useState('');
   const [showExportModal, setShowExportModal] = useState(false);
+  const { user } = useAuth();
+  const { role: routeRole } = useParams<{ role?: string }>();
+  const [showOAuthGate, setShowOAuthGate] = useState(false);
+  const [pendingExportType, setPendingExportType] = useState<'pdf' | 'docx' | null>(null);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [showCareerReadyModal, setShowCareerReadyModal] = useState(false);
   const [showLivePreview, setShowLivePreview] = useState(true);
 
@@ -269,6 +277,69 @@ const UnifiedResumeBuilder = () => {
     }));
   };
 
+  // Pre-fill target role from URL route parameter (e.g. /resume/software-engineer)
+  useEffect(() => {
+    if (routeRole && !targetJobTitle) {
+      const formatted = routeRole.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      setTargetJobTitle(formatted);
+      setLocalData((prev: any) => ({ ...prev, targetJobTitle: formatted }));
+    }
+  }, [routeRole]);
+
+  // Continuous draft persistence
+  useEffect(() => {
+    if (localData) {
+      try {
+        localStorage.setItem('tx_pending_resume_draft', JSON.stringify({
+          data: localData,
+          updatedAt: Date.now()
+        }));
+      } catch (_) {}
+    }
+  }, [localData]);
+
+  // Telemetry and post-auth pending export resume execution
+  useEffect(() => {
+    trackFunnelEvent('tool_started', { tool: 'resume-builder', role: routeRole });
+
+    const pendingStr = localStorage.getItem('tx_pending_resume_draft');
+    if (pendingStr) {
+      try {
+        const parsed = JSON.parse(pendingStr);
+        if (user && parsed.pendingExport) {
+          trackFunnelEvent('signup_completed', { trigger: 'resume_builder_export' });
+          toast.success('Signed in! Downloading your ATS resume now...');
+          localStorage.removeItem('tx_pending_resume_draft');
+          setTimeout(() => {
+            if (parsed.pendingExport === 'pdf') exportToPDF(parsed.data || localData);
+            else if (parsed.pendingExport === 'docx') exportToDOCX(parsed.data || localData);
+          }, 600);
+        }
+      } catch (_) {}
+    }
+  }, [user]);
+
+  const handleOAuthExportConversion = async () => {
+    setIsOAuthLoading(true);
+    try {
+      const returnUrl = window.location.href;
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: returnUrl,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent'
+          }
+        }
+      });
+      if (error) throw error;
+    } catch (err: any) {
+      toast.error(err.message || 'Google sign-in initiation failed.');
+      setIsOAuthLoading(false);
+    }
+  };
+
   const handleExperienceChange = (experiences: any[]) => {
     setLocalData((prev: any) => ({ ...prev, experience: experiences }));
   };
@@ -304,8 +375,38 @@ const UnifiedResumeBuilder = () => {
     toast.success(`Generated Targeted Resume for "${title}" from Master Profile`);
   };
 
-  const handleExportPDF = () => exportToPDF(localData);
-  const handleExportDOCX = () => exportToDOCX(localData);
+  const handleExportPDF = () => {
+    if (!user) {
+      try {
+        localStorage.setItem('tx_pending_resume_draft', JSON.stringify({
+          data: localData,
+          pendingExport: 'pdf',
+          updatedAt: Date.now()
+        }));
+      } catch (_) {}
+      trackFunnelEvent('oauth_gate_shown', { trigger: 'resume_export_pdf' });
+      setPendingExportType('pdf');
+      setShowOAuthGate(true);
+      return;
+    }
+    exportToPDF(localData);
+  };
+  const handleExportDOCX = () => {
+    if (!user) {
+      try {
+        localStorage.setItem('tx_pending_resume_draft', JSON.stringify({
+          data: localData,
+          pendingExport: 'docx',
+          updatedAt: Date.now()
+        }));
+      } catch (_) {}
+      trackFunnelEvent('oauth_gate_shown', { trigger: 'resume_export_docx' });
+      setPendingExportType('docx');
+      setShowOAuthGate(true);
+      return;
+    }
+    exportToDOCX(localData);
+  };
 
   if (isLoading) {
     return (

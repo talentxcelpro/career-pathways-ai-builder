@@ -22,6 +22,10 @@ export type ConversionEvent =
   | 'learning_progress_saved'
   | 'employer_job_published'
   | 'return_visit'
+  | 'job_tailoring_started'
+  | 'job_tailoring_completed'
+  | 'career_passport_created'
+  | 'career_passport_completed'
   // Legacy events retained for 100% backward compatibility
   | 'ats_started'
   | 'ats_completed'
@@ -119,6 +123,10 @@ export interface ConversionStats {
   learning_progress_saved: number;
   employer_job_published: number;
   return_visit: number;
+  job_tailoring_started?: number;
+  job_tailoring_completed?: number;
+  career_passport_created?: number;
+  career_passport_completed?: number;
   // Legacy milestones
   ats_started: number;
   ats_completed: number;
@@ -277,6 +285,10 @@ class ConversionTelemetryManager {
     learning_progress_saved: 0,
     employer_job_published: 0,
     return_visit: 0,
+    job_tailoring_started: 0,
+    job_tailoring_completed: 0,
+    career_passport_created: 0,
+    career_passport_completed: 0,
     // Legacy
     ats_started: 0,
     ats_completed: 0,

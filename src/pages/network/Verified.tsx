@@ -70,10 +70,12 @@ export const Verified: React.FC = () => {
     };
   }, [queryClient]);
 
-  // Fetch 100% Real Verified Profiles directly from Supabase
+  // Fetch 100% Real Verified Profiles directly from Supabase (with public_profiles view fallback for anon visitors)
   const { data: verifiedProfiles = [], isLoading } = useQuery({
-    queryKey: ['real-verified-professionals'],
+    queryKey: ['real-verified-professionals', user?.id],
     queryFn: async () => {
+      let rawData: any[] = [];
+
       const { data, error } = await supabase
         .from('profiles')
         .select('id, full_name, title, headline, location, current_company, about, skills, profile_picture_url, slug, custom_profile_url, username, updated_at, created_at')
@@ -81,15 +83,23 @@ export const Verified: React.FC = () => {
         .order('updated_at', { ascending: false })
         .limit(100);
 
-      if (error) {
-        console.error('Error fetching verified profiles:', error);
-        return [];
+      if (error || !data || data.length === 0) {
+        const { data: pubData } = await supabase
+          .from('public_profiles')
+          .select('id, full_name, title, headline, location, current_company, about, skills, profile_picture_url, username, created_at')
+          .not('full_name', 'is', null)
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        rawData = pubData || [];
+      } else {
+        rawData = data;
       }
 
       const now = Date.now();
 
       // Filter real profiles and assign verified credentials
-      const realList: RealVerifiedProfile[] = (data || [])
+      const realList: RealVerifiedProfile[] = rawData
         .filter(p => p.full_name && p.full_name.trim().length >= 2 && p.full_name.toLowerCase() !== 'user' && p.full_name.toLowerCase() !== 'test user')
         .map(p => {
           const rawTitle = p.title || p.headline || 'Industry Professional';

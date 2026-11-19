@@ -68,32 +68,32 @@ export const ViralResultShareCard: React.FC<ViralResultShareCardProps> = ({
   };
 
   return (
-    <Card className={`overflow-hidden border-indigo-500/30 bg-gradient-to-br from-indigo-950/40 via-slate-900/60 to-slate-950 shadow-xl ${className}`}>
+    <Card className={`overflow-hidden border-2 border-indigo-200/80 bg-white shadow-sm rounded-2xl ${className}`}>
       {/* Decorative gradient header strip */}
       <div className="h-1.5 w-full bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
       
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/30 text-xs px-2.5 py-0.5 flex items-center gap-1 font-semibold">
+          <Badge variant="outline" className="bg-indigo-50 text-indigo-700 border-indigo-200 text-xs px-2.5 py-0.5 flex items-center gap-1 font-semibold">
             <Trophy className="w-3.5 h-3.5 text-amber-400" /> {badgeText}
           </Badge>
-          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
             TalentXcel Live Score
           </span>
         </div>
-        <CardTitle className="text-base sm:text-lg font-black text-white mt-1">
+        <CardTitle className="text-base sm:text-lg font-black text-slate-900 mt-1">
           {headline}
         </CardTitle>
-        <CardDescription className="text-xs text-slate-300">
+        <CardDescription className="text-xs text-slate-600">
           {subheadline}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-4">
         {/* Visual Score Callout */}
-        <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
           <div>
-            <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400">
+            <div className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
               {metricValue}
             </div>
             <div className="text-xs font-semibold text-slate-400 mt-0.5">
@@ -113,7 +113,7 @@ export const ViralResultShareCard: React.FC<ViralResultShareCardProps> = ({
 
         {/* 1-Click Viral Distribution Buttons */}
         <div className="space-y-2">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
             Share Your Achievement:
           </span>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -121,7 +121,7 @@ export const ViralResultShareCard: React.FC<ViralResultShareCardProps> = ({
               size="sm"
               variant="outline"
               onClick={() => handleShareClick('whatsapp')}
-              className="bg-emerald-950/30 hover:bg-emerald-900/50 border-emerald-800/40 text-emerald-300 text-xs font-semibold h-8"
+              className="bg-emerald-50 hover:bg-emerald-100 border-emerald-200 text-emerald-700 text-xs font-semibold h-8"
             >
               WhatsApp
             </Button>
@@ -129,7 +129,7 @@ export const ViralResultShareCard: React.FC<ViralResultShareCardProps> = ({
               size="sm"
               variant="outline"
               onClick={() => handleShareClick('linkedin')}
-              className="bg-blue-950/30 hover:bg-blue-900/50 border-blue-800/40 text-blue-300 text-xs font-semibold h-8"
+              className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 text-xs font-semibold h-8"
             >
               LinkedIn
             </Button>
@@ -137,7 +137,7 @@ export const ViralResultShareCard: React.FC<ViralResultShareCardProps> = ({
               size="sm"
               variant="outline"
               onClick={() => handleShareClick('x')}
-              className="bg-slate-900 hover:bg-slate-800 border-slate-700 text-slate-200 text-xs font-semibold h-8"
+              className="bg-slate-100 hover:bg-slate-200 border-slate-200 text-slate-700 text-xs font-semibold h-8"
             >
               X / Twitter
             </Button>

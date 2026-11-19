@@ -42,7 +42,7 @@ export class ReferralEngine {
     }
   ): ShareableResultCard {
     const resultToken = this.generateToken(12);
-    const prefix = toolType === 'passport' ? '/p/@' : `/t/${toolType}/`;
+    const prefix = toolType === 'passport' ? '/u/@' : `/t/${toolType}/`;
     const shareUrl = `${this.BASE_URL}${prefix}${resultToken}?ref=${encodeURIComponent(referrerVisitorId)}`;
     const embedSnippet = `<iframe src="${this.BASE_URL}/embed/${toolType}?token=${resultToken}" width="100%" height="480" frameborder="0" loading="lazy"></iframe>`;
 

@@ -22,10 +22,11 @@ import {
   MessageSquare, 
   Search, 
   SlidersHorizontal,
-  RotateCw,
   BookOpen,
-  Gamepad2
+  Gamepad2,
+  Share2
 } from "lucide-react";
+import { toast } from "sonner";
 import Posts from './network/Posts';
 const CareerVersePage = React.lazy(() => import('./CareerVersePage'));
 
@@ -61,6 +62,8 @@ const Network: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || 'feed';
+  const highlightPostId = searchParams.get('highlight_post');
+  const industryFilter = searchParams.get('industry');
   const { connectionCount, articleCount, pendingRequestsCount, profile: liveProfile } = useNetworkNavigationMetrics();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [exploreDrawerOpen, setExploreDrawerOpen] = useState(false);
@@ -308,7 +311,7 @@ const Network: React.FC = () => {
                 {/* Enhanced Create Post Card */}
                 <EnhancedCreatePost />
 
-                {/* Feed Controls Bar: All Posts | Trending | Following | 🔄 */}
+                {/* Feed Controls Bar: All Posts | Trending | Following */}
                 <div className="flex items-center justify-between pt-0.5">
                   <div className="flex items-center gap-1.5">
                     <button 
@@ -333,6 +336,71 @@ const Network: React.FC = () => {
 
 
                 </div>
+
+                {/* Highlighted Post Banner (Post-Apply Viral Seeding Loop) */}
+                {highlightPostId && (
+                  <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-purple-600/10 border-2 border-blue-500/40 shadow-md space-y-2.5 animate-in fade-in duration-300">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-ping" />
+                        <span className="text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                          Your Perspective Is Published & Pinned
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSearchParams(prev => {
+                            const updated = new URLSearchParams(prev);
+                            updated.delete('highlight_post');
+                            return updated;
+                          });
+                        }}
+                        className="text-xs text-muted-foreground hover:text-foreground font-semibold px-2 py-0.5 rounded-lg hover:bg-muted"
+                      >
+                        Dismiss
+                      </button>
+                    </div>
+                    <p className="text-xs text-foreground font-medium">
+                      Your discussion is now visible to recruiters and professionals across the TalentXcel global network.
+                    </p>
+                    <div className="flex items-center gap-2 pt-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const url = `https://talentxcel.in/posts/${highlightPostId}`;
+                          navigator.clipboard.writeText(url);
+                          toast.success('Post link copied to clipboard!');
+                        }}
+                        className="h-7 text-xs font-semibold rounded-lg gap-1"
+                      >
+                        <Share2 className="h-3 w-3" /> Copy Link
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const url = `https://talentxcel.in/posts/${highlightPostId}`;
+                          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out this career perspective on TalentXcel: ${url}`)}`, '_blank');
+                        }}
+                        className="h-7 text-xs font-semibold rounded-lg gap-1 text-emerald-600 hover:text-emerald-700"
+                      >
+                        WhatsApp
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          const url = `https://talentxcel.in/posts/${highlightPostId}`;
+                          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+                        }}
+                        className="h-7 text-xs font-semibold rounded-lg gap-1 text-blue-600 hover:text-blue-700"
+                      >
+                        LinkedIn
+                      </Button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Posts Feed */}
                 <React.Suspense fallback={

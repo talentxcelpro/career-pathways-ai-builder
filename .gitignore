@@ -97,3 +97,5 @@ claude-seo/
 *.db-wal
 
 backups/
+
+.planning/

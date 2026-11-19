@@ -37,23 +37,38 @@ export const InteractiveProgressTracker = ({ data }: InteractiveProgressTrackerP
   const [selectedGoal, setSelectedGoal] = useState('skill-development');
   const [trackingMode, setTrackingMode] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
 
-  // Mock progress data for different time periods
+  // Deterministic progress history derived from actual user completion score & activities
+  const baseScore = data.completionScore || 70;
   const progressHistory = {
-    daily: Array.from({ length: 7 }, (_, i) => ({
-      date: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      score: Math.floor(Math.random() * 100) + 1,
-      activities: Math.floor(Math.random() * 5) + 1
-    })).reverse(),
-    weekly: Array.from({ length: 12 }, (_, i) => ({
-      date: `Week ${12 - i}`,
-      score: Math.floor(Math.random() * 100) + 1,
-      activities: Math.floor(Math.random() * 20) + 5
-    })),
-    monthly: Array.from({ length: 6 }, (_, i) => ({
-      date: new Date(Date.now() - i * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short' }),
-      score: Math.floor(Math.random() * 100) + 1,
-      activities: Math.floor(Math.random() * 50) + 10
-    })).reverse()
+    daily: Array.from({ length: 7 }, (_, i) => {
+      const dayOffset = 6 - i;
+      const date = new Date(Date.now() - dayOffset * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const curve = Math.round(Math.max(10, baseScore - (dayOffset * 1.5)));
+      return {
+        date,
+        score: curve,
+        activities: Math.max(1, Math.round((data.skillsGained + data.connectionsGrown) / 10))
+      };
+    }),
+    weekly: Array.from({ length: 12 }, (_, i) => {
+      const weekIndex = i + 1;
+      const curve = Math.round(Math.max(15, (baseScore * (weekIndex / 12))));
+      return {
+        date: `Week ${weekIndex}`,
+        score: curve,
+        activities: Math.max(2, Math.round((data.connectionsGrown + data.skillsGained) / 4))
+      };
+    }),
+    monthly: Array.from({ length: 6 }, (_, i) => {
+      const monthOffset = 5 - i;
+      const date = new Date(Date.now() - monthOffset * 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short' });
+      const curve = Math.round(Math.max(20, (baseScore * ((i + 1) / 6))));
+      return {
+        date,
+        score: curve,
+        activities: Math.max(3, data.connectionsGrown + data.skillsGained)
+      };
+    })
   };
 
   const careerGoals = [
@@ -61,61 +76,58 @@ export const InteractiveProgressTracker = ({ data }: InteractiveProgressTrackerP
       id: 'skill-development',
       title: 'Skill Development',
       description: 'Expand your technical expertise',
-      progress: 75,
+      progress: Math.min(100, Math.round((data.skillsGained / 10) * 100)),
       target: 100,
       icon: Star,
       color: 'text-purple-600 bg-purple-100',
       milestones: [
-        { task: 'Complete AI/ML Course', completed: true, points: 25 },
-        { task: 'Get AWS Certification', completed: true, points: 30 },
-        { task: 'Master React Advanced Patterns', completed: false, points: 20 },
-        { task: 'Learn GraphQL & APIs', completed: false, points: 25 }
+        { task: 'Add 5+ Verified Core Skills', completed: data.skillsGained >= 5, points: 25 },
+        { task: 'Add 10+ Complete Skill Stack', completed: data.skillsGained >= 10, points: 30 },
+        { task: 'Skill Gap Alignment Review', completed: data.skillsGained >= 3, points: 20 },
+        { task: 'Endorsement Readiness', completed: data.skillsGained >= 8, points: 25 }
       ]
     },
     {
       id: 'network-growth',
       title: 'Network Expansion',
       description: 'Build meaningful professional connections',
-      progress: 60,
+      progress: Math.min(100, Math.round((data.connectionsGrown / 25) * 100)),
       target: 100,
       icon: Users,
       color: 'text-blue-600 bg-blue-100',
       milestones: [
-        { task: 'Connect with 50 Industry Peers', completed: true, points: 30 },
-        { task: 'Attend 3 Networking Events', completed: true, points: 15 },
-        { task: 'Join 2 Professional Groups', completed: false, points: 15 },
-        { task: 'Find 3 Mentors', completed: false, points: 25 },
-        { task: 'Mentor 2 Junior Professionals', completed: false, points: 15 }
+        { task: 'First 5 Industry Connections', completed: data.connectionsGrown >= 5, points: 25 },
+        { task: 'Reach 15+ Verified Network', completed: data.connectionsGrown >= 15, points: 30 },
+        { task: 'Expand to 25+ Peer Benchmark', completed: data.connectionsGrown >= 25, points: 25 },
+        { task: 'Active Professional Engagement', completed: data.connectionsGrown >= 10, points: 20 }
       ]
     },
     {
       id: 'thought-leadership',
       title: 'Thought Leadership',
-      description: 'Establish expertise through content',
-      progress: 45,
+      description: 'Establish expertise through content and articles',
+      progress: Math.min(100, Math.round((data.articlesPublished / 3) * 100)),
       target: 100,
       icon: BookOpen,
       color: 'text-green-600 bg-green-100',
       milestones: [
-        { task: 'Publish 5 Technical Articles', completed: true, points: 25 },
-        { task: 'Speak at Industry Conference', completed: false, points: 30 },
-        { task: 'Start a Tech Podcast', completed: false, points: 25 },
-        { task: 'Build Personal Brand', completed: false, points: 20 }
+        { task: 'Publish First Technical Post', completed: data.articlesPublished >= 1, points: 35 },
+        { task: 'Publish 3 Industry Insights', completed: data.articlesPublished >= 3, points: 35 },
+        { task: 'Engage in Professional Discussions', completed: data.connectionsGrown >= 5, points: 30 }
       ]
     },
     {
       id: 'career-advancement',
-      title: 'Career Advancement',
-      description: 'Progress to the next career level',
-      progress: 68,
+      title: 'Profile Completeness',
+      description: 'Progress towards verified elite candidate status',
+      progress: data.completionScore,
       target: 100,
       icon: Trophy,
       color: 'text-orange-600 bg-orange-100',
       milestones: [
-        { task: 'Lead Cross-functional Project', completed: true, points: 30 },
-        { task: 'Manage Team of 3+ People', completed: true, points: 25 },
-        { task: 'Drive Strategic Initiative', completed: false, points: 25 },
-        { task: 'Achieve Performance Goals', completed: false, points: 20 }
+        { task: 'Verified Candidate Profile', completed: data.completionScore >= 50, points: 30 },
+        { task: 'Comprehensive Bio & Experience', completed: data.completionScore >= 70, points: 35 },
+        { task: 'High Market Readiness (80%+)', completed: data.completionScore >= 80, points: 35 }
       ]
     }
   ];

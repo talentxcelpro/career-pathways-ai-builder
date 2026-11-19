@@ -36,6 +36,7 @@ import {
   CheckCheck
 } from 'lucide-react';
 import { CareerPassportHeader } from './CareerPassportHeader';
+import { PassportClaimWidget } from './PassportClaimWidget';
 import { CareerPassportPricingSection } from './CareerPassportPricingSection';
 import { ProductFooter } from '@/components/products/common/ProductFooter';
 import { toast } from 'sonner';

@@ -61,17 +61,17 @@ export const RelatedSubdomainLinks: React.FC<RelatedSubdomainLinksProps> = ({
   ];
 
   return (
-    <div className={`rounded-2xl border border-slate-800 bg-slate-900/40 p-5 sm:p-6 space-y-4 ${className}`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+    <div className={`rounded-2xl border-2 border-slate-200/80 bg-white p-5 sm:p-6 space-y-4 shadow-sm ${className}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
         <div>
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <span>Explore Related Intelligence Across TalentXcel</span>
           </h3>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500">
             Deep-dive into verified cross-domain resources for {role} in {targetCity}.
           </p>
         </div>
-        <span className="text-[11px] font-mono text-blue-400 bg-blue-950/60 border border-blue-800/40 px-2.5 py-0.5 rounded-full w-fit">
+        <span className="text-[11px] font-mono text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-0.5 rounded-full w-fit font-semibold">
           Verified Cross-Domain
         </span>
       </div>
@@ -83,23 +83,23 @@ export const RelatedSubdomainLinks: React.FC<RelatedSubdomainLinksProps> = ({
             <a
               key={link.title}
               href={link.url}
-              className="p-3.5 rounded-xl border border-slate-800 hover:border-blue-500/50 bg-slate-950/50 hover:bg-slate-900 transition-all flex flex-col justify-between group"
+              className="p-3.5 rounded-xl border border-slate-200 hover:border-blue-400 bg-slate-50/70 hover:bg-blue-50/40 transition-all flex flex-col justify-between group shadow-2xs"
             >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-blue-400 uppercase tracking-wider">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
                     {link.badge}
                   </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-400 transition-colors" />
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 transition-colors" />
                 </div>
-                <h4 className="text-xs sm:text-sm font-bold text-white group-hover:text-blue-300 transition-colors line-clamp-1">
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                   {link.title}
                 </h4>
-                <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
                   {link.desc}
                 </p>
               </div>
-              <span className="text-[11px] font-semibold text-blue-400 mt-2.5 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+              <span className="text-[11px] font-semibold text-blue-600 mt-2.5 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
                 Explore on {link.badge} &rarr;
               </span>
             </a>
