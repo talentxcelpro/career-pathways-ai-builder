@@ -2494,16 +2494,39 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
     // 5D: jobs/:role-in-:city (Pattern 1)
     else if (secondary.includes('-in-')) {
       const partsRoleCity = secondary.split('-in-');
-      const roleSlug = partsRoleCity[0];
+      let roleSlug = partsRoleCity[0];
       const citySlug = partsRoleCity.slice(1).join('-in-');
-      if (!CANONICAL_ROLES_SET.has(roleSlug) || !CANONICAL_CITIES_SET.has(citySlug)) {
+
+      // Normalize role modifiers (fresher, junior, executive, senior)
+      let matchedCanonicalRole = CANONICAL_ROLES_SET.has(roleSlug) ? roleSlug : null;
+      if (!matchedCanonicalRole) {
+        const strippedRole = roleSlug
+          .replace(/^(fresher|freshers|junior|jr|senior|sr|executive)-/, '')
+          .replace(/^(fresher|freshers|junior|jr|senior|sr|executive)-/, '');
+        if (CANONICAL_ROLES_SET.has(strippedRole)) {
+          matchedCanonicalRole = strippedRole;
+        }
+      }
+
+      if (!matchedCanonicalRole || !CANONICAL_CITIES_SET.has(citySlug)) {
         return null; // Soft 404 guard
       }
       const roleName = formatTitle(roleSlug);
       const cityName = formatTitle(citySlug);
-      // Title strictly <= 60 characters
-      title = `${roleName} in ${cityName} Jobs | TalentXcel`.slice(0, 60);
-      description = `Explore verified ${roleName} job vacancies and career opportunities in ${cityName}. Review role requirements, technology stacks, and application deadlines on TalentXcel.`;
+
+      if (secondary === 'fresher-executive-data-engineer-in-patna') {
+        title = 'Data Engineer Fresher Jobs (₹4.5L–₹7.5L) Patna | TalentXcel';
+        description = 'Apply for Data Engineer Fresher opening in Patna. Entry-level role (0-1 yrs exp) with Python/SQL stack, competitive CTC and direct application.';
+      } else if (secondary === 'junior-big-data-engineer-in-kolkata') {
+        title = 'Junior Data Engineer Jobs in Kolkata (2026) | TalentXcel';
+        description = 'Apply for Junior Data Engineer in Kolkata. Verified opening covering SQL, Spark, and data pipeline fundamentals. Check requirements and apply directly.';
+      } else {
+        // Title strictly <= 60 characters with high CTR click intent
+        const roleCityTitle = `${roleName} Jobs in ${cityName} (2026) | TalentXcel`;
+        title = roleCityTitle.length <= 60 ? roleCityTitle : `${roleName} Jobs in ${cityName} | TalentXcel`.slice(0, 60);
+        description = `Explore verified ${roleName} job vacancies in ${cityName}. Review role requirements, salary benchmarks and submit direct application on TalentXcel.`.slice(0, 150);
+      }
+
       canonical = `https://talentxcel.in/jobs/${secondary}`;
       h1 = `${roleName} Jobs in ${cityName}`;
       // Combinatorial eligibility guard: gated by >= 5 unexpired jobs
@@ -2519,6 +2542,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           </div>
           <div class="pt-4 flex flex-wrap gap-3">
             <a href="/jobs?role=${encodeURIComponent(roleSlug)}&amp;location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">View ${escapeHtml(roleName)} Openings &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
             <a href="/locations/${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">All Jobs in ${escapeHtml(cityName)} &rarr;</a>
           </div>
           <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
@@ -2542,8 +2566,9 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
     // 5E: Canonical role hub (e.g. /jobs/software-engineer)
     else if (CANONICAL_ROLES_SET.has(secondary)) {
       const jobTitle = formatTitle(secondary);
-      title = `${jobTitle} Jobs & Career Opportunities (2026 Hiring) | TalentXcel`;
-      description = `Explore ${jobTitle} opportunities on TalentXcel. Review verified listings for role requirements, skill benchmarks, and application details.`;
+      const hubTitle = `${jobTitle} Jobs in India (2026 Openings) | TalentXcel`;
+      title = hubTitle.length <= 60 ? hubTitle : `${jobTitle} Jobs (2026 Hiring) | TalentXcel`.slice(0, 60);
+      description = `Browse verified ${jobTitle} vacancies across India. Review requirements, technology stacks, salary benchmarks, and apply directly on TalentXcel.`.slice(0, 155);
       canonical = `https://talentxcel.in/jobs/${secondary}`;
       h1 = `${jobTitle} Opportunities`;
       bodyContent = `
@@ -2748,12 +2773,57 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         title = 'Jindal Steel Careers: Associate Data Analyst | TalentXcel';
       } else if (secLower.includes('bhel-haridwar')) {
         title = 'BHEL Haridwar Careers: Cloud & Tech Jobs | TalentXcel';
+      } else if (secLower.includes('ashtamudi-seafoods-kollam') || (secLower.includes('associate-data-analyst') && secLower.includes('kollam'))) {
+        title = 'Data Analyst (₹3.6L–₹6L PA) — Ashtamudi, Kollam | TalentXcel';
+        description = 'Apply for Associate Data Analyst at Ashtamudi Seafoods in Kollam. Verified opening with salary benchmark, analytics skills and instant ATS resume matching.';
+      } else if (secLower.includes('jusco-jamshedpur') || (secLower.includes('associate-data-analyst') && secLower.includes('jamshedpur'))) {
+        title = 'Data Analyst (₹4L–₹7.5L PA) — Jusco Jamshedpur | TalentXcel';
+        description = 'Apply for Associate Data Analyst at Jusco in Jamshedpur. Verified opening with direct application, salary benchmark and instant ATS resume scan.';
+      } else if (secLower.includes('fresher-executive-data-engineer-in-patna') || (secLower.includes('data-engineer') && secLower.includes('patna'))) {
+        title = 'Data Engineer Fresher Jobs (₹4.5L–₹7.5L) Patna | TalentXcel';
+        description = 'Apply for Data Engineer Fresher opening in Patna. Entry-level role (0-1 yrs exp) with Python/SQL stack, competitive CTC and direct application.';
+      } else if (secLower.includes('devops-cloud-platform-engineer') || (secLower.includes('devops') && secLower.includes('new-delhi'))) {
+        title = 'DevOps Engineer (₹12L–₹22L PA) — New Delhi | TalentXcel';
+        description = 'Apply for DevOps Cloud Platform Engineer in New Delhi. Verified vacancy featuring Docker, Kubernetes, CI/CD pipelines and enterprise compensation.';
+      } else if (secLower.includes('mobile-application-developer-flutter') || (secLower.includes('flutter') && secLower.includes('mumbai'))) {
+        title = 'Flutter Developer Jobs in Mumbai (₹8L–₹16L) | TalentXcel';
+        description = 'Apply for Mobile Application Developer (Flutter and React Native) in Mumbai. Verified opening with competitive compensation and direct apply.';
+      } else if (secLower.includes('junior-big-data-engineer-in-kolkata') || (secLower.includes('data-engineer') && secLower.includes('kolkata'))) {
+        title = 'Junior Data Engineer Jobs in Kolkata (2026) | TalentXcel';
+        description = 'Apply for Junior Data Engineer in Kolkata. Verified opening covering SQL, Spark, and data pipeline fundamentals. Check requirements and apply directly.';
       } else {
-        const compactCompany = company.replace(/ Limited| Pvt Ltd| Ltd/gi, '').trim();
+        const compactCompany = company
+          .replace(/TalentXcel Services Client Partner/gi, 'Client Partner')
+          .replace(/TalentXcel Services/gi, 'TalentXcel')
+          .replace(/ Limited| Pvt Ltd| Ltd| Corporation| Corp/gi, '')
+          .trim();
         const baseTitle = `${jobTitle} at ${compactCompany} (${cityLoc}) | TalentXcel`;
-        title = baseTitle.length <= 60 ? baseTitle : `${jobTitle} at ${compactCompany} | TalentXcel`.slice(0, 60);
+        if (baseTitle.length <= 60) {
+          title = baseTitle;
+        } else {
+          const roleCityTitle = `${jobTitle} (${cityLoc}) | TalentXcel`;
+          if (roleCityTitle.length <= 60) {
+            title = roleCityTitle;
+          } else {
+            const cleanRole = jobTitle.replace(/Executive |Specialist |Associate /gi, '').trim();
+            const trimmedRoleCity = `${cleanRole} in ${cityLoc} | TalentXcel`;
+            if (trimmedRoleCity.length <= 60) {
+              title = trimmedRoleCity;
+            } else {
+              const availableLen = 60 - ' | TalentXcel'.length;
+              let truncated = jobTitle.slice(0, availableLen);
+              const lastSpace = truncated.lastIndexOf(' ');
+              if (lastSpace > 15) {
+                truncated = truncated.slice(0, lastSpace);
+              }
+              title = `${truncated} | TalentXcel`;
+            }
+          }
+        }
       }
-      description = `Apply for ${jobTitle} at ${company} in ${loc}.${salaryDisplay ? ' Annual CTC: ' + salaryDisplay + '.' : ''} Verified vacancy with direct application on TalentXcel.`;
+      if (!description) {
+        description = `Apply for ${jobTitle} at ${company} in ${loc}.${salaryDisplay ? ' Annual CTC: ' + salaryDisplay + '.' : ''} Verified vacancy with direct application on TalentXcel.`.slice(0, 155);
+      }
       canonical = `https://talentxcel.in/jobs/${job.seo_slug || job.id}`;
       h1 = `${jobTitle} — ${company}`;
 
@@ -2777,6 +2847,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           </div>
           <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800">
             <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Apply on TalentXcel &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
             <a href="/company/${encodeURIComponent(company.toLowerCase().replace(/\s+/g, '-'))}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">More from ${escapeHtml(company)} &rarr;</a>
           </div>
         </article>
