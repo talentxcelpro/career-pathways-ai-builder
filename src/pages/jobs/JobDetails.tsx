@@ -30,6 +30,7 @@ import {
   Send
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { JobDescriptionRenderer } from '@/components/jobs/JobDescriptionRenderer';
 import { PublicJobApplyButton } from '@/components/jobs/PublicJobApplyButton';
@@ -71,6 +72,41 @@ export default function JobDetails() {
       toast.success('Bookmark updated');
     }
   };
+
+  const { user } = useAuth();
+  const [candidateSkills, setCandidateSkills] = useState<string[]>([]);
+  const [applicantMatch, setApplicantMatch] = useState<{
+    score: number;
+    matched: string[];
+    missing: string[];
+  } | null>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('txc_saved_ats_report');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed?.foundKeywords) && parsed.foundKeywords.length > 0) {
+          setCandidateSkills(parsed.foundKeywords);
+        }
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from('profiles')
+        .select('skills')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (Array.isArray(data?.skills) && data.skills.length > 0) {
+            setCandidateSkills(prev => Array.from(new Set([...prev, ...(data.skills as string[])])));
+          }
+        });
+    }
+  }, [user]);
 
   // Fetch job details with reliable fallback
   const { data: job, isLoading, error } = useQuery({
@@ -231,6 +267,66 @@ export default function JobDetails() {
     enabled: !!job?.id,
     staleTime: 5 * 60 * 1000,
   });
+
+  // Calculate explainable applicant fit when candidate skills or job changes
+  useEffect(() => {
+    if (job && candidateSkills.length > 0) {
+      const rawJobSkills = (job.keywords || job.ai_skill_tags || []) as string[];
+      const jobSkillsList = rawJobSkills.length > 0
+        ? rawJobSkills
+        : (job.title || '').split(/[\s-/]+/).filter((w: string) => w.length > 3);
+      
+      if (jobSkillsList.length > 0) {
+        const matched = jobSkillsList.filter((js: string) =>
+          candidateSkills.some(cs => cs.toLowerCase().includes(js.toLowerCase()) || js.toLowerCase().includes(cs.toLowerCase()))
+        );
+        const missing = jobSkillsList.filter((js: string) => !matched.includes(js));
+        const matchRatio = matched.length / jobSkillsList.length;
+        const score = Math.min(96, Math.max(54, Math.round(52 + matchRatio * 44)));
+        setApplicantMatch({ score, matched, missing });
+      }
+    }
+  }, [job, candidateSkills]);
+
+  const handleAtsCheckWithContext = (action?: string) => {
+    if (!job) return;
+    const rawSkills = (job.keywords || job.ai_skill_tags || []) as string[];
+    const jobCtx = {
+      id: job.id,
+      title: job.title || '',
+      company: job.company_name || '',
+      location: job.location || '',
+      skills: rawSkills,
+      salary: (job.salary_min && job.salary_max) ? `${job.salary_min}-${job.salary_max}` : undefined,
+      description: (job.description || '').slice(0, 1500)
+    };
+
+    try {
+      sessionStorage.setItem('txc_active_target_job', JSON.stringify(jobCtx));
+      localStorage.setItem('txc_active_target_job', JSON.stringify(jobCtx));
+    } catch {}
+
+    const params = new URLSearchParams({
+      jobId: job.id,
+      jobTitle: job.title || '',
+      company: job.company_name || '',
+      location: job.location || '',
+      skills: rawSkills.slice(0, 8).join(',')
+    });
+
+    if (action) {
+      params.set('action', action);
+    }
+
+    GrowthFunnelTracker.track('tool_usage', {
+      tool_name: 'ats_scanner',
+      stage: 'handoff_from_job',
+      job_id: job.id,
+      job_title: job.title
+    });
+
+    navigate(`/resume/ats-check?${params.toString()}`);
+  };
 
   if (isLoading) {
     return (
@@ -416,17 +512,47 @@ export default function JobDetails() {
                 </Button>
               </Card>
 
-              <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
-                <FileCheck2 className="w-6 h-6 text-emerald-600" />
-                <h3 className="text-sm font-bold text-slate-900">Free ATS Resume Check</h3>
-                <p className="text-xs text-slate-600">Get a 10-second parseability audit for top Indian recruiters.</p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/resume/ats-check')} 
-                  className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold rounded-xl shadow-2xs"
-                >
-                  <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Check Resume (100% Free)
-                </Button>
+              <Card className={`bg-white border-2 ${applicantMatch ? 'border-emerald-300/90' : 'border-slate-200/80'} rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all`}>
+                {applicantMatch ? (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-emerald-600" />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800">Your Resume Match</h3>
+                      </div>
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
+                        {applicantMatch.score}%
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600">
+                      Matches <strong>{applicantMatch.matched.length}</strong> core skills required for this role.
+                    </p>
+                    {applicantMatch.missing.length > 0 && (
+                      <div className="text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                        Skill Gaps: {applicantMatch.missing.slice(0, 2).join(', ')}
+                      </div>
+                    )}
+                    <Button 
+                      onClick={() => handleAtsCheckWithContext('tailor')} 
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 mr-1.5" /> 1-Click Tailor Resume &rarr;
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <FileCheck2 className="w-6 h-6 text-emerald-600" />
+                    <h3 className="text-sm font-bold text-slate-900">Applicant Fit Intelligence &amp; ATS Check</h3>
+                    <p className="text-xs text-slate-600">Free 10-second ATS scannability score &amp; 1-click tailored bullet points.</p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => handleAtsCheckWithContext()} 
+                      className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-50 text-xs font-bold rounded-xl shadow-2xs"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 mr-1.5" /> Check My Fit (100% Free)
+                    </Button>
+                  </>
+                )}
               </Card>
 
               <Card className="bg-white border-2 border-slate-200/80 rounded-2xl text-left p-5 space-y-3 shadow-sm hover:shadow-md transition-all">
@@ -781,15 +907,28 @@ export default function JobDetails() {
 
               {/* Free ATS Resume Tool CTA */}
               <div className="bg-gradient-to-br from-blue-50 via-indigo-50/60 to-white border-2 border-blue-200/80 rounded-2xl p-6 space-y-3 shadow-sm">
-                <h3 className="text-base font-bold text-slate-900">Optimize Your Resume</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold text-slate-900">Optimize Your Resume</h3>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 uppercase tracking-wider">Free Tool</span>
+                </div>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Ensure your resume matches this job’s keywords and passes applicant tracking system parsers.
+                  Scan your resume against {companyName}'s exact requirements and unlock 1-click authentic tailoring.
                 </p>
-                <Link to="/resume" className="block">
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20">
-                    Open Free ATS Resume Studio
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Button 
+                    onClick={() => handleAtsCheckWithContext('scan')}
+                    variant="outline"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50 text-xs font-semibold rounded-xl"
+                  >
+                    Scan ATS Score
                   </Button>
-                </Link>
+                  <Button 
+                    onClick={() => handleAtsCheckWithContext('tailor')}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-500/20"
+                  >
+                    1-Click Tailor
+                  </Button>
+                </div>
               </div>
             </div>
           </main>

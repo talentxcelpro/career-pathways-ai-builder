@@ -430,6 +430,40 @@ export const InteractiveJobMatchWidget: React.FC<InteractiveJobMatchWidgetProps>
                 </div>
               </div>
             </div>
+
+            {/* 1-Click Tailor Prompt to Close Gaps */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 bg-gradient-to-r from-blue-50 to-indigo-50/70 rounded-xl border border-blue-200">
+              <div className="text-xs text-blue-900 leading-relaxed">
+                <span className="font-bold">Close these skill gaps before applying.</span> Align your experience authentically with this role.
+              </div>
+              <Button
+                size="sm"
+                onClick={() => {
+                  const params = new URLSearchParams({
+                    jobId: job.id,
+                    jobTitle: job.title,
+                    company: job.company_name || 'TalentXcel Partner',
+                    location: job.location || 'India',
+                    skills: jobSkills.join(','),
+                    action: 'tailor'
+                  });
+                  try {
+                    sessionStorage.setItem('txc_active_target_job', JSON.stringify({
+                      id: job.id,
+                      title: job.title,
+                      company: job.company_name || 'TalentXcel Partner',
+                      location: job.location || 'India',
+                      skills: jobSkills
+                    }));
+                  } catch {}
+                  navigate(`/resume/ats-check?${params.toString()}`);
+                }}
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shrink-0 rounded-lg shadow-sm shadow-blue-500/20"
+              >
+                <Sparkles className="w-3.5 h-3.5 mr-1.5 text-blue-200" />
+                1-Click Tailor Resume
+              </Button>
+            </div>
           </div>
 
           {/* Action Callout: Unregistered vs Registered */}
