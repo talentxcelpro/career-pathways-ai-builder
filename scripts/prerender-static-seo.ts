@@ -984,7 +984,8 @@ async function prerender() {
             </div>
             <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800">
               <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Apply on TalentXcel &rarr;</a>
-              <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
+              <a href="/resume/ats-check?jobId=${escapeHtml(job.id)}&amp;jobTitle=${encodeURIComponent(jobTitle)}&amp;company=${encodeURIComponent(companyName || '')}&amp;location=${encodeURIComponent(job.location || '')}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
+              <a href="/resume/ats-check?jobId=${escapeHtml(job.id)}&amp;jobTitle=${encodeURIComponent(jobTitle)}&amp;company=${encodeURIComponent(companyName || '')}&amp;location=${encodeURIComponent(job.location || '')}&amp;action=tailor" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">1-Click Tailor Resume &rarr;</a>
             </div>
           </div>
         `;
