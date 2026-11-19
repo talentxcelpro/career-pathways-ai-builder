@@ -944,9 +944,10 @@ export default async function handler(req: Request) {
   const cleanHost = hostHeader.split(':')[0].trim().toLowerCase();
 
   const isCandidateRoute = isCandidateProfileRoute(cleanPath);
+  const isJobRoute = cleanPath.startsWith('jobs/');
   const result = await generateDynamicSeoHtml(cleanPath, cleanHost);
   if (!result || result.status === 404) {
-    if (isCandidateRoute || DEPLOYMENT_UNITS.SOFT_404_PROTECTION) {
+    if (isCandidateRoute || isJobRoute || DEPLOYMENT_UNITS.SOFT_404_PROTECTION) {
       return notFoundResponse(cleanPath, isDebug, isCandidateRoute);
     } else {
       return legacyGenericOkResponse(cleanPath, isDebug);
