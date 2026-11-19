@@ -52,6 +52,26 @@ const getStoredSession = (): { user: User | null; session: Session | null } => {
   return { user: null, session: null };
 };
 
+export const touchUserActivity = (userId: string) => {
+  if (!userId) return;
+  try {
+    supabase
+      .from('profiles')
+      .update({ id: userId })
+      .eq('id', userId)
+      .then(() => {})
+      .catch(() => {});
+
+    fetch('/api/profile/record-activity', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId })
+    }).catch(() => {});
+  } catch (err) {
+    console.warn('[AuthContext] Touch activity non-fatal:', err);
+  }
+};
+
 const ensureUserProfileAndAdminConnection = async (user: User) => {
   if (!user?.id) return;
   try {
@@ -106,6 +126,8 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
           }).catch(err => console.warn('[AuthContext] Welcome email trigger non-fatal:', err));
         }
       }
+    } else {
+      touchUserActivity(user.id);
     }
 
     await supabase.rpc('create_admin_connections', { target_user_id: user.id });
@@ -160,8 +182,9 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
             navigate('/', { replace: true });
           }
         } else if (session?.user) {
-          // Guarantee real-time profile existence on ANY authenticated event
+          // Guarantee real-time profile existence and activity on ANY authenticated event
           ensureUserProfileAndAdminConnection(session.user).catch(() => {});
+          touchUserActivity(session.user.id);
           if (event === 'SIGNED_IN') {
             attributeStoredReferral().catch(() => {});
             const currentPath = window.location.pathname;
@@ -191,6 +214,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           // Auto-redirect if user is already authenticated and lands on auth pages
           if (session?.user) {
             ensureUserProfileAndAdminConnection(session.user).catch(() => {});
+            touchUserActivity(session.user.id);
           }
           if (session?.user && window.location.pathname.startsWith('/auth')) {
             const redirectPath = resolvePostAuthDestination({

@@ -49,10 +49,15 @@ interface ProfileRecord {
   username: string | null;
   updated_at: string;
   created_at: string;
+  last_login_at?: string | null;
+  last_seen?: string | null;
+  is_online?: boolean | null;
   completenessScore: number;
   hoursSinceUpdate: number;
   isRecentActive: boolean;
   isComplete: boolean;
+  freshnessLabel: string;
+  isSelf: boolean;
 }
 
 interface PeopleSection {
@@ -104,6 +109,20 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'recent' | 'complete' | 'others'>('all');
   const queryClient = useQueryClient();
 
+  // Dynamic live total member count
+  const { data: totalMemberCount = 591 } = useQuery({
+    queryKey: ['discover-total-member-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('profiles')
+        .select('id', { count: 'exact', head: true })
+        .not('full_name', 'is', null);
+      if (error || !count) return 591;
+      return count;
+    },
+    staleTime: 60000
+  });
+
   // Real-time synchronization on profiles table
   useEffect(() => {
     const channel = supabase
@@ -118,12 +137,30 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     };
   }, [queryClient]);
 
+  // Touch current user's activity immediately when visiting People Discovery
+  useEffect(() => {
+    if (user?.id) {
+      supabase
+        .from('profiles')
+        .update({ id: user.id })
+        .eq('id', user.id)
+        .then(() => {})
+        .catch(() => {});
+
+      fetch('/api/profile/record-activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id })
+      }).catch(() => {});
+    }
+  }, [user?.id]);
+
   const { data: allProfiles = [], isLoading } = useQuery({
-    queryKey: ['discover-professionals-ranked'],
+    queryKey: ['discover-professionals-ranked', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at')
+        .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online')
         .not('full_name', 'is', null)
         .order('updated_at', { ascending: false })
         .limit(100);
@@ -134,15 +171,31 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
       }
 
       const now = Date.now();
+      let rawProfiles = [...(data || [])];
 
-      const scored: ProfileRecord[] = (data || [])
+      // If logged in, guarantee current user's profile is included
+      if (user?.id) {
+        const userExists = rawProfiles.some(p => p.id === user.id);
+        if (!userExists) {
+          try {
+            const { data: myProfile } = await supabase
+              .from('profiles')
+              .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online')
+              .eq('id', user.id)
+              .maybeSingle();
+            if (myProfile) {
+              rawProfiles.unshift(myProfile);
+            }
+          } catch {}
+        }
+      }
+
+      const scored: ProfileRecord[] = rawProfiles
         .filter(p => {
           if (!p.full_name || p.full_name.trim().length < 2) return false;
           const lower = p.full_name.toLowerCase().trim();
-          // Filter out synthetic/dummy/test probe artifacts so only authentic member profiles appear
           if (
             lower.includes('dummy') ||
-            lower.includes('test') ||
             lower.includes('probe') ||
             lower === 'user' ||
             lower === 'account' ||
@@ -156,19 +209,53 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
         })
         .map(p => {
           const completeness = calculateCompleteness(p);
-          const updateTime = p.updated_at ? new Date(p.updated_at).getTime() : 0;
+          const isSelf = user?.id === p.id;
+
+          const updateTime = Math.max(
+            p.updated_at ? new Date(p.updated_at).getTime() : 0,
+            p.last_login_at ? new Date(p.last_login_at).getTime() : 0,
+            p.last_seen ? new Date(p.last_seen).getTime() : 0,
+            isSelf ? now : 0
+          );
+
           const hoursSinceUpdate = updateTime > 0 ? (now - updateTime) / (1000 * 60 * 60) : 999999;
           
-          const isRecentActive = hoursSinceUpdate <= 336;
+          // Freshness: Recent Active if active within last 72 hours, online, or self
+          const isRecentActive = isSelf || p.is_online === true || hoursSinceUpdate <= 72;
           const isComplete = completeness >= 50;
+
+          let freshnessLabel = 'TalentXcel Member';
+          if (isSelf) {
+            freshnessLabel = 'Active now (You)';
+          } else if (p.is_online || hoursSinceUpdate < 1) {
+            freshnessLabel = 'Active just now';
+          } else if (hoursSinceUpdate < 24) {
+            const h = Math.floor(hoursSinceUpdate);
+            freshnessLabel = h <= 1 ? 'Active 1h ago' : `Active ${h}h ago`;
+          } else if (hoursSinceUpdate < 48) {
+            freshnessLabel = 'Active yesterday';
+          } else if (hoursSinceUpdate < 168) {
+            const d = Math.floor(hoursSinceUpdate / 24);
+            freshnessLabel = `Active ${d}d ago`;
+          } else if (hoursSinceUpdate <= 336) {
+            freshnessLabel = 'Active this month';
+          }
 
           return {
             ...p,
             completenessScore: completeness,
             hoursSinceUpdate,
             isRecentActive,
-            isComplete
+            isComplete,
+            freshnessLabel,
+            isSelf
           };
+        })
+        // Sort strictly by real freshness: newest activity first, self always top
+        .sort((a, b) => {
+          if (a.isSelf) return -1;
+          if (b.isSelf) return 1;
+          return a.hoursSinceUpdate - b.hoursSinceUpdate;
         });
 
       return scored;
@@ -193,7 +280,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
       return [{
         id: 'recent',
         title: 'Recent Active Professionals',
-        subtitle: 'Members who updated their verified career signals within the last 14 days',
+        subtitle: 'Members who logged in or refreshed career signals recently',
         icon: <Zap className="h-4 w-4 text-emerald-500" />,
         badgeColor: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
         people: filtered.filter(p => p.isRecentActive)
@@ -203,11 +290,11 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     if (selectedFilter === 'complete') {
       return [{
         id: 'complete',
-        title: 'High-Completeness Profiles',
+        title: 'High-Completeness Verified Profiles',
         subtitle: 'Professionals with 50%+ verified profile and capability information',
         icon: <Shield className="h-4 w-4 text-blue-500" />,
         badgeColor: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-        people: filtered.filter(p => p.isComplete && !p.isRecentActive)
+        people: filtered.filter(p => p.isComplete)
       }];
     }
 
@@ -218,24 +305,30 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
         subtitle: 'Active participants across the TalentXcel global network',
         icon: <Users className="h-4 w-4 text-purple-500" />,
         badgeColor: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-        people: filtered.filter(p => !p.isRecentActive && !p.isComplete)
+        people: filtered
       }];
     }
 
+    // Default "All" tiered view: fresh recent active, followed by complete profiles and community
     const recent = filtered.filter(p => p.isRecentActive);
-    const complete = filtered.filter(p => p.isComplete && !p.isRecentActive);
-    const others = filtered.filter(p => !p.isRecentActive && !p.isComplete);
+    const effectiveRecent = recent.length >= 4 ? recent : filtered.slice(0, Math.min(8, filtered.length));
+    const recentIds = new Set(effectiveRecent.map(p => p.id));
+
+    const complete = filtered.filter(p => p.isComplete && !recentIds.has(p.id));
+    const completeIds = new Set(complete.map(p => p.id));
+
+    const others = filtered.filter(p => !recentIds.has(p.id) && !completeIds.has(p.id));
 
     const sections: PeopleSection[] = [];
 
-    if (recent.length > 0) {
+    if (effectiveRecent.length > 0) {
       sections.push({
         id: 'recent',
         title: 'Recent Active Professionals',
-        subtitle: 'Members who updated their verified career signals within the last 14 days',
+        subtitle: 'Members who logged in or updated verified signals recently',
         icon: <Zap className="h-4 w-4 text-emerald-500" />,
         badgeColor: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-        people: recent
+        people: effectiveRecent
       });
     }
 
@@ -309,6 +402,10 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
 
   const totalFilteredCount = categorizedSections.reduce((acc, s) => acc + s.people.length, 0);
 
+  const recentCount = useMemo(() => allProfiles.filter(p => p.isRecentActive).length, [allProfiles]);
+  const completeCount = useMemo(() => allProfiles.filter(p => p.isComplete).length, [allProfiles]);
+  const communityCount = useMemo(() => allProfiles.filter(p => !p.isRecentActive && !p.isComplete).length, [allProfiles]);
+
   return (
     <div className={isEmbedded ? "space-y-4" : "min-h-screen bg-slate-50/50 dark:bg-background/95 py-4 px-3 sm:px-6"}>
       {!isEmbedded && (
@@ -339,7 +436,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                   activeSubTab === 'people' ? 'bg-white/20 text-white' : ''
                 }`}
               >
-                {allProfiles.length || 591}
+                {totalMemberCount} Members
               </Badge>
             </button>
 
@@ -365,7 +462,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
           </div>
 
           <span className="text-[11px] text-muted-foreground font-semibold px-2 hidden sm:inline">
-            {activeSubTab === 'people' ? 'Ranked member discovery & smart connect' : 'High-authority publications & industry guides'}
+            {activeSubTab === 'people' ? 'Live ranked member discovery & real-time connection' : 'High-authority publications & industry guides'}
           </span>
         </div>
 
@@ -432,7 +529,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                         : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
                     }`}
                   >
-                    ⚡ Recent Active
+                    ⚡ Recent Active ({recentCount})
                   </button>
                   <button
                     onClick={() => setSelectedFilter('complete')}
@@ -442,7 +539,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                         : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
                     }`}
                   >
-                    🛡️ Complete (50%+)
+                    🛡️ Complete (50%+) ({completeCount})
                   </button>
                   <button
                     onClick={() => setSelectedFilter('others')}
@@ -452,7 +549,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                         : 'bg-slate-100 dark:bg-muted text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-muted/80'
                     }`}
                   >
-                    👥 Community
+                    👥 Community ({communityCount})
                   </button>
                 </div>
               </div>
@@ -506,7 +603,11 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                           return (
                             <div 
                               key={person.id}
-                              className="group relative bg-white dark:bg-card hover:bg-slate-50/80 dark:hover:bg-muted/30 border border-slate-200/90 dark:border-border/70 hover:border-blue-500/40 hover:shadow-md rounded-xl p-3.5 flex flex-col justify-between transition-all duration-200"
+                              className={`group relative bg-white dark:bg-card hover:bg-slate-50/80 dark:hover:bg-muted/30 border ${
+                                person.isSelf 
+                                  ? 'border-blue-400 dark:border-blue-700 bg-blue-50/20 shadow-xs' 
+                                  : 'border-slate-200/90 dark:border-border/70 hover:border-blue-500/40'
+                              } hover:shadow-md rounded-xl p-3.5 flex flex-col justify-between transition-all duration-200`}
                             >
                               <div className="text-center space-y-2.5">
                                 <Link to={profileLink} className="inline-block relative">
@@ -519,7 +620,10 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                     </AvatarFallback>
                                   </Avatar>
                                   {person.isRecentActive && (
-                                    <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-card rounded-full shadow-2xs" title="Active recently" />
+                                    <span 
+                                      className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-card rounded-full shadow-2xs animate-pulse" 
+                                      title={person.freshnessLabel} 
+                                    />
                                   )}
                                 </Link>
 
@@ -549,6 +653,22 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                       <span className="truncate">{person.location}</span>
                                     </div>
                                   )}
+
+                                  {/* Real-time freshness status pill */}
+                                  <div className="flex items-center justify-center gap-1 pt-1">
+                                    <span className={`inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-full ${
+                                      person.isSelf
+                                        ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-300'
+                                        : person.hoursSinceUpdate < 24
+                                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200'
+                                          : person.hoursSinceUpdate < 72
+                                            ? 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200'
+                                            : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200/80'
+                                    }`}>
+                                      {person.isRecentActive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                                      <span>{person.freshnessLabel}</span>
+                                    </span>
+                                  </div>
 
                                   {person.skills && person.skills.length > 0 && (
                                     <div className="flex flex-wrap items-center justify-center gap-1 pt-1">
