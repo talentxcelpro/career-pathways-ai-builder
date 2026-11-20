@@ -40,27 +40,10 @@ export function useEnhancedRealtime() {
       });
 
     // Subscribe to user-specific updates
+    // NOTE: ai_career_recommendations and ai_job_matches were removed from the
+    // supabase_realtime publication in migration 20261114000000 — subscriptions
+    // to those tables are dead and waste a connection slot. They have been removed.
     userChannel
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'ai_career_recommendations', filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          setActivityFeed(prev => [{
-            type: 'career_recommendation',
-            data: payload.new,
-            timestamp: new Date().toISOString()
-          }, ...prev.slice(0, 19)]);
-        }
-      )
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'ai_job_matches', filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          setActivityFeed(prev => [{
-            type: 'job_match',
-            data: payload.new,
-            timestamp: new Date().toISOString()
-          }, ...prev.slice(0, 19)]);
-        }
-      )
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'job_applications', filter: `user_id=eq.${user.id}` },
         (payload) => {
@@ -131,6 +114,9 @@ export function useEnhancedRealtime() {
 
 /**
  * Global Realtime Status Hook
+ * NOTE: Subscribes only to 'notifications' (which is in the realtime publication).
+ * 'jobs' and 'posts' were removed from supabase_realtime in migration 20261114000000
+ * and must NOT be re-added here.
  */
 export function useGlobalRealtimeStatus() {
   const [globalStatus, setGlobalStatus] = useState({
@@ -140,14 +126,12 @@ export function useGlobalRealtimeStatus() {
   });
 
   useEffect(() => {
-    // Monitor global realtime status
+    // Use broadcast-only channel — no postgres_changes to avoid dead subscriptions
+    // on tables removed from the realtime publication
     const statusChannel = supabase.channel('global-status');
-    
+
     statusChannel
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'jobs' }, () => {
-        setGlobalStatus(prev => ({ ...prev, lastUpdate: new Date() }));
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications' }, () => {
         setGlobalStatus(prev => ({ ...prev, lastUpdate: new Date() }));
       })
       .subscribe((status) => {

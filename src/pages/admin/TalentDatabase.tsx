@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Users, Database, Search, Settings, File, User } from 'lucide-react';
+import { Upload, FileText, Users, Database, Search, Settings, File, User, BarChart3, RefreshCw } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { BulkUploadManager } from '@/components/talent-database/BulkUploadManager';
 import { TalentSearch } from '@/components/talent-database/TalentSearch';
 import { ProfileGenerator } from '@/components/talent-database/ProfileGenerator';
@@ -18,33 +20,58 @@ import { ProcessingMonitor } from '@/components/talent-database/ProcessingMonito
 const TalentDatabase = () => {
   const [activeTab, setActiveTab] = useState('setup');
 
+  const { data: stats, isLoading: statsLoading, refetch: refetchStats } = useQuery({
+    queryKey: ['talent-database-summary-stats'],
+    queryFn: async () => {
+      const [
+        { count: cvCount },
+        { count: profilesCount },
+        { count: candidatesCount },
+        { count: viewsCount }
+      ] = await Promise.all([
+        supabase.from('cv_files').select('*', { count: 'exact', head: true }),
+        supabase.from('profiles').select('*', { count: 'exact', head: true }),
+        supabase.from('unified_candidates').select('*', { count: 'exact', head: true }),
+        supabase.from('profile_views_v2').select('*', { count: 'exact', head: true })
+      ]);
+
+      return {
+        cvCount: cvCount ?? 0,
+        profilesCount: profilesCount ?? 0,
+        candidatesCount: candidatesCount ?? 0,
+        viewsCount: viewsCount ?? 0
+      };
+    },
+    staleTime: 60000
+  });
+
   const features = [
     {
       icon: Upload,
       title: 'Bulk Upload CVs',
-      description: 'Upload thousands of CVs in PDF/DOCX format',
-      count: '0 CVs',
+      description: 'Uploaded & indexed CVs in storage',
+      count: statsLoading ? 'Loading...' : `${stats?.cvCount ?? 0} CVs`,
       color: 'bg-blue-500'
     },
     {
       icon: Users,
       title: 'Generated Profiles',
       description: 'Auto-generated candidate profiles',
-      count: '0 Profiles',
+      count: statsLoading ? 'Loading...' : `${stats?.profilesCount ?? 0} Profiles`,
       color: 'bg-green-500'
     },
     {
       icon: Database,
       title: 'Searchable Database',
-      description: 'SI-powered talent matching',
-      count: '0 Matches',
+      description: 'Unified candidates in database',
+      count: statsLoading ? 'Loading...' : `${stats?.candidatesCount ?? 0} Candidates`,
       color: 'bg-purple-500'
     },
     {
       icon: Search,
       title: 'SEO Optimized',
-      description: 'Public profile pages for candidates',
-      count: '0 Views',
+      description: 'Candidate public profile views',
+      count: statsLoading ? 'Loading...' : `${stats?.viewsCount ?? 0} Views`,
       color: 'bg-orange-500'
     }
   ];
@@ -59,10 +86,16 @@ const TalentDatabase = () => {
             Comprehensive talent management and intelligent job matching system
           </p>
         </div>
-        <Button size="lg" className="gap-2">
-          <Upload className="h-4 w-4" />
-          Quick Upload
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => refetchStats()} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Refresh Stats
+          </Button>
+          <Button size="lg" className="gap-2" onClick={() => setActiveTab('upload')}>
+            <Upload className="h-4 w-4" />
+            Quick Upload
+          </Button>
+        </div>
       </div>
 
       {/* Stats Overview */}
@@ -87,7 +120,7 @@ const TalentDatabase = () => {
 
       {/* Main Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-10">
+        <TabsList className="flex flex-wrap gap-1 p-1 bg-muted/60 rounded-xl h-auto w-full">
           <TabsTrigger value="setup" className="gap-2">
             <Settings className="h-4 w-4" />
             Setup

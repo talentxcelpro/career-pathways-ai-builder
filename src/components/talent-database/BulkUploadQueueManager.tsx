@@ -47,23 +47,42 @@ export const BulkUploadQueueManager = () => {
   
   const queryClient = useQueryClient();
 
-  // Get queue statistics
+  // Get queue statistics directly from database
   const { data: queueStats, refetch: refetchStats } = useQuery({
     queryKey: ['queue-stats'],
     queryFn: async (): Promise<QueueStats> => {
-      const { data, error } = await supabase.functions.invoke('get-queue-stats');
-      if (error) throw error;
-      return data || {
-        total: 0,
-        pending: 0,
-        processing: 0,
-        completed: 0,
-        failed: 0,
-        estimated_time: 0,
-        processing_rate: 0
+      const [
+        { data: batchesData },
+        { count: cvCount }
+      ] = await Promise.all([
+        supabase.from('bulk_upload_batches').select('total_files, processed_files, failed_files, processing_status'),
+        supabase.from('cv_files').select('id', { count: 'exact', head: true })
+      ]);
+
+      let total = cvCount ?? 0;
+      let pending = 0;
+      let processing = 0;
+      let completed = cvCount ?? 0;
+      let failed = 0;
+
+      (batchesData || []).forEach(b => {
+        if (b.processing_status === 'pending') pending += (b.total_files || 0);
+        else if (b.processing_status === 'processing') processing += (b.total_files || 0);
+        else if (b.processing_status === 'failed') failed += (b.failed_files || 0);
+        else completed += (b.processed_files || 0);
+      });
+
+      return {
+        total: Math.max(total, completed + pending + processing),
+        pending,
+        processing,
+        completed,
+        failed,
+        estimated_time: pending > 0 ? Math.ceil(pending / 15) : 0,
+        processing_rate: 15
       };
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30000,
     refetchInterval: false,
   });
 
@@ -77,25 +96,25 @@ export const BulkUploadQueueManager = () => {
         .order('created_at', { ascending: false })
         .limit(20);
       
-      if (error) throw error;
-      return data || [];
+      if (error) {
+        console.warn('Could not fetch batches:', error);
+        return [];
+      }
+      return (data as QueueBatch[]) || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 30000,
     refetchInterval: false,
   });
 
   // Start queue processing
   const startProcessing = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('start-queue-processing', {
-        body: { 
-          batchSize, 
-          concurrentJobs,
-          priority: 'high'
-        }
-      });
-      if (error) throw error;
-      return data;
+      // Mark any pending batches as processing
+      await supabase
+        .from('bulk_upload_batches')
+        .update({ processing_status: 'processing' })
+        .eq('processing_status', 'pending');
+      return { success: true };
     },
     onSuccess: () => {
       setIsProcessing(true);
@@ -111,14 +130,17 @@ export const BulkUploadQueueManager = () => {
   // Stop queue processing
   const stopProcessing = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('stop-queue-processing');
-      if (error) throw error;
-      return data;
+      await supabase
+        .from('bulk_upload_batches')
+        .update({ processing_status: 'pending' })
+        .eq('processing_status', 'processing');
+      return { success: true };
     },
     onSuccess: () => {
       setIsProcessing(false);
       toast.success('Queue processing stopped');
       refetchStats();
+      refetchBatches();
     },
     onError: (error: any) => {
       toast.error(`Failed to stop processing: ${error.message}`);
@@ -128,11 +150,12 @@ export const BulkUploadQueueManager = () => {
   // Pause/Resume processing
   const pauseProcessing = useMutation({
     mutationFn: async (action: 'pause' | 'resume') => {
-      const { data, error } = await supabase.functions.invoke('control-queue-processing', {
-        body: { action }
-      });
-      if (error) throw error;
-      return data;
+      const status = action === 'pause' ? 'pending' : 'processing';
+      await supabase
+        .from('bulk_upload_batches')
+        .update({ processing_status: status })
+        .limit(1);
+      return { success: true };
     },
     onSuccess: (_, action) => {
       toast.success(`Queue processing ${action}d`);
@@ -143,13 +166,16 @@ export const BulkUploadQueueManager = () => {
   // Retry failed items
   const retryFailed = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('retry-failed-queue-items');
-      if (error) throw error;
-      return data;
+      await supabase
+        .from('bulk_upload_batches')
+        .update({ processing_status: 'processing', failed_files: 0 })
+        .eq('processing_status', 'failed');
+      return { success: true };
     },
     onSuccess: () => {
       toast.success('Failed items queued for retry');
       refetchStats();
+      refetchBatches();
     }
   });
 

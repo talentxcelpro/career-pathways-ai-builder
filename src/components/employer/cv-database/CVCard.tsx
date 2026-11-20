@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { 
   Download, 
   ExternalLink,
+  Eye,
   MapPin,
   Briefcase,
   Calendar,
@@ -106,11 +107,21 @@ export const CVCard: React.FC<CVCardProps> = ({
               
               <div className="flex items-center gap-2">
                 {cv.resume_url && (
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={cv.resume_url} target="_blank" rel="noopener noreferrer">
-                      <Download className="h-4 w-4" />
-                    </a>
-                  </Button>
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      title="View CV"
+                      onClick={() => window.open(encodeURI(cv.resume_url!), '_blank')}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" title="Download CV" asChild>
+                      <a href={encodeURI(cv.resume_url)} download target="_blank" rel="noopener noreferrer">
+                        <Download className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  </>
                 )}
                 
                 <Button variant="outline" size="sm" asChild>

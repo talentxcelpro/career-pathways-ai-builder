@@ -16,7 +16,8 @@ export const CVFilesManager = () => {
   const { data: cvFiles, isLoading, error } = useQuery({
     queryKey: ['cv-files'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // 1. Try with join
+      const res = await supabase
         .from('cv_files')
         .select(`
           id,
@@ -36,8 +37,44 @@ export const CVFilesManager = () => {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (!res.error && res.data) {
+        return res.data;
+      }
+
+      // 2. Fallback without join to ensure resilience
+      const fallback = await supabase
+        .from('cv_files')
+        .select(`
+          id,
+          user_id,
+          original_filename,
+          file_url,
+          file_type,
+          parsing_status,
+          parsing_results,
+          created_at
+        `)
+        .order('created_at', { ascending: false });
+
+      if (fallback.error) throw fallback.error;
+
+      // Optionally fetch profiles for matched user_ids
+      const userIds = Array.from(new Set((fallback.data || []).map(f => f.user_id).filter(Boolean)));
+      let profilesMap: Record<string, any> = {};
+      if (userIds.length > 0) {
+        const { data: profs } = await supabase
+          .from('profiles')
+          .select('id, full_name, email, location')
+          .in('id', userIds.slice(0, 100));
+        (profs || []).forEach(p => {
+          profilesMap[p.id] = p;
+        });
+      }
+
+      return (fallback.data || []).map(f => ({
+        ...f,
+        profiles: f.user_id ? profilesMap[f.user_id] || null : null
+      }));
     }
   });
 
@@ -326,7 +363,7 @@ export const CVFilesManager = () => {
                       )}
                     </div>
 
-                    {cvFile.profiles && (
+                    {cvFile.profiles ? (
                       (() => {
                         const profile = (cvFile.profiles as any);
                         const profileEmail = profile?.email || '';
@@ -338,7 +375,7 @@ export const CVFilesManager = () => {
                           <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
                             <User className="h-4 w-4 text-muted-foreground" />
                             <div className="flex-1 min-w-0">
-                              <p className="font-medium text-sm">{profile?.full_name || 'Unknown User'}</p>
+                              <p className="font-medium text-sm">{profile?.full_name || 'Candidate'}</p>
                               <div className="flex items-center gap-2 flex-wrap">
                                 <p className="text-xs text-muted-foreground truncate">{displayEmail}</p>
                                 {isTempEmail(profileEmail) && (
@@ -358,6 +395,21 @@ export const CVFilesManager = () => {
                               {profile?.location && (
                                 <p className="text-xs text-muted-foreground">{profile.location}</p>
                               )}
+                            </div>
+                          </div>
+                        );
+                      })()
+                    ) : (
+                      (() => {
+                        const pr = cvFile.parsing_results || {};
+                        const parsedName = pr?.personal_info?.name || pr?.name || cvFile.original_filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+                        const parsedEmail = getParsedEmail(cvFile) || 'Stored in database';
+                        return (
+                          <div className="flex items-center space-x-2 mt-3 p-3 bg-muted/50 rounded-lg">
+                            <User className="h-4 w-4 text-muted-foreground" />
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm">{parsedName}</p>
+                              <p className="text-xs text-muted-foreground truncate">{parsedEmail}</p>
                             </div>
                           </div>
                         );

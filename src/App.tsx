@@ -78,6 +78,7 @@ import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { PublicAccessGuard } from "./components/auth/PublicAccessGuard";
+import { EmployerAccessGuard } from "./components/employer/EmployerAccessGuard";
 import { GoogleOneTapLogin } from "./components/auth/GoogleOneTapLogin";
 import { useOptimizedAuth } from "./hooks/useOptimizedAuth";
 import { SilentAuthHandler } from "./components/auth/SilentAuthHandler";
@@ -565,7 +566,7 @@ const App = () => {
                                       <Route path="/rpo" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-white">Loading Recruiter OS...</div>}><RecruiterLandingPage /></Suspense>} />
                                       <Route path="/post-job" element={<Suspense fallback={null}><GlobalEmployerAcquisition /></Suspense>} />
                                       <Route path="/talent" element={<Suspense fallback={<div>Loading...</div>}><PeopleDirectoryPage /></Suspense>} />
-                                      <Route path="/cv-database" element={<Suspense fallback={null}><CVDatabase /></Suspense>} />
+                                      <Route path="/cv-database" element={<Suspense fallback={null}><EmployerAccessGuard><CVDatabase /></EmployerAccessGuard></Suspense>} />
                                     </>
                                   )}
 
@@ -1272,7 +1273,7 @@ const App = () => {
                                   <Route path="/resume/templates" element={<ResumeTemplates />} />
                                   <Route path="/resume/ai-enhancement" element={<AIEnhancement />} />
                                 <Route path="/admin/users" element={<AdminLayout><UserManagement /></AdminLayout>} />
-                                <Route path="/talent-database" element={<AdminLayout><TalentDatabase /></AdminLayout>} />
+                                <Route path="/talent-database" element={<ProtectedRoute><AdminLayout><TalentDatabase /></AdminLayout></ProtectedRoute>} />
                                 <Route path="/admin/security" element={<AdminLayout><SecurityCenter /></AdminLayout>} />
                                 <Route path="/admin/prd" element={<AdminLayout><ProductRequirementDocument /></AdminLayout>} />
                                 <Route path="/seo-suite" element={<SEOSuite />} />
@@ -1308,7 +1309,7 @@ const App = () => {
                                 </Route>
                                 <Route path="/news" element={<NewsPage />} />
                                 <Route path="/news/:slug" element={<NewsPage />} />
-                                <Route path="/employer/cv-database" element={<CVDatabase />} />
+                                <Route path="/employer/cv-database" element={<Suspense fallback={null}><EmployerAccessGuard><CVDatabase /></EmployerAccessGuard></Suspense>} />
 
                                 {/* Communication Routes */}
                                 <Route path="/communication" element={<Navigate to="/messages" replace />} />

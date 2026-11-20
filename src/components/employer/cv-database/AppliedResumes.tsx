@@ -24,7 +24,7 @@ export const AppliedResumes: React.FC<AppliedResumesProps> = ({
   const { data: appliedCVs, isLoading } = useQuery({
     queryKey: ['applied_resumes'],
     queryFn: async () => {
-      // Get job applications with user profiles and job details
+      // 1. Try to get job applications with joins
       const { data, error } = await supabase
         .from('job_applications')
         .select(`
@@ -54,28 +54,53 @@ export const AppliedResumes: React.FC<AppliedResumesProps> = ({
         `)
         .order('applied_at', { ascending: false });
 
-      if (error) throw error;
+      if (!error && data && data.length > 0) {
+        return data.map((app: any) => ({
+          id: app.id,
+          full_name: app.profiles?.full_name || 'Candidate',
+          email: app.profiles?.email || '',
+          phone: app.profiles?.phone,
+          location: app.profiles?.location,
+          title: app.profiles?.title,
+          resume_url: app.resume_url || app.profiles?.resume_url,
+          profile_picture_url: app.profiles?.profile_picture_url,
+          about: app.profiles?.about,
+          skills: app.profiles?.skills || [],
+          experience_years: app.profiles?.experience_years,
+          current_company: app.profiles?.current_company,
+          applied_at: app.applied_at,
+          job_title: app.jobs?.title,
+          company_name: app.jobs?.company_name,
+          status: app.status || 'applied',
+          application_source: 'platform'
+        }));
+      }
 
-      // Transform the data to match our CV format
-      return data?.map((app: any) => ({
-        id: app.id,
-        full_name: app.profiles?.full_name || 'Unknown',
-        email: app.profiles?.email || '',
-        phone: app.profiles?.phone,
-        location: app.profiles?.location,
-        title: app.profiles?.title,
-        resume_url: app.resume_url || app.profiles?.resume_url,
-        profile_picture_url: app.profiles?.profile_picture_url,
-        about: app.profiles?.about,
-        skills: app.profiles?.skills || [],
-        experience_years: app.profiles?.experience_years,
-        current_company: app.profiles?.current_company,
-        applied_at: app.applied_at,
-        job_title: app.jobs?.title,
-        company_name: app.jobs?.company_name,
-        status: app.status,
+      // 2. Fallback: Query unified_candidates where source = 'application'
+      const { data: fallbackCandidates } = await supabase
+        .from('unified_candidates')
+        .select('*')
+        .eq('source', 'application');
+
+      return (fallbackCandidates || []).map((cand: any) => ({
+        id: cand.id,
+        full_name: cand.name || cand.full_name || 'Candidate',
+        email: cand.email || '',
+        phone: cand.phone,
+        location: cand.location,
+        title: cand.title,
+        resume_url: cand.resume_url,
+        profile_picture_url: cand.profile_picture_url,
+        about: cand.description,
+        skills: cand.skills || [],
+        experience_years: cand.experience_years,
+        current_company: cand.company,
+        applied_at: cand.applied_at || cand.created_at,
+        job_title: cand.title || 'Applicant',
+        company_name: cand.company || 'TalentXcel Partner',
+        status: 'applied',
         application_source: 'platform'
-      })) || [];
+      }));
     }
   });
 
