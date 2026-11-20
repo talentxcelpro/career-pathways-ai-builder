@@ -75,11 +75,19 @@ async function publishUrl(url, token) {
 }
 
 const PLG_URLS = [
+  'https://talentxcel.in/resume/ats-check',
+  'https://talentxcel.in/resume/build',
+  'https://talentxcel.in/career-map',
+  'https://talentxcel.in/jobs',
+  'https://talentxcel.in/jobs/freshers',
+  'https://talentxcel.in/colleges',
+  'https://talentxcel.in/companies',
   'https://talentxcel.in/ats-check',
   'https://talentxcel.in/resume-builder',
   'https://talentxcel.in/network',
   'https://talentxcel.in/passport',
   'https://talentxcel.in/salary',
+  'https://talentxcel.in/salary/scenarios',
   'https://talentxcel.in/salary/software-engineer-in-bangalore',
   'https://talentxcel.in/u/arshidwani',
   'https://talentxcel.in/verify/arshidwani'
