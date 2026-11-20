@@ -1045,7 +1045,13 @@ export function RecruiterOS() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => window.open(encodeURI(cand.resume_url!), '_blank')}
+                            onClick={() => {
+                              try {
+                                window.open(encodeURI(decodeURI(cand.resume_url!.trim())), '_blank');
+                              } catch {
+                                window.open(cand.resume_url!, '_blank');
+                              }
+                            }}
                             className="text-xs text-purple-400 hover:text-purple-300 border-purple-800/60 bg-purple-950/40 hover:bg-purple-900/50 font-bold"
                             title="Open Candidate CV"
                           >
@@ -1579,7 +1585,13 @@ export function RecruiterOS() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => window.open(encodeURI(selectedCandidate.resume_url!), '_blank')}
+                        onClick={() => {
+                          try {
+                            window.open(encodeURI(decodeURI(selectedCandidate.resume_url!.trim())), '_blank');
+                          } catch {
+                            window.open(selectedCandidate.resume_url!, '_blank');
+                          }
+                        }}
                         className="text-xs text-purple-400 hover:text-purple-300 border-purple-800/60 bg-purple-950/40 hover:bg-purple-900/50 font-bold"
                       >
                         <FileText className="h-3.5 w-3.5 mr-1" /> View Candidate CV
@@ -1590,7 +1602,7 @@ export function RecruiterOS() {
                         asChild
                         className="text-xs text-slate-300"
                       >
-                        <a href={encodeURI(selectedCandidate.resume_url!)} download target="_blank" rel="noopener noreferrer">
+                        <a href={encodeURI(decodeURI(selectedCandidate.resume_url!))} download target="_blank" rel="noopener noreferrer">
                           <Download className="h-3.5 w-3.5 mr-1" /> Download
                         </a>
                       </Button>

@@ -628,7 +628,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
                       <div className="flex flex-col gap-1">
                         {candidate.resume_url ? (
                           <a 
-                            href={encodeURI(candidate.resume_url)} 
+                            href={encodeURI(decodeURI(candidate.resume_url))} 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1"
@@ -656,7 +656,13 @@ export const UnifiedCandidatesTable: React.FC = () => {
                               size="sm"
                               variant="outline"
                               title="View CV"
-                              onClick={() => window.open(encodeURI(candidate.resume_url), '_blank')}
+                              onClick={() => {
+                                try {
+                                  window.open(encodeURI(decodeURI(candidate.resume_url)), '_blank');
+                                } catch {
+                                  window.open(candidate.resume_url, '_blank');
+                                }
+                              }}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -666,7 +672,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
                               title="Download CV"
                               asChild
                             >
-                              <a href={encodeURI(candidate.resume_url)} download target="_blank" rel="noopener noreferrer">
+                              <a href={encodeURI(decodeURI(candidate.resume_url))} download target="_blank" rel="noopener noreferrer">
                                 <Download className="h-4 w-4" />
                               </a>
                             </Button>

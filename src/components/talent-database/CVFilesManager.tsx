@@ -255,12 +255,17 @@ export const CVFilesManager = () => {
   };
 
   const openFile = (fileUrl: string) => {
-    window.open(fileUrl, '_blank');
+    try {
+      window.open(encodeURI(decodeURI(fileUrl)), '_blank');
+    } catch {
+      window.open(fileUrl, '_blank');
+    }
   };
 
   const downloadFile = async (fileUrl: string, filename: string) => {
     try {
-      const response = await fetch(fileUrl);
+      const cleanUrl = encodeURI(decodeURI(fileUrl));
+      const response = await fetch(cleanUrl);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -272,6 +277,7 @@ export const CVFilesManager = () => {
       document.body.removeChild(a);
     } catch (error) {
       console.error('Download failed:', error);
+      window.open(fileUrl, '_blank');
     }
   };
 
