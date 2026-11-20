@@ -55,8 +55,12 @@ import {
   ArrowUpRight,
   SlidersHorizontal,
   Mail,
-  Phone
+  Phone,
+  FileText,
+  Download,
+  Eye
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -81,6 +85,7 @@ export interface CandidateRecord {
   expectedSalary: string;
   noticePeriod: string;
   resume_url: string | null;
+  profile_picture_url?: string | null;
   whyMatches: {
     skills: string;
     experience: string;
@@ -236,8 +241,9 @@ export function RecruiterOS() {
     queryFn: async () => {
       let query = supabase
         .from('unified_candidates')
-        .select('id, name, email, phone, location, title, skills, experience_years, company, resume_url, description')
-        .limit(50);
+        .select('id, name, email, phone, location, title, skills, experience_years, company, resume_url, description, profile_picture_url')
+        .order('resume_url', { ascending: false, nullsFirst: false })
+        .limit(100);
 
       const term = omniSearch.trim();
       if (term) {
@@ -283,6 +289,7 @@ export function RecruiterOS() {
         expectedSalary: `₹${16 + (experienceYears * 2)}L - ₹${20 + (experienceYears * 2)}L`,
         noticePeriod: days === 0 ? 'Immediate' : `${days} Days`,
         resume_url: c.resume_url || null,
+        profile_picture_url: c.profile_picture_url || null,
         whyMatches: {
           skills: `${skillsArray.length > 0 ? skillsArray.length : 3} Relevant Skills Verified in Database`,
           experience: `${experienceYears}+ Years Practical Domain Experience`,
@@ -949,9 +956,14 @@ export function RecruiterOS() {
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                       <div className="flex items-start sm:items-center gap-3">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-lg shrink-0 shadow-md">
-                          {cand.name.charAt(0)}
-                        </div>
+                        <Avatar className="h-12 w-12 rounded-xl shrink-0 shadow-md ring-1 ring-white/10">
+                          {cand.profile_picture_url ? (
+                            <AvatarImage src={cand.profile_picture_url} alt={cand.name} className="object-cover" />
+                          ) : null}
+                          <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-black text-lg rounded-xl">
+                            {cand.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
                         <div>
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="font-bold text-base hover:text-blue-400 transition-colors">
@@ -1027,7 +1039,19 @@ export function RecruiterOS() {
                         Last touch: <span className="font-semibold text-blue-400">{cand.relationship.lastContact}</span>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        {cand.resume_url ? (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(encodeURI(cand.resume_url!), '_blank')}
+                            className="text-xs text-purple-400 hover:text-purple-300 border-purple-800/60 bg-purple-950/40 hover:bg-purple-900/50 font-bold"
+                            title="Open Candidate CV"
+                          >
+                            <FileText className="h-3.5 w-3.5 mr-1" />
+                            View CV
+                          </Button>
+                        ) : null}
                         <Button
                           size="sm"
                           variant="outline"
@@ -1476,9 +1500,14 @@ export function RecruiterOS() {
               <DialogHeader className={`border-b ${themeClasses.border} pb-4`}>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center font-black text-2xl text-white">
-                      {selectedCandidate.name.charAt(0)}
-                    </div>
+                    <Avatar className="h-14 w-14 rounded-2xl shrink-0 shadow-md ring-1 ring-white/10">
+                      {selectedCandidate.profile_picture_url ? (
+                        <AvatarImage src={selectedCandidate.profile_picture_url} alt={selectedCandidate.name} className="object-cover" />
+                      ) : null}
+                      <AvatarFallback className="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-2xl rounded-2xl">
+                        {selectedCandidate.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
                     <div>
                       <div className="flex items-center gap-2">
                         <DialogTitle className="text-xl font-black">
@@ -1543,12 +1572,29 @@ export function RecruiterOS() {
                     {selectedCandidate.phone && (
                       <span className="flex items-center gap-1.5"><Phone className="h-3.5 w-3.5 text-emerald-400" />{selectedCandidate.phone}</span>
                     )}
-                    {selectedCandidate.resume_url && (
-                      <a href={selectedCandidate.resume_url} target="_blank" rel="noreferrer" className="text-blue-400 hover:underline flex items-center gap-1">
-                        <ExternalLink className="h-3.5 w-3.5" /> View Resume File
-                      </a>
-                    )}
                   </div>
+                  {selectedCandidate.resume_url && (
+                    <div className="flex items-center gap-2 pt-2 border-t border-slate-700/40">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(encodeURI(selectedCandidate.resume_url!), '_blank')}
+                        className="text-xs text-purple-400 hover:text-purple-300 border-purple-800/60 bg-purple-950/40 hover:bg-purple-900/50 font-bold"
+                      >
+                        <FileText className="h-3.5 w-3.5 mr-1" /> View Candidate CV
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        asChild
+                        className="text-xs text-slate-300"
+                      >
+                        <a href={encodeURI(selectedCandidate.resume_url!)} download target="_blank" rel="noopener noreferrer">
+                          <Download className="h-3.5 w-3.5 mr-1" /> Download
+                        </a>
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
