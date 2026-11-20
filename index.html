@@ -40,7 +40,17 @@
       });
     </script>
 
-    <link rel="canonical" href="https://talentxcel.in/" />
+    <!-- Dynamic Canonical Initialization (Prevents duplicate apex canonical conflicts on subpages) -->
+    <script>
+      (function() {
+        var p = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+        var canonicalUrl = 'https://talentxcel.in' + (p === '/' ? '/' : p);
+        var link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = canonicalUrl;
+        document.head.appendChild(link);
+      })();
+    </script>
     <!-- Optimal title tag (53 characters, within 50-60 char boundary) -->
     <title>TalentXcel — Global Career Platform, Jobs & Passport</title>
     <!-- Optimal meta description (154 characters, within 140-160 char boundary) -->

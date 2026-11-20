@@ -6,15 +6,15 @@ import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter
 export const LandingFooter: React.FC = () => {
   const platformLinks = [
     { name: 'Search Verified Jobs', href: '/jobs' },
-    { name: 'Free ATS Resume Checker', href: '/ats-check' },
-    { name: 'AI Resume Builder', href: '/resume-builder' },
+    { name: 'Free ATS Resume Checker', href: '/resume/ats-check' },
+    { name: 'AI Resume Builder', href: '/resume/build' },
     { name: 'Professional Network & Directory', href: '/network' },
     { name: 'Career Passport & TalentScore', href: '/passport' },
     { name: 'Salary Intelligence & Curves', href: '/salary' },
-    { name: 'Career Pathways & Roadmaps', href: '/career-paths' },
+    { name: 'Career Pathways & Roadmaps', href: '/career-map' },
     { name: 'Top Companies & Employers', href: '/companies' },
     { name: 'Colleges & Institutions', href: '/colleges' },
-    { name: 'Government & PSU Jobs', href: '/government' },
+    { name: 'Government & PSU Jobs', href: '/government-jobs' },
     { name: 'Recruiter OS for Employers', href: '/recruiters' },
     { name: 'Career Reels', href: '/reels' },
   ];
@@ -28,7 +28,7 @@ export const LandingFooter: React.FC = () => {
 
   const supportLinks = [
     { name: 'Help Center', href: '/help' },
-    { name: 'Privacy Policy', href: '/privacy' },
+    { name: 'Privacy Policy', href: '/privacypolicy' },
     { name: 'Terms of Service', href: '/terms' },
     { name: 'Return & Refund Policy', href: '/return-refund-policy' },
   ];

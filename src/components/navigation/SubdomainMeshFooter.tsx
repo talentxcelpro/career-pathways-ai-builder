@@ -95,12 +95,12 @@ export const SubdomainMeshFooter: React.FC = () => {
             </strong>
             <ul className="space-y-1.5 text-slate-400">
               <li>
-                <a href="https://talentxcel.in/ats-check" className="hover:text-white transition-colors">
+                <a href="https://resume.talentxcel.in/resume/ats-check" className="hover:text-white transition-colors">
                   Free In-Browser ATS Scanner
                 </a>
               </li>
               <li>
-                <a href="https://talentxcel.in/resume-builder" className="hover:text-white transition-colors">
+                <a href="https://resume.talentxcel.in/resume/build" className="hover:text-white transition-colors">
                   Live AI Resume Builder & Studio
                 </a>
               </li>

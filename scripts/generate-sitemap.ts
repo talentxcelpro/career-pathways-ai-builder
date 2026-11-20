@@ -56,6 +56,10 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/faq', changefreq: 'monthly', priority: '0.5' },
   { path: '/terms', changefreq: 'monthly', priority: '0.3' },
   { path: '/privacypolicy', changefreq: 'monthly', priority: '0.3' },
+  { path: '/return-refund-policy', changefreq: 'monthly', priority: '0.3' },
+  { path: '/help', changefreq: 'monthly', priority: '0.5' },
+  { path: '/career-map', changefreq: 'daily', priority: '0.9' },
+  { path: '/reels', changefreq: 'daily', priority: '0.9' },
 ];
 
 function escapeXml(unsafe: string): string {
@@ -266,14 +270,15 @@ export async function generateProductionSitemaps() {
       }));
   }
 
+  // GSC Indexation Guard: Only indexable college hubs are submitted to sitemaps.
+  // Thin programmatic college shells emit 'noindex, follow' and are excluded from XML sitemaps.
   const collegeOverview: SitemapEntry[] = [
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/colleges', changefreq: 'daily', priority: '1.0' },
+    { path: '/colleges/global-programs', changefreq: 'daily', priority: '0.9' },
+    { path: '/colleges/scholarships', changefreq: 'daily', priority: '0.9' },
+    { path: '/colleges/career-pathway', changefreq: 'daily', priority: '0.9' },
   ];
-  allColleges.forEach(c => {
-    if (!c.slug) return;
-    collegeOverview.push({ path: `/colleges/${c.slug}`, changefreq: 'weekly', priority: '0.8' });
-  });
   const collegeOverviewEntries = deduplicate(collegeOverview);
 
   // 4. Career Pathways (85 canonical roles)
