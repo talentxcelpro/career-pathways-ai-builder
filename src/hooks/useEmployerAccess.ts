@@ -33,6 +33,22 @@ export const useEmployerAccess = () => {
           hasTeamMembership: true
         };
       }
+
+      // 1b. Admin role bypass (super_admin / admin roles have full employer access)
+      try {
+        const { data: isAdmin } = await supabase.rpc('is_current_user_admin');
+        if (isAdmin) {
+          return {
+            isEmployer: true,
+            isApproved: true,
+            hasEmployerAccess: true,
+            employerStatus: 'approved',
+            hasTeamMembership: true
+          };
+        }
+      } catch (err) {
+        // Fallback to checking profile and team membership
+      }
       
       // 2. Check profile status
       const { data: profile } = await supabase

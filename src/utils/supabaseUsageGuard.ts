@@ -269,10 +269,10 @@ export const usageGuardFetch: typeof fetch = async (input, init) => {
         console.warn(`[USAGE GUARD] Relation '${relation}' returned 404. Circuit breaker engaged to halt retries/polling.`);
       }
       
-      // Determine response size from Content-Length or rough estimate
+      // Determine response size from Content-Length or by reading the body
       const contentLength = response.headers.get('content-length');
-      const bytes = contentLength ? parseInt(contentLength, 10) : 0;
-      
+      let bytes = contentLength ? parseInt(contentLength, 10) : 0;
+
       // Check content-range for row counts (e.g., 0-19/250)
       const contentRange = response.headers.get('content-range');
       let rowCount: number | undefined;
@@ -280,6 +280,23 @@ export const usageGuardFetch: typeof fetch = async (input, init) => {
         const match = contentRange.match(/\/(\d+|\*)/);
         if (match && match[1] !== '*') {
           rowCount = parseInt(match[1], 10);
+        }
+      }
+
+      // Supabase REST API rarely sets Content-Length on streaming responses.
+      // If Content-Length is missing/zero and the response is OK, clone the
+      // body and measure the actual byte size — but only when the content-range
+      // suggests a small result set (< 2 MB heuristic: ≤ 500 rows).
+      if (!bytes && response.ok) {
+        const isSmallResult = !rowCount || rowCount <= 500;
+        if (isSmallResult) {
+          try {
+            const cloned = response.clone();
+            const buffer = await cloned.arrayBuffer();
+            bytes = buffer.byteLength;
+          } catch {
+            // Clone failed (body already consumed) — leave bytes at 0
+          }
         }
       }
 

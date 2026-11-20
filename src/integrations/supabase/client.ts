@@ -31,10 +31,10 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   // Configure realtime for better performance
   realtime: {
     params: {
-      eventsPerSecond: 10
+      eventsPerSecond: 2
     },
     // Add error handling for realtime connections
-    heartbeatIntervalMs: 30000,
+    heartbeatIntervalMs: 60000,
     reconnectAfterMs: (tries: number) => {
       return Math.min(tries * 1000, 30000);
     },

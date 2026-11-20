@@ -46,7 +46,7 @@ export function useRealtimePresence(channelName: string) {
       });
 
     return () => {
-      presenceChannel.unsubscribe();
+      supabase.removeChannel(presenceChannel);
     };
   }, [channelName]);
 
