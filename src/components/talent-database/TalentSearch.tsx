@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -6,9 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Filter, MapPin, Briefcase, GraduationCap, Star, Download, Eye } from 'lucide-react';
+import { Search, Filter, MapPin, Briefcase, GraduationCap, Star, Download, Eye, RefreshCw, FileText } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { usePlatformMetrics } from '@/config/platformMetrics';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface TalentProfile {
   id: string;
@@ -21,65 +22,105 @@ interface TalentProfile {
   availability: string;
   match_score?: number;
   profile_photo_url?: string;
+  resume_url?: string;
   last_active: string;
 }
 
 export const TalentSearch = () => {
-  const { metrics } = usePlatformMetrics();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
-    location: '',
-    experience: '',
-    availability: '',
-    skills: [] as string[],
-    education: '',
+    location: 'all',
+    experience: 'all',
+    availability: 'all',
     remote: false
   });
   const [searchResults, setSearchResults] = useState<TalentProfile[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [isSearching, setIsSearching] = useState(false);
 
-  // Mock data for demonstration
-  const mockProfiles: TalentProfile[] = [
-    {
-      id: '1',
-      full_name: 'Priya Sharma',
-      email: 'priya.sharma@email.com',
-      location: 'Bangalore, India',
-      job_title: 'Senior Software Engineer',
-      experience_years: 5,
-      skills: ['React', 'Node.js', 'Python', 'AWS', 'MongoDB'],
-      availability: 'Open to opportunities',
-      match_score: 95,
-      last_active: '2 days ago'
-    },
-    {
-      id: '2',
-      full_name: 'Rahul Patel',
-      email: 'rahul.patel@email.com',
-      location: 'Mumbai, India',
-      job_title: 'Data Scientist',
-      experience_years: 3,
-      skills: ['Python', 'Machine Learning', 'TensorFlow', 'SQL', 'R'],
-      availability: 'Available immediately',
-      match_score: 88,
-      last_active: '1 week ago'
-    }
-  ];
-
-  const handleSearch = async () => {
+  const fetchCandidates = async (query = '', filters = selectedFilters) => {
     setIsSearching(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setSearchResults(mockProfiles);
+    try {
+      let q = supabase
+        .from('unified_candidates')
+        .select('*', { count: 'exact' });
+
+      if (query.trim()) {
+        const term = `%${query.trim()}%`;
+        q = q.or(`name.ilike.${term},title.ilike.${term},location.ilike.${term},description.ilike.${term}`);
+      }
+
+      if (filters.location && filters.location !== 'all') {
+        q = q.ilike('location', `%${filters.location}%`);
+      }
+
+      if (filters.experience && filters.experience !== 'all') {
+        const expNum = parseInt(filters.experience, 10);
+        if (!isNaN(expNum)) {
+          q = q.gte('experience_years', expNum);
+        }
+      }
+
+      const { data, count, error } = await q
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+      if (error) throw error;
+
+      setTotalCount(count || 0);
+
+      const mapped: TalentProfile[] = (data || []).map((c: any) => {
+        let skillsArr: string[] = [];
+        if (Array.isArray(c.skills)) {
+          skillsArr = c.skills;
+        } else if (typeof c.skills === 'string') {
+          skillsArr = c.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
+        }
+
+        const dateStr = c.created_at ? new Date(c.created_at).toLocaleDateString() : 'Recently';
+
+        return {
+          id: c.id,
+          full_name: c.name || 'Candidate',
+          email: c.email || 'Confidential',
+          location: c.location || 'India',
+          job_title: c.title || c.company || 'Professional',
+          experience_years: c.experience_years || 0,
+          skills: skillsArr,
+          availability: c.looking_for_job ? 'Open to opportunities' : 'Available immediately',
+          profile_photo_url: c.profile_picture_url || undefined,
+          resume_url: c.resume_url || undefined,
+          last_active: dateStr
+        };
+      });
+
+      setSearchResults(mapped);
+    } catch (err: any) {
+      console.error('Failed to search candidates:', err);
+      toast.error('Search error: ' + err.message);
+    } finally {
       setIsSearching(false);
-    }, 1000);
+    }
   };
 
-  const availabilityColors = {
-    'Open to opportunities': 'bg-green-100 text-green-800',
-    'Available immediately': 'bg-blue-100 text-blue-800',
-    'Not looking': 'bg-gray-100 text-gray-800'
+  useEffect(() => {
+    fetchCandidates();
+  }, []);
+
+  const handleSearch = () => {
+    fetchCandidates(searchQuery, selectedFilters);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  const availabilityColors: Record<string, string> = {
+    'Open to opportunities': 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300',
+    'Available immediately': 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
+    'Not looking': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300'
   };
 
   return (
@@ -87,9 +128,15 @@ export const TalentSearch = () => {
       {/* Search Controls */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="h-5 w-5" />
-            Search Talent Database
+          <CardTitle className="flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <Search className="h-5 w-5 text-primary" />
+              Live Candidate Talent Search
+            </span>
+            <Button variant="outline" size="sm" onClick={() => fetchCandidates(searchQuery, selectedFilters)} className="gap-2">
+              <RefreshCw className="h-4 w-4" />
+              Refresh
+            </Button>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -97,9 +144,10 @@ export const TalentSearch = () => {
           <div className="flex space-x-2">
             <div className="flex-1">
               <Input
-                placeholder="Search by name, skills, job title, or company..."
+                placeholder="Search candidates by name, job title, skills, or location..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
                 className="w-full"
               />
             </div>
@@ -114,238 +162,186 @@ export const TalentSearch = () => {
           </div>
 
           {/* Advanced Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label>Location</Label>
-              <Select value={selectedFilters.location} onValueChange={(value) => 
-                setSelectedFilters(prev => ({ ...prev, location: value }))
-              }>
+              <Select 
+                value={selectedFilters.location} 
+                onValueChange={(val) => {
+                  const updated = { ...selectedFilters, location: val };
+                  setSelectedFilters(updated);
+                  fetchCandidates(searchQuery, updated);
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Any location" />
+                  <SelectValue placeholder="All Locations" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="bangalore">Bangalore</SelectItem>
-                  <SelectItem value="mumbai">Mumbai</SelectItem>
-                  <SelectItem value="delhi">Delhi</SelectItem>
-                  <SelectItem value="pune">Pune</SelectItem>
-                  <SelectItem value="hyderabad">Hyderabad</SelectItem>
+                  <SelectItem value="all">All Locations</SelectItem>
+                  <SelectItem value="Noida">Noida / Delhi NCR</SelectItem>
+                  <SelectItem value="Bangalore">Bangalore</SelectItem>
+                  <SelectItem value="Mumbai">Mumbai</SelectItem>
+                  <SelectItem value="Hyderabad">Hyderabad</SelectItem>
+                  <SelectItem value="Pune">Pune</SelectItem>
+                  <SelectItem value="Chennai">Chennai</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label>Experience</Label>
-              <Select value={selectedFilters.experience} onValueChange={(value) => 
-                setSelectedFilters(prev => ({ ...prev, experience: value }))
-              }>
+              <Label>Minimum Experience</Label>
+              <Select 
+                value={selectedFilters.experience} 
+                onValueChange={(val) => {
+                  const updated = { ...selectedFilters, experience: val };
+                  setSelectedFilters(updated);
+                  fetchCandidates(searchQuery, updated);
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Any experience" />
+                  <SelectValue placeholder="Any Experience" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0-1">0-1 years</SelectItem>
-                  <SelectItem value="2-3">2-3 years</SelectItem>
-                  <SelectItem value="4-6">4-6 years</SelectItem>
-                  <SelectItem value="7-10">7-10 years</SelectItem>
-                  <SelectItem value="10+">10+ years</SelectItem>
+                  <SelectItem value="all">Any Experience</SelectItem>
+                  <SelectItem value="1">1+ Years</SelectItem>
+                  <SelectItem value="3">3+ Years</SelectItem>
+                  <SelectItem value="5">5+ Years</SelectItem>
+                  <SelectItem value="8">8+ Years</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
               <Label>Availability</Label>
-              <Select value={selectedFilters.availability} onValueChange={(value) => 
-                setSelectedFilters(prev => ({ ...prev, availability: value }))
-              }>
+              <Select 
+                value={selectedFilters.availability} 
+                onValueChange={(val) => {
+                  const updated = { ...selectedFilters, availability: val };
+                  setSelectedFilters(updated);
+                  fetchCandidates(searchQuery, updated);
+                }}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Any availability" />
+                  <SelectValue placeholder="All Availabilities" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
                   <SelectItem value="immediate">Available immediately</SelectItem>
                   <SelectItem value="open">Open to opportunities</SelectItem>
-                  <SelectItem value="passive">Passive candidate</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="space-y-2">
-              <Label>Remote Work</Label>
-              <div className="flex items-center space-x-2 pt-2">
-                <Checkbox 
-                  id="remote"
-                  checked={selectedFilters.remote}
-                  onCheckedChange={(checked) => 
-                    setSelectedFilters(prev => ({ ...prev, remote: checked as boolean }))
-                  }
-                />
-                <Label htmlFor="remote" className="text-sm">Open to remote work</Label>
-              </div>
-            </div>
-          </div>
-
-          {/* Skills Filter */}
-          <div className="space-y-2">
-            <Label>Required Skills</Label>
-            <Input
-              placeholder="e.g., React, Python, AWS (comma separated)"
-              className="w-full"
-            />
           </div>
         </CardContent>
       </Card>
 
       {/* Search Results */}
-      {searchResults.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span>Search Results ({searchResults.length} profiles found)</span>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Download className="h-4 w-4" />
-                  Export List
-                </Button>
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Filter className="h-4 w-4" />
-                  Save Search
-                </Button>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between text-base md:text-lg">
+            <span>
+              Candidate Results ({searchResults.length} of {totalCount} profiles in database)
+            </span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isSearching ? (
+            <div className="py-12 text-center text-muted-foreground">
+              <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-3" />
+              Searching real candidate records...
+            </div>
+          ) : searchResults.length === 0 ? (
+            <div className="py-12 text-center text-muted-foreground">
+              <Search className="h-10 w-10 mx-auto mb-2 opacity-50" />
+              <p>No candidates found matching the query.</p>
+            </div>
+          ) : (
             <div className="space-y-4">
               {searchResults.map((profile) => (
                 <div
                   key={profile.id}
-                  className="border rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="border rounded-xl p-4 hover:shadow-md transition-shadow bg-card"
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div className="flex items-start space-x-4 flex-1">
-                      <Avatar className="h-16 w-16">
+                      <Avatar className="h-14 w-14">
                         <AvatarImage src={profile.profile_photo_url} />
-                        <AvatarFallback className="text-lg">
-                          {profile.full_name.split(' ').map(n => n[0]).join('')}
+                        <AvatarFallback className="text-base font-semibold">
+                          {profile.full_name.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="text-lg font-semibold">{profile.full_name}</h3>
-                          {profile.match_score && (
-                            <Badge variant="secondary" className="gap-1">
-                              <Star className="h-3 w-3 fill-current" />
-                              {profile.match_score}% match
-                            </Badge>
-                          )}
-                        </div>
-                        
-                        <p className="text-foreground mb-2">{profile.job_title}</p>
-                        
-                        <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-3">
-                          <div className="flex items-center space-x-1">
-                            <MapPin className="h-4 w-4" />
-                            <span>{profile.location}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Briefcase className="h-4 w-4" />
-                            <span>{profile.experience_years} years exp.</span>
-                          </div>
-                          <span>Last active: {profile.last_active}</span>
-                        </div>
-
-                        <div className="flex items-center space-x-2 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <h3 className="text-lg font-semibold truncate">{profile.full_name}</h3>
                           <Badge 
                             className={availabilityColors[profile.availability] || 'bg-gray-100 text-gray-800'}
                           >
                             {profile.availability}
                           </Badge>
                         </div>
-
-                        <div className="flex flex-wrap gap-1">
-                          {profile.skills.slice(0, 6).map((skill, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {skill}
-                            </Badge>
-                          ))}
-                          {profile.skills.length > 6 && (
-                            <Badge variant="outline" className="text-xs">
-                              +{profile.skills.length - 6} more
-                            </Badge>
-                          )}
+                        
+                        <p className="text-sm font-medium text-foreground mb-2">{profile.job_title}</p>
+                        
+                        <div className="flex items-center flex-wrap gap-4 text-xs text-muted-foreground mb-3">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="h-3.5 w-3.5" />
+                            <span>{profile.location}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Briefcase className="h-3.5 w-3.5" />
+                            <span>{profile.experience_years} yrs exp</span>
+                          </div>
+                          <span>Added: {profile.last_active}</span>
+                          <span className="text-xs text-muted-foreground truncate">{profile.email}</span>
                         </div>
+
+                        {profile.skills.length > 0 && (
+                          <div className="flex flex-wrap gap-1">
+                            {profile.skills.slice(0, 7).map((skill, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {skill}
+                              </Badge>
+                            ))}
+                            {profile.skills.length > 7 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{profile.skills.length - 7} more
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    <div className="flex flex-col space-y-2">
-                      <Button size="sm" className="gap-2">
+                    <div className="flex md:flex-col gap-2 shrink-0">
+                      {profile.resume_url && (
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="gap-2"
+                          onClick={() => window.open(profile.resume_url, '_blank')}
+                        >
+                          <Download className="h-4 w-4" />
+                          View CV
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="default"
+                        className="gap-2"
+                        onClick={() => window.open(`/talent?search=${encodeURIComponent(profile.full_name)}`, '_blank')}
+                      >
                         <Eye className="h-4 w-4" />
-                        View Profile
-                      </Button>
-                      <Button size="sm" variant="outline" className="gap-2">
-                        <Download className="h-4 w-4" />
-                        Download CV
+                        Full Profile
                       </Button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-
-            {/* Pagination would go here */}
-            <div className="mt-6 flex justify-center">
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm" disabled>
-                  Previous
-                </Button>
-                <Badge variant="outline">Page 1 of 1</Badge>
-                <Button variant="outline" size="sm" disabled>
-                  Next
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Empty State */}
-      {searchResults.length === 0 && searchQuery && !isSearching && (
-        <Card>
-          <CardContent className="py-8 text-center">
-            <Search className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No results found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search criteria or filters
-            </p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-blue-600">{metrics.totalProfessionalsDisplay}</div>
-            <div className="text-sm text-muted-foreground">Total Profiles</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{metrics.activeCandidatesDisplay}</div>
-            <div className="text-sm text-muted-foreground">Active Candidates</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">156</div>
-            <div className="text-sm text-muted-foreground">New This Week</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-orange-600">324</div>
-            <div className="text-sm text-muted-foreground">Profile Views</div>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
