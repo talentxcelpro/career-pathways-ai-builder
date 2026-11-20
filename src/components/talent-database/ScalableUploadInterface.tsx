@@ -172,36 +172,68 @@ export const ScalableUploadInterface = () => {
         const candidateName = file.name
           .replace(/\.[^/.]+$/, '')
           .replace(/[-_]/g, ' ')
-          .replace(/^(cv|resume)\s*/i, '');
+          .replace(/^(cv|resume)\s*/i, '')
+          .trim();
 
-        // Insert into cv_files
-        await supabase.from('cv_files').insert({
-          original_filename: file.name,
-          file_url: fileUrl || `https://storage.talentxcel.in/${sanitizedName}`,
-          file_type: file.type || 'application/pdf',
-          file_size: file.size,
-          user_id: user?.id || null,
-          parsing_status: 'completed',
-          parsing_results: {
-            personal_info: {
-              name: candidateName,
-              email: null
-            },
-            skills: ['General', 'Technical'],
-            experience_years: 2
-          }
-        });
+        const finalFileUrl = fileUrl || `https://storage.talentxcel.in/${sanitizedName}`;
 
-        // Auto-generate profile if enabled
+        // 1. Deduplicate check on cv_files (prevent duplicate files in storage index)
+        const { data: existingCv } = await supabase
+          .from('cv_files')
+          .select('id, file_url')
+          .or(`original_filename.eq."${file.name}",file_url.eq."${finalFileUrl}"`)
+          .limit(1);
+
+        let cvFileId = existingCv?.[0]?.id;
+        if (!cvFileId) {
+          const { data: insertedCv } = await supabase.from('cv_files').insert({
+            original_filename: file.name,
+            file_url: finalFileUrl,
+            file_type: file.type || 'application/pdf',
+            file_size: file.size,
+            user_id: user?.id || null,
+            parsing_status: 'completed',
+            parsing_results: {
+              personal_info: {
+                name: candidateName,
+                email: null
+              },
+              skills: ['General', 'Technical'],
+              experience_years: 2
+            }
+          }).select('id').single();
+          cvFileId = insertedCv?.id;
+        }
+
+        // 2. Deduplicate check on unified_candidates (prevent duplicate candidate profiles)
         if (uploadConfig.autoGenerateProfiles) {
-          await supabase.from('unified_candidates').insert({
-            full_name: candidateName,
-            headline: 'Candidate Profile (Imported from ' + file.name + ')',
-            skills: ['General', 'Technical'],
-            experience_years: 2,
-            source: 'bulk_upload',
-            is_active: true
-          });
+          const { data: existingCandidate } = await supabase
+            .from('unified_candidates')
+            .select('id, name, resume_url')
+            .or(`name.ilike."${candidateName}",resume_url.eq."${finalFileUrl}"`)
+            .limit(1);
+
+          if (existingCandidate && existingCandidate.length > 0) {
+            // Update existing record rather than creating a duplicate
+            const existing = existingCandidate[0];
+            await supabase.from('unified_candidates').update({
+              resume_url: existing.resume_url || finalFileUrl,
+              cv_file_id: cvFileId || existing.id,
+              updated_at: new Date().toISOString()
+            }).eq('id', existing.id);
+          } else {
+            // Insert unique candidate with valid schema fields
+            await supabase.from('unified_candidates').insert({
+              name: candidateName,
+              title: 'Professional Candidate',
+              resume_url: finalFileUrl,
+              cv_file_id: cvFileId,
+              skills: ['General', 'Technical'],
+              experience_years: 2,
+              source: 'bulk_upload',
+              looking_for_job: true
+            });
+          }
         }
 
         processedCount++;

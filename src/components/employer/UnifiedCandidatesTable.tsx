@@ -48,10 +48,11 @@ export const UnifiedCandidatesTable: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch unified candidates view
+      // Fetch unified candidates view (canonical only, filtering archived duplicates)
       const { data: candidatesData, error } = await supabase
         .from('unified_candidates')
         .select('*')
+        .or('activation_status.is.null,activation_status.neq.merged_archive')
         .order('created_at', { ascending: false });
 
       if (error) {

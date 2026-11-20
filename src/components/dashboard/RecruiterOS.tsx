@@ -241,7 +241,8 @@ export function RecruiterOS() {
     queryFn: async () => {
       let query = supabase
         .from('unified_candidates')
-        .select('id, name, email, phone, location, title, skills, experience_years, company, resume_url, description, profile_picture_url')
+        .select('id, name, email, phone, location, title, skills, experience_years, company, resume_url, description, profile_picture_url, activation_status')
+        .or('activation_status.is.null,activation_status.neq.merged_archive')
         .order('resume_url', { ascending: false, nullsFirst: false })
         .limit(100);
 

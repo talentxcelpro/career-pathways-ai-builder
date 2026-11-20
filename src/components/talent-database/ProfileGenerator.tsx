@@ -55,27 +55,49 @@ const ProfileGenerator = () => {
   const generateProfilesMutation = useMutation({
     mutationFn: async () => {
       setIsSyncing(true);
-      // Ensure cv_files with valid parsed candidates are present in unified_candidates
+      // Ensure cv_files with valid parsed candidates are present in unified_candidates (without duplicates)
       const { data: cvFiles } = await supabase
         .from('cv_files')
-        .select('id, original_filename, parsing_results')
+        .select('id, original_filename, file_url, parsing_results')
         .limit(50);
 
       let created = 0;
       if (cvFiles && cvFiles.length > 0) {
         for (const file of cvFiles) {
           const pr = file.parsing_results || {};
-          const name = pr?.personal_info?.name || file.original_filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-          if (name) {
-            await supabase.from('unified_candidates').upsert({
-              full_name: name,
-              headline: pr?.job_title || 'Professional Candidate',
-              experience_years: pr?.years_of_experience || 2,
-              skills: Array.isArray(pr?.skills) ? pr.skills : ['Professional'],
-              source: 'cv_sync',
-              is_active: true
-            }, { onConflict: 'full_name' });
-            created++;
+          const candidateName = (pr?.personal_info?.name || file.original_filename.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ')).trim();
+          if (candidateName) {
+            // Check if already exists in unified_candidates
+            const { data: existing } = await supabase
+              .from('unified_candidates')
+              .select('id')
+              .or(`cv_file_id.eq."${file.id}",name.ilike."${candidateName}"`)
+              .limit(1);
+
+            if (existing && existing.length > 0) {
+              // Update existing rather than creating duplicate
+              await supabase.from('unified_candidates').update({
+                title: pr?.job_title || 'Professional Candidate',
+                experience_years: pr?.years_of_experience || 2,
+                skills: Array.isArray(pr?.skills) ? pr.skills : ['Professional'],
+                resume_url: file.file_url,
+                cv_file_id: file.id,
+                updated_at: new Date().toISOString()
+              }).eq('id', existing[0].id);
+            } else {
+              // Create new record
+              await supabase.from('unified_candidates').insert({
+                name: candidateName,
+                title: pr?.job_title || 'Professional Candidate',
+                experience_years: pr?.years_of_experience || 2,
+                skills: Array.isArray(pr?.skills) ? pr.skills : ['Professional'],
+                resume_url: file.file_url,
+                cv_file_id: file.id,
+                source: 'cv_sync',
+                looking_for_job: true
+              });
+              created++;
+            }
           }
         }
       }
