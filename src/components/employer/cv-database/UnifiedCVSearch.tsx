@@ -204,34 +204,45 @@ export const UnifiedCVSearch: React.FC<UnifiedCVSearchProps> = ({
 
   const downloadSingleCV = async (resumeUrl: string, candidateName: string) => {
     try {
+      const cleanUrl = encodeURI(resumeUrl);
       if (resumeUrl.includes('/storage/v1/object/public/')) {
-        // Extract file path from public URL
         const urlParts = resumeUrl.split('/storage/v1/object/public/');
         if (urlParts[1]) {
           const [bucket, ...pathParts] = urlParts[1].split('/');
-          const filePath = pathParts.join('/');
+          const filePath = decodeURIComponent(pathParts.join('/'));
           
-          const { data, error } = await supabase.storage
-            .from(bucket)
-            .createSignedUrl(filePath, 300); // 5 min expiry
-          
-          if (error) throw error;
-          
-          const link = document.createElement('a');
-          link.href = data.signedUrl;
-          link.download = `${candidateName.replace(/[^a-zA-Z0-9]/g, '_')}_CV.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          return;
+          try {
+            const { data, error } = await supabase.storage
+              .from(bucket)
+              .createSignedUrl(filePath, 300);
+            
+            if (!error && data?.signedUrl) {
+              const link = document.createElement('a');
+              link.href = data.signedUrl;
+              link.download = `${candidateName.replace(/[^a-zA-Z0-9]/g, '_')}_CV.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              return;
+            }
+          } catch {
+            // Fall through to direct link
+          }
         }
       }
       
-      // For external URLs, open directly
-      window.open(resumeUrl, '_blank');
+      // Direct download / open
+      const link = document.createElement('a');
+      link.href = cleanUrl;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.download = `${candidateName.replace(/[^a-zA-Z0-9]/g, '_')}_CV.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Download error:', error);
-      alert('Failed to download CV. Please try again.');
+      window.open(encodeURI(resumeUrl), '_blank');
     }
   };
 

@@ -627,12 +627,12 @@ export const UnifiedCandidatesTable: React.FC = () => {
                       <div className="flex flex-col gap-1">
                         {candidate.resume_url ? (
                           <a 
-                            href={candidate.resume_url} 
+                            href={encodeURI(candidate.resume_url)} 
                             target="_blank" 
                             rel="noopener noreferrer" 
                             className="text-xs font-medium text-blue-600 hover:underline flex items-center gap-1"
                           >
-                            📎 {candidate.original_filename || candidate.resume_url.split('/').pop()?.split('?')[0] || 'View CV'}
+                            📎 {candidate.original_filename || decodeURIComponent(candidate.resume_url.split('/').pop()?.split('?')[0] || '') || 'View CV'}
                           </a>
                         ) : candidate.original_filename ? (
                           <span className="text-xs font-medium text-muted-foreground">
@@ -655,7 +655,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
                               size="sm"
                               variant="outline"
                               title="View CV"
-                              onClick={() => window.open(candidate.resume_url, '_blank')}
+                              onClick={() => window.open(encodeURI(candidate.resume_url), '_blank')}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -665,7 +665,7 @@ export const UnifiedCandidatesTable: React.FC = () => {
                               title="Download CV"
                               asChild
                             >
-                              <a href={candidate.resume_url} download target="_blank" rel="noopener noreferrer">
+                              <a href={encodeURI(candidate.resume_url)} download target="_blank" rel="noopener noreferrer">
                                 <Download className="h-4 w-4" />
                               </a>
                             </Button>
