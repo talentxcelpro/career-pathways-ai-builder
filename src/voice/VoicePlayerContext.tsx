@@ -178,7 +178,25 @@ export function VoicePlayerProvider({ children }: { children: React.ReactNode })
 export function useVoicePlayer() {
   const context = useContext(VoicePlayerContext);
   if (!context) {
-    throw new Error('useVoicePlayer must be used inside VoicePlayerProvider.');
+    return {
+      audioUrl: null,
+      currentText: '',
+      error: null,
+      isPaused: false,
+      isPlaying: false,
+      pause: () => {},
+      play: async () => {},
+      progress: 0,
+      provider: 'browser' as const,
+      resume: () => {},
+      selectedVoice: null,
+      setSelectedVoice: () => {},
+      speed: 1,
+      state: 'idle' as const,
+      status: 'idle',
+      stop: () => {},
+      voices: [],
+    } as any;
   }
   return context;
 }
