@@ -115,7 +115,9 @@ export const Connections: React.FC = () => {
         .from('connections')
         .select('id, requester_id, recipient_id, status, created_at, connected_at, message')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        // INCIDENT-FIX: added query limit [date: 2026-11-21]
+        .limit(100);
 
       if (error) {
         console.error('Error fetching connections:', error);
@@ -135,11 +137,15 @@ export const Connections: React.FC = () => {
         supabase
           .from('user_follows')
           .select('id, following_id, created_at')
-          .eq('follower_id', user.id),
+          .eq('follower_id', user.id)
+          // INCIDENT-FIX: added query limit [date: 2026-11-21]
+          .limit(100),
         supabase
           .from('user_follows')
           .select('id, follower_id, created_at')
           .eq('following_id', user.id)
+          // INCIDENT-FIX: added query limit [date: 2026-11-21]
+          .limit(100)
       ]);
 
       return {

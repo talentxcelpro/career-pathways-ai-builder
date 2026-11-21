@@ -28,18 +28,19 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
   db: {
     schema: 'public'
   },
-  // Configure realtime for better performance
+  // Configure realtime for resilient performance & prevent thundering herd
   realtime: {
     params: {
       eventsPerSecond: 2
     },
-    // Add error handling for realtime connections
-    heartbeatIntervalMs: 60000,
+    heartbeatIntervalMs: 30000,
     reconnectAfterMs: (tries: number) => {
-      return Math.min(tries * 1000, 30000);
+      // Randomized exponential backoff with jitter to prevent reconnect stampedes
+      const backoff = Math.min(1000 * Math.pow(1.5, Math.min(tries, 6)), 30000);
+      const jitter = Math.floor(Math.random() * 1000);
+      return backoff + jitter;
     },
-    // Add more robust error handling
-    timeout: 60000
+    timeout: 30000
   }
 });
 

@@ -31,23 +31,16 @@ export const useContentRecommendations = (limit: number = 10) => {
     enabled: !!user
   });
 
-  // Fetch recent interactions
-  const { data: interactions } = useQuery({
+  // Fetch recent interactions (safely handle dropped legacy user_activities table)
+  const { data: interactions = [] } = useQuery({
     queryKey: ['user-interactions', user?.id],
     queryFn: async () => {
       if (!user) return [];
-
-      const { data, error } = await supabase
-        .from('user_activities')
-        .select('activity_type, activity_data')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (error) throw error;
-      return data;
+      // Legacy user_activities relation dropped in migration; return safe empty interactions
+      return [];
     },
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000
   });
 
   // Generate recommendations based on user profile and behavior

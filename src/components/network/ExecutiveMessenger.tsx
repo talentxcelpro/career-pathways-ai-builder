@@ -135,7 +135,9 @@ export const ExecutiveMessenger: React.FC = () => {
         .from('conversations')
         .select('*')
         .filter('participants', 'cs', `{${currentUserId}}`)
-        .order('last_updated', { ascending: false });
+        .order('last_updated', { ascending: false })
+        // INCIDENT-FIX: added query limit [date: 2026-11-21]
+        .limit(50);
 
       if (error) return [];
       return convData || [];
@@ -203,7 +205,9 @@ export const ExecutiveMessenger: React.FC = () => {
         .from('messages')
         .select('id, content, conversation_id, created_at, sender_id, recipient_id, message_type, status')
         .eq('conversation_id', selectedConversationId)
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: true })
+        // INCIDENT-FIX: added query limit [date: 2026-11-21]
+        .limit(100);
 
       if (error) return [];
       return data || [];

@@ -23,90 +23,20 @@ export interface UserActivity {
 export const useUserActivities = (userId: string, limit: number = 20) => {
   const [activities, setActivities] = useState<UserActivity[]>([]);
 
-  // Fetch initial activities
-  const { data, isLoading, error, refetch } = useQuery({
+  // Safe fallback: user_activities was dropped from production schema
+  const { data = [], isLoading = false, error = null, refetch = async () => {} } = useQuery({
     queryKey: ['user-activities', userId, limit],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_activities')
-        .select(`
-          *,
-          profiles (
-            full_name,
-            username,
-            profile_photo_url
-          )
-        `)
-        .eq('user_id', userId)
-        .eq('is_public', true)
-        .order('created_at', { ascending: false })
-        .limit(limit);
-
-      if (error) throw error;
-      
-      // Transform the data to match our interface
-      const transformedData = (data || []).map(item => ({
-        ...item,
-        metadata: item.metadata as Record<string, any>,
-        profiles: (item.profiles as any) || null
-      })) as UserActivity[];
-      
-      return transformedData;
+      return [] as UserActivity[];
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Set initial data
   useEffect(() => {
     if (data) {
       setActivities(data);
     }
   }, [data]);
-
-  // Set up real-time subscription
-  useEffect(() => {
-    const channel = supabase
-      .channel('user-activities-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'user_activities',
-          filter: `user_id=eq.${userId}`,
-        },
-        async (payload) => {
-          // Fetch the full activity with profile data
-          const { data: newActivity } = await supabase
-            .from('user_activities')
-            .select(`
-              *,
-              profiles (
-                full_name,
-                username,
-                profile_photo_url
-              )
-            `)
-            .eq('id', payload.new.id)
-            .single();
-
-          if (newActivity && newActivity.is_public) {
-            const transformedActivity = {
-              ...newActivity,
-              metadata: newActivity.metadata as Record<string, any>,
-              profiles: (newActivity.profiles as any) || null
-            } as UserActivity;
-            
-            setActivities(prev => [transformedActivity, ...prev.slice(0, limit - 1)]);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [userId, limit]);
 
   return {
     activities,

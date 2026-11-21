@@ -108,7 +108,7 @@ export const JobsPulse: React.FC<JobsPulseProps> = ({
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'jobs',
         },

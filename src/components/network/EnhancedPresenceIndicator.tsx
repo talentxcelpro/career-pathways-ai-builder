@@ -39,10 +39,11 @@ export const EnhancedPresenceIndicator = memo<EnhancedPresenceIndicatorProps>(({
     lg: 'text-base'
   };
 
-  // Subscribe to user presence
+  // Subscribe to shared user presence room instead of spawning per-user channels
   useEffect(() => {
+    if (!userId) return;
     const channel = supabase
-      .channel(`presence-${userId}`)
+      .channel('talentxcel-presence-shared')
       .on('presence', { event: 'sync' }, () => {
         const presenceState = channel.presenceState();
         const userPresence = presenceState[userId];
@@ -74,7 +75,7 @@ export const EnhancedPresenceIndicator = memo<EnhancedPresenceIndicatorProps>(({
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      // Shared channel remains managed globally
     };
   }, [userId]);
 

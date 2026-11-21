@@ -29,6 +29,7 @@ import { getStandardAvatarUrl } from '@/utils/avatarUtils';
 import { generatePersonProfileSlug, getPublicProfilePath } from '@/utils/userProfileSlug';
 import { useConnectionRequests } from '@/hooks/useConnectionRequests';
 import { useAuth } from '@/contexts/AuthContext';
+import { touchUserActivity } from '@/contexts/OptimizedAuthContext';
 import { toast } from 'sonner';
 import { CareerContentHub } from '@/components/social/CareerContentHub';
 import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
@@ -125,11 +126,11 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     staleTime: 60000
   });
 
-  // Real-time synchronization on profiles table
+  // Real-time synchronization: Only listen for new profile additions to prevent refetch storms
   useEffect(() => {
     const channel = supabase
       .channel('discover-profiles-realtime-sync')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, () => {
         queryClient.invalidateQueries({ queryKey: ['discover-professionals-ranked'] });
       })
       .subscribe();
@@ -139,21 +140,10 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
     };
   }, [queryClient]);
 
-  // Touch current user's activity immediately when visiting People Discovery
+  // Record visitor presence throttled via API without Postgres table updates
   useEffect(() => {
     if (user?.id) {
-      supabase
-        .from('profiles')
-        .update({ id: user.id })
-        .eq('id', user.id)
-        .then(() => {})
-        .catch(() => {});
-
-      fetch('/api/profile/record-activity', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id })
-      }).catch(() => {});
+      touchUserActivity(user.id);
     }
   }, [user?.id]);
 

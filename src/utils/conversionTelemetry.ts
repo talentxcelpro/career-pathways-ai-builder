@@ -330,13 +330,21 @@ class ConversionTelemetryManager {
 
   private saveToStorage(): void {
     if (typeof window === 'undefined') return;
-    try {
-      const serializedCounts = JSON.stringify(this.counts);
-      localStorage.setItem(STORAGE_KEY, serializedCounts);
-      sessionStorage.setItem(STORAGE_KEY, serializedCounts);
-      localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(this.eventsLog.slice(-MAX_LOCAL_EVENTS)));
-    } catch {
-      // Storage safety
+    const write = () => {
+      try {
+        const serializedCounts = JSON.stringify(this.counts);
+        localStorage.setItem(STORAGE_KEY, serializedCounts);
+        sessionStorage.setItem(STORAGE_KEY, serializedCounts);
+        localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(this.eventsLog.slice(-MAX_LOCAL_EVENTS)));
+      } catch {
+        // Storage safety
+      }
+    };
+
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(write, { timeout: 200 });
+    } else {
+      setTimeout(write, 0);
     }
   }
 

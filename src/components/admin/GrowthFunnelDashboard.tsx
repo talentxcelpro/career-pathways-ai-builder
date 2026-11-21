@@ -46,41 +46,61 @@ export const GrowthFunnelDashboard: React.FC = () => {
   const { data: dbData, isLoading, refetch } = useQuery({
     queryKey: ['growth-os-funnel-metrics'],
     queryFn: async () => {
-      // 1. Profiles
+      // 1. Profiles (bounded)
+      // INCIDENT-FIX: added query limit to prevent unpaginated table scan [date: 2026-11-21]
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, created_at, user_role, onboarding_completed, profile_completed, login_count');
+        .select('id, created_at, user_role, onboarding_completed, profile_completed, login_count')
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
-      // 2. User behavior events (canonical)
+      // 2. User behavior events (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: events } = await supabase
         .from('user_behavior_events')
         .select('*')
-        .order('created_at', { ascending: true });
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
-      // 3. Resumes
+      // 3. Resumes (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: resumes } = await supabase
         .from('resumes')
-        .select('id, user_id, created_at, ats_score');
+        .select('id, user_id, created_at, ats_score')
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
-      // 4. Career Passports
+      // 4. Career Passports (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: passports } = await supabase
         .from('career_passports')
-        .select('id, user_id, created_at, talent_score');
+        .select('id, user_id, created_at, talent_score')
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
-      // 5. Job Applications
+      // 5. Job Applications (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: applications } = await supabase
         .from('job_applications')
-        .select('id, user_id, job_id, created_at, applied_at, status');
+        .select('id, user_id, job_id, created_at, applied_at, status')
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
-      // 6. Requirements
+      // 6. Requirements (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: requirements } = await supabase
         .from('requirements')
-        .select('id, employer_id, created_at, status');
+        .select('id, employer_id, created_at, status')
+        .order('created_at', { ascending: false })
+        .limit(500);
 
-      // 7. Shortlists
+      // 7. Shortlists (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: shortlists } = await supabase
         .from('shortlists')
-        .select('id, employer_id, candidate_id, created_at, status');
+        .select('id, employer_id, candidate_id, created_at, status')
+        .order('created_at', { ascending: false })
+        .limit(500);
 
       // 8. Ecosystem counts
       const { count: postsCount } = await supabase.from('posts').select('*', { count: 'exact', head: true });
@@ -100,7 +120,8 @@ export const GrowthFunnelDashboard: React.FC = () => {
         coursesCount: coursesCount || 0
       };
     },
-    refetchInterval: 30000 // 30s auto-refresh
+    // INCIDENT-FIX: reduced polling frequency from 30s to 5 minutes [date: 2026-11-21]
+    refetchInterval: 5 * 60 * 1000 // 5m auto-refresh
   });
 
   // Filtered views

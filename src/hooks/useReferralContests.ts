@@ -143,36 +143,34 @@ export const useReferralContests = () => {
 
     try {
       const { data, error } = await supabase
-        .from('referrals')
-        .select('id')
+        .from('user_referrals')
+        .select('successful_referrals')
         .eq('referrer_id', user.id)
-        .eq('status', 'completed')
-        .gte('completed_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()); // Last 7 days
+        .maybeSingle();
 
       if (error) throw error;
-      return data?.length || 0;
+      return data?.successful_referrals || 0;
     } catch (error) {
       console.error('Error fetching contest progress:', error);
-      return Math.floor(Math.random() * 5); // Mock progress
+      return 0;
     }
   };
 
   // Get leaderboard data
   const getLeaderboard = async (contestId: string) => {
     try {
-      // This would be a more complex query in real implementation
-      // For now, return mock data based on real referral counts
       const { data: topReferrers, error } = await supabase
-        .from('referrals')
-        .select('referrer_id')
-        .eq('status', 'completed')
-        .gte('completed_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+        .from('user_referrals')
+        .select('referrer_id, successful_referrals')
+        .gt('successful_referrals', 0)
+        .order('successful_referrals', { ascending: false })
+        .limit(20);
 
       if (error) throw error;
 
       // Group by referrer and count
-      const referrerCounts = topReferrers?.reduce((acc, ref) => {
-        acc[ref.referrer_id] = (acc[ref.referrer_id] || 0) + 1;
+      const referrerCounts = (topReferrers || []).reduce((acc, ref) => {
+        acc[ref.referrer_id] = ref.successful_referrals || 1;
         return acc;
       }, {} as Record<string, number>) || {};
 

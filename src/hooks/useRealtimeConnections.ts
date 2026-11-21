@@ -100,7 +100,7 @@ export function useRealtimeConnections() {
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'UPDATE',
           schema: 'public',
           table: 'profiles'
         },

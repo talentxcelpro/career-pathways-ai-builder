@@ -79,10 +79,10 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         }
       }
 
-      // Build posts query
+      // Build posts query with bounded column projection
       let query = supabase
         .from('posts')
-        .select('*');
+        .select('id, content, created_at, updated_at, author_id, user_id, media_urls, tags, hashtags, likes_count, comments_count, shares_count, is_public, visibility, status, post_type, headline, tagline, is_deleted');
 
       // Visibility filter
       if (filters.type === 'connections' && connectedAuthorIds) {
@@ -124,13 +124,14 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
 
       const postIds = postList.map((p: any) => p.id);
 
-      // Batch fetch engagement in parallel to eliminate N+1 queries in child cards
+      // Batch fetch engagement in parallel to eliminate N+1 queries in child cards (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const [likesResult, commentsResult, sharesResult, userLikesResult, userSavesResult] = await Promise.all([
-        supabase.from('post_likes').select('post_id').in('post_id', postIds),
-        supabase.from('post_comments').select('post_id').in('post_id', postIds),
-        supabase.from('post_shares').select('post_id').in('post_id', postIds),
-        userId ? supabase.from('post_likes').select('post_id').in('post_id', postIds).eq('user_id', userId) : Promise.resolve({ data: [] }),
-        userId ? supabase.from('post_saves').select('post_id').in('post_id', postIds).eq('user_id', userId) : Promise.resolve({ data: [] })
+        supabase.from('post_likes').select('post_id').in('post_id', postIds).limit(200),
+        supabase.from('post_comments').select('post_id').in('post_id', postIds).limit(100),
+        supabase.from('post_shares').select('post_id').in('post_id', postIds).limit(50),
+        userId ? supabase.from('post_likes').select('post_id').in('post_id', postIds).eq('user_id', userId).limit(50) : Promise.resolve({ data: [] }),
+        userId ? supabase.from('post_saves').select('post_id').in('post_id', postIds).eq('user_id', userId).limit(50) : Promise.resolve({ data: [] })
       ]);
 
       // Count engagement per post

@@ -49,7 +49,7 @@ const SlugProfile = lazy(() => import("@/pages/SlugProfile"));
 const SocialMarketingDashboard = lazy(() => import("@/pages/admin/SocialMarketingDashboard"));
 const SocialContentStudio = lazy(() => import("@/pages/admin/SocialContentStudio"));
 const SocialMarketingCalendar = lazy(() => import("@/pages/admin/SocialMarketingCalendar"));
-import UDXDiscoveryDashboard from "@/pages/discovery/UDXDiscoveryDashboard";
+const UDXDiscoveryDashboard = lazy(() => import("@/pages/discovery/UDXDiscoveryDashboard"));
 import { UDXSuperAdminGuard } from "@/components/auth/UDXSuperAdminGuard";
 const BenchmarkResultsPage = lazy(() => import("@/pages/BenchmarkResultsPage"));
 const GrowthControlPlane = lazy(() => import("@/pages/growth/GrowthControlPlane"));
@@ -318,7 +318,7 @@ const queryClient = new QueryClient({
       refetchInterval: false, // No global auto-polling - prevents exceeding Supabase bandwidth
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: false, // Don't burn egress on tab focus
-      refetchOnReconnect: 'always',
+      refetchOnReconnect: false, // Prevent thundering herd re-query storms on reconnect
       retry: 1,
       gcTime: 30 * 60 * 1000,
       networkMode: 'online',

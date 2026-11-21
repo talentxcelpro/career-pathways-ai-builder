@@ -1,72 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
-import { useUserPresence } from '@/hooks/useUserPresence';
 
 interface RealTimePresenceProps {
   userId?: string;
   showLastSeen?: boolean;
   variant?: 'dot' | 'badge' | 'text';
+  initialOnline?: boolean;
+  initialLastSeen?: string | null;
 }
 
 export const RealTimePresence: React.FC<RealTimePresenceProps> = ({
   userId,
   showLastSeen = true,
-  variant = 'dot'
+  variant = 'dot',
+  initialOnline = false,
+  initialLastSeen = null,
 }) => {
   const [presenceData, setPresenceData] = useState<{
     isOnline: boolean;
     lastSeen: string | null;
-  }>({ isOnline: false, lastSeen: null });
-
-  // Initialize user presence for current user
-  useUserPresence();
+  }>({ isOnline: initialOnline, lastSeen: initialLastSeen });
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || initialOnline) return;
 
-    // Fetch initial presence data
+    // Lightweight fetch without per-item Realtime channels to prevent WAL sender overload
+    let mounted = true;
     const fetchPresence = async () => {
-      const { data } = await supabase
-        .from('profiles')
-        .select('is_online, last_seen')
-        .eq('id', userId)
-        .single();
+      try {
+        const { data } = await supabase
+          .from('profiles')
+          .select('is_online, last_seen')
+          .eq('id', userId)
+          .maybeSingle();
 
-      if (data) {
-        setPresenceData({
-          isOnline: data.is_online || false,
-          lastSeen: data.last_seen
-        });
-      }
+        if (mounted && data) {
+          setPresenceData({
+            isOnline: Boolean(data.is_online),
+            lastSeen: data.last_seen || null
+          });
+        }
+      } catch {}
     };
 
     fetchPresence();
-
-    // Subscribe to presence changes
-    const channel = supabase
-      .channel(`presence:${userId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${userId}`
-        },
-        (payload) => {
-          setPresenceData({
-            isOnline: payload.new.is_online || false,
-            lastSeen: payload.new.last_seen
-          });
-        }
-      )
-      .subscribe();
-
     return () => {
-      supabase.removeChannel(channel);
+      mounted = false;
     };
-  }, [userId]);
+  }, [userId, initialOnline]);
 
   const getLastSeenText = (lastSeen: string | null): string => {
     if (!lastSeen) return 'Never';

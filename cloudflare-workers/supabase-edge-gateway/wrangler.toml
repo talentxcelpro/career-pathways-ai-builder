@@ -1,0 +1,17 @@
+name = "talentxcel-supabase-edge-gateway"
+main = "src/index.ts"
+compatibility_date = "2024-11-12"
+compatibility_flags = ["nodejs_compat"]
+
+# Production Gateway Environment
+[vars]
+SUPABASE_ORIGIN = "https://dthlgsnakhoftinssokm.supabase.co"
+ENVIRONMENT = "production"
+DEFAULT_PUBLIC_TTL = 120 # 2 minutes edge TTL
+MAX_PUBLIC_TTL = 300     # 5 minutes max stale-while-revalidate
+
+# Routes on talentxcel zone
+# When deployed, maps to edge.talentxcel.in/* or talentxcel.in/api/v1/edge/*
+# [routes]
+# pattern = "edge.talentxcel.in/*"
+# zone_name = "talentxcel.in"

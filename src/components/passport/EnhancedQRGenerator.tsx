@@ -35,10 +35,10 @@ const EnhancedQRGenerator: React.FC<EnhancedQRGeneratorProps> = ({ profileData }
     
     try {
       const { data, error } = await supabase
-        .from('referrals')
+        .from('user_referrals')
         .select('referral_code')
-        .eq('user_id', user.id)
-        .single();
+        .or(`referrer_id.eq.${user.id},user_id.eq.${user.id}`)
+        .maybeSingle();
       
       if (data?.referral_code) {
         setReferralCode(data.referral_code);

@@ -84,17 +84,20 @@ export const useLinkedInPulse = () => {
       // Get post IDs for fetching related data
       const postIds = postsData.map(post => post.id);
 
-      // Fetch likes, comments separately
+      // Fetch likes, comments separately (bounded to prevent platform-wide scans)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const [likesResult, commentsResult] = await Promise.all([
         supabase
           .from('post_likes')
           .select('post_id, user_id')
-          .in('post_id', postIds),
+          .in('post_id', postIds)
+          .limit(200),
         supabase
           .from('post_comments')
           .select('id, post_id, content, created_at, user_id')
           .in('post_id', postIds)
           .order('created_at', { ascending: false })
+          .limit(100)
       ]);
 
       // Create maps for likes and comments
@@ -126,12 +129,14 @@ export const useLinkedInPulse = () => {
 
       if (profilesError) throw profilesError;
 
-      // Get current user's TalentNetwork
+      // Get current user's TalentNetwork (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: TalentNetworkData } = await supabase
         .from('connections')
         .select('requester_id, recipient_id, status')
         .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-        .eq('status', 'accepted');
+        .eq('status', 'accepted')
+        .limit(200);
 
       const TalentNetwork = new Set();
       TalentNetworkData?.forEach(conn => {
@@ -139,11 +144,14 @@ export const useLinkedInPulse = () => {
         if (conn.recipient_id === user.id) TalentNetwork.add(conn.requester_id);
       });
 
-      // Get user's likes
+      // Get user's likes bounded strictly to current postIds in page
+      // INCIDENT-FIX: scoped to active postIds with limit to prevent unbounded scans [date: 2026-11-21]
       const { data: userLikes } = await supabase
         .from('post_likes')
         .select('post_id')
-        .eq('user_id', user.id);
+        .eq('user_id', user.id)
+        .in('post_id', postIds)
+        .limit(50);
 
       const likedPosts = new Set(userLikes?.map(like => like.post_id) || []);
 

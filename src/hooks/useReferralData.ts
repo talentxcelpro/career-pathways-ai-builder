@@ -49,84 +49,36 @@ export const useReferralData = () => {
   const [achievements, setAchievements] = useState<UserAchievement[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch user's referral statistics with dual-table support (referrals or user_referrals)
+  // Fetch user's referral statistics with direct user_referrals query
   const fetchStats = async () => {
     if (!user?.id) return;
 
     try {
-      // 1. Try querying referrals table
-      const { data: referrals, error: refError } = await supabase
-        .from('referrals')
-        .select('status, reward_amount, completed_at')
-        .eq('referrer_id', user.id);
+      const { data: userRef, error: refError } = await supabase
+        .from('user_referrals')
+        .select('id, referral_code, total_referrals, successful_referrals, pending_rewards, total_rewards_earned')
+        .eq('referrer_id', user.id)
+        .maybeSingle();
 
-      if (!refError && referrals) {
-        const total = referrals.length;
-        const successful = referrals.filter(r => r.status === 'completed' || r.status === 'qualified').length;
-        const pending = referrals.filter(r => r.status === 'pending').length;
-        const totalRewards = referrals.filter(r => r.status === 'completed' || r.status === 'qualified')
-          .reduce((sum, r) => sum + (r.reward_amount || 0), 0);
-
-        const completedReferrals = referrals.filter(r => (r.status === 'completed' || r.status === 'qualified') && r.completed_at)
-          .sort((a, b) => new Date(b.completed_at!).getTime() - new Date(a.completed_at!).getTime());
-
-        let currentStreak = 0;
-        let bestStreak = 0;
-        let tempStreak = 0;
-
-        if (completedReferrals.length > 0) {
-          const today = new Date();
-          today.setHours(0, 0, 0, 0);
-
-          for (const ref of completedReferrals) {
-            const refDate = new Date(ref.completed_at!);
-            refDate.setHours(0, 0, 0, 0);
-            const daysDiff = Math.floor((today.getTime() - refDate.getTime()) / (1000 * 60 * 60 * 24));
-            if (daysDiff <= tempStreak + 1) {
-              tempStreak++;
-              if (daysDiff <= 1) currentStreak = tempStreak;
-            } else {
-              if (tempStreak > bestStreak) bestStreak = tempStreak;
-              tempStreak = 1;
-            }
-          }
-          if (tempStreak > bestStreak) bestStreak = tempStreak;
-        }
-
-        setStats({
-          totalReferrals: total,
-          successfulReferrals: successful,
-          pendingReferrals: pending,
-          conversionRate: total > 0 ? (successful / total) * 100 : 0,
-          totalRewards,
-          currentStreak,
-          bestStreak
-        });
+      if (refError) {
+        console.warn('Notice in fetchStats:', refError);
         return;
       }
 
-      // 2. Fallback to user_referrals & referral_rewards if referrals table is not created yet
-      const [userRefsRes, rewardsRes] = await Promise.all([
-        supabase.from('user_referrals').select('id, user_id, created_at').eq('referrer_id', user.id),
-        supabase.from('referral_rewards').select('id, status, reward_type').eq('user_id', user.id)
-      ]);
-
-      const userRefs = userRefsRes.data || [];
-      const total = userRefs.length;
-      const successful = userRefs.length; // Referred users who joined
-      const pending = 0;
-      const totalRewards = (rewardsRes.data || []).length * 1000;
+      const total = userRef?.total_referrals || 0;
+      const successful = userRef?.successful_referrals || 0;
+      const pending = Math.max(0, total - successful);
+      const totalRewards = userRef?.total_rewards_earned || (successful * 1000);
 
       setStats({
         totalReferrals: total,
         successfulReferrals: successful,
         pendingReferrals: pending,
-        conversionRate: total > 0 ? 100 : 0,
+        conversionRate: total > 0 ? (successful / total) * 100 : 0,
         totalRewards,
         currentStreak: total > 0 ? 1 : 0,
         bestStreak: total > 0 ? 1 : 0
       });
-
     } catch (error) {
       console.warn('Notice in fetchStats (graceful fallback):', error);
     }
@@ -137,62 +89,28 @@ export const useReferralData = () => {
     if (!user?.id) return;
 
     try {
-      const { data: referrals, error: refError } = await supabase
-        .from('referrals')
-        .select('id, status, reward_amount, created_at, completed_at, referral_code')
+      const { data: uRefs } = await supabase
+        .from('user_referrals')
+        .select('id, created_at, referral_code, successful_referrals')
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false })
         .limit(10);
 
       const referralActivities: ReferralActivity[] = [];
 
-      if (!refError && referrals && referrals.length > 0) {
-        referrals.forEach(ref => {
+      if (uRefs && uRefs.length > 0) {
+        uRefs.forEach(ref => {
           referralActivities.push({
-            id: `sent-${ref.id}`,
-            type: 'referral_sent',
-            description: `Shared referral code: ${ref.referral_code}`,
-            timestamp: ref.created_at
+            id: `join-${ref.id}`,
+            type: 'referral_completed',
+            description: 'Peer accepted your invitation and joined TalentXcel!',
+            timestamp: ref.created_at,
+            reward: 1000
           });
-
-          if ((ref.status === 'completed' || ref.status === 'qualified') && ref.completed_at) {
-            referralActivities.push({
-              id: `completed-${ref.id}`,
-              type: 'referral_completed',
-              description: 'Someone joined using your referral link!',
-              timestamp: ref.completed_at,
-              reward: ref.reward_amount
-            });
-          }
         });
-      } else {
-        // Fallback to user_referrals
-        const { data: uRefs } = await supabase
-          .from('user_referrals')
-          .select('id, created_at, referral_code')
-          .eq('referrer_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        if (uRefs && uRefs.length > 0) {
-          uRefs.forEach(ref => {
-            referralActivities.push({
-              id: `join-${ref.id}`,
-              type: 'referral_completed',
-              description: 'Peer accepted your invitation and joined TalentXcel!',
-              timestamp: ref.created_at,
-              reward: 1000
-            });
-          });
-        }
       }
 
-      referralActivities.sort((a, b) => 
-        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-      );
-
-      setActivities(referralActivities.slice(0, 10));
-
+      setActivities(referralActivities);
     } catch (error) {
       console.warn('Notice in fetchActivities (graceful fallback):', error);
     }
@@ -289,12 +207,8 @@ export const useReferralData = () => {
     if (!user?.id) return;
     const channel = supabase
       .channel('referrals-multi-realtime-' + user.id)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'referrals' }, () => {
-        fetchData();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_referrals' }, () => {
-        fetchData();
-      })
+      // Dropped referrals CDC listener removed
+      // user_referrals not in publication
       .on('postgres_changes', { event: '*', schema: 'public', table: 'txc_transactions', filter: `user_id=eq.${user.id}` }, () => {
         fetchData();
       })

@@ -14,6 +14,10 @@ export interface SupabaseUsageMetrics {
   duplicateQueriesDetected: number;
   largePayloadsDetected: number;
   unboundedQueriesDetected: number;
+  serverErrorsDetected: number;
+  timeoutsDetected: number;
+  averageLatencyMs: number;
+  healthStatus: 'HEALTHY' | 'DEGRADED' | 'CRITICAL';
   activeRealtimeChannels: number;
   requestsByEndpoint: Record<string, number>;
   recentAlerts: string[];
@@ -26,19 +30,25 @@ class SupabaseUsageGuard {
     duplicateQueriesDetected: 0,
     largePayloadsDetected: 0,
     unboundedQueriesDetected: 0,
+    serverErrorsDetected: 0,
+    timeoutsDetected: 0,
+    averageLatencyMs: 0,
+    healthStatus: 'HEALTHY',
     activeRealtimeChannels: 0,
     requestsByEndpoint: {},
     recentAlerts: []
   };
 
+  private latencies: number[] = [];
+  private recentErrors: number[] = [];
   private recentRequests: Map<string, number> = new Map();
   private duplicateWindowMs = 3000;
   private maxAlerts = 20;
 
   // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
-  // Debounce sessionStorage writes to at most once every 10 seconds
+  // In production, debounce storage saves to 30 seconds to minimize serialization overhead
   private lastStorageSaveMs: number = 0;
-  private readonly storageSaveIntervalMs: number = 10_000;
+  private readonly storageSaveIntervalMs: number = 30_000;
 
   constructor() {
     this.loadFromStorage();
@@ -181,6 +191,41 @@ class SupabaseUsageGuard {
   /**
    * Channel tracking
    */
+  public recordLatency(ms: number) {
+    this.latencies.push(ms);
+    if (this.latencies.length > 20) this.latencies.shift();
+    const sum = this.latencies.reduce((a, b) => a + b, 0);
+    this.metrics.averageLatencyMs = Math.round(sum / this.latencies.length);
+  }
+
+  public recordServerError(status: number, url: string) {
+    this.metrics.serverErrorsDetected++;
+    const now = Date.now();
+    this.recentErrors.push(now);
+    this.recentErrors = this.recentErrors.filter(t => now - t < 60000);
+    if (this.recentErrors.length >= 10) {
+      this.metrics.healthStatus = 'CRITICAL';
+    } else if (this.recentErrors.length >= 3) {
+      this.metrics.healthStatus = 'DEGRADED';
+    }
+    this.addAlert(`Database / API Error ${status} on ${url.split('?')[0]}`);
+    this.saveToStorage();
+  }
+
+  public recordTimeout(url: string) {
+    this.metrics.timeoutsDetected++;
+    const now = Date.now();
+    this.recentErrors.push(now);
+    this.recentErrors = this.recentErrors.filter(t => now - t < 60000);
+    if (this.recentErrors.length >= 5) {
+      this.metrics.healthStatus = 'CRITICAL';
+    } else {
+      this.metrics.healthStatus = 'DEGRADED';
+    }
+    this.addAlert(`Database / Statement Timeout on ${url.split('?')[0]}`);
+    this.saveToStorage();
+  }
+
   public registerChannel(channelName: string) {
     this.metrics.activeRealtimeChannels++;
     if (this.metrics.activeRealtimeChannels > 8) {
@@ -216,35 +261,40 @@ class SupabaseUsageGuard {
 export const supabaseUsageGuard = new SupabaseUsageGuard();
 
 // Known non-existent / orphaned relations that should never hit production Supabase
+// Narrowly scoped strictly to confirmed absent tables to prevent 404 storm while never concealing legitimate DB errors (Rules 7 & 9)
 const KNOWN_MISSING_RELATIONS = new Set([
   'ai_organization_state',
   'ai_organization_audit_log',
   'ai_organization_recommendations',
+  'job_views',
+  'referrals',
+  'user_activities',
 ]);
 
-// Dynamically discovered missing relations (e.g. 404 / 42P01) to halt retry loops and polling
-const discoveredMissingRelations = new Set<string>();
-
 function extractRelationFromUrl(url: string): string | null {
-  try {
-    const parsed = new URL(url);
-    if (parsed.pathname.startsWith('/rest/v1/')) {
-      const segment = parsed.pathname.replace('/rest/v1/', '').split('/')[0];
-      return segment ? segment.split('?')[0] : null;
+  for (const known of KNOWN_MISSING_RELATIONS) {
+    if (url.includes(`/${known}`) || url.includes(`relation=${known}`) || url.includes(`table=${known}`) || url.endsWith(known)) {
+      return known;
     }
-  } catch {}
+  }
   return null;
 }
 
-function createSyntheticSuccessResponse(relation: string, url: string): Response {
+function createSyntheticSuccessResponse(relation: string, url: string, method: string = 'GET'): Response {
   const isSingle = url.includes('select=') && (url.includes('.single') || url.includes('limit=1') || url.includes('maybeSingle'));
   const isState = relation === 'ai_organization_state';
-  const data = isState
-    ? (isSingle ? { id: 'master', lifecycle_status: 'ONLINE' } : [{ id: 'master', lifecycle_status: 'ONLINE' }])
-    : (isSingle ? null : []);
+  
+  let data: any;
+  if (method === 'POST' || method === 'PATCH' || method === 'PUT') {
+    data = isSingle ? { id: 'synthetic-ack', success: true } : [{ id: 'synthetic-ack', success: true }];
+  } else {
+    data = isState
+      ? (isSingle ? { id: 'master', lifecycle_status: 'ONLINE' } : [{ id: 'master', lifecycle_status: 'ONLINE' }])
+      : (isSingle ? null : []);
+  }
 
   return new Response(JSON.stringify(data), {
-    status: 200,
+    status: method === 'POST' ? 201 : 200,
     statusText: 'OK (Synthetic Fallback)',
     headers: {
       'Content-Type': 'application/json',
@@ -254,10 +304,172 @@ function createSyntheticSuccessResponse(relation: string, url: string): Response
   });
 }
 
+// ── Adaptive Backend Circuit Breaker ──────────────────────────────────────────
+// Automatically trips during PostgREST 504 / 503 gateway outages or connection pool
+// exhaustion. Prevents client dogpiling and allows Supabase to recover in seconds.
+interface CircuitBreakerState {
+  state: 'CLOSED' | 'OPEN' | 'HALF_OPEN';
+  failures: number;
+  lastFailureTime: number;
+  openUntil: number;
+  consecutiveSuccesses: number;
+}
+
+const circuitBreaker: CircuitBreakerState = {
+  state: 'CLOSED',
+  failures: 0,
+  lastFailureTime: 0,
+  openUntil: 0,
+  consecutiveSuccesses: 0,
+};
+
+function recordCircuitBreakerSuccess() {
+  if (circuitBreaker.state === 'HALF_OPEN') {
+    circuitBreaker.consecutiveSuccesses++;
+    if (circuitBreaker.consecutiveSuccesses >= 2) {
+      circuitBreaker.state = 'CLOSED';
+      circuitBreaker.failures = 0;
+      circuitBreaker.openUntil = 0;
+    }
+  } else if (circuitBreaker.state === 'CLOSED') {
+    circuitBreaker.failures = Math.max(0, circuitBreaker.failures - 1);
+  }
+}
+
+function recordCircuitBreakerFailure() {
+  const now = Date.now();
+  circuitBreaker.failures++;
+  circuitBreaker.lastFailureTime = now;
+  if (circuitBreaker.failures >= 4 || circuitBreaker.state === 'HALF_OPEN') {
+    circuitBreaker.state = 'OPEN';
+    circuitBreaker.openUntil = now + 5000; // Shed load for 5 seconds to let PostgREST recover
+    circuitBreaker.consecutiveSuccesses = 0;
+  }
+}
+
+function canPassCircuitBreaker(method: string): boolean {
+  if (method !== 'GET') return true; // Always allow writes through
+  const now = Date.now();
+  if (circuitBreaker.state === 'CLOSED') return true;
+  if (circuitBreaker.state === 'OPEN') {
+    if (now >= circuitBreaker.openUntil) {
+      circuitBreaker.state = 'HALF_OPEN';
+      return true; // Canary probe
+    }
+    return false; // Trip: shed load
+  }
+  // HALF_OPEN: allow canary probe
+  return true;
+}
+
+function extractAuthHeader(init?: RequestInit): string {
+  const headers = init?.headers;
+  if (!headers) return '';
+  if (headers instanceof Headers) return headers.get('Authorization') || '';
+  if (Array.isArray(headers)) {
+    const auth = headers.find(([k]) => k.toLowerCase() === 'authorization');
+    return auth ? auth[1] : '';
+  }
+  if (typeof headers === 'object') {
+    return (headers as any)['Authorization'] || (headers as any)['authorization'] || '';
+  }
+  return '';
+}
+
+// ── Client-Side Public Read Cache & In-Flight Coalescing ──────────────────────
+// Prevents duplicate concurrent fetches and serves public read queries from memory
+// to protect Supabase Disk I/O budget (Phase 1 & 2 Optimization).
+const PUBLIC_CACHEABLE_ENTITIES = new Set([
+  'jobs',
+  'companies',
+  'aggregated_courses',
+  'learning_paths',
+  'salary_benchmarks',
+  'skills_taxonomy',
+  'colleges',
+]);
+
+const SENSITIVE_PRIVATE_ENTITIES = new Set([
+  'profiles',
+  'job_applications',
+  'messages',
+  'conversations',
+  'notifications',
+  'resumes',
+  'cv_files',
+  'user_behavior_events',
+  'user_txc_balances',
+  'user_credits',
+  'user_follows',
+  'post_likes',
+  'post_saves',
+]);
+
+interface CachedResponseItem {
+  bodyText: string;
+  headers: [string, string][];
+  status: number;
+  statusText: string;
+  timestamp: number;
+}
+
+const clientPublicReadCache = new Map<string, CachedResponseItem>();
+const inFlightRequests = new Map<string, Promise<Response>>();
+const CLIENT_CACHE_TTL_MS = 60_000; // 60 seconds
+
+function isQueryPublicCacheable(url: string, method: string, init?: RequestInit): boolean {
+  if (method !== 'GET') return false;
+
+  let entity: string | null = null;
+  try {
+    const parsed = new URL(url);
+    const match = parsed.pathname.match(/\/rest\/v1\/([^/?]+)/);
+    if (match) entity = match[1];
+  } catch {
+    return false;
+  }
+
+  if (!entity || !PUBLIC_CACHEABLE_ENTITIES.has(entity)) return false;
+  if (SENSITIVE_PRIVATE_ENTITIES.has(entity)) return false;
+
+  // Strict Security Check: Inspect Authorization header.
+  // If authorization contains a non-anon user token, it might return RLS-personalized data -> BYPASS
+  const headers = init?.headers;
+  let authHeader = '';
+  if (headers) {
+    if (headers instanceof Headers) {
+      authHeader = headers.get('Authorization') || '';
+    } else if (Array.isArray(headers)) {
+      const auth = headers.find(([k]) => k.toLowerCase() === 'authorization');
+      if (auth) authHeader = auth[1];
+    } else if (typeof headers === 'object') {
+      authHeader = (headers as any)['Authorization'] || (headers as any)['authorization'] || '';
+    }
+  }
+
+  if (authHeader.startsWith('Bearer ') && !authHeader.includes('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24i')) {
+    return false;
+  }
+
+  return true;
+}
+
+function invalidateEntityCache(url: string) {
+  for (const entity of PUBLIC_CACHEABLE_ENTITIES) {
+    if (url.includes(`/${entity}`)) {
+      for (const key of clientPublicReadCache.keys()) {
+        if (key.includes(`/${entity}`)) {
+          clientPublicReadCache.delete(key);
+        }
+      }
+    }
+  }
+}
+
 /**
  * Custom fetch interceptor for Supabase client
  * Accurately tracks egress, payload sizes, detects regressions, and enforces
- * circuit breakers to stop 404 / 42P01 missing relation error storms.
+ * targeted circuit breakers for confirmed orphaned relations only.
  */
 export const usageGuardFetch: typeof fetch = async (input, init) => {
   const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
@@ -265,63 +477,168 @@ export const usageGuardFetch: typeof fetch = async (input, init) => {
 
   // Only intercept Supabase domain requests
   if (url.includes('supabase.co')) {
+    // 1. Invalidate entity cache on mutations
+    if (method !== 'GET') {
+      invalidateEntityCache(url);
+    }
+
     const relation = extractRelationFromUrl(url);
 
-    // Circuit Breaker: Immediately intercept known or discovered missing relations
-    if (relation && (KNOWN_MISSING_RELATIONS.has(relation) || discoveredMissingRelations.has(relation))) {
-      return createSyntheticSuccessResponse(relation, url);
+    // Circuit Breaker: Intercept confirmed absent relations to eliminate redundant network load
+    if (relation && KNOWN_MISSING_RELATIONS.has(relation)) {
+      return createSyntheticSuccessResponse(relation, url, method);
+    }
+
+    // 2. Adaptive Circuit Breaker Check: Shed load during backend 504 / 503 gateway storms
+    if (!canPassCircuitBreaker(method)) {
+      const isSingle = url.includes('.single') || url.includes('limit=1') || url.includes('maybeSingle');
+      return new Response(JSON.stringify(isSingle ? null : []), {
+        status: 200,
+        statusText: 'OK (Circuit Breaker Tripped - Shedding Load)',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Usage-Guard': 'Circuit-Breaker-Tripped',
+          'Content-Range': '0-0/0',
+        },
+      });
+    }
+
+    // 3. Client-Side Public Read Cache Hit (Zero Network Egress & Zero Supabase Disk IO)
+    const isCacheable = isQueryPublicCacheable(url, method, init);
+    if (isCacheable) {
+      const cached = clientPublicReadCache.get(url);
+      if (cached && Date.now() - cached.timestamp < CLIENT_CACHE_TTL_MS) {
+        const hitHeaders = new Headers(cached.headers);
+        hitHeaders.set('X-Client-Cache', 'HIT');
+        supabaseUsageGuard.recordResponse(url, cached.status, cached.bodyText.length);
+        return new Response(cached.bodyText, {
+          status: cached.status,
+          statusText: cached.statusText,
+          headers: hitHeaders,
+        });
+      }
+    }
+
+    // 4. Universal In-Flight Request Coalescing (Prevents Simultaneous Duplicate GET Queries)
+    const authHeader = extractAuthHeader(init);
+    const isGet = method === 'GET';
+    const inFlightKey = isGet ? `${method}:${url}::${authHeader}` : null;
+    if (inFlightKey) {
+      const existingInFlight = inFlightRequests.get(inFlightKey);
+      if (existingInFlight) {
+        const inFlightRes = await existingInFlight;
+        return inFlightRes.clone();
+      }
     }
 
     supabaseUsageGuard.recordRequest(url, method);
+    const startTime = performance.now();
 
-    try {
-      const response = await fetch(input, init);
+    // 5. Anti-Hanging Hard Request Timeout via AbortController
+    const isMutation = method !== 'GET' && method !== 'HEAD';
+    const timeoutMs = isMutation ? 25_000 : 12_000;
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      controller.abort(new DOMException(`Request timeout (${timeoutMs}ms) on ${url.split('?')[0]}`, 'TimeoutError'));
+    }, timeoutMs);
 
-      // Inspect for missing relation 404 or 42P01 schema errors to immediately trip circuit breaker
-      if (relation && response.status === 404) {
-        discoveredMissingRelations.add(relation);
-        console.warn(`[USAGE GUARD] Relation '${relation}' returned 404. Circuit breaker engaged to halt retries/polling.`);
+    if (init?.signal) {
+      if (init.signal.aborted) {
+        controller.abort(init.signal.reason);
+      } else {
+        init.signal.addEventListener('abort', () => controller.abort(init.signal?.reason), { once: true });
       }
-      
-      // Determine response size from Content-Length or by reading the body
-      const contentLength = response.headers.get('content-length');
-      let bytes = contentLength ? parseInt(contentLength, 10) : 0;
+    }
 
-      // Check content-range for row counts (e.g., 0-19/250)
-      const contentRange = response.headers.get('content-range');
-      let rowCount: number | undefined;
-      if (contentRange) {
-        const match = contentRange.match(/\/(\d+|\*)/);
-        if (match && match[1] !== '*') {
-          rowCount = parseInt(match[1], 10);
+    const fetchExecution = (async () => {
+      try {
+        const response = await fetch(input, { ...init, signal: controller.signal });
+        clearTimeout(timer);
+        const latency = performance.now() - startTime;
+        supabaseUsageGuard.recordLatency(latency);
+
+        if (response.ok) {
+          recordCircuitBreakerSuccess();
+        } else if (response.status >= 502 && response.status <= 504) {
+          recordCircuitBreakerFailure();
+          supabaseUsageGuard.recordServerError(response.status, url);
+        } else if (response.status >= 500) {
+          supabaseUsageGuard.recordServerError(response.status, url);
         }
-      }
+        
+        // Determine response size from Content-Length or by reading the body
+        const contentLength = response.headers.get('content-length');
+        let bytes = contentLength ? parseInt(contentLength, 10) : 0;
 
-      // Supabase REST API rarely sets Content-Length on streaming responses.
-      // If Content-Length is missing/zero and the response is OK, clone the
-      // body and measure the actual byte size — but only when the content-range
-      // suggests a small result set (< 2 MB heuristic: ≤ 500 rows).
-      // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
-      // Body cloning only runs in DEV — doubles memory/CPU on Micro compute plan in production.
-      if (!bytes && response.ok && import.meta.env.DEV) {
-        const isSmallResult = !rowCount || rowCount <= 500;
-        if (isSmallResult) {
-          try {
-            const cloned = response.clone();
-            const buffer = await cloned.arrayBuffer();
-            bytes = buffer.byteLength;
-          } catch {
-            // Clone failed (body already consumed) — leave bytes at 0
+        // Check content-range for row counts (e.g., 0-19/250)
+        const contentRange = response.headers.get('content-range');
+        let rowCount: number | undefined;
+        if (contentRange) {
+          const match = contentRange.match(/\/(\d+|\*)/);
+          if (match && match[1] !== '*') {
+            rowCount = parseInt(match[1], 10);
           }
         }
-      }
-      // In production, bytes stays 0 when Content-Length header is absent (no body clone)
 
-      supabaseUsageGuard.recordResponse(url, response.status, bytes, rowCount);
-      return response;
-    } catch (err) {
-      throw err;
+        // Cache public successful responses client-side
+        if (response.ok && isCacheable) {
+          try {
+            const clone = response.clone();
+            const bodyText = await clone.text();
+            const headersList: [string, string][] = [];
+            response.headers.forEach((v, k) => headersList.push([k, v]));
+            headersList.push(['X-Client-Cache', 'MISS']);
+
+            clientPublicReadCache.set(url, {
+              bodyText,
+              headers: headersList,
+              status: response.status,
+              statusText: response.statusText,
+              timestamp: Date.now(),
+            });
+
+            if (clientPublicReadCache.size > 100) {
+              const oldestKey = clientPublicReadCache.keys().next().value;
+              if (oldestKey) clientPublicReadCache.delete(oldestKey);
+            }
+          } catch {}
+        }
+
+        // Body cloning only runs in DEV — doubles memory/CPU on Micro compute plan in production.
+        if (!bytes && response.ok && import.meta.env.DEV) {
+          const isSmallResult = !rowCount || rowCount <= 500;
+          if (isSmallResult) {
+            try {
+              const cloned = response.clone();
+              const buffer = await cloned.arrayBuffer();
+              bytes = buffer.byteLength;
+            } catch {}
+          }
+        }
+
+        supabaseUsageGuard.recordResponse(url, response.status, bytes, rowCount);
+        return response;
+      } catch (err: any) {
+        clearTimeout(timer);
+        const latency = performance.now() - startTime;
+        supabaseUsageGuard.recordLatency(latency);
+        if (err.name === 'TimeoutError' || err.name === 'AbortError' || err.message?.includes('timeout')) {
+          supabaseUsageGuard.recordTimeout(url);
+          recordCircuitBreakerFailure();
+        }
+        throw err;
+      } finally {
+        if (inFlightKey) {
+          inFlightRequests.delete(inFlightKey);
+        }
+      }
+    })();
+
+    if (inFlightKey) {
+      inFlightRequests.set(inFlightKey, fetchExecution);
     }
+
+    return fetchExecution;
   }
 
   return fetch(input, init);

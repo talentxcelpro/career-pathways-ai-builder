@@ -56,8 +56,8 @@
     <meta name="google-site-verification" content="nTmI_33A3373kHEXPI2gE41jbDB1Xly7qKUBaAucsnM" />
 
     <!-- High-priority hero image preload for fast LCP -->
-    <link rel="preload" href="/hero-character-full.webp" as="image" type="image/webp" fetchpriority="high" />
-    <!-- Critical preconnect and DNS prefetch -->
+    <link rel="preload" as="image" href="/hero-character-full.webp" type="image/webp" fetchpriority="high">
+        <!-- Critical preconnect and DNS prefetch -->
     <link rel="dns-prefetch" href="https://dthlgsnakhoftinssokm.supabase.co">
     <link rel="preconnect" href="https://dthlgsnakhoftinssokm.supabase.co" crossorigin>
     <link rel="dns-prefetch" href="https://accounts.google.com">
@@ -276,18 +276,27 @@
 
     <main id="main-content" role="main">
       <div id="root">
-        <div id="tx-initial-content" class="tx-initial-content" style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;">
-            <div style="position:relative;width:180px;height:52px;display:flex;align-items:center;justify-content:center;">
-              <img src="/talentxcel-brand-logo.png" alt="TalentXcel" style="width:150px;height:auto;object-fit:contain;display:block;" />
+        <div id="tx-initial-content" style="min-height:100vh;background:#ffffff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#0f172a;">
+          <header style="height:64px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;padding:0 24px;max-width:1280px;margin:0 auto;">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:20px;font-weight:800;color:#0f172a;letter-spacing:-0.03em;">Talent<span style="color:#0284c7;">Xcel</span></span>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:20px;">
-              <div style="width:16px;height:16px;border:2px solid #e2e8f0;border-top-color:#0284c7;border-radius:50%;animation:txSpin 0.8s linear infinite;"></div>
-              <p style="font-size:13px;font-weight:500;color:#64748b;letter-spacing:-0.01em;margin:0;">Loading your experience...</p>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <a href="/auth/login" style="padding:6px 16px;border-radius:9999px;font-size:13px;font-weight:600;color:#334155;text-decoration:none;">Sign in</a>
+              <a href="/auth/register" style="padding:6px 18px;border-radius:9999px;font-size:13px;font-weight:600;color:#2563eb;border:1px solid #2563eb;text-decoration:none;">Join free</a>
             </div>
-            <style>
-              @keyframes txSpin { to { transform: rotate(360deg); } }
-            </style>
+          </header>
+          <div style="max-width:1280px;margin:0 auto;padding:40px 24px;">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;">
+            <div style="max-width:640px;flex:1 1 320px;">
+              <span style="display:inline-block;padding:3px 12px;border-radius:9999px;background:#eff6ff;color:#2563eb;font-size:12px;font-weight:700;margin-bottom:16px;">TalentXcel SI — Super Intelligence for Careers</span>
+              <h1 style="font-size:42px;font-weight:800;letter-spacing:-0.02em;line-height:1.15;margin:0 0 12px 0;">Get Discovered.<br/>Get Matched.<br/><span style="color:#2563eb;">Get Hired Worldwide.</span></h1>
+              <p style="font-size:16px;color:#64748b;margin:0 0 24px 0;">Powered by TalentXcel SI — context-aware career and talent intelligence from profile to placement. Select your goal below to get started instantly.</p>
+            </div>
+            <div style="max-width:506px;flex:1 1 300px;text-align:center;">
+              <img src="/hero-character-full.webp" alt="TalentXcel Global Career Platform" width="506" height="338" style="max-width:100%;height:auto;border-radius:16px;box-shadow:0 10px 25px -5px rgba(0,0,0,0.1);" fetchpriority="high" decoding="async" />
+            </div>
+          </div>
           </div>
         </div>
       </div>

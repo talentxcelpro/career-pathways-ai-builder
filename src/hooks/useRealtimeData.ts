@@ -150,11 +150,6 @@ export function useJobsRealtime(
       table: 'job_applications',
       event: '*',
       callback: onApplicationUpdate
-    },
-    {
-      table: 'job_views',
-      event: 'INSERT',
-      callback: onJobUpdate
     }
   ]);
 }

@@ -20,16 +20,7 @@ export function useSocialActivityTracker() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Track in user_activities table if it exists
-      await supabase
-        .from('user_activities')
-        .insert({
-          user_id: user.id,
-          activity_type: activityType,
-          activity_data: metadata,
-          created_at: new Date().toISOString()
-        });
-
+      // In-memory / console telemetry without issuing writes to dropped user_activities table
       console.log(`Activity tracked: ${activityType}`, metadata);
     } catch (error) {
       console.log('Activity tracking failed (non-critical):', error);

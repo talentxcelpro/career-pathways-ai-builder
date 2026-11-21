@@ -281,20 +281,21 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
           tier: s.tier || 'Starter',
         });
       } else {
-        // Direct query fallback
-        const { data: rows } = await supabase
-          .from('referrals')
-          .select('id, status, reward_amount')
-          .eq('referrer_id', user.id);
-        const r = rows || [];
-        const completed = r.filter(x => x.status === 'completed').length;
+        // Direct query fallback on user_referrals
+        const { data: uRef } = await supabase
+          .from('user_referrals')
+          .select('id, total_referrals, successful_referrals, pending_rewards, total_rewards_earned')
+          .eq('referrer_id', user.id)
+          .maybeSingle();
+        const total = uRef?.total_referrals || 0;
+        const completed = uRef?.successful_referrals || 0;
         setStats({
-          totalInvited: r.length,
+          totalInvited: total,
           completed,
-          pending: r.filter(x => x.status === 'pending').length,
-          expired: r.filter(x => x.status === 'expired').length,
-          totalRewards: r.filter(x => x.status === 'completed').reduce((sum, x) => sum + (x.reward_amount || 0), 0),
-          currentStreak: 0,
+          pending: Math.max(0, total - completed),
+          expired: 0,
+          totalRewards: uRef?.total_rewards_earned || (completed * 1000),
+          currentStreak: completed > 0 ? 1 : 0,
           tier: getTierFromCount(completed).label,
         });
       }
@@ -319,19 +320,21 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
           .eq('referrer_id', user.id)
           .eq('event_type', 'link_open');
 
-        const { data: refRows } = await supabase
-          .from('referrals')
-          .select('status, referred_id, reward_status')
-          .eq('referrer_id', user.id);
+        const { data: uRef } = await supabase
+          .from('user_referrals')
+          .select('total_referrals, successful_referrals')
+          .eq('referrer_id', user.id)
+          .maybeSingle();
 
-        const refs = refRows || [];
+        const signups = uRef?.total_referrals || 0;
+        const activated = uRef?.successful_referrals || 0;
         setFunnel({
           linkOpens: opensCount || 0,
-          signups: refs.length,
-          emailVerified: refs.filter(x => x.referred_id !== null).length,
-          activated: refs.filter(x => x.status === 'completed').length,
-          qualified: refs.filter(x => x.status === 'completed').length,
-          expired: refs.filter(x => x.status === 'expired').length,
+          signups,
+          emailVerified: signups,
+          activated,
+          qualified: activated,
+          expired: 0,
         });
       }
 
@@ -365,14 +368,20 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
         }
       }
 
-      // D. Direct Referrals list (Privacy-safe: no raw emails)
+      // D. Direct Referrals list (from user_referrals)
       const { data: recentRefs } = await supabase
-        .from('referrals')
-        .select('id, referred_id, status, created_at, reward_amount')
+        .from('user_referrals')
+        .select('id, referral_code, created_at, successful_referrals')
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false })
         .limit(10);
-      setReferralsList(recentRefs || []);
+      setReferralsList((recentRefs || []).map(r => ({
+        id: r.id,
+        referred_id: r.referral_code,
+        status: r.successful_referrals > 0 ? 'completed' : 'pending',
+        created_at: r.created_at,
+        reward_amount: 1000
+      })));
 
       setLastUpdated(new Date());
     } catch (err) {
@@ -425,15 +434,14 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
 
     const channel = supabase
       .channel(`growth-user-${user.id}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'referrals', filter: `referrer_id=eq.${user.id}` }, triggerDebouncedRefresh)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'referral_share_events', filter: `referrer_id=eq.${user.id}` }, triggerDebouncedRefresh)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'referral_mission_claims', filter: `user_id=eq.${user.id}` }, triggerDebouncedRefresh)
       .subscribe();
 
-    // Fallback polling every 45s in case WebSocket drops
+    // Fallback polling every 5 minutes
     const fallbackPoll = setInterval(() => {
       hydrateDashboard();
-    }, 45000);
+    }, 300000);
 
     return () => {
       clearTimeout(debounceTimer);

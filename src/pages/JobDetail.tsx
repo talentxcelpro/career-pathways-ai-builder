@@ -209,6 +209,8 @@ const JobDetail = () => {
       return jobData;
     },
     enabled: !!slugOrId,
+    staleTime: 5 * 60 * 1000, // 5 min cache to prevent query loops on mobile window focus
+    refetchOnWindowFocus: false,
   });
 
   // Handle canonical SEO slug redirects
@@ -231,18 +233,7 @@ const JobDetail = () => {
 
       const trackView = async () => {
         try {
-          await supabase
-            .from('job_views')
-            .insert({
-              job_id: job.id,
-              user_id: currentUser.id,
-              viewed_at: new Date().toISOString()
-            });
-
-          await supabase
-            .from('jobs')
-            .update({ views_count: (job.views_count || 0) + 1 })
-            .eq('id', job.id);
+          await supabase.rpc('increment_job_views', { job_uuid: job.id });
         } catch (e) {
           console.warn('View tracking non-fatal error:', e);
         }
