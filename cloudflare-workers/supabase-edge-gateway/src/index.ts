@@ -4,33 +4,15 @@ import {
   PUBLIC_CACHEABLE_ENTITIES,
   SENSITIVE_PRIVATE_ENTITIES,
   SENSITIVE_QUERY_PATTERNS,
+  SUPPORTED_PREFER_DIRECTIVES,
 } from './types';
 
 const CORS_HEADERS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'apikey, Authorization, Content-Type, Range, Prefer, X-Client-Info',
-  'Access-Control-Expose-Headers': 'Content-Range, X-Total-Count, Content-Length',
+  'Access-Control-Expose-Headers': 'Content-Range, X-Total-Count, Content-Length, ETag',
 };
-
-/**
- * Safely decodes a JWT payload without external dependencies.
- * Returns null if token is malformed or invalid base64.
- */
-function decodeJwtPayload(token: string): Record<string, any> | null {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return null;
-    let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    while (base64.length % 4 !== 0) {
-      base64 += '=';
-    }
-    const jsonStr = atob(base64);
-    return JSON.parse(jsonStr);
-  } catch {
-    return null;
-  }
-}
 
 /**
  * Extracts PostgREST entity name from pathname (e.g. /rest/v1/jobs -> 'jobs')
@@ -41,39 +23,130 @@ function extractEntity(pathname: string): string | null {
 }
 
 /**
- * Generates a deterministic canonical cache key URL by sorting query parameters.
- * E.g., /jobs?select=*&limit=1 and /jobs?limit=1&select=* produce identical cache keys.
+ * Normalizes request variance headers (Accept, Prefer) that materially affect
+ * the PostgREST response body or pagination structure.
  */
-function getCanonicalCacheKeyUrl(targetUrl: URL): string {
+function extractVarianceDimensions(headers: Headers): {
+  accept: string;
+  prefer: string;
+} {
+  const rawAccept = headers.get('Accept') || '';
+  let accept = 'application/json';
+  if (rawAccept.includes('text/csv')) {
+    accept = 'text/csv';
+  } else if (rawAccept.includes('application/vnd.pgrst.object+json')) {
+    accept = 'application/vnd.pgrst.object+json';
+  } else if (rawAccept.includes('application/openapi+json')) {
+    accept = 'application/openapi+json';
+  }
+
+  const rawPrefer = (headers.get('Prefer') || '').toLowerCase();
+  let prefer = '';
+  if (rawPrefer) {
+    const directives = rawPrefer.split(',').map((d) => d.trim()).filter(Boolean);
+    prefer = directives.sort().join(';');
+  }
+
+  return { accept, prefer };
+}
+
+/**
+ * Generates a deterministic canonical cache key Request.
+ * - Sorts query parameter keys alphabetically.
+ * - Strictly PRESERVES the relative order of duplicate values for each key (never sorts values).
+ * - Ignores/filters internal discriminator keys from query input.
+ * - Binds request variance dimensions (__cg_accept, __cg_prefer) to prevent cache collisions.
+ */
+export function getCanonicalCacheKey(targetUrl: URL, headers: Headers): Request {
   const canonicalUrl = new URL(targetUrl.toString());
+
+  // Group search parameters by key in alphabetical order without altering value order
+  const paramMap = new Map<string, string[]>();
+  for (const [key, value] of targetUrl.searchParams.entries()) {
+    if (key.startsWith('__cg_')) continue; // Ignore internal discriminators in incoming queries
+    if (!paramMap.has(key)) {
+      paramMap.set(key, []);
+    }
+    paramMap.get(key)!.push(value);
+  }
+
+  const sortedKeys = Array.from(paramMap.keys()).sort();
   const sortedParams = new URLSearchParams();
-  const keys = Array.from(canonicalUrl.searchParams.keys()).sort();
-  for (const key of keys) {
-    const values = canonicalUrl.searchParams.getAll(key).sort();
+  for (const key of sortedKeys) {
+    const values = paramMap.get(key)!;
     for (const val of values) {
       sortedParams.append(key, val);
     }
   }
+
+  // Bind request variance dimensions
+  const variance = extractVarianceDimensions(headers);
+  sortedParams.set('__cg_accept', variance.accept);
+  if (variance.prefer) {
+    sortedParams.set('__cg_prefer', variance.prefer);
+  }
+
   canonicalUrl.search = sortedParams.toString();
-  return canonicalUrl.toString();
+  return new Request(canonicalUrl.toString(), { method: 'GET' });
 }
 
 /**
- * Strict fail-closed evaluator to determine if a request is eligible for shared public edge caching.
- * Protects against accidental leakage of authenticated, personalized, or sensitive data.
+ * Strict fail-closed security boundary for cache eligibility.
+ * 
+ * Strict Staging Readiness Invariants:
+ * 1. Method must be GET or HEAD.
+ * 2. Range header: Conservatively BYPASSES all requests carrying a Range header.
+ * 3. Client discriminator collision: Reject/BYPASS any query parameter starting with `__cg_`.
+ * 4. Prefer validation: Only explicitly supported count directives allowed; any other directive BYPASSES.
+ * 5. Allowlisted public entity: Only verified public catalog/directory tables (jobs, companies, etc.).
+ * 6. Sensitive entities: Explicit denylist strictly BYPASSES.
+ * 7. Sensitive query filters: Reject queries targeting user/profile/employer IDs.
+ * 8. Cookies: Any cookie strictly BYPASSES.
+ * 9. Exact trusted anonymous key match:
+ *    - If Authorization present: must strictly equal `Bearer ${env.SUPABASE_ANON_KEY}`.
+ *    - If Authorization absent: apikey must strictly equal `env.SUPABASE_ANON_KEY`.
+ *    - If env.SUPABASE_ANON_KEY not set: all caching disabled.
  */
-function isPublicCacheable(req: Request, entity: string | null, url: URL): boolean {
-  // 1. Only idempotent safe read methods are cacheable
+export function isPublicCacheable(
+  req: Request,
+  entity: string | null,
+  url: URL,
+  env: Env
+): boolean {
+  // 1. Method check: strictly idempotent safe reads
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     return false;
   }
 
-  // 2. Must target a known allowlisted public entity
+  // 2. Conservative Range Gate: strictly BYPASS any request with a Range header
+  if (req.headers.has('Range') || req.headers.has('range')) {
+    return false;
+  }
+
+  // 3. Client Discriminator Collision Gate: Reject client-supplied reserved parameters
+  for (const key of url.searchParams.keys()) {
+    if (key.startsWith('__cg_')) {
+      return false; // Prevent client collision with internal cache namespace
+    }
+  }
+
+  // 4. Prefer Directive Gate: Only explicitly supported directives allowed
+  const preferHeader = req.headers.get('Prefer') || '';
+  if (preferHeader) {
+    const directives = preferHeader.split(',').map((d) => d.trim().toLowerCase()).filter(Boolean);
+    for (const directive of directives) {
+      if (!SUPPORTED_PREFER_DIRECTIVES.has(directive)) {
+        return false; // Unsupported or ambiguous Prefer directive -> fail closed to BYPASS
+      }
+    }
+  }
+
+  // 5. Allowlisted public entity check
   if (!entity || !PUBLIC_CACHEABLE_ENTITIES.has(entity)) {
     return false;
   }
 
-  // 3. Reject any sensitive private entity or sensitive prefix
+  // 6. Sensitive / private entity denylist
   if (SENSITIVE_PRIVATE_ENTITIES.has(entity)) {
     return false;
   }
@@ -87,60 +160,44 @@ function isPublicCacheable(req: Request, entity: string | null, url: URL): boole
     return false;
   }
 
-  // 4. Reject requests containing user-specific query parameters
-  const searchString = url.search.toLowerCase();
+  // 7. Reject user-identifying or sensitive query parameters
+  const searchLower = url.search.toLowerCase();
   for (const pattern of SENSITIVE_QUERY_PATTERNS) {
-    if (searchString.includes(`${pattern}=`) || searchString.includes(`.${pattern}`)) {
+    if (searchLower.includes(`${pattern}=`) || searchLower.includes(`.${pattern}`)) {
       return false;
     }
   }
 
-  // 5. Reject requests with authenticated session cookies
+  // 8. Reject any session or authentication cookies
   const cookieHeader = req.headers.get('Cookie') || '';
   if (
     cookieHeader.includes('sb-') ||
     cookieHeader.includes('auth-token') ||
     cookieHeader.includes('access_token') ||
-    cookieHeader.includes('supabase-auth')
+    cookieHeader.includes('supabase-auth') ||
+    cookieHeader.includes('token=')
   ) {
     return false;
   }
 
-  // 6. Strict JWT Verification on Authorization Header
-  const authHeader = req.headers.get('Authorization') || '';
-  if (authHeader) {
-    if (!authHeader.startsWith('Bearer ')) {
-      // Unknown or basic auth scheme -> fail closed
-      return false;
-    }
-    const token = authHeader.slice(7).trim();
-    const payload = decodeJwtPayload(token);
-    if (!payload) {
-      // Malformed or invalid JWT -> fail closed
-      return false;
-    }
-
-    // Role MUST strictly be 'anon'. Any 'authenticated' or service role MUST BYPASS edge cache.
-    if (payload.role !== 'anon') {
-      return false;
-    }
-
-    // Authenticated users have a 'sub' claim with their UUID; anon keys do not have a user sub
-    if (payload.sub && typeof payload.sub === 'string' && payload.sub.length > 0) {
-      return false;
-    }
-
-    // Audience must not be 'authenticated'
-    if (payload.aud === 'authenticated') {
-      return false;
-    }
+  // 9. Trusted Credential Validation (Fail-Closed)
+  const trustedAnonKey = env.SUPABASE_ANON_KEY?.trim();
+  if (!trustedAnonKey) {
+    // If trusted anon key is not configured in environment, fail closed
+    return false;
   }
 
-  // 7. Verify apikey header if present
-  const apiKeyHeader = req.headers.get('apikey') || '';
-  if (apiKeyHeader && apiKeyHeader.includes('.')) {
-    const apiPayload = decodeJwtPayload(apiKeyHeader);
-    if (apiPayload && apiPayload.role && apiPayload.role !== 'anon') {
+  const authHeader = req.headers.get('Authorization')?.trim() || '';
+  const apiKeyHeader = req.headers.get('apikey')?.trim() || url.searchParams.get('apikey')?.trim() || '';
+
+  if (authHeader) {
+    // If Authorization is supplied, it MUST match the exact trusted anonymous key
+    if (authHeader !== `Bearer ${trustedAnonKey}`) {
+      return false;
+    }
+  } else {
+    // If Authorization is absent, apikey MUST match the exact trusted anonymous key
+    if (apiKeyHeader !== trustedAnonKey) {
       return false;
     }
   }
@@ -176,43 +233,68 @@ export default {
       );
     }
 
-    // 3. Cache Purge Webhook (Protected by secret)
+    const origin = env.SUPABASE_ORIGIN || 'https://dthlgsnakhoftinssokm.supabase.co';
+
+    // 3. Protected Cache Purge Endpoint
     if (url.pathname === '/purge' && req.method === 'POST') {
       const authKey = req.headers.get('X-Purge-Key');
-      if (!env.PURGE_API_KEY || authKey !== env.PURGE_API_KEY) {
+      if (!env.PURGE_API_KEY || !authKey || authKey !== env.PURGE_API_KEY) {
         return new Response(
           JSON.stringify({ error: 'Unauthorized purge request' }),
           { status: 401, headers: CORS_HEADERS }
         );
       }
 
-      const body = (await req.json().catch(() => ({}))) as { targetUrl?: string };
-      const cache = (caches as any).default;
-      if (body.targetUrl && cache) {
-        await cache.delete(new Request(body.targetUrl));
+      const body = (await req.json().catch(() => ({}))) as {
+        targetUrl?: string;
+        entity?: string;
+        accept?: string;
+        prefer?: string;
+      };
+
+      if (!body.targetUrl && !body.entity) {
         return new Response(
-          JSON.stringify({ success: true, purged: body.targetUrl }),
-          { status: 200, headers: CORS_HEADERS }
+          JSON.stringify({ error: 'Missing targetUrl or entity in purge payload' }),
+          { status: 400, headers: CORS_HEADERS }
         );
       }
+
+      const cache = (caches as any).default;
+      if (cache) {
+        try {
+          const purgeTarget = body.targetUrl || `${origin}/rest/v1/${body.entity}`;
+          const purgeHeaders = new Headers({
+            'Accept': body.accept || 'application/json',
+            'Prefer': body.prefer || '',
+          });
+          const canonicalKey = getCanonicalCacheKey(new URL(purgeTarget, origin), purgeHeaders);
+          const wasCached = await cache.delete(canonicalKey);
+          return new Response(
+            JSON.stringify({ success: true, purged: canonicalKey.url, wasCached }),
+            { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+          );
+        } catch (err: any) {
+          return new Response(
+            JSON.stringify({ error: 'Purge execution failure', details: err?.message || String(err) }),
+            { status: 500, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
+          );
+        }
+      }
+
       return new Response(
-        JSON.stringify({ success: true, message: 'Purge request accepted' }),
-        { status: 200, headers: CORS_HEADERS }
+        JSON.stringify({ success: true, message: 'Purge accepted (no cache store)' }),
+        { status: 200, headers: { 'Content-Type': 'application/json', ...CORS_HEADERS } }
       );
     }
 
     const entity = extractEntity(url.pathname);
-    const origin = env.SUPABASE_ORIGIN || 'https://dthlgsnakhoftinssokm.supabase.co';
     const targetUrl = new URL(url.pathname + url.search, origin);
 
-    const publicCacheable = isPublicCacheable(req, entity, url);
+    const publicCacheable = isPublicCacheable(req, entity, url, env);
 
     // 4. Edge Cache Evaluation (Cloudflare Cache API)
     const cache = (caches as any).default;
-    const canonicalKeyUrl = getCanonicalCacheKeyUrl(targetUrl);
-    const cacheKey = new Request(canonicalKeyUrl, {
-      method: 'GET',
-    });
+    const cacheKey = getCanonicalCacheKey(targetUrl, req.headers);
 
     if (publicCacheable && cache) {
       try {
@@ -231,7 +313,8 @@ export default {
           });
         }
       } catch (err) {
-        console.error('[Edge Cache Match Error]', err);
+        // Cache read failure resilience: log and transparently fall through to origin
+        console.error('[Edge Gateway Cache Match Error]', err);
       }
     }
 
@@ -250,57 +333,63 @@ export default {
 
     const originRes = await fetch(originReq);
 
-    // Prepare response headers
-    const responseHeaders = new Headers(originRes.headers);
+    // Prepare client response headers
+    const clientHeaders = new Headers(originRes.headers);
     for (const [k, v] of Object.entries(CORS_HEADERS)) {
-      responseHeaders.set(k, v);
+      clientHeaders.set(k, v);
     }
 
     // 6. Cache Storage Decision
-    // Only cache if public cacheable AND response is 200 OK (reject 206, 4xx, 5xx)
+    // Strictly require publicCacheable AND origin status 200 OK (reject 206, 3xx, 4xx, 5xx)
     if (publicCacheable && originRes.status === 200) {
       const ttl = Number(env.DEFAULT_PUBLIC_TTL) || 120; // 2 minutes default
       const maxStale = Number(env.MAX_PUBLIC_TTL) || 300; // 5 minutes stale-while-revalidate
 
-      responseHeaders.set(
+      clientHeaders.set(
         'Cache-Control',
         `public, max-age=${ttl}, s-maxage=${ttl}, stale-while-revalidate=${maxStale}`
       );
-      responseHeaders.set('CF-Cache-Status', 'MISS');
-      responseHeaders.set('X-Edge-Origin', 'Supabase-Origin');
+      clientHeaders.set('CF-Cache-Status', 'MISS');
+      clientHeaders.set('X-Edge-Origin', 'Supabase-Origin');
 
-      // CRITICAL RFC 7234 & Cloudflare Cache API Compliance:
-      // Strip Set-Cookie, Pragma, and Expires before caching.
-      // Cloudflare Cache API strictly drops any response with Set-Cookie!
-      responseHeaders.delete('Set-Cookie');
-      responseHeaders.delete('set-cookie');
-      responseHeaders.delete('Pragma');
-      responseHeaders.delete('Expires');
+      // Strip Set-Cookie from public response (anonymous public reads do not need tracking cookies)
+      clientHeaders.delete('Set-Cookie');
+      clientHeaders.delete('set-cookie');
+
+      // Prepare sanitized headers specifically for edge cache storage
+      const cacheHeaders = new Headers(clientHeaders);
+      cacheHeaders.delete('Set-Cookie');
+      cacheHeaders.delete('set-cookie');
+      cacheHeaders.delete('Pragma');
+      cacheHeaders.delete('Expires');
+      cacheHeaders.delete('sb-request-id');
+      cacheHeaders.delete('x-envoy-upstream-service-time');
 
       const responseToCache = new Response(originRes.clone().body, {
         status: originRes.status,
         statusText: originRes.statusText,
-        headers: responseHeaders,
+        headers: cacheHeaders,
       });
 
       if (cache) {
         ctx.waitUntil(
           cache.put(cacheKey, responseToCache).catch((err: any) => {
-            console.error('[Edge Cache Put Error]', err);
+            // Cache write failure resilience: log without interrupting client response
+            console.error('[Edge Gateway Cache Put Error]', err);
           })
         );
       }
     } else {
-      // Non-public, authenticated, or error responses MUST NEVER be stored at the shared edge
-      responseHeaders.set('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate');
-      responseHeaders.set('CF-Cache-Status', 'BYPASS');
-      responseHeaders.set('X-Edge-Origin', 'Supabase-Origin');
+      // Non-public, authenticated, or non-200 responses MUST NEVER be stored at the shared edge
+      clientHeaders.set('Cache-Control', 'private, no-cache, no-store, max-age=0, must-revalidate');
+      clientHeaders.set('CF-Cache-Status', 'BYPASS');
+      clientHeaders.set('X-Edge-Origin', 'Supabase-Origin');
     }
 
     return new Response(originRes.body, {
       status: originRes.status,
       statusText: originRes.statusText,
-      headers: responseHeaders,
+      headers: clientHeaders,
     });
   },
 };

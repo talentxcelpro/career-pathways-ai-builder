@@ -111,34 +111,7 @@ export default defineConfig(({ mode }) => ({
           if (id.includes('node_modules/recharts')) {
             return 'recharts-vendor';
           }
-          // 6. Standalone PDF export & Canvas conversion (loaded strictly on resume download / export)
-          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
-            return 'jspdf-vendor';
-          }
-          // 7. Standalone document processors (DOCX, Mammoth, JSZip) for ATS file uploads
-          if (id.includes('node_modules/docx') || id.includes('node_modules/mammoth') || id.includes('node_modules/jszip')) {
-            return 'document-processing-vendor';
-          }
-          // 8. Heavy OCR computer-vision engine (loaded on-demand for scan tools)
-          if (id.includes('node_modules/tesseract.js')) {
-            return 'tesseract-vendor';
-          }
-          // 9. Calendar and QR utilities
-          if (id.includes('node_modules/react-big-calendar')) {
-            return 'calendar-vendor';
-          }
-          if (id.includes('node_modules/qrcode') || id.includes('node_modules/qr-scanner')) {
-            return 'qr-vendor';
-          }
-          // 10. Animation engine isolated from critical public LCP path
-          if (id.includes('node_modules/framer-motion')) {
-            return 'framer-motion-vendor';
-          }
-          // 11. Large icon sets isolated from core runtime
-          if (id.includes('node_modules/lucide-react')) {
-            return 'lucide-vendor';
-          }
-          // 12. Keep React core runtime and remaining vendor libraries in core vendor
+          // 6. Keep React core runtime and remaining vendor libraries in core vendor
           if (id.includes('node_modules')) {
             return 'vendor';
           }
