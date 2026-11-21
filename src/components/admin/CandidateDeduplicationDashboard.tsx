@@ -39,6 +39,7 @@ export const CandidateDeduplicationDashboard: React.FC = () => {
   const [mergePreview, setMergePreview] = useState<MergePreview | null>(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
+  const [isBatchMerging, setIsBatchMerging] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -49,6 +50,7 @@ export const CandidateDeduplicationDashboard: React.FC = () => {
       const { data: candidates, error } = await supabase
         .from('unified_candidates')
         .select('*')
+        .or('activation_status.is.null,activation_status.neq.merged_archive')
         .order('name', { ascending: true });
 
       if (error) throw error;
@@ -138,6 +140,59 @@ export const CandidateDeduplicationDashboard: React.FC = () => {
     }
   };
 
+  const handleBatchMergeAll = async () => {
+    if (groups.length === 0) return;
+    try {
+      setIsBatchMerging(true);
+      let mergedCount = 0;
+
+      for (const group of groups) {
+        const preview = buildMergePreview(group.canonicalCandidate, group.duplicateCandidates);
+
+        // 1. Update canonical candidate
+        await supabase
+          .from('unified_candidates')
+          .update({
+            email: preview.mergedEmail,
+            phone: preview.mergedPhone,
+            skills: preview.mergedSkills,
+            resume_url: preview.mergedResumeUrl,
+            application_data: {
+              deduplication_audit: preview.auditTrail,
+              historical_resumes: preview.historicalResumeUrls
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', preview.targetCanonicalId);
+
+        // 2. Mark duplicate records as merged_archive
+        for (const dupId of preview.sourceCandidateIds) {
+          await supabase
+            .from('unified_candidates')
+            .update({
+              activation_status: 'merged_archive',
+              application_data: {
+                merged_into: preview.targetCanonicalId,
+                merged_at: new Date().toISOString()
+              }
+            })
+            .eq('id', dupId);
+        }
+        mergedCount++;
+      }
+
+      toast.success(`Successfully reconciled all ${mergedCount} duplicate groups!`);
+      refetch();
+      queryClient.invalidateQueries({ queryKey: ['unified-candidates'] });
+      queryClient.invalidateQueries({ queryKey: ['talent-database-summary-stats'] });
+    } catch (err: any) {
+      console.error('Batch merge error:', err);
+      toast.error('Batch merge failed: ' + err.message);
+    } finally {
+      setIsBatchMerging(false);
+    }
+  };
+
   const handleMarkSeparate = (group: DuplicateGroup) => {
     toast.info(`Group ${group.groupId} marked as distinct candidates.`);
   };
@@ -212,16 +267,28 @@ export const CandidateDeduplicationDashboard: React.FC = () => {
                 Multi-layer duplicate detection across emails, phones, CV fingerprints, and content similarity.
               </CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              disabled={isLoading}
-              className="gap-1.5 shrink-0"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-              Rescan Database
-            </Button>
+            <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleBatchMergeAll}
+                disabled={isLoading || isBatchMerging || groups.length === 0}
+                className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md"
+              >
+                <GitMerge className={`h-3.5 w-3.5 ${isBatchMerging ? 'animate-spin' : ''}`} />
+                {isBatchMerging ? 'Reconciling Duplicates...' : `Merge All ${groups.length} Groups Now`}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => refetch()}
+                disabled={isLoading || isBatchMerging}
+                className="gap-1.5"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+                Rescan Database
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">

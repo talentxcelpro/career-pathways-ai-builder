@@ -35,6 +35,11 @@ class SupabaseUsageGuard {
   private duplicateWindowMs = 3000;
   private maxAlerts = 20;
 
+  // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
+  // Debounce sessionStorage writes to at most once every 10 seconds
+  private lastStorageSaveMs: number = 0;
+  private readonly storageSaveIntervalMs: number = 10_000;
+
   constructor() {
     this.loadFromStorage();
   }
@@ -58,6 +63,11 @@ class SupabaseUsageGuard {
 
   private saveToStorage() {
     if (typeof window === 'undefined') return;
+    // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
+    // Debounce: skip write if fewer than 10 seconds have passed since last save
+    const now = Date.now();
+    if (now - this.lastStorageSaveMs < this.storageSaveIntervalMs) return;
+    this.lastStorageSaveMs = now;
     try {
       sessionStorage.setItem('txc_supabase_usage', JSON.stringify({
         totalRequests: this.metrics.totalRequests,
@@ -114,7 +124,9 @@ class SupabaseUsageGuard {
     this.recentRequests.set(requestKey, now);
 
     // Clean up old entries
-    if (this.recentRequests.size > 200) {
+    // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
+    // Run cleanup every 100 requests (time-based) in addition to size-based threshold
+    if (this.recentRequests.size > 200 || this.metrics.totalRequests % 100 === 0) {
       for (const [k, time] of this.recentRequests.entries()) {
         if (now - time > 10000) this.recentRequests.delete(k);
       }
@@ -151,7 +163,9 @@ class SupabaseUsageGuard {
   public recordResponse(inputUrl: string, status: number, contentLengthBytes: number = 0, rowCount?: number) {
     this.metrics.totalEstimatedBytes += contentLengthBytes;
 
-    if (contentLengthBytes > 250000 || (rowCount && rowCount > 100)) {
+    // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
+    // Raised threshold from 250000/100 to 500000/200 to reduce noise alerts in production
+    if (contentLengthBytes > 500000 || (rowCount && rowCount > 200)) {
       this.metrics.largePayloadsDetected++;
       const sizeKb = (contentLengthBytes / 1024).toFixed(1);
       const alertMsg = `Large payload: ${sizeKb}KB (${rowCount || '?'} rows) from ${inputUrl.split('?')[0]}`;
@@ -287,7 +301,9 @@ export const usageGuardFetch: typeof fetch = async (input, init) => {
       // If Content-Length is missing/zero and the response is OK, clone the
       // body and measure the actual byte size — but only when the content-range
       // suggests a small result set (< 2 MB heuristic: ≤ 500 rows).
-      if (!bytes && response.ok) {
+      // INCIDENT-FIX: production overhead reduction [date: 2026-11-21]
+      // Body cloning only runs in DEV — doubles memory/CPU on Micro compute plan in production.
+      if (!bytes && response.ok && import.meta.env.DEV) {
         const isSmallResult = !rowCount || rowCount <= 500;
         if (isSmallResult) {
           try {
@@ -299,6 +315,7 @@ export const usageGuardFetch: typeof fetch = async (input, init) => {
           }
         }
       }
+      // In production, bytes stays 0 when Content-Length header is absent (no body clone)
 
       supabaseUsageGuard.recordResponse(url, response.status, bytes, rowCount);
       return response;
