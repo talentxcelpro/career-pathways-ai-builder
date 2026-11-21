@@ -19,15 +19,18 @@ export const useUserManagement = () => {
   const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users', searchTerm, roleFilter, statusFilter, verificationFilter, completionFilter, currentPage, pageSize],
     queryFn: async () => {
-      // First, get all auth users with their email addresses
-      const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-      
-      if (authError) {
-        console.error('Error fetching auth users:', authError);
-        throw authError;
+      // 1. Attempt to get auth users, safely catch if client lacks service-role permission
+      let authUsersList: any[] = [];
+      try {
+        const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+        if (!authError && authUsers?.users?.length) {
+          authUsersList = authUsers.users;
+        }
+      } catch (err) {
+        console.warn('supabase.auth.admin unavailable in client context, falling back to profiles:', err);
       }
 
-      // Get all profiles
+      // 2. Get all profiles with latest profile picture and metadata
       const { data: profilesData, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
@@ -38,28 +41,48 @@ export const useUserManagement = () => {
         throw profilesError;
       }
 
-      // Merge auth users with profiles
-      const allUsers = (authUsers?.users || []).map(authUser => {
-        const profile = profilesData?.find(p => p.id === authUser.id);
-        
-        return {
-          id: authUser.id,
-          email: authUser.email || 'No email',
-          full_name: profile?.full_name || authUser.user_metadata?.full_name || null,
-          created_at: profile?.created_at || authUser.created_at,
-          profile_completed: profile?.profile_completed || false,
-          verification_status: profile?.verification_status || 'unverified',
-          user_role: profile?.user_role || null,
-          phone: profile?.phone || authUser.phone || null,
-          location: profile?.location || null,
-          title: profile?.title || null,
-          about: profile?.about || null,
-          profile_picture_url: profile?.profile_picture_url || null,
-          email_confirmed_at: authUser.email_confirmed_at,
-          last_sign_in_at: authUser.last_sign_in_at,
+      // 3. Build unified users list
+      let allUsers: any[] = [];
+      if (authUsersList.length > 0) {
+        allUsers = authUsersList.map(authUser => {
+          const profile = profilesData?.find(p => p.id === authUser.id);
+          return {
+            id: authUser.id,
+            email: authUser.email || profile?.email || 'No email',
+            full_name: profile?.full_name || authUser.user_metadata?.full_name || null,
+            created_at: profile?.created_at || authUser.created_at,
+            profile_completed: profile?.profile_completed || false,
+            verification_status: profile?.verification_status || 'unverified',
+            user_role: profile?.user_role || null,
+            phone: profile?.phone || authUser.phone || null,
+            location: profile?.location || null,
+            title: profile?.title || null,
+            about: profile?.about || null,
+            profile_picture_url: profile?.profile_picture_url || profile?.profile_photo_url || authUser.user_metadata?.avatar_url || null,
+            email_confirmed_at: authUser.email_confirmed_at,
+            last_sign_in_at: authUser.last_sign_in_at,
+            ...profile
+          };
+        });
+      } else {
+        allUsers = (profilesData || []).map(profile => ({
+          id: profile.id,
+          email: profile.email || 'No email',
+          full_name: profile.full_name || null,
+          created_at: profile.created_at,
+          profile_completed: profile.profile_completed || false,
+          verification_status: profile.verification_status || 'unverified',
+          user_role: profile.user_role || null,
+          phone: profile.phone || null,
+          location: profile.location || null,
+          title: profile.title || null,
+          about: profile.about || null,
+          profile_picture_url: profile.profile_picture_url || profile.profile_photo_url || null,
+          email_confirmed_at: null,
+          last_sign_in_at: profile.last_login_at || null,
           ...profile
-        };
-      });
+        }));
+      }
 
       // Apply filters
       let filteredUsers = allUsers;

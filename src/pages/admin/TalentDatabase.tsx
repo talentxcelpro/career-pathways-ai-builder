@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Upload, FileText, Users, Database, Search, Settings, File, User, BarChart3, RefreshCw } from 'lucide-react';
+import { Upload, FileText, Users, Database, Search, Settings, File, User, BarChart3, RefreshCw, ShieldCheck } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,6 +16,7 @@ import NameFixerTool from '@/components/talent-database/NameFixerTool';
 import { ScalableUploadInterface } from '@/components/talent-database/ScalableUploadInterface';
 import { BulkUploadQueueManager } from '@/components/talent-database/BulkUploadQueueManager';
 import { ProcessingMonitor } from '@/components/talent-database/ProcessingMonitor';
+import { CandidateDeduplicationDashboard } from '@/components/admin/CandidateDeduplicationDashboard';
 
 const TalentDatabase = () => {
   const [activeTab, setActiveTab] = useState('setup');
@@ -161,6 +162,10 @@ const TalentDatabase = () => {
             <Database className="h-4 w-4" />
             Job Matching
           </TabsTrigger>
+          <TabsTrigger value="dedup" className="gap-2 bg-emerald-500/10 text-emerald-500 data-[state=active]:bg-emerald-600 data-[state=active]:text-white">
+            <ShieldCheck className="h-4 w-4" />
+            Duplicate Engine
+          </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <FileText className="h-4 w-4" />
             Analytics
@@ -285,6 +290,10 @@ const TalentDatabase = () => {
               <MatchingEngine />
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="dedup" className="space-y-6">
+          <CandidateDeduplicationDashboard />
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
