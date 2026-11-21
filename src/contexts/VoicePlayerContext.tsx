@@ -284,6 +284,25 @@ export const VoicePlayerProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
 export const useVoicePlayer = (): VoicePlayerContextValue => {
   const ctx = useContext(VoicePlayerContext);
-  if (!ctx) throw new Error('useVoicePlayer must be used within VoicePlayerProvider');
+  if (!ctx) {
+    return {
+      play: async () => {},
+      pause: () => {},
+      resume: () => {},
+      stop: () => {},
+      status: 'idle',
+      isPlaying: false,
+      isPaused: false,
+      progress: 0,
+      text: '',
+      source: undefined,
+      currentAudioUrl: null,
+      error: null,
+      voice: null,
+      voices: [],
+      setVoice: () => {},
+      previewVoice: async () => {}
+    } as unknown as VoicePlayerContextValue;
+  }
   return ctx;
 };
