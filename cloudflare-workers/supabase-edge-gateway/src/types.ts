@@ -3,6 +3,7 @@ export interface Env {
   ENVIRONMENT?: string;
   DEFAULT_PUBLIC_TTL?: string | number;
   MAX_PUBLIC_TTL?: string | number;
+  SUPABASE_ANON_KEY?: string;
   PURGE_API_KEY?: string;
 }
 
@@ -11,7 +12,7 @@ export interface WorkerExecutionContext {
   passThroughOnException(): void;
 }
 
-// Strictly public tables that are safe for shared edge caching
+// Strictly public tables that are safe for shared edge caching (directory/catalog only)
 export const PUBLIC_CACHEABLE_ENTITIES = new Set([
   'jobs',
   'companies',
@@ -20,8 +21,6 @@ export const PUBLIC_CACHEABLE_ENTITIES = new Set([
   'salary_benchmarks',
   'skills_taxonomy',
   'colleges',
-  'ats_sources',
-  'ats_feed_snapshots',
 ]);
 
 // Tables and resources that MUST NEVER be cached publicly (enforce RLS, user privacy, credentials)
@@ -47,6 +46,8 @@ export const SENSITIVE_PRIVATE_ENTITIES = new Set([
   'ai_organization_recommendations',
   'admin_telemetry_logs',
   'employer_reviews',
+  'external_ats_sources',
+  'job_ingestion_queue',
 ]);
 
 // Query parameter patterns that indicate user-specific or personalized filtering
@@ -60,4 +61,13 @@ export const SENSITIVE_QUERY_PATTERNS = [
   'author_id',
   'recipient_id',
   'sender_id',
+  'employer_id',
+  'creator_id',
 ];
+
+// Explicitly safe Prefer directives supported for shared edge caching:
+// Only 'count=none' is eligible for edge caching because 'count=exact' causes PostgREST 
+// to return 206 Partial Content and trigger expensive sequential count(*) scans on origin.
+export const SUPPORTED_PREFER_DIRECTIVES = new Set([
+  'count=none',
+]);
