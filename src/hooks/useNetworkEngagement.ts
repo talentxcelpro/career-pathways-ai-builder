@@ -15,20 +15,7 @@ export function useNetworkEngagement() {
 
   const trackEvent = useCallback(async (event: EngagementEvent) => {
     setEvents(prev => [...prev, event]);
-    
-    try {
-      // Track engagement in analytics
-      await supabase.from('user_activities').insert({
-        activity_type: event.type,
-        activity_data: {
-          target_id: event.targetId,
-          target_type: event.targetType,
-          ...event.metadata
-        }
-      });
-    } catch (error) {
-      console.error('Failed to track engagement:', error);
-    }
+    // Lightweight local event tracking without inserting into dropped user_activities table
   }, []);
 
   const sharePost = useCallback(async (postId: string, originalAuthorId: string) => {

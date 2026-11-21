@@ -38,12 +38,12 @@ export const EnhancedNetworkPostsFeed: React.FC<EnhancedNetworkPostsFeedProps> =
 
   const posts = data?.pages.flatMap(page => page.data) || [];
 
-  // Realtime subscription on posts table with graceful fallback
+  // Realtime subscription on posts table: Only listen for new posts to avoid refetch storms on reactions/views
   useEffect(() => {
     try {
       const channel = supabase
         .channel('feed-posts-realtime-sync')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, () => {
           refetch();
         })
         .subscribe((status) => {

@@ -124,9 +124,10 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
 
     try {
       setIsLoading(true);
+      // Select strictly required columns to eliminate heavy payload & disk read spikes
       let query = supabase
         .from('notifications')
-        .select('*')
+        .select('id, user_id, title, message, type, is_read, link, action_url, module, category, priority, icon, created_at, read_at')
         .eq('user_id', user.id);
 
       if (sortBy === 'relevance') {
@@ -137,7 +138,7 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
         query = query.order('created_at', { ascending: false });
       }
 
-      const { data, error } = await query.limit(100);
+      const { data, error } = await query.limit(30);
 
       if (error) throw error;
       setNotifications((data || []) as Notification[]);
@@ -195,20 +196,22 @@ export const NotificationProvider: FC<{ children: ReactNode }> = ({ children }) 
     };
   }, [loadNotifications]);
 
-  // Tab Focus & Online Reconnection Reconciliation
+  // Network reconnection handler (deduplicated; window focus refetch removed to prevent focus-switch query storms)
   useEffect(() => {
     if (!user) return;
 
-    const handleFocusOrOnline = () => {
-      loadNotifications();
+    let lastOnlineRefetch = 0;
+    const handleOnline = () => {
+      const now = Date.now();
+      if (now - lastOnlineRefetch > 60_000) { // Throttle reconnect refetch to at most once per minute
+        lastOnlineRefetch = now;
+        loadNotifications();
+      }
     };
 
-    window.addEventListener('focus', handleFocusOrOnline);
-    window.addEventListener('online', handleFocusOrOnline);
-
+    window.addEventListener('online', handleOnline);
     return () => {
-      window.removeEventListener('focus', handleFocusOrOnline);
-      window.removeEventListener('online', handleFocusOrOnline);
+      window.removeEventListener('online', handleOnline);
     };
   }, [user, loadNotifications]);
 

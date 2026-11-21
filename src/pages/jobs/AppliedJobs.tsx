@@ -32,7 +32,9 @@ export default function AppliedJobs() {
           jobs!fk_job_applications_job_id (*)
         `)
         .eq('user_id', user.id)
-        .order('applied_at', { ascending: false });
+        .order('applied_at', { ascending: false })
+        // INCIDENT-FIX: added query limit [date: 2026-11-21]
+        .limit(50);
 
       if (statusFilter !== 'all') {
         query1 = query1.eq('status', statusFilter);
@@ -49,7 +51,9 @@ export default function AppliedJobs() {
             jobs!job_applications_job_id_fkey (*)
           `)
           .eq('user_id', user.id)
-          .order('applied_at', { ascending: false });
+          .order('applied_at', { ascending: false })
+          // INCIDENT-FIX: added query limit [date: 2026-11-21]
+          .limit(50);
 
         if (statusFilter !== 'all') {
           query2 = query2.eq('status', statusFilter);
@@ -63,7 +67,9 @@ export default function AppliedJobs() {
             .from('job_applications')
             .select('*')
             .eq('user_id', user.id)
-            .order('applied_at', { ascending: false });
+            .order('applied_at', { ascending: false })
+            // INCIDENT-FIX: added query limit [date: 2026-11-21]
+            .limit(50);
 
           if (statusFilter !== 'all') {
             query3 = query3.eq('status', statusFilter);

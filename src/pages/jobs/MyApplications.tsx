@@ -96,7 +96,9 @@ const MyApplications = () => {
           )
         `)
         .eq('user_id', user.id)
-        .order('applied_at', { ascending: false });
+        .order('applied_at', { ascending: false })
+        // INCIDENT-FIX: added query limit [date: 2026-11-21]
+        .limit(50);
 
       if (!res1.error && res1.data) {
         rawApps = res1.data;
@@ -130,7 +132,9 @@ const MyApplications = () => {
             )
           `)
           .eq('user_id', user.id)
-          .order('applied_at', { ascending: false });
+          .order('applied_at', { ascending: false })
+          // INCIDENT-FIX: added query limit [date: 2026-11-21]
+          .limit(50);
 
         if (!res2.error && res2.data) {
           rawApps = res2.data;
@@ -140,7 +144,9 @@ const MyApplications = () => {
             .from('job_applications')
             .select('*')
             .eq('user_id', user.id)
-            .order('applied_at', { ascending: false });
+            .order('applied_at', { ascending: false })
+            // INCIDENT-FIX: added query limit [date: 2026-11-21]
+            .limit(50);
 
           if (res3.error) throw res3.error;
           const apps = res3.data || [];

@@ -47,13 +47,12 @@ const PersonalizedReferral: React.FC = () => {
         if (profile) {
           setReferrerProfile(profile);
           
-          // Get their referral code
+          // Get their referral code from active user_referrals table
           const { data: referral } = await supabase
-            .from('referrals')
+            .from('user_referrals')
             .select('referral_code')
             .eq('referrer_id', profile.id)
-            .eq('status', 'pending')
-            .single();
+            .maybeSingle();
             
           if (referral) {
             setReferralCode(referral.referral_code);

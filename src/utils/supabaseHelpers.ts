@@ -2,23 +2,12 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const incrementJobViews = async (jobId: string) => {
-  // Insert a job view record
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  const { error: viewError } = await supabase
-    .from('job_views')
-    .insert({
-      job_id: jobId,
-      user_id: user?.id,
-      ip_address: null, // Could be populated with actual IP
-      user_agent: navigator.userAgent
-    });
-
-  if (viewError) {
-    console.error('Error inserting job view:', viewError);
+  try {
+    // Atomically increment job views via database RPC (zero calls to legacy dropped job_views table)
+    await supabase.rpc('increment_job_views', { job_uuid: jobId });
+  } catch (err) {
+    console.warn('Job view increment non-fatal:', err);
   }
-
-  // The trigger will automatically update the jobs.views_count
 };
 
 export const incrementJobApplications = async (jobId: string) => {

@@ -99,3 +99,6 @@ claude-seo/
 backups/
 
 .planning/
+
+.wrangler
+.wrangler/

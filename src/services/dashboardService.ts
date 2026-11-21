@@ -235,7 +235,9 @@ export const getAllCourses = async (): Promise<PopularCourse[]> => {
       `)
       .eq('is_active', true)
       .eq('published', true)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      // INCIDENT-FIX: added query limit to prevent unpaginated table scan [date: 2026-11-21]
+      .limit(50);
 
     if (error) {
       throw error;
@@ -276,7 +278,9 @@ export const getAllLearningPaths = async () => {
     const { data, error } = await supabase
       .from('learning_paths')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
+      .limit(30);
 
     if (error) throw error;
     return data || [];
@@ -293,7 +297,9 @@ export const getJobFocusedCourses = async (filters?: { industry?: string; skill?
       .from('job_focused_courses')
       .select('*')
       .eq('is_active', true)
-      .order('job_relevance_score', { ascending: false });
+      .order('job_relevance_score', { ascending: false })
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
+      .limit(30);
 
     if (filters?.industry) {
       query = query.contains('industry_alignment', [filters.industry]);
@@ -316,7 +322,9 @@ export const getSkillDemandTrends = async (location = 'India') => {
       .from('skill_demand_trends')
       .select('*')
       .eq('location', location)
-      .order('growth_rate', { ascending: false });
+      .order('growth_rate', { ascending: false })
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
+      .limit(20);
 
     if (error) throw error;
     return data || [];
@@ -332,7 +340,9 @@ export const getUserCourseProgress = async (userId?: string) => {
       .from('user_course_progress')
       .select('*')
       .eq('user_id', userId)
-      .order('updated_at', { ascending: false });
+      .order('updated_at', { ascending: false })
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
+      .limit(50);
 
     if (error) throw error;
     return data || [];

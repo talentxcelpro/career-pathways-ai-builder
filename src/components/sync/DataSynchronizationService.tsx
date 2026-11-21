@@ -66,8 +66,9 @@ export const DataSynchronizationService: React.FC = () => {
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Initialize real-time subscriptions
-    initializeRealtimeSync();
+    // Initialize real-time subscriptions with proper cleanup retention
+    // INCIDENT-FIX: added realtime channel cleanup [date: 2026-11-21]
+    const cleanupRealtime = initializeRealtimeSync();
 
     // Load queued actions from localStorage
     loadQueuedActions();
@@ -75,6 +76,9 @@ export const DataSynchronizationService: React.FC = () => {
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
+      if (typeof cleanupRealtime === 'function') {
+        cleanupRealtime();
+      }
     };
   }, [user]);
 

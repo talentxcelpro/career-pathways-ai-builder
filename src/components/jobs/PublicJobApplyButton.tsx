@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { Briefcase, User, ArrowRight, Zap } from 'lucide-react';
 import { GuestJobApplyModal } from './GuestJobApplyModal';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
@@ -23,20 +23,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
   jobTitle,
   companyName,
 }) => {
-  const [currentUser, setCurrentUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [showApplicationForm, setShowApplicationForm] = useState(false);
-  const [showGuestModal, setShowGuestModal] = useState(false);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setCurrentUser(user);
-      setLoading(false);
-    };
-    checkUser();
-  }, []);
+  const { user: currentUser } = useAuth();
 
   const handleApplyClick = () => {
     GrowthFunnelTracker.track('apply_cta_clicked', {
@@ -51,15 +38,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
     setShowGuestModal(true);
   };
 
-  if (loading) {
-    return (
-      <Button 
-        data-testid="public-job-apply" disabled className={className}>
-        <Briefcase className="h-4 w-4 mr-2" />
-        Loading...
-      </Button>
-    );
-  }
+  
 
   return (
     <>

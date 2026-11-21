@@ -39,11 +39,13 @@ export const DailyGrowthDashboard: React.FC = () => {
   const { data: metrics, isLoading, refetch, dataUpdatedAt } = useQuery({
     queryKey: ['daily-growth-os-audit'],
     queryFn: async () => {
-      // 1. Fetch profiles
+      // 1. Fetch profiles (bounded to recent cohort)
+      // INCIDENT-FIX: added query limit to prevent full table scans [date: 2026-11-21]
       const { data: profiles, error: pErr } = await supabase
         .from('profiles')
         .select('id, created_at, user_role, location, last_login_at, onboarding_completed, source')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
       if (pErr) console.warn('Profiles query warning:', pErr);
 
@@ -53,22 +55,26 @@ export const DailyGrowthDashboard: React.FC = () => {
         .select('*', { count: 'exact', head: true })
         .eq('is_active', true);
 
-      // 3. Fetch applications
+      // 3. Fetch applications (bounded)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const { data: applications } = await supabase
         .from('job_applications')
-        .select('id, created_at, status');
+        .select('id, created_at, status')
+        .order('created_at', { ascending: false })
+        .limit(1000);
 
-      // 4. Fetch referrals
+      // 4. Fetch referrals (bounded from active user_referrals table)
       const { data: referrals } = await supabase
-        .from('referrals')
-        .select('id, total_referrals, successful_referrals');
+        .from('user_referrals')
+        .select('id, total_referrals, successful_referrals')
+        .limit(1000);
 
       // 5. Fetch user behavior events (last 14 days)
       const { data: events } = await supabase
         .from('user_behavior_events')
         .select('id, event_type, event_data, created_at, device_type')
         .order('created_at', { ascending: false })
-        .limit(2000);
+        .limit(1000);
 
       return {
         profiles: profiles || [],
@@ -78,7 +84,8 @@ export const DailyGrowthDashboard: React.FC = () => {
         events: events || []
       };
     },
-    refetchInterval: 30000 // 30s auto-refresh
+    // INCIDENT-FIX: reduced polling frequency from 30s to 5 minutes [date: 2026-11-21]
+    refetchInterval: 5 * 60 * 1000 // 5m auto-refresh
   });
 
   // Empirical Computations

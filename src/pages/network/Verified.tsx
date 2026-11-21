@@ -60,7 +60,7 @@ export const Verified: React.FC = () => {
   useEffect(() => {
     const channel = supabase
       .channel('verified-profiles-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'profiles' }, () => {
         queryClient.invalidateQueries({ queryKey: ['real-verified-professionals'] });
       })
       .subscribe();

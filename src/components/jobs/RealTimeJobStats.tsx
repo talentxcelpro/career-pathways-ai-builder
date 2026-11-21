@@ -96,7 +96,7 @@ export const RealTimeJobStats: React.FC = () => {
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'jobs'
         },

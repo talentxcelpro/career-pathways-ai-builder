@@ -34,14 +34,8 @@ const Index = () => {
     }, 100);
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-        <span className="text-xs text-muted-foreground font-medium">Loading TalentXcel...</span>
-      </div>
-    );
-  }
+  // Phase 1 Optimization: Public homepage never blocks on background auth initialization.
+  // Anonymous visitors and Googlebot see the full hero landing page immediately without spinner delay.
 
   const renderContent = () => {
     if (showFinalLaunch) return <FinalLaunchRunner />;

@@ -31,7 +31,7 @@ const ArticleDetail = lazy(() => import('../pages/network/ArticleDetail'));
 const MyNetwork = lazy(() => import('../pages/network/MyNetwork'));
 const Discover = lazy(() => import('../pages/network/Discover'));
 import ProfileUrlRedirect from "../components/profile/ProfileUrlRedirect";
-import ComprehensiveMobileNetworkAnalysis from "../components/analysis/ComprehensiveMobileNetworkAnalysis";
+const ComprehensiveMobileNetworkAnalysis = lazy(() => import("../components/analysis/ComprehensiveMobileNetworkAnalysis"));
 const MobileNetwork = lazy(() => import('../pages/mobile/MobileNetwork').then(m => ({ default: m.MobileNetwork })));
 const SkillSwap = lazy(() => import('../pages/network/SkillSwap'));
 const VideoIntros = lazy(() => import('../pages/network/VideoIntros'));

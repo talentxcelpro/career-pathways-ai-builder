@@ -102,6 +102,10 @@ export const AppleHeroSection = () => {
                 alt="TalentXcel Global Career Platform"
                 className="w-full h-[165px] sm:h-auto object-cover object-top sm:object-center select-none transition-transform duration-500 group-hover:scale-[1.01]"
                 loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                width={506}
+                height={338}
               />
 
               {/* 4 Interactive Desktop Hotspots mapped precisely to glass cards */}

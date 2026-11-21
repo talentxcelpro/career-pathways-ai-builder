@@ -52,16 +52,19 @@ const getStoredSession = (): { user: User | null; session: Session | null } => {
   return { user: null, session: null };
 };
 
+// Debounced in-memory / session activity touch to eliminate database write amplification & WAL bloat
+const lastTouchedMap = new Map<string, number>();
+const TOUCH_ACTIVITY_THROTTLE_MS = 30 * 60 * 1000; // At most once per 30 minutes
+
 export const touchUserActivity = (userId: string) => {
   if (!userId) return;
-  try {
-    supabase
-      .from('profiles')
-      .update({ id: userId })
-      .eq('id', userId)
-      .then(() => {})
-      .catch(() => {});
+  const now = Date.now();
+  const lastTouched = lastTouchedMap.get(userId) || 0;
+  if (now - lastTouched < TOUCH_ACTIVITY_THROTTLE_MS) return;
+  lastTouchedMap.set(userId, now);
 
+  try {
+    // Record activity purely through edge API without issuing a no-op Postgres UPDATE on profiles
     fetch('/api/profile/record-activity', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -74,6 +77,11 @@ export const touchUserActivity = (userId: string) => {
 
 const ensureUserProfileAndAdminConnection = async (user: User) => {
   if (!user?.id) return;
+  const verifiedKey = `txc_profile_verified_${user.id}`;
+  if (typeof window !== 'undefined' && sessionStorage.getItem(verifiedKey)) {
+    return; // Profile existence already confirmed for this session
+  }
+
   try {
     const { data: profile } = await supabase
       .from('profiles')
@@ -101,6 +109,9 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
         verification_status: 'unverified'
       }, { onConflict: 'id' });
 
+      // Connect to community admins only for new profile creation
+      await supabase.rpc('create_admin_connections', { target_user_id: user.id });
+
       // Welcome eligibility: Only trigger welcome email for genuine new accounts (created within last 15 mins)
       if (user.email) {
         const isRecentRegistration = user.created_at && (Date.now() - new Date(user.created_at).getTime()) < 15 * 60 * 1000;
@@ -126,11 +137,11 @@ const ensureUserProfileAndAdminConnection = async (user: User) => {
           }).catch(err => console.warn('[AuthContext] Welcome email trigger non-fatal:', err));
         }
       }
-    } else {
-      touchUserActivity(user.id);
     }
 
-    await supabase.rpc('create_admin_connections', { target_user_id: user.id });
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(verifiedKey, '1');
+    }
   } catch (err) {
     console.warn('Auto profile & connection check handled:', err);
   }
@@ -202,6 +213,13 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
       }
     );
 
+    // Failsafe timer: guarantee loading state never deadlocks on mobile/slow networks (Phase 7)
+    const authTimeoutTimer = setTimeout(() => {
+      if (mounted) {
+        setLoading(false);
+      }
+    }, 2500);
+
     // Get initial session
     const initAuth = async () => {
       try {
@@ -237,6 +255,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           setUser(null);
         }
       } finally {
+        clearTimeout(authTimeoutTimer);
         if (mounted) {
           setLoading(false);
         }
@@ -247,6 +266,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
 
     return () => {
       mounted = false;
+      clearTimeout(authTimeoutTimer);
       subscription.unsubscribe();
     };
   }, [navigate]);

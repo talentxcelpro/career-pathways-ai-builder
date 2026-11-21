@@ -40,7 +40,27 @@ export const JobsFeed: React.FC<JobsFeedProps> = ({
       let query = supabase
         .from('jobs')
         .select(`
-          *,
+          id,
+          title,
+          description,
+          company_name,
+          location,
+          employment_type,
+          experience_level,
+          salary_min,
+          salary_max,
+          salary_range,
+          salary_currency,
+          skills_required,
+          is_remote,
+          is_featured,
+          views_count,
+          applications_count,
+          posted_at,
+          created_at,
+          expires_at,
+          external_url,
+          seo_slug,
           companies (
             id,
             name,
@@ -101,35 +121,20 @@ export const JobsFeed: React.FC<JobsFeedProps> = ({
     refetchInterval: false,
   });
 
-  // Set up real-time subscriptions
+  // Set up real-time subscriptions for new jobs only (prevent invalidation loops on views/likes)
   useEffect(() => {
     const channel = supabase
       .channel('jobs-feed-updates')
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'jobs',
         },
         (payload) => {
-          console.log('🔄 Job updated:', payload);
+          console.log('🔄 New job posted:', payload);
           setRefreshKey(prev => prev + 1);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'content_engagement',
-        },
-        (payload) => {
-          const newRecord = payload.new as any;
-          if (newRecord?.content_type === 'job') {
-            console.log('🔄 Job engagement updated:', payload);
-            setRefreshKey(prev => prev + 1);
-          }
         }
       )
       .subscribe();

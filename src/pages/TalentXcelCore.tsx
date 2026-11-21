@@ -81,11 +81,25 @@ async function loadCoreOverview(userId: string): Promise<CoreOverview> {
 }
 
 function LoadingTalentXcelCore() {
+  const [showRetry, setShowRetry] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowRetry(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center">
       <div className="flex flex-col items-center gap-4 text-slate-600">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
         <p className="text-sm font-semibold">Loading TalentXcel</p>
+        {showRetry && (
+          <div className="flex flex-col items-center gap-2 mt-2">
+            <p className="text-xs text-slate-400">Network connection taking longer than expected</p>
+            <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+              Reload
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

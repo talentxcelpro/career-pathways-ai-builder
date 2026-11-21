@@ -6,8 +6,7 @@ import { JobCategories } from '@/components/jobs/JobCategories';
 import { TrustSection } from '@/components/jobs/TrustSection';
 import { EnhancedJobFilters } from '@/components/jobs/EnhancedJobFilters';
 import { JobsList } from '@/components/jobs/JobsList';
-import { useSmartAutoRefresh, REFRESH_INTERVALS } from '@/hooks/useAutoRefresh';
-import { useJobsRealtime, useAutoRefreshJobs } from '@/hooks/useRealtimeData';
+import { useJobsRealtime } from '@/hooks/useRealtimeData';
 import { AutoRefreshIndicator } from '@/components/shared/AutoRefreshIndicator';
 import { DataFreshness } from '@/components/shared/DataFreshness';
 import { OfflineIndicator } from '@/components/shared/OfflineIndicator';
@@ -38,16 +37,18 @@ const Jobs = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [experienceLevel, setExperienceLevel] = useState('');
   const queryClient = useQueryClient();
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
 
-  // Auto-refresh with realtime updates
-  const { lastRefresh } = useAutoRefreshJobs();
+  // Realtime updates with query invalidation
   const { isConnected } = useJobsRealtime(
     (payload) => {
       console.log('Job updated:', payload);
+      setLastRefresh(new Date());
       queryClient.invalidateQueries({ queryKey: ['jobs'] });
     },
     (payload) => {
       console.log('Application updated:', payload);
+      setLastRefresh(new Date());
       queryClient.invalidateQueries({ queryKey: ['job_applications'] });
     }
   );
@@ -163,17 +164,6 @@ const Jobs = () => {
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
-
-  // Auto-refresh jobs data every 20 seconds
-  useSmartAutoRefresh(() => {
-    refetch();
-  }, REFRESH_INTERVALS.JOBS);
-
-  // Set up realtime for jobs updates
-  useJobsRealtime(
-    () => refetch(),
-    () => refetch()
-  );
 
   // Get saved jobs (only if user is logged in)
   const { data: savedJobsData = [] } = useQuery({

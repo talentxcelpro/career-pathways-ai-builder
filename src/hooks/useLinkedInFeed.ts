@@ -82,17 +82,20 @@ export const useLinkedInFeed = () => {
       // Get post IDs for fetching related data
       const postIds = postsData.map(post => post.id);
 
-      // Fetch likes, comments separately
+      // Fetch likes, comments separately (bounded to prevent platform-wide scans)
+      // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const [likesResult, commentsResult] = await Promise.all([
         supabase
           .from('post_likes')
           .select('post_id, user_id')
-          .in('post_id', postIds),
+          .in('post_id', postIds)
+          .limit(200),
         supabase
           .from('post_comments')
           .select('id, post_id, content, created_at, user_id')
           .in('post_id', postIds)
           .order('created_at', { ascending: false })
+          .limit(100)
       ]);
 
       // Create maps for likes and comments
@@ -129,22 +132,25 @@ export const useLinkedInFeed = () => {
       let savedPosts = new Set<string>();
 
       if (user?.id) {
-        // Get current user's connections
+        // Get current user's connections (bounded)
+        // INCIDENT-FIX: added query limit [date: 2026-11-21]
         const { data: connectionsData } = await supabase
           .from('connections')
           .select('requester_id, recipient_id, status')
           .or(`requester_id.eq.${user.id},recipient_id.eq.${user.id}`)
-          .eq('status', 'accepted');
+          .eq('status', 'accepted')
+          .limit(200);
 
         connectionsData?.forEach(conn => {
           if (conn.requester_id === user.id) connections.add(conn.recipient_id);
           if (conn.recipient_id === user.id) connections.add(conn.requester_id);
         });
 
-        // Get user's likes and saved posts
+        // Get user's likes and saved posts bounded strictly to current postIds in page
+        // INCIDENT-FIX: scoped to active postIds with limit to prevent unbounded scans [date: 2026-11-21]
         const [userLikesRes, userSavesRes] = await Promise.all([
-          supabase.from('post_likes').select('post_id').eq('user_id', user.id),
-          supabase.from('post_saves').select('post_id').eq('user_id', user.id),
+          supabase.from('post_likes').select('post_id').eq('user_id', user.id).in('post_id', postIds).limit(50),
+          supabase.from('post_saves').select('post_id').eq('user_id', user.id).in('post_id', postIds).limit(50),
         ]);
 
         likedPosts = new Set(userLikesRes.data?.map(like => like.post_id) || []);

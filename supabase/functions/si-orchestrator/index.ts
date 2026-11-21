@@ -48,14 +48,14 @@ serve(async (req) => {
       });
     }
 
-    // Verify admin access
+    // Verify admin access (profiles schema uses user_role)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('is_admin, role')
+      .select('user_role')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
-    const isAdmin = profile?.is_admin === true || ['admin', 'superadmin'].includes(profile?.role || '');
+    const isAdmin = (profile as any)?.user_role === 'admin';
     if (!isAdmin) {
       return new Response(JSON.stringify({ error: 'Forbidden: Admin access required' }), {
         status: 403,

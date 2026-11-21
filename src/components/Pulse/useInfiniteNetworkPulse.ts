@@ -57,11 +57,15 @@ export function useInfiniteNetworkPulse(filters: PulseFilters = {}) {
             .from('connections')
             .select('requester_id, recipient_id')
             .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`)
-            .eq('status', 'accepted'),
+            .eq('status', 'accepted')
+            // INCIDENT-FIX: added query limit [date: 2026-11-21]
+            .limit(100),
           supabase
             .from('user_follows')
             .select('following_id')
-            .eq('follower_id', userId),
+            .eq('follower_id', userId)
+            // INCIDENT-FIX: added query limit [date: 2026-11-21]
+            .limit(100),
         ]);
 
         if (TalentNetworkRes.error) console.warn('Connection Pulse filter failed:', TalentNetworkRes.error);

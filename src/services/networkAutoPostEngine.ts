@@ -176,11 +176,11 @@ class NetworkAutoPostEngine {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role, is_super_admin')
+        .select('user_role')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (profile && (profile.role === 'admin' || profile.is_super_admin)) {
+      if (profile && (profile as any).user_role === 'admin') {
         return { id: user.id, email: user.email || AUTHORIZED_EMAIL };
       }
 

@@ -23,12 +23,16 @@ export function useRealtimeJobStatus() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    // INCIDENT-FIX: retain channels in scope so sync cleanup removes them reliably [date: 2026-11-21]
+    let applicationsChannel: ReturnType<typeof supabase.channel> | null = null;
+    let matchesChannel: ReturnType<typeof supabase.channel> | null = null;
+
     const setupJobTracking = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
       // Track job applications
-      const applicationsChannel = supabase
+      applicationsChannel = supabase
         .channel(`job_applications:${user.id}`)
         .on(
           'postgres_changes',
@@ -73,13 +77,13 @@ export function useRealtimeJobStatus() {
               }
             }
           }
-        )
-        .subscribe((status) => {
-          setIsConnected(status === 'SUBSCRIBED');
-        });
+        );
+      applicationsChannel.subscribe((status) => {
+        setIsConnected(status === 'SUBSCRIBED');
+      });
 
       // Track AI job matches
-      const matchesChannel = supabase
+      matchesChannel = supabase
         .channel(`job_matches:${user.id}`)
         .on(
           'postgres_changes',
@@ -109,16 +113,16 @@ export function useRealtimeJobStatus() {
               }
             }
           }
-        )
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(applicationsChannel);
-        supabase.removeChannel(matchesChannel);
-      };
+        );
+      matchesChannel.subscribe();
     };
 
     setupJobTracking();
+
+    return () => {
+      if (applicationsChannel) supabase.removeChannel(applicationsChannel);
+      if (matchesChannel) supabase.removeChannel(matchesChannel);
+    };
   }, [queryClient]);
 
   const clearUpdates = useCallback(() => {

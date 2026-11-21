@@ -27,26 +27,14 @@ export const useReferralSystem = () => {
   const [myReferralCode, setMyReferralCode] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Generate or get user's referral code with dual-table support
+  // Generate or get user's referral code directly from active user_referrals table
   const generateReferralCode = async (): Promise<string | null> => {
     if (!user) return null;
 
     try {
       setIsLoading(true);
 
-      // Check if user already has a referral code in referrals table
-      const { data: existingReferral, error: refError } = await supabase
-        .from('referrals')
-        .select('referral_code')
-        .eq('referrer_id', user.id)
-        .maybeSingle();
-
-      if (!refError && existingReferral?.referral_code) {
-        setMyReferralCode(existingReferral.referral_code);
-        return existingReferral.referral_code;
-      }
-
-      // Check in user_referrals table
+      // Check in active user_referrals table (relation referrals was deprecated)
       const { data: uRef } = await supabase
         .from('user_referrals')
         .select('referral_code')
@@ -61,18 +49,17 @@ export const useReferralSystem = () => {
       // Generate clean deterministic referral code based on user UID
       const deterministicCode = 'TXC' + user.id.replace(/-/g, '').slice(0, 8).toUpperCase();
 
-      // Try inserting into referrals table
+      // Upsert into active user_referrals table
       try {
-        const { data, error } = await supabase
-          .from('referrals')
+        const { data } = await supabase
+          .from('user_referrals')
           .insert({
             referrer_id: user.id,
             referral_code: deterministicCode,
-            status: 'pending',
-            reward_type: 'txc',
-            reward_amount: 1000,
-            referred_at: new Date().toISOString(),
-            expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+            total_referrals: 0,
+            successful_referrals: 0,
+            current_tier: 0,
+            is_active: true
           })
           .select('referral_code')
           .maybeSingle();
@@ -82,7 +69,7 @@ export const useReferralSystem = () => {
           return data.referral_code;
         }
       } catch (insertErr) {
-        console.warn('referrals table insert bypassed:', insertErr);
+        console.warn('user_referrals table insert bypassed:', insertErr);
       }
 
       // Fallback code
@@ -106,20 +93,18 @@ export const useReferralSystem = () => {
       setIsLoading(true);
 
       const { data: referral, error: findError } = await supabase
-        .from('referrals')
+        .from('user_referrals')
         .select('*')
         .eq('referral_code', referralCode)
-        .eq('status', 'pending')
         .maybeSingle();
 
       if (!findError && referral) {
         await supabase
-          .from('referrals')
+          .from('user_referrals')
           .update({
-            referred_id: user.id,
-            status: 'completed',
-            completed_at: new Date().toISOString(),
-            referred_email: user.email
+            total_referrals: (referral.total_referrals || 0) + 1,
+            successful_referrals: (referral.successful_referrals || 0) + 1,
+            updated_at: new Date().toISOString()
           })
           .eq('id', referral.id);
 
@@ -127,7 +112,7 @@ export const useReferralSystem = () => {
           body: {
             userId: referral.referrer_id,
             action: 'referral_completed',
-            amount: referral.reward_amount || 1000,
+            amount: 1000,
             description: 'Referral bonus for inviting a new user',
             metadata: { referee_id: user.id }
           }
@@ -159,16 +144,15 @@ export const useReferralSystem = () => {
 
     try {
       const { data, error } = await supabase
-        .from('referrals')
+        .from('user_referrals')
         .select('*')
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false });
 
       if (!error && data) {
         setReferrals(data);
-        const activeReferral = data.find(r => r.status === 'pending');
-        if (activeReferral?.referral_code) {
-          setMyReferralCode(activeReferral.referral_code);
+        if (data.length > 0 && data[0]?.referral_code) {
+          setMyReferralCode(data[0].referral_code);
         }
         return;
       }

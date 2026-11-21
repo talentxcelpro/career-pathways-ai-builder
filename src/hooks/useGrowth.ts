@@ -26,12 +26,19 @@ export function useGrowth() {
     queryKey: ['referrals', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('referrals')
-        .select('*')
+        .from('user_referrals')
+        .select('id, referral_code, created_at, successful_referrals')
+        .eq('referrer_id', user?.id)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as Referral[];
+      return (data || []).map(d => ({
+        id: d.id,
+        referred_email: d.referral_code || 'peer@talentxcel.in',
+        status: (d.successful_referrals > 0 ? 'completed' : 'pending') as Referral['status'],
+        reward_points: (d.successful_referrals || 0) * 1000,
+        created_at: d.created_at
+      }));
     },
     enabled: !!user?.id
   });
@@ -51,13 +58,11 @@ export function useGrowth() {
 
   const addReferral = useMutation({
     mutationFn: async (email: string) => {
+      // Record referral invitation in user_referrals
       const { data, error } = await supabase
-        .from('referrals')
-        .insert([{ 
-          referrer_id: user?.id, 
-          referred_email: email,
-          status: 'pending'
-        }]);
+        .from('user_referrals')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('referrer_id', user?.id);
       
       if (error) throw error;
       return data;

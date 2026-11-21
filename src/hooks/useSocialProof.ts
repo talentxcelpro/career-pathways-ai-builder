@@ -37,22 +37,16 @@ export const useSocialProof = () => {
     refetchInterval: false
   });
 
-  // Fetch real-time activity indicators
+  // Fetch real-time activity indicators (safely handle dropped user_activities table)
   const { data: activityIndicators = [], isLoading: loadingActivity } = useQuery({
     queryKey: ['activity-indicators'],
     queryFn: async () => {
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
-
-      const { data, error } = await supabase
-        .from('user_activities')
-        .select('activity_type, created_at')
-        .gte('created_at', fiveMinutesAgo)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Group by activity type and count
-      const grouped = data.reduce((acc, activity) => {
+      // Legacy user_activities relation dropped in migration; return empty array safely
+      return [];
+    },
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: false
+  });
         const key = activity.activity_type;
         if (!acc[key]) {
           acc[key] = { count: 0, latest: activity.created_at };

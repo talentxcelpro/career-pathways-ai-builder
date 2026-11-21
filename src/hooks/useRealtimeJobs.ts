@@ -57,7 +57,7 @@ export const useRealtimeJobs = (filters: JobFilters = {}, sortBy: string = 'crea
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
+          event: 'INSERT', // Only listen for new job postings
           schema: 'public',
           table: 'jobs'
         },
@@ -77,7 +77,7 @@ export const useRealtimeJobs = (filters: JobFilters = {}, sortBy: string = 'crea
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'companies'
         },
@@ -184,7 +184,7 @@ export const useRealtimeJobStats = () => {
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'INSERT',
           schema: 'public',
           table: 'jobs'
         },

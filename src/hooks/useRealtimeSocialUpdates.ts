@@ -1,24 +1,29 @@
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function useRealtimeSocialUpdates() {
   const { toast } = useToast();
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Listen for new connections
-    const connectionsChannel = supabase
-      .channel('connections-changes')
+    // INCIDENT-FIX: skip unauthenticated subscriptions and scope to user to prevent platform-wide broadcast overload [date: 2026-11-21]
+    if (!user?.id) return;
+
+    // Consolidate into a single scoped channel instead of 4 separate global channels
+    const socialChannel = supabase
+      .channel(`user-social-updates-${user.id}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'connections'
+          table: 'connections',
+          filter: `recipient_id=eq.${user.id}`
         },
         (payload) => {
-          // Show notification for connection requests
-          if (payload.new.status === 'pending') {
+          if (payload.new && (payload.new as any).status === 'pending') {
             toast({
               title: "New Connection Request",
               description: "You have a new connection request",
@@ -31,11 +36,11 @@ export function useRealtimeSocialUpdates() {
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'connections'
+          table: 'connections',
+          filter: `requester_id=eq.${user.id}`
         },
         (payload) => {
-          // Show notification when connection is accepted
-          if (payload.new.status === 'accepted' && payload.old.status === 'pending') {
+          if (payload.new && (payload.new as any).status === 'accepted' && (payload.old as any)?.status === 'pending') {
             toast({
               title: "Connection Accepted",
               description: "Your connection request was accepted!",
@@ -43,52 +48,15 @@ export function useRealtimeSocialUpdates() {
           }
         }
       )
-      .subscribe();
-
-    // Listen for new post likes
-    const postLikesChannel = supabase
-      .channel('post-likes-changes')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'post_likes'
+          table: 'user_follows',
+          filter: `following_id=eq.${user.id}`
         },
-        (payload) => {
-          // Could trigger UI updates for like counts
-          console.log('New post like:', payload.new);
-        }
-      )
-      .subscribe();
-
-    // Listen for new job interactions
-    const jobInteractionsChannel = supabase
-      .channel('job-interactions-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'job_interactions'
-        },
-        (payload) => {
-          console.log('New job interaction:', payload.new);
-        }
-      )
-      .subscribe();
-
-    // Listen for new user follows
-    const userFollowsChannel = supabase
-      .channel('user-follows-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'user_follows'
-        },
-        (payload) => {
+        () => {
           toast({
             title: "New Follower",
             description: "Someone started following you!",
@@ -98,10 +66,7 @@ export function useRealtimeSocialUpdates() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(connectionsChannel);
-      supabase.removeChannel(postLikesChannel);
-      supabase.removeChannel(jobInteractionsChannel);
-      supabase.removeChannel(userFollowsChannel);
+      supabase.removeChannel(socialChannel);
     };
-  }, [toast]);
+  }, [user?.id, toast]);
 }

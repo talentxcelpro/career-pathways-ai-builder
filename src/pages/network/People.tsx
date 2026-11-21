@@ -123,7 +123,7 @@ const People: React.FC = () => {
         .not('full_name', 'is', null)
         .neq('full_name', '')
         .order('created_at', { ascending: false })
-        .limit(1000);
+        .limit(100);
 
       if (error) {
         console.warn('Could not fetch DB profiles:', error);
@@ -131,20 +131,20 @@ const People: React.FC = () => {
       }
       return data || [];
     },
-    staleTime: 30 * 1000,
+    staleTime: 5 * 60 * 1000, // 5 minutes cache to eliminate egress & query storms
   });
 
-  // Dynamic Realtime subscription
+  // Dynamic Realtime subscription: Only listen to INSERT events for new members
   useEffect(() => {
     const channel = supabase
       .channel('realtime:talent-profiles')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'profiles' },
+        { event: 'INSERT', schema: 'public', table: 'profiles' },
         (payload) => {
           queryClient.invalidateQueries({ queryKey: ['global-talent-profiles'] });
           const insertedProfile = payload.new as any;
-          if (payload.eventType === 'INSERT' && insertedProfile?.profile_visibility === 'public' && insertedProfile?.full_name) {
+          if (insertedProfile?.profile_visibility === 'public' && insertedProfile?.full_name) {
             toast.success(`${insertedProfile.full_name} joined the public directory.`);
           }
         }

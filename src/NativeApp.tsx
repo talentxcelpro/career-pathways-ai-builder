@@ -75,11 +75,28 @@ const nativeQueryClient = new QueryClient({
 });
 
 function NativeLoading() {
+  const [showRetry, setShowRetry] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setShowRetry(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#f6f8fb] flex items-center justify-center px-6 text-slate-900">
       <div className="text-center">
         <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
         <p className="mt-4 text-sm font-semibold text-slate-500">Loading TalentXcel</p>
+        {showRetry && (
+          <div className="mt-3 flex flex-col items-center gap-2">
+            <p className="text-xs text-slate-400">Connection taking longer than expected</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-xs px-3 py-1.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700"
+            >
+              Retry
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -65,7 +65,7 @@ const Articles = () => {
   useEffect(() => {
     const channel = supabase
       .channel('network-articles-realtime-sync')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, () => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, () => {
         queryClient.invalidateQueries({ queryKey: ['articles'] });
         queryClient.invalidateQueries({ queryKey: ['my-articles-count'] });
       })

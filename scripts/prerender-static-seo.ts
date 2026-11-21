@@ -264,11 +264,20 @@ async function prerender() {
           </div>
         </div>
       </footer>`;
-      const renderedBody = `<div id="root"><div class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans"><header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4"><div class="max-w-7xl mx-auto flex items-center justify-between"><a href="/" class="text-xl font-bold text-white tracking-tight">Talent<span class="text-blue-500">Xcel</span></a><nav class="hidden md:flex gap-6 text-sm font-medium text-slate-300"><a href="/jobs" class="hover:text-white">Jobs</a><a href="/colleges" class="hover:text-white">Colleges</a><a href="/resume" class="hover:text-white">Resume</a><a href="/employer" class="hover:text-white">Employers</a></nav></div></header><main class="max-w-6xl mx-auto px-4 py-8 md:py-12">${meta.h1 ? `<h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">${escapeHtml(meta.h1)}</h1>` : ''}${meta.bodyContentHtml}</main>${subdomainMeshHtml}</div></div>`;
-      if (pageHtml.includes('id="tx-initial-content"')) {
-        pageHtml = pageHtml.replace(/<div id=["']root["']>[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/main>/i, `${renderedBody}</main>`);
+      const renderedBody = `<div id="root"><div id="tx-initial-content" class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans"><header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4"><div class="max-w-7xl mx-auto flex items-center justify-between"><a href="/" class="text-xl font-bold text-white tracking-tight">Talent<span class="text-blue-500">Xcel</span></a><nav class="hidden md:flex gap-6 text-sm font-medium text-slate-300"><a href="/jobs" class="hover:text-white">Jobs</a><a href="/colleges" class="hover:text-white">Colleges</a><a href="/resume" class="hover:text-white">Resume</a><a href="/employer" class="hover:text-white">Employers</a></nav></div></header><main class="max-w-6xl mx-auto px-4 py-8 md:py-12">${meta.h1 ? `<h1 class="text-3xl md:text-4xl font-bold tracking-tight text-white mb-6">${escapeHtml(meta.h1)}</h1>` : ''}${meta.bodyContentHtml}</main>${subdomainMeshHtml}</div></div>`;
+      
+      const mainRegex = /<main id=["']main-content["'][^>]*>[\s\S]*?<\/main>/i;
+      if (mainRegex.test(pageHtml)) {
+        pageHtml = pageHtml.replace(mainRegex, `<main id="main-content" role="main">${renderedBody}</main>`);
+      } else if (/<div id=["']root["']>[\s\S]*?<\/div>/i.test(pageHtml)) {
+        pageHtml = pageHtml.replace(/<div id=["']root["']>[\s\S]*?<\/div>/i, renderedBody);
       } else {
-        pageHtml = pageHtml.replace(/<div id=["']root["']><\/div>/i, renderedBody);
+        throw new Error(`FAIL-CLOSED: Could not locate #main-content or #root container to inject prerendered HTML for ${routePath}`);
+      }
+
+      // Strict validation: Ensure prerendered content actually exists in pageHtml
+      if (!pageHtml.includes('id="tx-initial-content"') || !pageHtml.includes(subdomainMeshHtml.slice(0, 50))) {
+        throw new Error(`FAIL-CLOSED: Prerendered content injection verification failed for route: ${routePath}`);
       }
     }
 
