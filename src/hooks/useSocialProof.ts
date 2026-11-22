@@ -42,24 +42,7 @@ export const useSocialProof = () => {
     queryKey: ['activity-indicators'],
     queryFn: async () => {
       // Legacy user_activities relation dropped in migration; return empty array safely
-      return [];
-    },
-    staleTime: 5 * 60 * 1000,
-    refetchInterval: false
-  });
-        const key = activity.activity_type;
-        if (!acc[key]) {
-          acc[key] = { count: 0, latest: activity.created_at };
-        }
-        acc[key].count += 1;
-        return acc;
-      }, {} as Record<string, { count: number; latest: string }>);
-
-      return Object.entries(grouped).map(([action, data]) => ({
-        user_count: data.count,
-        action,
-        timestamp: data.latest
-      })) as ActivityIndicator[];
+      return [] as ActivityIndicator[];
     },
     staleTime: 5 * 60 * 1000,
     refetchInterval: false

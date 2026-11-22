@@ -8,7 +8,9 @@ interface ProfileUpdateData {
   id?: string;
   profile_picture_url?: string;
   profile_photo_url?: string;
+  cover_image_url?: string;
   banner_url?: string;
+  banner_picture_url?: string;
   full_name?: string;
   title?: string;
   headline?: string;
@@ -30,6 +32,35 @@ interface ProfileUpdateData {
   username?: string;
   custom_url_slug?: string;
 }
+
+// Columns explicitly granted to authenticated role in 2026 CLS migration
+const ALLOWED_PROFILE_UPDATE_FIELDS = new Set([
+  'full_name',
+  'username',
+  'title',
+  'headline',
+  'about',
+  'location',
+  'email',
+  'phone',
+  'website',
+  'profile_picture_url',
+  'profile_photo_url',
+  'cover_image_url',
+  'skills',
+  'experience_years',
+  'industry',
+  'current_company',
+  'linkedin_url',
+  'github_url',
+  'portfolio_url',
+  'resume_url',
+  'looking_for_job',
+  'open_to_remote',
+  'preferred_salary_min',
+  'preferred_salary_max',
+  'preferred_locations'
+]);
 
 type ProfileUpdateError = {
   message?: string;
@@ -98,11 +129,41 @@ export function useProfileUpdate() {
         }
       }
 
-      // Always use UPDATE for existing profiles - much safer than upsert
-      const updateData = {
-        ...rawUpdateData,
-        updated_at: new Date().toISOString()
-      };
+      // Map banner identifiers to cover_image_url (the explicit column with CLS UPDATE grant)
+      if ((rawUpdateData.banner_url || rawUpdateData.banner_picture_url) && !rawUpdateData.cover_image_url) {
+        rawUpdateData.cover_image_url = rawUpdateData.banner_url || rawUpdateData.banner_picture_url;
+      }
+
+      // Mirror profile_picture_url to profile_photo_url
+      if (rawUpdateData.profile_picture_url && !rawUpdateData.profile_photo_url) {
+        rawUpdateData.profile_photo_url = rawUpdateData.profile_picture_url;
+      }
+
+      // Filter payload strictly to user-permitted CLS columns; NEVER pass created_at or updated_at
+      const updateData: Record<string, any> = {};
+      for (const [key, value] of Object.entries(rawUpdateData)) {
+        if (ALLOWED_PROFILE_UPDATE_FIELDS.has(key)) {
+          updateData[key] = value;
+        }
+      }
+
+      // Sync user metadata in Supabase Auth so immediate session reads reflect changes
+      if (updateData.profile_picture_url || updateData.full_name) {
+        try {
+          await supabase.auth.updateUser({
+            data: {
+              ...(updateData.full_name ? { full_name: updateData.full_name } : {}),
+              ...(updateData.profile_picture_url ? { 
+                avatar_url: updateData.profile_picture_url,
+                picture: updateData.profile_picture_url,
+                profile_picture_url: updateData.profile_picture_url
+              } : {})
+            }
+          });
+        } catch (authErr) {
+          console.warn('Auth user metadata sync notice:', authErr);
+        }
+      }
 
       const { data: result, error } = await supabase
         .from('profiles')
@@ -144,6 +205,8 @@ export function useProfileUpdate() {
       // Invalidate all profile-related queries
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: ['live-user-profile-card'] });
+      queryClient.invalidateQueries({ queryKey: ['network-feed'] });
       
       // Trigger TXC mining for profile updates
       if (variables.skills) {
@@ -174,13 +237,26 @@ export function useProfileUpdate() {
     mutationFn: async (profilePictureUrl: string) => {
       const user = await resolveAuthenticatedUser();
 
-      const { data, error } = await withTimeout(
+      // Sync auth user metadata so session-based avatar fallbacks update immediately
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            avatar_url: profilePictureUrl,
+            picture: profilePictureUrl,
+            profile_picture_url: profilePictureUrl
+          }
+        });
+      } catch (authErr) {
+        console.warn('Auth user metadata sync notice:', authErr);
+      }
+
+      // Do NOT send updated_at: authenticated role is revoked from mutating updated_at
+      const { data, error } = await withTimeout<any>(
         supabase
           .from('profiles')
           .update({ 
             profile_picture_url: profilePictureUrl,
-            profile_photo_url: profilePictureUrl,
-            updated_at: new Date().toISOString()
+            profile_photo_url: profilePictureUrl
           })
           .eq('id', user.id)
           .select()
@@ -191,7 +267,7 @@ export function useProfileUpdate() {
       if (error) throw error;
       if (data) return data;
 
-      // If no row existed, insert for new users
+      // If no row existed, insert for new users (no created_at / updated_at in body)
       const { data: inserted, error: insertError } = await supabase
         .from('profiles')
         .insert({
@@ -200,8 +276,7 @@ export function useProfileUpdate() {
           email: user.email || null,
           full_name: user.user_metadata?.full_name || null,
           profile_picture_url: profilePictureUrl,
-          profile_photo_url: profilePictureUrl,
-          updated_at: new Date().toISOString()
+          profile_photo_url: profilePictureUrl
         })
         .select()
         .maybeSingle();
@@ -211,6 +286,9 @@ export function useProfileUpdate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['live-user-profile-card'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: ['network-feed'] });
       toast.success('Profile picture updated successfully');
     },
     onError: (error: unknown) => {

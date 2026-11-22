@@ -107,7 +107,13 @@ function NativeProtectedRoute({ children }: { children: JSX.Element }) {
   const location = useLocation();
 
   if (loading) return <NativeLoading />;
-  if (!user || !session) return <Navigate to="/" state={{ from: location }} replace />;
+  if (!user || !session) {
+    const targetPath = `${location.pathname}${location.search}${location.hash}`;
+    const authUrl = targetPath && targetPath !== '/' 
+      ? `/auth?returnTo=${encodeURIComponent(targetPath)}`
+      : '/auth';
+    return <Navigate to={authUrl} state={{ from: location }} replace />;
+  }
   return children;
 }
 

@@ -77,16 +77,16 @@ function deleteCookie(name: string): void {
 }
 
 /**
- * Checks whether a serialized session string represents an unexpired Supabase session.
+ * Checks whether a serialized session string represents a valid Supabase session.
+ * A session is valid for persistence if it contains a user object and either an
+ * active access_token or a valid refresh_token that GoTrue can use to refresh.
  */
 function isValidSessionPayload(raw: string): boolean {
   try {
     const parsed = JSON.parse(raw);
-    if (!parsed || !parsed.access_token || !parsed.user) return false;
-    if (parsed.expires_at) {
-      const now = Math.floor(Date.now() / 1000);
-      if (parsed.expires_at <= now) return false;
-    }
+    if (!parsed || typeof parsed !== 'object') return false;
+    if (!parsed.user) return false;
+    if (!parsed.access_token && !parsed.refresh_token) return false;
     return true;
   } catch {
     return false;
@@ -178,18 +178,9 @@ export const crossSubdomainStorage = {
       if (isValidSessionPayload(value)) {
         const encoded = encodeForCookie(value);
         if (encoded.length <= MAX_COOKIE_BYTES) {
-          // Calculate max-age from session expires_at if available
-          let maxAge = 2592000; // 30 days default
-          try {
-            const parsed = JSON.parse(value);
-            if (parsed.expires_at) {
-              const secondsLeft = parsed.expires_at - Math.floor(Date.now() / 1000);
-              if (secondsLeft > 0) {
-                maxAge = Math.min(secondsLeft, 2592000);
-              }
-            }
-          } catch {}
-
+          // Standard cross-subdomain cookie lifetime: 30 days (2,592,000s)
+          // Preserves session continuity across subdomains and browser restarts
+          const maxAge = 2592000;
           setCookie(COOKIE_PREFIX, encoded, maxAge);
         }
       }

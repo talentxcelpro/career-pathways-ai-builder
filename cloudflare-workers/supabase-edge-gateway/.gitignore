@@ -1,0 +1,7 @@
+# Local Wrangler environment and secret variables
+.dev.vars
+.dev.vars.*
+
+# Wrangler build artifacts and caches
+.wrangler/
+dist/

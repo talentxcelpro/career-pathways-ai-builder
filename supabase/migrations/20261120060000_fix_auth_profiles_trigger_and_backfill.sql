@@ -39,7 +39,10 @@ BEGIN
     NULL
   );
 
-  -- 1. Insert or update into public.profiles
+  -- Bypass privacy column restrictions during auth trigger creation
+  PERFORM pg_catalog.set_config('txc.in_consent_rpc', 'on', true);
+
+  -- 1. Insert or update into public.profiles with safe privacy defaults
   BEGIN
     INSERT INTO public.profiles (
       id,
@@ -53,6 +56,8 @@ BEGIN
       profile_completed,
       is_profile_public,
       profile_visibility,
+      verification_status,
+      user_role,
       created_at,
       updated_at
     ) VALUES (
@@ -65,8 +70,10 @@ BEGIN
       true,
       false,
       false,
-      true,
-      'public',
+      false,
+      'private',
+      'unverified',
+      'candidate',
       now(),
       now()
     )

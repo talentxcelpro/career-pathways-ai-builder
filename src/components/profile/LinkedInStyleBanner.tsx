@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Camera, Edit3, Zap, CheckCircle2, MapPin, Briefcase, Building2, ChevronRight, ShieldCheck, Users, ArrowUpDown, Bookmark, Clock, Settings, Eye, BookOpen, PenTool } from 'lucide-react';
+import { Camera, Edit3, Zap, CheckCircle2, MapPin, Briefcase, Building2, ChevronRight, ShieldCheck, Users, ArrowUpDown, Bookmark, Clock, Settings, Eye, BookOpen, PenTool, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useFileUpload } from '@/hooks/useFileUpload';
 import { toast } from 'sonner';
@@ -91,13 +91,17 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
       if (type === 'avatar') {
         await updateProfilePicture.mutateAsync(uploadedUrl);
       } else {
-        await updateProfile.mutateAsync({ cover_image_url: uploadedUrl } as any);
+        await updateProfile.mutateAsync({ cover_image_url: uploadedUrl });
       }
-      toast.success(`${type} updated successfully!`);
-      setTimeout(() => window.location.reload(), 800);
-    } catch (error) {
+      queryClient.invalidateQueries({ queryKey: ['live-user-profile-card', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      await refetchProfile();
+      toast.success(`${type === 'banner' ? 'Banner' : 'Profile picture'} updated successfully!`);
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error(`Failed to update ${type}`);
+      toast.error(error?.message || `Failed to update ${type}`);
     } finally {
       setUploading(null);
     }
@@ -107,8 +111,8 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
   const title = liveProfile?.title?.trim() || liveProfile?.headline?.trim() || "Professional Member";
   const company = liveProfile?.company?.trim() || liveProfile?.current_company?.trim() || liveProfile?.organization?.trim() || "TalentXcel Network";
   const location = liveProfile?.location?.trim() || "India";
-  const avatarUrl = liveProfile?.profile_picture_url || liveProfile?.profile_photo_url || liveProfile?.avatar_url;
-  const coverUrl = liveProfile?.cover_image_url;
+  const avatarUrl = liveProfile?.profile_picture_url || liveProfile?.profile_photo_url || liveProfile?.avatar_url || user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const coverUrl = liveProfile?.cover_image_url || liveProfile?.banner_url || liveProfile?.banner_picture_url;
 
   return (
     <div className="space-y-2.5">
@@ -123,14 +127,22 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-600/30 via-teal-700/20 to-slate-950" />
           )}
 
-          {/* Camera Edit Button */}
+          {/* Camera Edit Button for Banner */}
           {isOwnProfile && (
-            <label className="relative z-10 p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white cursor-pointer backdrop-blur-md transition-colors">
-              <Camera className="h-3 w-3" />
+            <label 
+              className="relative z-10 p-1.5 rounded-full bg-black/50 hover:bg-black/75 text-white cursor-pointer backdrop-blur-md transition-colors shadow-sm" 
+              title="Update banner image"
+            >
+              {uploading === 'banner' ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Camera className="h-3 w-3" />
+              )}
               <input 
                 type="file" 
                 accept="image/*" 
                 className="hidden" 
+                disabled={uploading !== null}
                 onChange={(e) => e.target.files?.[0] && handleImageUpload('banner', e.target.files[0])} 
               />
             </label>
@@ -140,15 +152,62 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
         {/* Profile Avatar & Details Content */}
         <CardContent className="px-3.5 pb-3.5 pt-0 relative flex flex-col items-center text-center">
           
-          {/* Circular Overlapping Avatar (20% smaller with light blue background) */}
-          <div className="relative -mt-7 mb-1.5">
-            <Avatar className="w-14 h-14 border-2 border-sky-400 dark:border-sky-600 shadow-md bg-sky-100 dark:bg-sky-950">
-              <AvatarImage src={avatarUrl || undefined} alt={fullName} className="w-full h-full object-contain p-1 bg-sky-100 dark:bg-sky-950 rounded-full" />
+          {/* Circular Overlapping Avatar with Camera Edit Controls */}
+          <div className="relative -mt-7 mb-1.5 group">
+            <Avatar className="w-14 h-14 border-2 border-sky-400 dark:border-sky-600 shadow-md bg-sky-100 dark:bg-sky-950 overflow-hidden">
+              <AvatarImage 
+                src={avatarUrl || undefined} 
+                alt={fullName} 
+                className="w-full h-full object-cover" 
+              />
               <AvatarFallback className="text-sm font-black bg-sky-100 dark:bg-sky-950 text-sky-800 dark:text-sky-200">
                 {(fullName || 'U').charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-xs" />
+
+            {/* Desktop Hover Overlay: Click to change photo */}
+            {isOwnProfile && (
+              <label 
+                className="absolute inset-0 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity backdrop-blur-[1px] text-white z-10"
+                title="Update profile picture"
+              >
+                {uploading === 'avatar' ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-white" />
+                ) : (
+                  <Camera className="h-4 w-4 text-white" />
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  disabled={uploading !== null}
+                  onChange={(e) => e.target.files?.[0] && handleImageUpload('avatar', e.target.files[0])} 
+                />
+              </label>
+            )}
+
+            {/* Mobile / Touch Camera Badge Button (always visible on small screens) */}
+            {isOwnProfile && (
+              <label 
+                className="absolute -bottom-1 -left-1 p-1 rounded-full bg-slate-900/80 hover:bg-slate-900 text-white cursor-pointer shadow-sm border border-white dark:border-slate-800 transition-colors z-20 sm:hidden"
+                title="Update profile picture"
+              >
+                {uploading === 'avatar' ? (
+                  <Loader2 className="h-2.5 w-2.5 animate-spin" />
+                ) : (
+                  <Camera className="h-2.5 w-2.5" />
+                )}
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  disabled={uploading !== null}
+                  onChange={(e) => e.target.files?.[0] && handleImageUpload('avatar', e.target.files[0])} 
+                />
+              </label>
+            )}
+
+            <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-slate-900 rounded-full shadow-xs pointer-events-none z-10" />
           </div>
 
           {/* Candidate Name & Verified Badge */}

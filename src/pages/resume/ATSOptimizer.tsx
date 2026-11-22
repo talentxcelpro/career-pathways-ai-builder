@@ -258,8 +258,7 @@ export const ATSOptimizer: React.FC = () => {
 
           if (report.foundKeywords?.length) {
             await supabase.from('profiles').update({
-              skills: report.foundKeywords,
-              updated_at: new Date().toISOString()
+              skills: report.foundKeywords
             }).eq('id', user.id);
           }
 

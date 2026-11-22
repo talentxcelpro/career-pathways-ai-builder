@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { GOOGLE_CLIENT_ID, loadGoogleIdentityServices } from '@/config/googleAuth';
-import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { resolvePostAuthDestination, recordUserIntent, isValidInternalPath } from '@/utils/intentRouting';
 import { trackAuthSession } from '@/lib/analytics/conversionTracker';
 
 interface SocialLoginProps {
@@ -127,12 +127,24 @@ export const SocialLogin: React.FC<SocialLoginProps> = ({
       return;
     }
 
+    const searchParams = new URLSearchParams(window.location.search);
+    const returnToParam = searchParams.get('returnTo') || searchParams.get('redirect') || searchParams.get('returnUrl');
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const effectiveReturn = returnToParam || (!currentPath.startsWith('/auth') && currentPath !== '/' ? currentPath : null);
+
+    if (effectiveReturn && isValidInternalPath(effectiveReturn)) {
+      recordUserIntent(null, effectiveReturn);
+    }
+
     try {
-      // Don't use skipBrowserRedirect — let Supabase manage PKCE verifier storage naturally
+      const callbackUrl = effectiveReturn && isValidInternalPath(effectiveReturn)
+        ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(effectiveReturn)}`
+        : `${window.location.origin}/auth/callback`;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'linkedin_oidc',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl,
           scopes: 'openid profile email',
         },
       });

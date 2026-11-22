@@ -27,7 +27,7 @@ export const useOptimizedAuth = () => {
   return context;
 };
 
-const getStoredSession = (): { user: User | null; session: Session | null } => {
+const getStoredSession = (): { user: User | null; session: Session | null; isExpired?: boolean } => {
   if (typeof window === 'undefined') return { user: null, session: null };
   try {
     // Eagerly sync session from cross-subdomain cookie bridge if local storage is unpopulated
@@ -41,9 +41,10 @@ const getStoredSession = (): { user: User | null; session: Session | null } => {
           const parsed = JSON.parse(raw);
           if (parsed?.user) {
             const now = Math.floor(Date.now() / 1000);
-            if (!parsed.expires_at || parsed.expires_at > now) {
-              return { user: parsed.user, session: parsed };
-            }
+            const isExpired = Boolean(parsed.expires_at && parsed.expires_at <= now);
+            // If user exists and either token is unexpired or refresh_token exists,
+            // preserve the session state so UI does not flash guest state
+            return { user: parsed.user, session: parsed, isExpired };
           }
         }
       }
@@ -220,10 +221,56 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
       }
     }, 2500);
 
-    // Get initial session
+    // Cross-tab synchronization via storage events (Phase 6)
+    const handleStorageChange = async (event: StorageEvent) => {
+      if (!mounted) return;
+      if (event.key && event.key.startsWith('sb-') && event.key.endsWith('-auth-token')) {
+        if (!event.newValue) {
+          // User signed out in another tab
+          setSession(null);
+          setUser(null);
+          setLoading(false);
+        } else {
+          // User signed in or refreshed session in another tab
+          try {
+            const { data: { session: newSession } } = await supabase.auth.getSession();
+            if (mounted && newSession?.user) {
+              setSession(newSession);
+              setUser(newSession.user);
+              setLoading(false);
+            }
+          } catch (e) {
+            console.warn('[OptimizedAuth] Cross-tab session sync non-fatal:', e);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Get initial session with transparent refresh recovery
     const initAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        let { data: { session } } = await supabase.auth.getSession();
+        
+        // Transparent session recovery: If getSession() returns null or an expired session,
+        // but storage contains a valid user & refresh token, explicitly trigger refreshSession()
+        const now = Math.floor(Date.now() / 1000);
+        const isSessionExpired = session?.expires_at ? session.expires_at <= now : false;
+
+        if (!session || isSessionExpired) {
+          const stored = getStoredSession();
+          if (stored.user && (stored.session as any)?.refresh_token) {
+            try {
+              const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+              if (!refreshError && refreshData.session) {
+                session = refreshData.session;
+              }
+            } catch (refErr) {
+              console.warn('[OptimizedAuth] Background refresh recovery warning:', refErr);
+            }
+          }
+        }
         
         if (mounted) {
           setSession(session);
@@ -267,6 +314,7 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
     return () => {
       mounted = false;
       clearTimeout(authTimeoutTimer);
+      window.removeEventListener('storage', handleStorageChange);
       subscription.unsubscribe();
     };
   }, [navigate]);

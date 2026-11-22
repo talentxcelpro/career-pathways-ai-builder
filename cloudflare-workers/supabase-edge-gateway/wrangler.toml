@@ -3,16 +3,23 @@ main = "src/index.ts"
 compatibility_date = "2024-11-12"
 compatibility_flags = ["nodejs_compat"]
 
-# Production Gateway Environment (Unactivated / No Routes)
+# Production Gateway Environment (Activated for edge.talentxcel.in)
+# NOTE: Secrets (SUPABASE_ANON_KEY, PURGE_API_KEY) must NOT be declared in [vars].
+# Use `wrangler secret put <KEY>` for production encrypted secret bindings.
+# For local development, secrets are loaded via gitignored `.dev.vars`.
+routes = [
+  { pattern = "edge.talentxcel.in/*", zone_id = "9305760b109c673fd4be89436422edff" }
+]
+workers_dev = true
+
 [vars]
 SUPABASE_ORIGIN = "https://dthlgsnakhoftinssokm.supabase.co"
 ENVIRONMENT = "production"
 DEFAULT_PUBLIC_TTL = 120 # 2 minutes edge TTL
 MAX_PUBLIC_TTL = 300     # 5 minutes max stale-while-revalidate
-SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc"
-PURGE_API_KEY = "txc_purge_sec_019a8f7c9e12"
 
 # Isolated Staging Gateway Environment
+# NOTE: Use `wrangler secret put <KEY> --env staging` for staging encrypted secret bindings.
 [env.staging]
 name = "talentxcel-supabase-edge-gateway-staging"
 
@@ -21,5 +28,3 @@ SUPABASE_ORIGIN = "https://dthlgsnakhoftinssokm.supabase.co"
 ENVIRONMENT = "staging"
 DEFAULT_PUBLIC_TTL = 120
 MAX_PUBLIC_TTL = 300
-SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc"
-PURGE_API_KEY = "txc_purge_sec_019a8f7c9e12"

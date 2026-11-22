@@ -151,14 +151,6 @@ const ProfileSettings = () => {
 
         // 3. Persist locally for instant offline cache
         localStorage.setItem(`talentxcel_prefs_${user.id}`, JSON.stringify(settings));
-
-        // 4. Update profiles timestamp
-        await supabase
-          .from('profiles')
-          .update({
-            updated_at: new Date().toISOString(),
-          })
-          .eq('id', user.id);
       } else {
         localStorage.setItem('talentxcel_guest_prefs', JSON.stringify(settings));
       }
