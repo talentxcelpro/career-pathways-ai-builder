@@ -1,19 +1,26 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import LoginForm from '@/components/auth/LoginForm';
 import { setSubdomainRedirect } from '@/utils/subdomainRedirect';
 import { useOptimizedAuth } from '@/contexts/OptimizedAuthContext';
-import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { resolvePostAuthDestination, recordUserIntent, isValidInternalPath } from '@/utils/intentRouting';
 
 const Login = () => {
   const { user, loading } = useOptimizedAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
-  const redirectParam = searchParams.get('redirect') || searchParams.get('returnUrl');
+
+  const stateFrom = (location.state as any)?.from;
+  const statePath = typeof stateFrom === 'string' 
+    ? stateFrom 
+    : (stateFrom?.pathname ? `${stateFrom.pathname}${stateFrom.search || ''}${stateFrom.hash || ''}` : null);
+  const redirectParam = searchParams.get('returnTo') || searchParams.get('redirect') || searchParams.get('returnUrl') || statePath;
 
   useEffect(() => {
-    if (redirectParam) {
+    if (redirectParam && isValidInternalPath(redirectParam)) {
+      recordUserIntent(null, redirectParam);
       setSubdomainRedirect(redirectParam);
     }
   }, [redirectParam]);

@@ -30,10 +30,14 @@ const OAuthCallback = () => {
           setStatus('retrying');
           // Small delay so the user sees the retrying state, then re-initiate
           await new Promise(r => setTimeout(r, 800));
+          const returnToParam = requestUrl.searchParams.get('returnTo');
+          const retryCallback = returnToParam
+            ? `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnToParam)}`
+            : `${window.location.origin}/auth/callback`;
           const { error: retryError } = await supabase.auth.signInWithOAuth({
             provider: 'linkedin_oidc',
             options: {
-              redirectTo: `${window.location.origin}/auth/callback`,
+              redirectTo: retryCallback,
               scopes: 'openid profile email',
             },
           });
