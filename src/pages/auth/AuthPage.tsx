@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ArrowLeft, Mail, Lock, User, Building, Chrome } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
-import { resolvePostAuthDestination } from '@/utils/intentRouting';
+import { resolvePostAuthDestination, recordUserIntent, isValidInternalPath } from '@/utils/intentRouting';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { trackAuthSession } from '@/lib/analytics/conversionTracker';
 import { getStoredReferral, clearStoredReferral } from '@/utils/referralTracker';
@@ -42,6 +42,21 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
 
   // Get flow from URL params or props
   const currentFlow = flow || searchParams.get('flow') || 'resume';
+
+  // Extract intended return path from searchParams or React Router location state
+  const stateFrom = (location.state as any)?.from;
+  const statePath = typeof stateFrom === 'string' 
+    ? stateFrom 
+    : (stateFrom?.pathname ? `${stateFrom.pathname}${stateFrom.search || ''}${stateFrom.hash || ''}` : null);
+  const targetReturnTo = searchParams.get('returnTo') || searchParams.get('redirect') || searchParams.get('returnUrl') || statePath;
+
+  // Persist intended deep-link so it survives OAuth or email verification redirects
+  useEffect(() => {
+    if (targetReturnTo && isValidInternalPath(targetReturnTo)) {
+      recordUserIntent(currentFlow, targetReturnTo);
+    }
+  }, [targetReturnTo, currentFlow]);
+
   const redirectTo = resolvePostAuthDestination({
     searchParams,
     role: userType,
@@ -240,13 +255,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
   };
 
   const handleSocialAuth = async (provider: 'google' | 'linkedin_oidc') => {
-    // Central SSO Authority: If on a subdomain (e.g. jobs.talentxcel.in, employer.talentxcel.in),
-    // delegate OAuth to talentxcel.in (the registered authorized origin) with returnTo URL.
+    const isLinkedIn = provider === 'linkedin_oidc';
     const host = typeof window !== 'undefined' ? window.location.hostname.toLowerCase() : '';
     const isSubdomain = host && host !== 'talentxcel.in' && host !== 'www.talentxcel.in' && !host.includes('localhost') && host.endsWith('.talentxcel.in');
 
+    const effectiveReturn = targetReturnTo && isValidInternalPath(targetReturnTo) ? targetReturnTo : null;
+    if (effectiveReturn) {
+      recordUserIntent(currentFlow, effectiveReturn);
+    }
+
     if (isSubdomain) {
-      const returnUrl = window.location.href;
+      const returnUrl = effectiveReturn || window.location.href;
       window.location.href = `https://talentxcel.in/auth?returnTo=${encodeURIComponent(returnUrl)}&flow=${currentFlow}&type=${userType}`;
       return;
     }
@@ -254,17 +273,17 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
     try {
       setIsLoading(true);
       
-      // Use current domain for redirects
       const baseUrl = window.location.origin;
-      const redirectUrl = `${baseUrl}/onboarding?flow=${currentFlow}&type=${userType}`;
-      
-      console.log('Social auth attempt:', { provider, redirectUrl });
+      const callbackUrl = effectiveReturn
+        ? `${baseUrl}/auth/callback?returnTo=${encodeURIComponent(effectiveReturn)}`
+        : `${baseUrl}/auth/callback`;
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: redirectUrl,
-          queryParams: {
+          redirectTo: callbackUrl,
+          scopes: isLinkedIn ? 'openid profile email' : undefined,
+          queryParams: isLinkedIn ? undefined : {
             access_type: 'offline',
             prompt: 'consent'
           }
@@ -272,8 +291,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       });
 
       if (error) throw error;
-      
-      console.log('Social auth initiated:', data);
       // Don't set loading to false here as page will redirect
     } catch (error: any) {
       console.error('Social auth error:', error);

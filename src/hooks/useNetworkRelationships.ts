@@ -91,15 +91,22 @@ export function useNetworkRelationships() {
       .channel(`network-relationships-realtime-${user.id}`)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'connections' }, () => {
         queryClient.invalidateQueries({ queryKey: ['network-relationships-connections'] });
+        queryClient.invalidateQueries({ queryKey: ['following-followers-connections'] });
+        queryClient.invalidateQueries({ queryKey: ['following-followers-partner-profiles'] });
         queryClient.invalidateQueries({ queryKey: ['userConnections'] });
         queryClient.invalidateQueries({ queryKey: ['connection-requests'] });
         queryClient.invalidateQueries({ queryKey: ['pendingRequestsCount'] });
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_follows' }, () => {
         queryClient.invalidateQueries({ queryKey: ['network-relationships-follows'] });
+        queryClient.invalidateQueries({ queryKey: ['following-followers-follows'] });
+        queryClient.invalidateQueries({ queryKey: ['following-followers-partner-profiles'] });
         queryClient.invalidateQueries({ queryKey: ['user-follows'] });
         queryClient.invalidateQueries({ queryKey: ['following'] });
         queryClient.invalidateQueries({ queryKey: ['followers'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['following-followers-partner-profiles'] });
       })
       .subscribe();
 

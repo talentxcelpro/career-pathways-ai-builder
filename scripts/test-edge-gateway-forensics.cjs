@@ -24,12 +24,48 @@
  */
 
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 
 const GATEWAY_HOST = '127.0.0.1';
 const GATEWAY_PORT = 8787;
-const TRUSTED_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
-const PURGE_KEY = 'txc_purge_sec_019a8f7c9e12';
+
+// Load credentials dynamically from process.env, .dev.vars, or .env (never hardcoded)
+function resolveCredentials() {
+  let anonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY || '';
+  let purgeKey = process.env.PURGE_API_KEY || '';
+
+  const devVarsPath = path.join(__dirname, '..', 'cloudflare-workers', 'supabase-edge-gateway', '.dev.vars');
+  if (fs.existsSync(devVarsPath)) {
+    const content = fs.readFileSync(devVarsPath, 'utf8');
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('SUPABASE_ANON_KEY=')) {
+        anonKey = anonKey || trimmed.substring('SUPABASE_ANON_KEY='.length).trim();
+      } else if (trimmed.startsWith('PURGE_API_KEY=')) {
+        purgeKey = purgeKey || trimmed.substring('PURGE_API_KEY='.length).trim();
+      }
+    }
+  }
+
+  const envPath = path.join(__dirname, '..', '.env');
+  if (!anonKey && fs.existsSync(envPath)) {
+    const content = fs.readFileSync(envPath, 'utf8');
+    for (const line of content.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('VITE_SUPABASE_PUBLISHABLE_KEY=')) {
+        anonKey = trimmed.substring('VITE_SUPABASE_PUBLISHABLE_KEY='.length).trim();
+      }
+    }
+  }
+
+  if (!anonKey) {
+    throw new Error('SUPABASE_ANON_KEY not found in environment, .dev.vars, or .env');
+  }
+  return { anonKey, purgeKey };
+}
+
+const { anonKey: TRUSTED_ANON_KEY, purgeKey: PURGE_KEY } = resolveCredentials();
 
 function createMockToken(role, sub = null) {
   const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64url');

@@ -125,12 +125,8 @@ export async function ensureUserProfileSlug(
     // 2. Generate unique name slug
     const uniqueSlug = await getUniqueProfileSlug(nameToUse, emailToUse, userId);
 
-    // 3. Update profile row with the new slug and custom_profile_url
-    const updatePayload: Record<string, any> = {
-      slug: uniqueSlug,
-      custom_profile_url: uniqueSlug,
-      updated_at: new Date().toISOString()
-    };
+    // 3. Update profile row with username / full_name if needed
+    const updatePayload: Record<string, any> = {};
 
     if (nameToUse && !profile?.full_name) {
       updatePayload.full_name = nameToUse;
@@ -140,10 +136,12 @@ export async function ensureUserProfileSlug(
       updatePayload.username = uniqueSlug.replace(/-/g, '');
     }
 
-    await supabase
-      .from('profiles')
-      .update(updatePayload)
-      .eq('id', userId);
+    if (Object.keys(updatePayload).length > 0) {
+      await supabase
+        .from('profiles')
+        .update(updatePayload)
+        .eq('id', userId);
+    }
 
     return uniqueSlug;
   } catch (err) {

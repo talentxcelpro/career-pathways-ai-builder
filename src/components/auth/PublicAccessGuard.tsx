@@ -3,6 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { RestrictedAccessPage } from './RestrictedAccessPage';
+import { recordUserIntent, isValidInternalPath } from '@/utils/intentRouting';
 
 interface PublicAccessGuardProps {
   children: React.ReactNode;
@@ -22,15 +23,24 @@ export const PublicAccessGuard: React.FC<PublicAccessGuardProps> = ({
   if (loading || isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Verifying access...</p>
+        </div>
       </div>
     );
   }
 
+  const targetPath = `${location.pathname}${location.search}${location.hash}`;
+  const loginUrl = isValidInternalPath(targetPath)
+    ? `/auth/login?returnTo=${encodeURIComponent(targetPath)}`
+    : '/auth/login';
+
   // If route requires admin access
   if (requiresAdminAccess) {
     if (!user) {
-      return <Navigate to="/" state={{ from: location }} replace />;
+      if (isValidInternalPath(targetPath)) recordUserIntent(null, targetPath);
+      return <Navigate to={loginUrl} state={{ from: location }} replace />;
     }
     if (!isAdmin) {
       const routeName = location.pathname.split('/')[1] || 'Feature';
@@ -44,9 +54,10 @@ export const PublicAccessGuard: React.FC<PublicAccessGuardProps> = ({
     return <>{children}</>;
   }
 
-  // If route is not public and user is not authenticated, redirect to login
+  // If route is not public and user is not authenticated, redirect to login preserving target
   if (!user) {
-    return <Navigate to="/" state={{ from: location }} replace />;
+    if (isValidInternalPath(targetPath)) recordUserIntent(null, targetPath);
+    return <Navigate to={loginUrl} state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

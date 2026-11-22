@@ -304,10 +304,16 @@ export function FollowingFollowersList() {
             {connectionsList.length === 0 ? (
               <div className="text-center py-10 space-y-2">
                 <UserCheck className="h-10 w-10 text-muted-foreground mx-auto opacity-50" />
-                <h4 className="text-sm font-bold text-foreground">No connections found</h4>
-                <p className="text-xs text-muted-foreground">Discover verified professionals to expand your circle.</p>
-                <Button size="sm" onClick={() => navigate('/network/discover')} className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-7.5 rounded-lg mt-1">
-                  Discover People
+                <h4 className="text-sm font-bold text-foreground">
+                  {searchTerm.trim() ? `No connections matching "${searchTerm}"` : 'No connections found'}
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {searchTerm.trim()
+                    ? 'Try searching the global talent directory to connect with them.'
+                    : 'Discover verified professionals to expand your circle.'}
+                </p>
+                <Button size="sm" onClick={() => navigate(searchTerm.trim() ? `/talent?q=${encodeURIComponent(searchTerm.trim())}` : '/network/discover')} className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-7.5 rounded-lg mt-1">
+                  {searchTerm.trim() ? 'Search All Platform Members' : 'Discover People'}
                 </Button>
               </div>
             ) : (

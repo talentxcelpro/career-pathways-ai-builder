@@ -161,8 +161,7 @@ const ProfileEdit = () => {
                 // Heal in database silently
                 supabase.from('profiles').update({
                   profile_picture_url: publicUrl,
-                  profile_photo_url: publicUrl,
-                  updated_at: new Date().toISOString()
+                  profile_photo_url: publicUrl
                 }).eq('id', currentUser.id);
               }
             }
@@ -208,7 +207,38 @@ const ProfileEdit = () => {
         } catch (_) { /* ignore */ }
       }
 
-      // Build safe update payload - NEVER include 'id' in update body to avoid FK validation errors
+      // 1. Synchronize affirmative consent record with profile_visibility via authorized RPC
+      if (data.profile_visibility) {
+        try {
+          const isPublicConsent = (data.profile_visibility || 'public') === 'public';
+          await supabase.rpc('set_public_profile_consent', {
+            p_granted: isPublicConsent,
+            p_visibility: data.profile_visibility || 'public',
+            p_source: 'profile_settings'
+          });
+        } catch (consentErr) {
+          console.warn('Consent RPC update notice:', consentErr);
+        }
+      }
+
+      // 2. Synchronize auth user metadata so session-based avatars and names update immediately
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            ...(data.full_name?.trim() ? { full_name: data.full_name.trim() } : {}),
+            ...(cleanPictureUrl ? { 
+              avatar_url: cleanPictureUrl,
+              picture: cleanPictureUrl,
+              profile_picture_url: cleanPictureUrl
+            } : {})
+          }
+        });
+      } catch (authErr) {
+        console.warn('Auth metadata sync notice:', authErr);
+      }
+
+      // 3. Build safe update payload strictly matching user-permitted CLS columns
+      // (NEVER include updated_at, created_at, id, or system columns to avoid Postgres 42501 error)
       const updatePayload: Record<string, any> = {
         full_name: data.full_name?.trim() || null,
         title: data.title?.trim() || null,
@@ -223,20 +253,11 @@ const ProfileEdit = () => {
         experience_years: typeof data.experience_years === 'number' ? data.experience_years : Number(data.experience_years) || 0,
         profile_picture_url: cleanPictureUrl,
         profile_photo_url: cleanPictureUrl,
-        social_links: data.social_links && typeof data.social_links === 'object' ? data.social_links : {},
-        profile_visibility: data.profile_visibility || 'public',
-        allow_profile_sharing: data.allow_profile_sharing ?? true,
         resume_url: data.resume_url?.trim() || null,
-        work_experiences: normalizedWorkExperiences,
-        updated_at: new Date().toISOString()
       };
 
       if (data.email && data.email.trim()) {
         updatePayload.email = data.email.trim();
-      }
-
-      if (data.custom_profile_url && data.custom_profile_url.trim()) {
-        updatePayload.custom_profile_url = data.custom_profile_url.trim();
       }
 
       // Try to update existing profile first
@@ -248,32 +269,8 @@ const ProfileEdit = () => {
         .maybeSingle();
 
       if (updateError) {
-        // If unique constraint violation on custom_profile_url, retry without custom_profile_url
-        if (updateError.code === '23505' && updatePayload.custom_profile_url) {
-          delete updatePayload.custom_profile_url;
-          const { data: retryUpdated, error: retryError } = await supabase
-            .from('profiles')
-            .update(updatePayload)
-            .eq('id', activeUser.id)
-            .select()
-            .maybeSingle();
-          if (retryError) throw retryError;
-          return retryUpdated;
-        }
         console.error('Profile update failed:', updateError);
         throw updateError;
-      }
-
-      // Synchronize affirmative consent record with profile_visibility
-      try {
-        const isPublicConsent = (data.profile_visibility || 'public') === 'public';
-        await supabase.rpc('set_public_profile_consent', {
-          p_granted: isPublicConsent,
-          p_visibility: data.profile_visibility || 'public',
-          p_source: 'profile_settings'
-        });
-      } catch (_) {
-        // Non-blocking fallback if RPC not installed
       }
 
       if (updated) {
@@ -326,6 +323,8 @@ const ProfileEdit = () => {
     onSuccess: (savedData: any) => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       queryClient.invalidateQueries({ queryKey: ['currentUser'] });
+      queryClient.invalidateQueries({ queryKey: ['live-user-profile-card'] });
+      queryClient.invalidateQueries({ queryKey: ['network-feed'] });
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
