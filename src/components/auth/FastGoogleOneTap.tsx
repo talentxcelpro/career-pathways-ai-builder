@@ -62,7 +62,7 @@ const hasActiveAuthSession = (): boolean => {
           const parsed = JSON.parse(item);
           if (parsed?.user) {
             const now = Math.floor(Date.now() / 1000);
-            if (!parsed.expires_at || parsed.expires_at > now) {
+            if (parsed.refresh_token || !parsed.expires_at || parsed.expires_at > now) {
               return true;
             }
           }
