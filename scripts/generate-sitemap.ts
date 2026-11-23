@@ -336,8 +336,8 @@ export async function generateProductionSitemaps() {
   // Excludes secondary tier-2 location pages that declare 'noindex, follow' in prerendered HTML
   const INDEXABLE_METRO_SLUGS = [
     'ahmedabad', 'bangalore', 'bhopal', 'bhubaneswar', 'chandigarh', 'chennai',
-    'coimbatore', 'hyderabad', 'indore', 'jaipur', 'kochi', 'kolkata', 'lucknow',
-    'mumbai', 'nagpur', 'noida', 'patna', 'pune', 'surat', 'vadodara', 'visakhapatnam'
+    'coimbatore', 'gurugram', 'hyderabad', 'indore', 'jaipur', 'kochi', 'kolkata', 'lucknow',
+    'mumbai', 'nagpur', 'noida', 'patna', 'pune', 'surat', 'vadodara', 'varanasi', 'visakhapatnam'
   ];
 
   // Verify against dist/locations/*.html if dist exists to ensure 100% parity with prerendered robots directives
