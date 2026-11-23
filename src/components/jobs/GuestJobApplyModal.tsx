@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import {
   Briefcase,
   Upload,
+  Check,
   CheckCircle2,
   FileText,
   Sparkles,
