@@ -236,7 +236,7 @@ const SalaryGuidePage: React.FC = () => {
                   <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
                 </div>
                 <div className="text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-                  {inHand ? `₹${(inHand.monthlyInHandMin / 1000).toFixed(0)}K - ₹${(inHand.monthlyInHandMax / 1000).toFixed(0)}K/mo` : formatMonthly(benchmark.p50)}
+                  {inHand?.estimatedMonthlyNet ? `₹${Math.round(inHand.estimatedMonthlyNet / 1000)}K/mo` : formatMonthly(benchmark.p50)}
                 </div>
                 <p className="text-[11px] text-muted-foreground">Estimated in-hand monthly payout</p>
               </CardContent>
