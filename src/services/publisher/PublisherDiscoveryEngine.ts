@@ -711,11 +711,15 @@ export class PublisherDiscoveryEngine {
         .from('embed_publisher_opportunities' as any)
         .select('*');
 
-      if (logsError && oppsError) {
+      if (logsError || oppsError) {
+        const errorDetail = logsError?.message || oppsError?.message || 'Remote database query error';
+        const isTablePending = logsError?.code === '42P01' || oppsError?.code === '42P01';
         return {
-          status: 'NO LIVE ACTIVITY YET',
+          status: 'DATA UNAVAILABLE',
           lastUpdated: new Date().toISOString(),
-          details: 'Initialized in clean operational state'
+          details: isTablePending
+            ? 'Remote tables pending migration (Postgres 42P01). Local model active.'
+            : `Database error: ${errorDetail}`
         };
       }
 

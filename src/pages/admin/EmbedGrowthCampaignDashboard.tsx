@@ -68,6 +68,7 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
   // Data Integrity & Operational States
   const [isTestSandboxMode, setIsTestSandboxMode] = useState<boolean>(false);
   const [dataStatus, setDataStatus] = useState<DashboardDataStatus>('NO LIVE ACTIVITY YET');
+  const [statusDetails, setStatusDetails] = useState<string>('');
   const [lastRefreshedAt, setLastRefreshedAt] = useState<string>(new Date().toLocaleTimeString());
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isPersisting, setIsPersisting] = useState<boolean>(false);
@@ -82,15 +83,18 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
     try {
       if (isTestSandboxMode) {
         setDataStatus('TEST DATA');
+        setStatusDetails('Showing isolated demonstration test fixtures.');
         setStats(publisherDiscovery.getFunnelStats({ includeFixtures: true }));
       } else {
         const syncResult = await publisherDiscovery.fetchLiveStateFromDb();
         setDataStatus(syncResult.status);
+        setStatusDetails(syncResult.details || '');
         setStats(publisherDiscovery.getFunnelStats({ includeFixtures: false }));
       }
       setLastRefreshedAt(new Date().toLocaleTimeString());
     } catch {
       setDataStatus('DATA UNAVAILABLE');
+      setStatusDetails('Database synchronization failed.');
     } finally {
       setIsRefreshing(false);
     }
