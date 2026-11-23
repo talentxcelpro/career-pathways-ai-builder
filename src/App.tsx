@@ -78,6 +78,7 @@ const Tier2CityJobsIndex2026 = lazy(() => import('@/pages/benchmarks/Tier2CityJo
 const EmbedDirectoryPage = lazy(() => import('@/pages/embed/EmbedDirectoryPage'));
 const EmbedStandaloneView = lazy(() => import('@/pages/embed/EmbedStandaloneView'));
 const EmbedDistributionAdmin = lazy(() => import('@/pages/admin/EmbedDistributionAdmin'));
+const EmbedGrowthCampaignDashboard = lazy(() => import('@/pages/admin/EmbedGrowthCampaignDashboard'));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -1349,6 +1350,7 @@ const App = () => {
                                  <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />
                                  <Route path="/admin/embeds" element={<AdminLayout><Suspense fallback={null}><EmbedDistributionAdmin /></Suspense></AdminLayout>} />
+                                 <Route path="/admin/embed-growth" element={<AdminLayout><Suspense fallback={null}><EmbedGrowthCampaignDashboard /></Suspense></AdminLayout>} />
                                  {/* Explicit Public Learning Provider Directory Routes */}
                                  <Route path="/learning/providers" element={<AllProvidersPage />} />
                                  <Route path="/learning/providers/:slug" element={<ProviderPage />} />

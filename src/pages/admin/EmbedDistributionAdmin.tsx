@@ -79,6 +79,14 @@ export const EmbedDistributionAdmin: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <Button
+            onClick={() => window.location.href = '/admin/embed-growth'}
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 px-3.5 rounded-xl flex items-center gap-1.5 shadow-md shadow-blue-600/20"
+          >
+            <span>Publisher Acquisition Engine</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </Button>
+
+          <Button
             onClick={() => window.open('/embeds', '_blank')}
             variant="outline"
             className="border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs h-9 rounded-xl flex items-center gap-1.5"
