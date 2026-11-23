@@ -158,6 +158,13 @@ export const Navbar = () => {
     },
   ];
 
+  const secondaryTools = [
+    { to: "/tools/salary-analyzer", label: "Salary Analyzer" },
+    { to: "/resume/ats-check", label: "ATS Resume Scan" },
+    { to: "/career-map", label: "Career Map" },
+    { to: "/government-jobs", label: "Government Jobs" },
+  ];
+
   const isCurrentPath = (path: string) => {
     if (path === '/network') {
       return location.pathname === '/network' || location.pathname.startsWith('/network/');

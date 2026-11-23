@@ -38,6 +38,7 @@ import {
   Award,
   Globe,
   Sliders,
+  AlertCircle,
   ChevronRight,
   ExternalLink,
   Cpu,

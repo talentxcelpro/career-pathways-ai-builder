@@ -20,6 +20,7 @@ interface UnifiedAuthFormProps {
 }
 
 export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps) => {
+  const PLATFORM_METRICS = usePlatformMetrics();
   const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(() => {
     if (initialMode) return initialMode !== 'signup';

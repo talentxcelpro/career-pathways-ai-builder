@@ -110,13 +110,13 @@ export default function JobApply() {
     }
   });
 
+  const targetJobId = job?.id || id;
+
   // Apply mutation
   const applyMutation = useMutation({
     mutationFn: async (applicationData: any) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
-
-      const targetJobId = job?.id || id;
 
       // Check if already applied
       const { data: existingApplication } = await supabase

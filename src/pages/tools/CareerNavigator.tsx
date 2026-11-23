@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MessageSquare, Send, Bot, User, Sparkles, FileText, TrendingUp, Save } from 'lucide-react';
+import { MessageSquare, Send, Bot, User, Sparkles, FileText, TrendingUp, Save, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ChatMessage {

@@ -170,10 +170,13 @@ export async function generateWhatsAppDailyDigest(targetDate: string = new Date(
       position: idx + 1,
     }));
 
-    await supabase
-      .from('job_alert_campaign_jobs')
-      .upsert(jobLinkPayload, { onConflict: 'campaign_id,job_id' })
-      .catch((e) => console.warn('Warning linking campaign jobs:', e));
+    try {
+      await supabase
+        .from('job_alert_campaign_jobs')
+        .upsert(jobLinkPayload, { onConflict: 'campaign_id,job_id' });
+    } catch (e) {
+      console.warn('Warning linking campaign jobs:', e);
+    }
   }
 
   return {

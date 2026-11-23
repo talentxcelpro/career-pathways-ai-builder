@@ -910,7 +910,7 @@ export const GrowthEngineAdminPanel: React.FC = () => {
                   Dual Viral Coefficient Architecture
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  TalentXcel measures both <span className="font-bold text-blue-300">Population K-factor</span> ($K = i \times c$ across all active platform users) and <span className="font-bold text-purple-300">Active Referrer K-factor</span> ($K_{ref}$ across members who shared invite links).
+                  TalentXcel measures both <span className="font-bold text-blue-300">Population K-factor</span> ($K = i \times c$ across all active platform users) and <span className="font-bold text-purple-300">Active Referrer K-factor</span> ($K_{'ref'}$ across members who shared invite links).
                 </p>
               </div>
 

@@ -24,8 +24,10 @@ import {
   ExternalLink,
   CheckCircle,
   AlertCircle,
-  Star
+  Star,
+  Briefcase
 } from 'lucide-react';
+import { updateMetaTags } from '@/utils/metaTags';
 import { formatDistanceToNow } from 'date-fns';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { toast } from 'sonner';

@@ -39,7 +39,9 @@ import ProfileUrlRedirect from "@/components/profile/ProfileUrlRedirect";
 import UniversalProfileRouteHandler from "@/components/profile/UniversalProfileRouteHandler";
 import FastPassportRedirect from "@/components/passport/FastPassportRedirect";
 import { EnhancedSEODemoWrapper } from "@/components/seo/EnhancedSEODemoWrapper";
+import { RouteErrorBoundary } from "@/components/shared/RouteErrorBoundary";
 const JobDetails = lazy(() => import("@/pages/jobs/JobDetails"));
+const JobApply = lazy(() => import("@/pages/jobs/JobApply"));
 const Blog = lazy(() => import("@/pages/Blog"));
 const BlogPost = lazy(() => import("@/pages/BlogPost"));
 const BlogRedirect = lazy(() => import("@/pages/BlogRedirect"));
@@ -648,8 +650,8 @@ const App = () => {
                                       <Route path="/negotiation" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Negotiation Coach...</div>}><SalaryAnalyzer defaultTab="negotiation" /></Suspense>} />
                                       <Route path="/goals" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Goals...</div>}><SalaryAnalyzer defaultTab="goals" /></Suspense>} />
                                       <Route path="/skills-gap" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Skills Gap...</div>}><SalaryAnalyzer defaultTab="skills-gap" /></Suspense>} />
-                                      <Route path="/salary/:role" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
-                                      <Route path="/salary/:role/:location" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
+                                      <Route path="/salary/:role" element={<RouteErrorBoundary name="Salary Guide"><Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense></RouteErrorBoundary>} />
+                                      <Route path="/salary/:role/:location" element={<RouteErrorBoundary name="Salary Guide"><Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense></RouteErrorBoundary>} />
                                       <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                                       <Route path="/tools/salary-analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                                     </>
@@ -725,8 +727,8 @@ const App = () => {
                 <Route path="/salary/goals" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Goals...</div>}><SalaryAnalyzer defaultTab="goals" /></Suspense>} />
                 <Route path="/salary/skills-gap" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Skills Gap...</div>}><SalaryAnalyzer defaultTab="skills-gap" /></Suspense>} />
                 <Route path="/salary/jobs" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Matching Jobs...</div>}><SalaryAnalyzer defaultTab="jobs" /></Suspense>} />
-                <Route path="/salary/:role" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
-                <Route path="/salary/:role/:location" element={<Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
+                <Route path="/salary/:role" element={<RouteErrorBoundary name="Salary Guide"><Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense></RouteErrorBoundary>} />
+                <Route path="/salary/:role/:location" element={<RouteErrorBoundary name="Salary Guide"><Suspense fallback={<div>Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense></RouteErrorBoundary>} />
                 <Route path="/analyzer" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                 <Route path="/salaries" element={<Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
 
@@ -750,10 +752,10 @@ const App = () => {
                 <Route path="/careers" element={<AICareerHub />} />
                 <Route path="/careers/:role" element={<CareerRoadmapGenerator />} />
 
-                <Route path="/career-insights" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense>} />
-                <Route path="/career-insights/salary/:slug" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
-                <Route path="/career-insights/salary/:role/:location" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
-                <Route path="/career-insights/salary" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
+                <Route path="/career-insights" element={<RouteErrorBoundary name="Career Insights"><Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense></RouteErrorBoundary>} />
+                <Route path="/career-insights/salary/:slug" element={<RouteErrorBoundary name="Salary Guide"><Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense></RouteErrorBoundary>} />
+                <Route path="/career-insights/salary/:role/:location" element={<RouteErrorBoundary name="Salary Guide"><Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense></RouteErrorBoundary>} />
+                <Route path="/career-insights/salary" element={<RouteErrorBoundary name="Salary Analyzer"><Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense></RouteErrorBoundary>} />
                 <Route path="/insights" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense>} />
                 <Route path="/public/market-insights" element={<Suspense fallback={<div>Loading Market Insights...</div>}><PublicMarketInsights /></Suspense>} />
                 <Route path="/tools/market-insights" element={<Suspense fallback={<div>Loading Market Insights...</div>}><PublicMarketInsights /></Suspense>} />
@@ -1043,22 +1045,41 @@ const App = () => {
                 <Route path="/jobs/vadodara" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
                 <Route path="/jobs/mysuru" element={<Suspense fallback={<div>Loading...</div>}><JobLocationPage /></Suspense>} />
 
+                {/* Direct Job Application Route */}
+                <Route path="/jobs/:id/apply" element={
+                  <RouteErrorBoundary name="Job Application">
+                    <Suspense fallback={<div>Loading Application...</div>}>
+                      <JobApply />
+                    </Suspense>
+                  </RouteErrorBoundary>
+                } />
+
                 {/* Specific Job Detail Routes - UUID and slug patterns */}
                 <Route path="/jobs/:slugOrId" element={
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <JobDetails />
-                  </Suspense>
+                  <RouteErrorBoundary name="Job Details">
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <JobDetails />
+                    </Suspense>
+                  </RouteErrorBoundary>
                 } />
                 
                 {/* Job Detail Route fallback for complex slugs */}
                 <Route path="/job/:slugOrId" element={
-                  <Suspense fallback={<div>Loading...</div>}>
-                    <JobDetails />
-                  </Suspense>
+                  <RouteErrorBoundary name="Job Details">
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <JobDetails />
+                    </Suspense>
+                  </RouteErrorBoundary>
                 } />
                 
                 {/* TalentXcel SEO Blueprint Routes */}
-                <Route path="/jobs" element={<Suspense fallback={<div>Loading...</div>}><JobsPage /></Suspense>} />
+                <Route path="/jobs" element={
+                  <RouteErrorBoundary name="Jobs Directory">
+                    <Suspense fallback={<div>Loading...</div>}>
+                      <JobsPage />
+                    </Suspense>
+                  </RouteErrorBoundary>
+                } />
                 
                 {/* Government Jobs Intelligence Network Routes */}
                 <Route path="/government-jobs" element={<Suspense fallback={<div>Loading...</div>}><GovernmentJobs /></Suspense>} />

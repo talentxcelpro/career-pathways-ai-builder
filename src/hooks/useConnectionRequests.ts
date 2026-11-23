@@ -96,7 +96,7 @@ export const useConnectionRequests = () => {
                     senderLocation: myLocation,
                     sender_avatar: myAvatar,
                     senderAvatar: myAvatar,
-                    personal_note: message || '',
+                    personal_note: connectionMessage || '',
                     name: recProfile.full_name || 'Professional',
                     recipient_name: recProfile.full_name || 'Professional'
                   }
