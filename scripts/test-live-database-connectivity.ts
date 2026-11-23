@@ -66,42 +66,30 @@ async function runDatabaseConnectivityGate() {
       theme: 'audit_probe'
     };
 
-    const { data: insertData, error: insertError, status: insertStatus } = await supabase
+    // Note: Anonymous clients can INSERT telemetry, but cannot SELECT it (enforced by RLS)
+    const { error: insertError, status: insertStatus } = await supabase
       .from('embed_telemetry_events' as any)
-      .insert(insertPayload)
-      .select('id, asset_id, publisher_domain, created_at')
-      .single();
+      .insert(insertPayload);
 
     console.log(`   -> Insert Response Status: ${insertStatus}`);
     if (insertError) {
       console.log(`   -> Insert notice: ${insertError.message} (Code: ${insertError.code})`);
       console.log('   -> Policy assessment: Anonymous insert allowed via RLS policy "Anonymous can insert embed telemetry".');
-    } else if (insertData) {
-      insertedEventId = (insertData as any).id;
-      console.log(`   -> Successfully wrote telemetry event to Supabase! Event ID: ${insertedEventId}`);
+    } else {
+      console.log(`   -> Anonymous telemetry event successfully inserted via public RLS policy.`);
+    }
 
-      // Read back
-      const { data: readData, error: readError } = await supabase
-        .from('embed_telemetry_events' as any)
-        .select('id, asset_id, publisher_domain')
-        .eq('id', insertedEventId)
-        .maybeSingle();
+    // Try reading back as anon (should be blocked by RLS)
+    const { data: readData, error: readError } = await supabase
+      .from('embed_telemetry_events' as any)
+      .select('id, asset_id, publisher_domain')
+      .eq('publisher_domain', probeDomain)
+      .limit(1);
 
-      if (readError) {
-        console.log(`   -> Readback notice: ${readError.message} (Admin RLS policy active for select).`);
-      } else if (readData) {
-        console.log(`   -> Readback confirmed: ${(readData as any).asset_id} matches probe.`);
-      }
-
-      // Cleanup probe record so it does NOT contaminate analytics
-      const { error: deleteError } = await supabase
-        .from('embed_telemetry_events' as any)
-        .delete()
-        .eq('id', insertedEventId);
-
-      if (!deleteError) {
-        console.log(`   -> Probe event cleaned up successfully.`);
-      }
+    if (readError) {
+      console.log(`   -> Anonymous readback blocked as expected: ${readError.message} (Code: ${readError.code})`);
+    } else if (readData && readData.length === 0) {
+      console.log(`   -> Anonymous readback returned 0 rows (RLS policy active: anonymous cannot read telemetry ledger).`);
     }
   } catch (err: any) {
     console.log(`   -> Telemetry probe execution: ${err.message}`);

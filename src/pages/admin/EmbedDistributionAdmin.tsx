@@ -238,28 +238,28 @@ export const EmbedDistributionAdmin: React.FC = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              {[
-                { domain: 'iitm.ac.in/placements', renders: 3420, clicks: 512, status: 'verified' },
-                { domain: 'careerbuzz.in/engineering', renders: 2180, clicks: 384, status: 'verified' },
-                { domain: 'indoretechjobs.com/blog', renders: 1640, clicks: 290, status: 'verified' },
-                { domain: 'devcommunity.io/resources', renders: 1120, clicks: 195, status: 'verified' },
-                ...publishers.map(p => ({ domain: p.domain, renders: p.totalImpressions, clicks: p.totalClicks, status: p.status }))
-              ].slice(0, 5).map((pub, idx) => (
-                <div
-                  key={idx}
-                  className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between text-xs"
-                >
-                  <div>
-                    <span className="font-bold text-slate-200 block truncate">{pub.domain}</span>
-                    <span className="text-[10px] text-slate-500">Live External Host</span>
-                  </div>
-
-                  <div className="text-right">
-                    <span className="font-mono text-emerald-400 font-bold">{pub.renders} Renders</span>
-                    <span className="text-[10px] text-purple-400 block">{pub.clicks} Clicks</span>
-                  </div>
+              {publishers.length === 0 ? (
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800/80 text-center text-xs text-slate-500">
+                  No verified external publisher domains recorded yet. External renders will appear here in real time.
                 </div>
-              ))}
+              ) : (
+                publishers.slice(0, 5).map((pub, idx) => (
+                  <div
+                    key={idx}
+                    className="p-2.5 rounded-xl bg-slate-950 border border-slate-800/80 flex items-center justify-between text-xs"
+                  >
+                    <div>
+                      <span className="font-bold text-slate-200 block truncate">{pub.domain}</span>
+                      <span className="text-[10px] text-slate-500">Live External Host</span>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="font-mono text-emerald-400 font-bold">{pub.totalImpressions} Renders</span>
+                      <span className="text-[10px] text-purple-400 block">{pub.totalClicks} Clicks</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
 
