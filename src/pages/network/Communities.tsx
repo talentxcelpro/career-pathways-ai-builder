@@ -46,7 +46,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export interface ProfessionalCommunity {
   id: string;
@@ -181,7 +181,44 @@ const FOUNDATION_CIRCLES: Omit<ProfessionalCommunity, 'online_count'>[] = [
 export const Communities: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
   const queryClient = useQueryClient();
+
+  // Programmatic / Dynamic community parser for Cohort 6D (/network/communities/:slug)
+  const parsedCommunity = useMemo(() => {
+    if (!slug) return null;
+    let role = '';
+    let city = '';
+    const match = slug.match(/^(.+?)-leaders-in-(.+)$/);
+    if (match) {
+      role = match[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      city = match[2].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    } else {
+      role = slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+    const name = city ? `${role} Leaders in ${city}` : role;
+    const community: ProfessionalCommunity = {
+      id: `comm-${slug}`,
+      name,
+      headline: city ? `Executive and engineering leadership network for ${role} professionals in ${city}` : `Network for ${role} professionals`,
+      description: `Connect with vetted ${role} peers${city ? ` in ${city} and surrounding hubs` : ''}. Share architectural patterns, leadership insights, open roles, and career intelligence.`,
+      category: 'leadership',
+      category_label: 'Executive Leadership',
+      hub: 'all',
+      hub_label: city || 'Global Hub',
+      member_count: 320,
+      online_count: 18,
+      is_private: false,
+      is_featured: true,
+      cover_gradient: 'from-blue-900 via-indigo-950 to-slate-900',
+      tags: [`#${role.replace(/\s+/g, '')}`, city ? `#${city.replace(/\s+/g, '')}` : '#GlobalTech', '#TalentXcelNetwork'],
+      host_name: `${role} Circle Lead`,
+      host_title: `Community Director${city ? ` - ${city}` : ''}`,
+      host_avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      created_at: new Date().toISOString()
+    };
+    return { role, city, name, community };
+  }, [slug]);
 
   const [activeTab, setActiveTab] = useState<'discover' | 'my-circles' | 'featured'>('discover');
   const [searchTerm, setSearchTerm] = useState('');
@@ -489,9 +526,30 @@ export const Communities: React.FC = () => {
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
   };
 
+  // Merge live DB groups with foundation circles and any slug-based programmatic circle
+  const allCommunities = useMemo(() => {
+    const list: ProfessionalCommunity[] = [...communities];
+    const existingIds = new Set(list.map(c => c.id));
+
+    // Add foundation circles if not already present in DB
+    FOUNDATION_CIRCLES.forEach(fc => {
+      if (!existingIds.has(fc.id)) {
+        list.push({ ...fc, online_count: Math.floor(fc.member_count * 0.08) });
+        existingIds.add(fc.id);
+      }
+    });
+
+    // If slug is present, create a targeted programmatic community and place at the top
+    if (parsedCommunity && !existingIds.has(parsedCommunity.community.id)) {
+      list.unshift(parsedCommunity.community);
+    }
+
+    return list;
+  }, [communities, parsedCommunity]);
+
   // Filtered lists
   const filteredCommunities = useMemo(() => {
-    return communities.filter(c => {
+    return allCommunities.filter(c => {
       if (selectedCategory !== 'all' && c.category !== selectedCategory) return false;
       if (selectedHub !== 'all' && c.hub !== selectedHub) return false;
       if (searchTerm.trim()) {
@@ -505,15 +563,15 @@ export const Communities: React.FC = () => {
       }
       return true;
     });
-  }, [communities, selectedCategory, selectedHub, searchTerm]);
+  }, [allCommunities, selectedCategory, selectedHub, searchTerm]);
 
   const myJoinedCommunities = useMemo(() => {
-    return communities.filter(c => joinedIds.has(c.id));
-  }, [communities, joinedIds]);
+    return allCommunities.filter(c => joinedIds.has(c.id));
+  }, [allCommunities, joinedIds]);
 
   const featuredCommunities = useMemo(() => {
-    return communities.filter(c => c.is_featured);
-  }, [communities]);
+    return allCommunities.filter(c => c.is_featured);
+  }, [allCommunities]);
 
   const displayList = activeTab === 'my-circles' 
     ? myJoinedCommunities 
@@ -524,9 +582,9 @@ export const Communities: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background pb-20">
       <SEOHead
-        title="Professional Community Circles | TalentXcel Network"
-        description="Connect with specialized professional engineering, leadership, and product communities across global tech hubs on TalentXcel."
-        canonical="https://talentxcel.in/network/communities"
+        title={parsedCommunity ? `${parsedCommunity.name} | TalentXcel Network` : "Professional Community Circles | TalentXcel Network"}
+        description={parsedCommunity ? `Connect with verified ${parsedCommunity.role} professionals${parsedCommunity.city ? ` in ${parsedCommunity.city}` : ''}. Discuss technical architectures, career opportunities, and peer insights.` : "Connect with specialized professional engineering, leadership, and product communities across global tech hubs on TalentXcel."}
+        canonical={slug ? `https://talentxcel.in/network/communities/${slug}` : "https://talentxcel.in/network/communities"}
         type="website"
       />
 
@@ -557,6 +615,32 @@ export const Communities: React.FC = () => {
           </div>
         </div>
 
+        {/* Dynamic Programmatic Community Highlight (Cohort 6D) */}
+        {parsedCommunity && (
+          <div className="bg-gradient-to-r from-blue-950/60 via-indigo-950/40 to-slate-900 border border-blue-500/30 rounded-3xl p-6 shadow-lg backdrop-blur-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 text-xs font-semibold border border-blue-400/30">
+                <Globe2 className="w-3.5 h-3.5" />
+                Featured Circle: {parsedCommunity.city || 'Global Hub'}
+              </div>
+              <h2 className="text-xl font-black text-white tracking-tight">
+                {parsedCommunity.name}
+              </h2>
+              <p className="text-xs text-slate-300 max-w-xl">
+                {parsedCommunity.community.description}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setSelectedCircleForDetail(parsedCommunity.community)}
+                className="rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow"
+              >
+                Enter Circle Discussion
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Hubs & Category Filters Bar */}
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           
@@ -565,7 +649,7 @@ export const Communities: React.FC = () => {
             <TabsList className="bg-white dark:bg-card border border-slate-200 dark:border-border rounded-xl p-1 h-auto">
               <TabsTrigger value="discover" className="rounded-lg text-xs font-bold px-3.5 py-1.5 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                 <Compass className="w-3.5 h-3.5 mr-1.5" />
-                Discover ({communities.length})
+                Discover ({allCommunities.length})
               </TabsTrigger>
               <TabsTrigger value="my-circles" className="rounded-lg text-xs font-bold px-3.5 py-1.5 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
                 <Check className="w-3.5 h-3.5 mr-1.5" />

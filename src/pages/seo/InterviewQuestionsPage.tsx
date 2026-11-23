@@ -222,14 +222,17 @@ WHERE product_id = :productId
 };
 
 export const InterviewQuestionsPage: React.FC = () => {
-  const { role: roleParam } = useParams<{ role?: string }>();
+  const { role: roleParam, slug } = useParams<{ role?: string; slug?: string }>();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'technical' | 'behavioral' | 'system_design'>('all');
 
-  const formattedRole = roleParam 
-    ? roleParam.split(/[-_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  const rawTarget = slug || roleParam || '';
+  const cleanRole = rawTarget.replace(/-interview-questions-and-answers.*/, '').replace(/-interview-questions.*/, '');
+
+  const formattedRole = cleanRole 
+    ? cleanRole.split(/[-_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
     : 'Software Engineer';
 
-  const questions = DEFAULT_INTERVIEW_QUESTIONS[roleParam || ''] || DEFAULT_INTERVIEW_QUESTIONS.default;
+  const questions = DEFAULT_INTERVIEW_QUESTIONS[cleanRole] || DEFAULT_INTERVIEW_QUESTIONS[roleParam || ''] || DEFAULT_INTERVIEW_QUESTIONS.default;
 
   const filteredQuestions = selectedFilter === 'all' 
     ? questions 

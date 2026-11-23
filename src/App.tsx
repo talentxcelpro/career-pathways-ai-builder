@@ -272,6 +272,7 @@ const AggregatedCourseDetail = lazy(() => import('@/pages/learning/AggregatedCou
 const LearningPathsPage = lazy(() => import('@/pages/learning/LearningPathsPage'));
 const Certificates = lazy(() => import('@/pages/learning/Certificates'));
 const SalaryGuidePage = lazy(() => import('./pages/seo/SalaryGuidePage'));
+const InterviewQuestionsPage = lazy(() => import('@/pages/seo/InterviewQuestionsPage').then(m => ({ default: m.InterviewQuestionsPage })));
 const Companies = lazy(() => import('./pages/Companies'));
 const SubdomainLandingPage = lazy(() => import('./components/landing/SubdomainLandingPage'));
 
@@ -737,14 +738,22 @@ const App = () => {
                 <Route path="/learning/paths" element={<Suspense fallback={null}><LearningPathsPage /></Suspense>} />
                 <Route path="/learning/paths/:id" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
                 <Route path="/learning/certificates" element={<Suspense fallback={null}><Certificates /></Suspense>} />
+                <Route path="/courses" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
+                <Route path="/courses/:id" element={<Suspense fallback={null}><AggregatedCourseDetail /></Suspense>} />
+                <Route path="/courses/category/:category" element={<Suspense fallback={null}><AllCourses /></Suspense>} />
 
                 <Route path="/career-map" element={<AICareerHub />} />
                 <Route path="/career-map/ai-roadmap-builder" element={<InteractiveCareerRoadmapBuilder />} />
                 <Route path="/career-map/my-roadmaps" element={<CareerDashboard />} />
                 <Route path="/career-map/skills-gap" element={<SkillsGap />} />
                 <Route path="/career-map/:id" element={<InteractiveCareerRoadmapBuilder />} />
+                <Route path="/careers" element={<AICareerHub />} />
+                <Route path="/careers/:role" element={<CareerRoadmapGenerator />} />
 
                 <Route path="/career-insights" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense>} />
+                <Route path="/career-insights/salary/:slug" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
+                <Route path="/career-insights/salary/:role/:location" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Guide...</div>}><SalaryGuidePage /></Suspense>} />
+                <Route path="/career-insights/salary" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Salary Analyzer...</div>}><SalaryAnalyzer /></Suspense>} />
                 <Route path="/insights" element={<Suspense fallback={<div className="p-8 text-center text-xs font-semibold">Loading Career Insights...</div>}><CareerInsightsPage /></Suspense>} />
                 <Route path="/public/market-insights" element={<Suspense fallback={<div>Loading Market Insights...</div>}><PublicMarketInsights /></Suspense>} />
                 <Route path="/tools/market-insights" element={<Suspense fallback={<div>Loading Market Insights...</div>}><PublicMarketInsights /></Suspense>} />
@@ -757,12 +766,14 @@ const App = () => {
                 <Route path="/resume/templates" element={<ResumeTemplates />} />
                 <Route path="/resume/cover-letter" element={<CoverLetterStudio />} />
                 <Route path="/resume/interview-prep" element={<InterviewPrepSuite />} />
+                <Route path="/resume/interview-prep/:slug" element={<Suspense fallback={null}><InterviewQuestionsPage /></Suspense>} />
                 <Route path="/resume-builder" element={<UnifiedResumeBuilder />} />
                 <Route path="/resume-templates" element={<ResumeTemplates />} />
                 <Route path="/ats-checker" element={<ATSChecker />} />
 
                 <Route path="/passport" element={<Suspense fallback={null}><CareerPassportDashboard /></Suspense>} />
                 <Route path="/passport/public/:identifier" element={<Suspense fallback={null}><PublicPassport /></Suspense>} />
+                <Route path="/passport/proof/:credentialId" element={<Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading proof...</div>}><ProofRedirect /></Suspense>} />
 
                 <Route path="/colleges" element={<Suspense fallback={null}><Colleges /></Suspense>} />
                 <Route path="/colleges/:id" element={<Suspense fallback={null}><CollegeDetail /></Suspense>} />
@@ -812,6 +823,27 @@ const App = () => {
                   </Suspense>
                 } />
                 <Route path="/communities" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Communities...</div>
+                  }>
+                    <CommunitiesPage />
+                  </Suspense>
+                } />
+                <Route path="/communities/:slug" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Communities...</div>
+                  }>
+                    <CommunitiesPage />
+                  </Suspense>
+                } />
+                <Route path="/network/communities" element={
+                  <Suspense fallback={
+                    <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Communities...</div>
+                  }>
+                    <CommunitiesPage />
+                  </Suspense>
+                } />
+                <Route path="/network/communities/:slug" element={
                   <Suspense fallback={
                     <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Communities...</div>
                   }>
