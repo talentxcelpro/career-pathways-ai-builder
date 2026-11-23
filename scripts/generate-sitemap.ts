@@ -52,6 +52,8 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
   { path: '/mcp', changefreq: 'daily', priority: '0.9' },
   { path: '/about', changefreq: 'monthly', priority: '0.6' },
+  { path: '/blog', changefreq: 'weekly', priority: '0.8' },
+  { path: '/news', changefreq: 'daily', priority: '0.8' },
   { path: '/contact', changefreq: 'monthly', priority: '0.5' },
   { path: '/faq', changefreq: 'monthly', priority: '0.5' },
   { path: '/terms', changefreq: 'monthly', priority: '0.3' },
@@ -139,6 +141,7 @@ function safeWriteFile(filePath: string, content: string, retries = 5) {
 export async function generateProductionSitemaps() {
   console.log('Generating TalentXcel XML sitemaps from configured public routes...');
   const publicDir = resolve(process.cwd(), 'public');
+  const distDir = resolve(process.cwd(), 'dist');
   if (!existsSync(publicDir)) mkdirSync(publicDir, { recursive: true });
 
   // Clean up old obsolete sitemap XML files
@@ -170,12 +173,12 @@ export async function generateProductionSitemaps() {
   // 1. Base Static Pages (30 core pages)
   const baseEntries = deduplicate(BASE_PAGES);
 
+  let allDbJobs: any[] = [];
   let activeJobEntriesList: SitemapEntry[] = [
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/jobs', changefreq: 'daily', priority: '1.0' },
   ];
   try {
-    let allDbJobs: any[] = [];
     let page = 0;
     const pageSize = 1000;
     let hasMore = true;
@@ -185,7 +188,7 @@ export async function generateProductionSitemaps() {
       const to = from + pageSize - 1;
       const { data: chunk, error } = await supabase
         .from('jobs')
-        .select('id, seo_slug, created_at, posted_at, expires_at, job_status')
+        .select('id, seo_slug, created_at, posted_at, expires_at, job_status, location_city, location')
         .eq('is_active', true)
         .range(from, to);
 
@@ -329,19 +332,28 @@ export async function generateProductionSitemaps() {
     }))
   );
 
-  // 7B. Verified Location Hubs (Only 60 Indian Cities with >= 10 unexpired jobs)
-  const ELIGIBLE_CITY_SLUGS = [
-    'bhopal', 'jaipur', 'chandigarh', 'pune', 'coimbatore', 'mumbai', 'bhubaneswar',
-    'noida', 'kolkata', 'indore', 'surat', 'chennai', 'kochi', 'hyderabad', 'patna',
-    'delhi', 'bangalore', 'gurugram', 'bilaspur', 'nagpur', 'dhanbad', 'jamshedpur',
-    'aurangabad', 'amravati', 'kanpur', 'vadodara', 'nashik', 'kota', 'jammu', 'guwahati',
-    'hubli', 'dehradun', 'srinagar', 'mysuru', 'solapur', 'kolhapur', 'gwalior', 'jabalpur',
-    'jodhpur', 'udaipur', 'haridwar', 'calicut', 'ranchi', 'aligarh', 'raipur', 'mangalore',
-    'belgaum', 'tiruchirappalli', 'salem', 'moradabad', 'thrissur', 'kollam', 'warangal',
-    'guntur', 'vellore', 'vijayawada', 'ahmedabad', 'varanasi', 'lucknow'
+  // 7B. Verified Location Hubs: Only Indian Cities with >= 10 unexpired jobs that are confirmed indexable
+  // Excludes secondary tier-2 location pages that declare 'noindex, follow' in prerendered HTML
+  const INDEXABLE_METRO_SLUGS = [
+    'ahmedabad', 'bangalore', 'bhopal', 'bhubaneswar', 'chandigarh', 'chennai',
+    'coimbatore', 'hyderabad', 'indore', 'jaipur', 'kochi', 'kolkata', 'lucknow',
+    'mumbai', 'nagpur', 'noida', 'patna', 'pune', 'surat', 'vadodara', 'visakhapatnam'
   ];
+
+  // Verify against dist/locations/*.html if dist exists to ensure 100% parity with prerendered robots directives
+  const indexableCitySlugs = INDEXABLE_METRO_SLUGS.filter((slug) => {
+    const distHtmlPath = resolve(distDir, 'locations', `${slug}.html`);
+    if (existsSync(distHtmlPath)) {
+      const html = readFileSync(distHtmlPath, 'utf8');
+      if (html.includes('content="noindex') || html.includes("content='noindex")) {
+        return false;
+      }
+    }
+    return true;
+  });
+
   const locationEntries = deduplicate(
-    ELIGIBLE_CITY_SLUGS.map((slug) => ({
+    indexableCitySlugs.map((slug) => ({
       path: `/locations/${slug}`,
       changefreq: 'daily' as const,
       priority: '0.9',
