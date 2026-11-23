@@ -1,0 +1,902 @@
+[
+  {
+    "platformId": "PLT_000024",
+    "domain": "careernavigator-bristol.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bristol.co.uk",
+    "title": "Actionable Career Playbook: Building a High-Leverage Featured Section: Proof of Work Over Claimed Skill Endorsements",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000054",
+    "domain": "hiringdigest-berlin.de",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-berlin.de",
+    "title": "Actionable Career Playbook: AI Guardrails in Talent Acquisition: Mitigating Algorithmic Bias in Candidate Screening",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000084",
+    "domain": "thecareerpivot-nairobi.africa",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-nairobi.africa",
+    "title": "Actionable Career Playbook: The Evolution of Candidate Sourcing: From Boolean String Hunting to Intent Graphs",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000114",
+    "domain": "jobhuntweekly-sanfrancisco1.us",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-sanfrancisco1.us",
+    "title": "Actionable Career Playbook: Why Free Doesn’t Have to Mean Compromised: Inside TalentXcel’s Free ATS Resume Builder",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000144",
+    "domain": "careernavigator-sydney1.com.au",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-sydney1.com.au",
+    "title": "Actionable Career Playbook: Why Free Doesn’t Have to Mean Compromised: Inside TalentXcel’s Free ATS Resume Builder",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000174",
+    "domain": "hiringdigest-doha1.org",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-doha1.org",
+    "title": "Actionable Career Playbook: The T-Shaped Professional in the AI Era: Developing Durable Hybrid Competencies",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000204",
+    "domain": "thecareerpivot-bangalore2.net",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bangalore2.net",
+    "title": "Actionable Career Playbook: From Blank Page to Interview-Ready: Building a Technical Resume in Under 15 Minutes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000234",
+    "domain": "jobhuntweekly-calgary2.ca",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-calgary2.ca",
+    "title": "Actionable Career Playbook: The Rise of the Full-Stack Systems Engineer: Blending Cloud Architecture with Core Development",
+    "targetUrl": "https://talentxcel.in/learning",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000264",
+    "domain": "careernavigator-manila2.com",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-manila2.com",
+    "title": "Guest Contribution Proposal: The 45-Minute Technical Interview Framework: How to Structure System Design and Coding Responses Under Pressure",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000294",
+    "domain": "hiringdigest-santiago2.com",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-santiago2.com",
+    "title": "Verified Tool / Resource Spotlight: Bootstrapping a High-Velocity Career Platform: Technical Lessons in Scalable Architecture",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000324",
+    "domain": "thecareerpivot-bristol3.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bristol3.co.uk",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000354",
+    "domain": "jobhuntweekly-berlin3.de",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-berlin3.de",
+    "title": "Verified Tool / Resource Spotlight: Mentorship Without Hierarchy: How Reverse-Mentoring Bridges Tech Generational Divides",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000384",
+    "domain": "careernavigator-nairobi3.africa",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-nairobi3.africa",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000414",
+    "domain": "hiringdigest-sanfrancisco4.us",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-sanfrancisco4.us",
+    "title": "Verified Tool / Resource Spotlight: Engineering Culture That Retains Talent: Beyond Ping Pong Tables and Free Snacks",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000444",
+    "domain": "thecareerpivot-sydney4.com.au",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-sydney4.com.au",
+    "title": "Guest Contribution Proposal: Building for Candidate Dignity: Why TalentXcel Is Replacing Predatory Paywalls with Verified Career Utility",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000474",
+    "domain": "jobhuntweekly-doha4.org",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-doha4.org",
+    "title": "Featured Resource: TalentXcel — The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000504",
+    "domain": "careernavigator-bangalore5.net",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bangalore5.net",
+    "title": "Guest Contribution Proposal: The 45-Minute Technical Interview Framework: How to Structure System Design and Coding Responses Under Pressure",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000534",
+    "domain": "hiringdigest-calgary5.ca",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-calgary5.ca",
+    "title": "Verified Tool / Resource Spotlight: Building a Personal Board of Advisors: Curating Long-Term Career Guidance",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000564",
+    "domain": "thecareerpivot-manila5.com",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-manila5.com",
+    "title": "Guest Contribution Proposal: The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000594",
+    "domain": "jobhuntweekly-santiago5.com",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-santiago5.com",
+    "title": "Verified Tool / Resource Spotlight: Structuring System Design Responses: The 45-Minute Senior Engineering Interview Framework",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000624",
+    "domain": "careernavigator-bristol6.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bristol6.co.uk",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000654",
+    "domain": "hiringdigest-berlin6.de",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-berlin6.de",
+    "title": "Verified Tool / Resource Spotlight: The Reverse Interview Playbook: 10 Diagnostic Questions That Reveal Toxic Team Dynamics",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000684",
+    "domain": "thecareerpivot-nairobi6.africa",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-nairobi6.africa",
+    "title": "Guest Contribution Proposal: The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000714",
+    "domain": "jobhuntweekly-sanfrancisco7.us",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-sanfrancisco7.us",
+    "title": "Verified Tool / Resource Spotlight: AI Guardrails in Talent Acquisition: Mitigating Algorithmic Bias in Candidate Screening",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000744",
+    "domain": "careernavigator-sydney7.com.au",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-sydney7.com.au",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000774",
+    "domain": "hiringdigest-doha7.org",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-doha7.org",
+    "title": "Featured Resource: TalentXcel — Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000804",
+    "domain": "thecareerpivot-bangalore8.net",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bangalore8.net",
+    "title": "Guest Contribution Proposal: The Asymmetric Application Problem: Why Sending 200 Blind Applications Fails and the 3-Signal Targeting Alternative",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000834",
+    "domain": "jobhuntweekly-calgary8.ca",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-calgary8.ca",
+    "title": "Verified Tool / Resource Spotlight: The 3-Minute Job Application Audit: How TalentXcel Diagnoses Resume-Job Fit",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000864",
+    "domain": "careernavigator-manila8.com",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-manila8.com",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000894",
+    "domain": "hiringdigest-santiago8.com",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-santiago8.com",
+    "title": "Featured Resource: TalentXcel — The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000924",
+    "domain": "thecareerpivot-bristol9.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bristol9.co.uk",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000954",
+    "domain": "jobhuntweekly-berlin9.de",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-berlin9.de",
+    "title": "Verified Tool / Resource Spotlight: The Single-Page vs Two-Page Resume Debate: An Evidence-Based Seniority Threshold Analysis",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_000984",
+    "domain": "careernavigator-nairobi9.africa",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-nairobi9.africa",
+    "title": "Guest Contribution Proposal: The 45-Minute Technical Interview Framework: How to Structure System Design and Coding Responses Under Pressure",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001014",
+    "domain": "hiringdigest-sanfrancisco10.us",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-sanfrancisco10.us",
+    "title": "Verified Tool / Resource Spotlight: Transparency as a Competitive Moat: Why TalentXcel Opens Its Career Data",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001044",
+    "domain": "thecareerpivot-sydney10.com.au",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-sydney10.com.au",
+    "title": "Guest Contribution Proposal: The Asymmetric Application Problem: Why Sending 200 Blind Applications Fails and the 3-Signal Targeting Alternative",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001074",
+    "domain": "jobhuntweekly-doha10.org",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-doha10.org",
+    "title": "Verified Tool / Resource Spotlight: Mentorship Without Hierarchy: How Reverse-Mentoring Bridges Tech Generational Divides",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001104",
+    "domain": "careernavigator-bangalore11.net",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bangalore11.net",
+    "title": "Guest Contribution Proposal: Building for Candidate Dignity: Why TalentXcel Is Replacing Predatory Paywalls with Verified Career Utility",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001134",
+    "domain": "hiringdigest-calgary11.ca",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-calgary11.ca",
+    "title": "Verified Tool / Resource Spotlight: Reducing Time-to-Offer: Eliminating Hidden Bottlenecks in Technical Interview Loops",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001164",
+    "domain": "thecareerpivot-manila11.com",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-manila11.com",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001194",
+    "domain": "jobhuntweekly-santiago11.com",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-santiago11.com",
+    "title": "Verified Tool / Resource Spotlight: How to Share Your Career Passport to Bypass Initial Recruiter Screening Calls",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001224",
+    "domain": "careernavigator-bristol12.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bristol12.co.uk",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001254",
+    "domain": "hiringdigest-berlin12.de",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-berlin12.de",
+    "title": "Verified Tool / Resource Spotlight: Metricizing Qualitative Work: How Non-Sales Professionals Build Impact-Driven Bullets",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001284",
+    "domain": "thecareerpivot-nairobi12.africa",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-nairobi12.africa",
+    "title": "Guest Contribution Proposal: The 5-Point Value-First Inquiry: Professional Networking Without the Awkwardness",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001314",
+    "domain": "jobhuntweekly-sanfrancisco13.us",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-sanfrancisco13.us",
+    "title": "Verified Tool / Resource Spotlight: How to Decouple Job Title Inflation: Translating Inflated Titles into Universal Industry Competencies",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001344",
+    "domain": "careernavigator-sydney13.com.au",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-sydney13.com.au",
+    "title": "Guest Contribution Proposal: The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001374",
+    "domain": "hiringdigest-doha13.org",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-doha13.org",
+    "title": "Verified Tool / Resource Spotlight: Eliminating Resume Clutter: 7 Outdated Sections That Instantly Signal a Stale Candidate",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001404",
+    "domain": "thecareerpivot-bangalore14.net",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bangalore14.net",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001434",
+    "domain": "jobhuntweekly-calgary14.ca",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-calgary14.ca",
+    "title": "Verified Tool / Resource Spotlight: The Rise of the Full-Stack Systems Engineer: Blending Cloud Architecture with Core Development",
+    "targetUrl": "https://talentxcel.in/learning",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001464",
+    "domain": "careernavigator-manila14.com",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-manila14.com",
+    "title": "Guest Contribution Proposal: The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001494",
+    "domain": "hiringdigest-santiago14.com",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-santiago14.com",
+    "title": "Verified Tool / Resource Spotlight: Individual Contributor vs People Management: A Decision Matrix for High Performers",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001524",
+    "domain": "thecareerpivot-bristol15.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bristol15.co.uk",
+    "title": "Guest Contribution Proposal: The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001554",
+    "domain": "jobhuntweekly-berlin15.de",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-berlin15.de",
+    "title": "Verified Tool / Resource Spotlight: Building a Personal Board of Advisors: Curating Long-Term Career Guidance",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001584",
+    "domain": "careernavigator-nairobi15.africa",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-nairobi15.africa",
+    "title": "Guest Contribution Proposal: Building for Candidate Dignity: Why TalentXcel Is Replacing Predatory Paywalls with Verified Career Utility",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001614",
+    "domain": "hiringdigest-sanfrancisco16.us",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-sanfrancisco16.us",
+    "title": "Verified Tool / Resource Spotlight: Individual Contributor vs People Management: A Decision Matrix for High Performers",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001644",
+    "domain": "thecareerpivot-sydney16.com.au",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-sydney16.com.au",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001674",
+    "domain": "jobhuntweekly-doha16.org",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-doha16.org",
+    "title": "Verified Tool / Resource Spotlight: Transparency as a Competitive Moat: Why TalentXcel Opens Its Career Data",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001704",
+    "domain": "careernavigator-bangalore17.net",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bangalore17.net",
+    "title": "Guest Contribution Proposal: The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001734",
+    "domain": "hiringdigest-calgary17.ca",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-calgary17.ca",
+    "title": "Featured Resource: TalentXcel — The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001764",
+    "domain": "thecareerpivot-manila17.com",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-manila17.com",
+    "title": "Guest Contribution Proposal: Algorithmic Sourcing and Bias Mitigation: The Emerging Legal and Ethical Imperatives in Automated Recruiting",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001794",
+    "domain": "jobhuntweekly-santiago17.com",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-santiago17.com",
+    "title": "Verified Tool / Resource Spotlight: Demystifying the ATS Black Box: How Modern Applicant Tracking Systems Actually Parse Data",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001824",
+    "domain": "careernavigator-bristol18.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bristol18.co.uk",
+    "title": "Guest Contribution Proposal: The 45-Minute Technical Interview Framework: How to Structure System Design and Coding Responses Under Pressure",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001854",
+    "domain": "hiringdigest-berlin18.de",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-berlin18.de",
+    "title": "Verified Tool / Resource Spotlight: The 3-Minute Job Application Audit: How TalentXcel Diagnoses Resume-Job Fit",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001884",
+    "domain": "thecareerpivot-nairobi18.africa",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-nairobi18.africa",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001914",
+    "domain": "jobhuntweekly-sanfrancisco19.us",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-sanfrancisco19.us",
+    "title": "Verified Tool / Resource Spotlight: The Single-Page vs Two-Page Resume Debate: An Evidence-Based Seniority Threshold Analysis",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001944",
+    "domain": "careernavigator-sydney19.com.au",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-sydney19.com.au",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_001974",
+    "domain": "hiringdigest-doha19.org",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-doha19.org",
+    "title": "Verified Tool / Resource Spotlight: Global Tech Hubs Beyond Silicon Valley: Where Distributed Talent Is Finding High-Growth Roles",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002004",
+    "domain": "thecareerpivot-bangalore20.net",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bangalore20.net",
+    "title": "Guest Contribution Proposal: The 5-Point Value-First Inquiry: Professional Networking Without the Awkwardness",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002034",
+    "domain": "jobhuntweekly-calgary20.ca",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-calgary20.ca",
+    "title": "Verified Tool / Resource Spotlight: Eliminating Resume Clutter: 7 Outdated Sections That Instantly Signal a Stale Candidate",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002064",
+    "domain": "careernavigator-manila20.com",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-manila20.com",
+    "title": "Guest Contribution Proposal: The Asymmetric Application Problem: Why Sending 200 Blind Applications Fails and the 3-Signal Targeting Alternative",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002094",
+    "domain": "hiringdigest-santiago20.com",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-santiago20.com",
+    "title": "Verified Tool / Resource Spotlight: Transparency as a Competitive Moat: Why TalentXcel Opens Its Career Data",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002124",
+    "domain": "thecareerpivot-bristol21.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bristol21.co.uk",
+    "title": "Guest Contribution Proposal: The Death of Degree Proxies: How Skills-Based Hiring and Proof-of-Work Portfolios Are Replacing the 4-Year Credential",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002154",
+    "domain": "jobhuntweekly-berlin21.de",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-berlin21.de",
+    "title": "Verified Tool / Resource Spotlight: Bootstrapping a High-Velocity Career Platform: Technical Lessons in Scalable Architecture",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002184",
+    "domain": "careernavigator-nairobi21.africa",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-nairobi21.africa",
+    "title": "Guest Contribution Proposal: The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002214",
+    "domain": "hiringdigest-sanfrancisco22.us",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-sanfrancisco22.us",
+    "title": "Featured Resource: TalentXcel — The 5-Point Value-First Inquiry: Professional Networking Without the Awkwardness",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002244",
+    "domain": "thecareerpivot-sydney22.com.au",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-sydney22.com.au",
+    "title": "Guest Contribution Proposal: The T-Shaped Professional in the AI Era: Building Durable Career Moats in Knowledge Work",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002274",
+    "domain": "jobhuntweekly-doha22.org",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-doha22.org",
+    "title": "Featured Resource: TalentXcel — The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002304",
+    "domain": "careernavigator-bangalore23.net",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bangalore23.net",
+    "title": "Guest Contribution Proposal: The Asynchronous Literacy Standard: What Distributed Engineering Teams Actually Evaluate in Remote Candidates",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002334",
+    "domain": "hiringdigest-calgary23.ca",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-calgary23.ca",
+    "title": "Featured Resource: TalentXcel — The T-Shaped Professional in the AI Era: Building Durable Career Moats in Knowledge Work",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002364",
+    "domain": "thecareerpivot-manila23.com",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-manila23.com",
+    "title": "Guest Contribution Proposal: The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002394",
+    "domain": "jobhuntweekly-santiago23.com",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-santiago23.com",
+    "title": "Verified Tool / Resource Spotlight: Individual Contributor vs People Management: A Decision Matrix for High Performers",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002424",
+    "domain": "careernavigator-bristol24.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bristol24.co.uk",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002454",
+    "domain": "hiringdigest-berlin24.de",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-berlin24.de",
+    "title": "Verified Tool / Resource Spotlight: The Shift to Skills-Based Hiring: Why Degree Requirements Are Disappearing from Tech Job Specs",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002484",
+    "domain": "thecareerpivot-nairobi24.africa",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-nairobi24.africa",
+    "title": "Guest Contribution Proposal: The 5-Point Value-First Inquiry: Professional Networking Without the Awkwardness",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002514",
+    "domain": "jobhuntweekly-sanfrancisco25.us",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-sanfrancisco25.us",
+    "title": "Featured Resource: TalentXcel — The 5-Point Value-First Inquiry: Professional Networking Without the Awkwardness",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002544",
+    "domain": "careernavigator-sydney25.com.au",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-sydney25.com.au",
+    "title": "Guest Contribution Proposal: Building for Candidate Dignity: Why TalentXcel Is Replacing Predatory Paywalls with Verified Career Utility",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002574",
+    "domain": "hiringdigest-doha25.org",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-doha25.org",
+    "title": "Featured Resource: TalentXcel — The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002604",
+    "domain": "thecareerpivot-bangalore26.net",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bangalore26.net",
+    "title": "Guest Contribution Proposal: The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002634",
+    "domain": "jobhuntweekly-calgary26.ca",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-calgary26.ca",
+    "title": "Featured Resource: TalentXcel — The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002664",
+    "domain": "careernavigator-manila26.com",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-manila26.com",
+    "title": "Guest Contribution Proposal: The 5-Point Value-First Inquiry: Professional Networking Without the Awkwardness",
+    "targetUrl": "https://talentxcel.in/network",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002694",
+    "domain": "hiringdigest-santiago26.com",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-santiago26.com",
+    "title": "Verified Tool / Resource Spotlight: The 3-Minute Job Application Audit: How TalentXcel Diagnoses Resume-Job Fit",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002724",
+    "domain": "thecareerpivot-bristol27.co.uk",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-bristol27.co.uk",
+    "title": "Guest Contribution Proposal: The Asymmetric Application Problem: Why Sending 200 Blind Applications Fails and the 3-Signal Targeting Alternative",
+    "targetUrl": "https://talentxcel.in/jobs",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002754",
+    "domain": "jobhuntweekly-berlin27.de",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-berlin27.de",
+    "title": "Verified Tool / Resource Spotlight: The Evolution of Candidate Sourcing: From Boolean String Hunting to Intent Graphs",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002784",
+    "domain": "careernavigator-nairobi27.africa",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-nairobi27.africa",
+    "title": "Guest Contribution Proposal: The ATS Parsing Hierarchy: How Applicant Tracking Systems Tokenize, Score, and Filter Technical Resumes",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002814",
+    "domain": "hiringdigest-sanfrancisco28.us",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-sanfrancisco28.us",
+    "title": "Verified Tool / Resource Spotlight: Engineering Culture That Retains Talent: Beyond Ping Pong Tables and Free Snacks",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002844",
+    "domain": "thecareerpivot-sydney28.com.au",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-sydney28.com.au",
+    "title": "Guest Contribution Proposal: Algorithmic Sourcing and Bias Mitigation: The Emerging Legal and Ethical Imperatives in Automated Recruiting",
+    "targetUrl": "https://talentxcel.in/careers",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002874",
+    "domain": "jobhuntweekly-doha28.org",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-doha28.org",
+    "title": "Featured Resource: TalentXcel — Building for Candidate Dignity: Why TalentXcel Is Replacing Predatory Paywalls with Verified Career Utility",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002904",
+    "domain": "careernavigator-bangalore29.net",
+    "method": "EMAIL",
+    "contact": "editor@careernavigator-bangalore29.net",
+    "title": "Guest Contribution Proposal: The T-Shaped Professional in the AI Era: Building Durable Career Moats in Knowledge Work",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002934",
+    "domain": "hiringdigest-calgary29.ca",
+    "method": "EMAIL",
+    "contact": "editor@hiringdigest-calgary29.ca",
+    "title": "Verified Tool / Resource Spotlight: From College Placement Cell to Global Career: Empowering University Students with Verified Credentials",
+    "targetUrl": "https://talentxcel.in/passport",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002964",
+    "domain": "thecareerpivot-manila29.com",
+    "method": "EMAIL",
+    "contact": "editor@thecareerpivot-manila29.com",
+    "title": "Guest Contribution Proposal: Metricizing Qualitative Work: How Operations, Design, and Engineering Professionals Build High-Impact Bullet Points",
+    "targetUrl": "https://talentxcel.in/resume",
+    "status": "OUTREACH_READY"
+  },
+  {
+    "platformId": "PLT_002994",
+    "domain": "jobhuntweekly-santiago29.com",
+    "method": "EMAIL",
+    "contact": "editor@jobhuntweekly-santiago29.com",
+    "title": "Verified Tool / Resource Spotlight: Bootstrapping a High-Velocity Career Platform: Technical Lessons in Scalable Architecture",
+    "targetUrl": "https://talentxcel.in",
+    "status": "OUTREACH_READY"
+  }
+]

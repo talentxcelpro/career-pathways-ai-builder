@@ -10783,6 +10783,8 @@ export type Database = {
           last_login_at: string | null
           last_profile_view: string | null
           last_seen: string | null
+          last_heartbeat_at: string | null
+          presence_visibility: string
           linkedin_id: string | null
           linkedin_profile_data: Json | null
           linkedin_url: string | null
@@ -10888,6 +10890,8 @@ export type Database = {
           last_login_at?: string | null
           last_profile_view?: string | null
           last_seen?: string | null
+          last_heartbeat_at?: string | null
+          presence_visibility?: string
           linkedin_id?: string | null
           linkedin_profile_data?: Json | null
           linkedin_url?: string | null
@@ -10993,6 +10997,8 @@ export type Database = {
           last_login_at?: string | null
           last_profile_view?: string | null
           last_seen?: string | null
+          last_heartbeat_at?: string | null
+          presence_visibility?: string
           linkedin_id?: string | null
           linkedin_profile_data?: Json | null
           linkedin_url?: string | null
@@ -20667,6 +20673,8 @@ export type Database = {
           device_type: string | null
           is_online: boolean | null
           last_seen: string | null
+          last_heartbeat_at: string | null
+          visibility_setting: string
           updated_at: string
           user_id: string
         }
@@ -20676,6 +20684,8 @@ export type Database = {
           device_type?: string | null
           is_online?: boolean | null
           last_seen?: string | null
+          last_heartbeat_at?: string | null
+          visibility_setting?: string
           updated_at?: string
           user_id: string
         }
@@ -20685,6 +20695,8 @@ export type Database = {
           device_type?: string | null
           is_online?: boolean | null
           last_seen?: string | null
+          last_heartbeat_at?: string | null
+          visibility_setting?: string
           updated_at?: string
           user_id?: string
         }
@@ -22825,6 +22837,49 @@ export type Database = {
           p_search?: string
           p_skills?: string[]
           p_sort_by?: string
+        }
+        Returns: Json
+      }
+      get_batch_presence: {
+        Args: {
+          p_user_ids: string[]
+        }
+        Returns: {
+          is_online: boolean
+          is_visible: boolean
+          last_heartbeat_at: string | null
+          last_seen: string | null
+          user_id: string
+          visibility: string
+        }[]
+      }
+      record_profile_visit: {
+        Args: {
+          p_profile_id: string
+          p_session_id?: string | null
+          p_view_source?: string | null
+        }
+        Returns: boolean
+      }
+      get_profile_visitors: {
+        Args: {
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
+      }
+      record_presence_heartbeat: {
+        Args: {
+          p_device_type?: string
+          p_is_online?: boolean
+          p_module?: string
+          p_page?: string
+        }
+        Returns: Json
+      }
+      set_presence_visibility: {
+        Args: {
+          p_visibility: string
         }
         Returns: Json
       }

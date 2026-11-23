@@ -206,6 +206,7 @@ export const Navbar = () => {
 
   // Hide navbar on full-screen immersive experiences (Reels player, canvas editors, wizards)
   const isFullScreenImmersive = 
+    location.pathname.startsWith('/embed/') ||
     location.pathname.startsWith('/resume/editor/') || 
     location.pathname.startsWith('/resume/wizard') ||
     location.pathname === '/mobile/reels' ||

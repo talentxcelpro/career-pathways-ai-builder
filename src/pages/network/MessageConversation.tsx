@@ -86,7 +86,8 @@ const MessageConversation = () => {
       }
       return data;
     },
-    enabled: !!conversation?.participants
+    enabled: !!conversation?.participants,
+    refetchInterval: 30000
   });
 
   const { data: messages, isLoading } = useQuery({

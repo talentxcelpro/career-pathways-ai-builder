@@ -36,7 +36,7 @@ export const useProfileViews = (profileId?: string): UseProfileViewsReturn => {
     fetchViewCount();
   }, [profileId]);
 
-  // Increment view count with debouncing
+  // Increment view count with debouncing and server-side validation
   const incrementView = useCallback(async (targetProfileId: string, viewType: string = 'profile') => {
     if (isLoading || !targetProfileId) return;
     
@@ -46,35 +46,17 @@ export const useProfileViews = (profileId?: string): UseProfileViewsReturn => {
     setIsLoading(true);
 
     try {
-      // Check if user has viewed this profile recently (within last hour)
-      const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
-      
-      const { data: recentView } = await supabase
-        .from('profile_views')
-        .select('id')
-        .eq('profile_id', targetProfileId)
-        .eq('viewer_id', user?.id || null)
-        .gte('viewed_at', oneHourAgo)
-        .limit(1)
-        .maybeSingle();
+      const { data, error } = await supabase.rpc('record_profile_visit', {
+        p_profile_id: targetProfileId,
+        p_view_source: viewType,
+        p_session_id: null
+      });
 
-      // Only increment if no recent view found
-      if (!recentView) {
-        const { error } = await supabase
-          .from('profile_views')
-          .insert({
-            profile_id: targetProfileId,
-            viewer_id: user?.id || null,
-            view_type: viewType as any,
-            viewed_at: new Date().toISOString()
-          });
-
-        if (!error) {
-          setViewCount(prev => prev + 1);
-        }
+      if (!error && data) {
+        setViewCount(prev => prev + 1);
       }
     } catch (error) {
-      console.warn('Failed to increment view:', error);
+      console.warn('Failed to record profile visit:', error);
     } finally {
       setIsLoading(false);
     }

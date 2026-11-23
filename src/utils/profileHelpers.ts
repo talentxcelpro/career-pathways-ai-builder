@@ -60,10 +60,10 @@ export const deleteProfileAsset = async (url: string, assetType: 'avatar' | 'res
 };
 
 export const incrementProfileView = async (profileUserId: string) => {
-  const { error } = await supabase.rpc('increment_profile_views', {
-    profile_user_id: profileUserId,
-    viewer_ip: null,
-    viewer_agent: navigator.userAgent
+  const { error } = await supabase.rpc('record_profile_visit', {
+    p_profile_id: profileUserId,
+    p_view_source: 'profile_page',
+    p_session_id: null
   });
   
   if (error) console.error('Error tracking profile view:', error);

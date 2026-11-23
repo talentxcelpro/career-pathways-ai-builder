@@ -1,6 +1,6 @@
 import { toast } from 'sonner';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Phone, Video, MoreVertical, Minus, Square, X, User, Settings, Archive } from "lucide-react";
+import { PresenceIndicator } from './PresenceIndicator';
 
 interface MessageConversationHeaderProps {
   otherUser: any;
@@ -74,8 +75,15 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
                   {generateInitials(otherUser)}
                 </AvatarFallback>
               </Avatar>
-              {/* Online status indicator - always show green for now */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-green-500 border border-white rounded-full"></div>
+              {/* Online status indicator */}
+              <PresenceIndicator
+                isOnline={otherUser?.is_online}
+                lastSeen={otherUser?.last_seen}
+                lastHeartbeatAt={otherUser?.last_heartbeat_at}
+                visibility={otherUser?.presence_visibility}
+                variant="dot"
+                dotClassName="absolute -bottom-0.5 -right-0.5 w-2 h-2 border border-white"
+              />
             </div>
           </Link>
           <div className="text-center">
@@ -87,16 +95,18 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
                 {formatDisplayName(otherUser)}
               </h3>
             </Link>
-            <div className="flex items-center justify-center space-x-1">
+            <div className="flex items-center justify-center space-x-1.5">
               <p className="text-gray-600 text-xs truncate max-w-24">
                 {otherUser?.title || 'Professional'}
               </p>
-              <div className="flex items-center">
-                <div className={`w-1.5 h-1.5 rounded-full mr-1 ${isUserOnline ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                <span className={`text-xs font-medium ${isUserOnline ? 'text-green-600' : 'text-gray-500'}`}>
-                  {isUserOnline ? 'Online' : 'Offline'}
-                </span>
-              </div>
+              <span className="text-gray-300">•</span>
+              <PresenceIndicator
+                isOnline={otherUser?.is_online}
+                lastSeen={otherUser?.last_seen}
+                lastHeartbeatAt={otherUser?.last_heartbeat_at}
+                visibility={otherUser?.presence_visibility}
+                variant="compact"
+              />
             </div>
           </div>
         </div>
@@ -108,7 +118,6 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
             size="sm" 
             className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
             onClick={() => {
-              // TODO: Implement voice call functionality
               toast.info('Voice calling will be available in the upcoming mobile release.');
             }}
             title="Voice call"
@@ -120,7 +129,6 @@ const MessageConversationHeader: React.FC<MessageConversationHeaderProps> = ({
             size="sm" 
             className="text-gray-600 hover:text-blue-600 hover:bg-blue-50 h-6 w-6 p-0 transition-colors"
             onClick={() => {
-              // TODO: Implement video call functionality  
               toast.info('Video calling will be available in the upcoming mobile release.');
             }}
             title="Video call"

@@ -1,0 +1,33 @@
+{
+  "totalIngested": 2,
+  "skippedDuplicates": 100,
+  "timestamp": "2026-11-23T11:25:08.267Z",
+  "platforms": [
+    {
+      "platformId": "REAL_0601",
+      "platformName": "The Work Buzz",
+      "domain": "theworkbuzz.com",
+      "canonicalDomain": "theworkbuzz.com",
+      "country": "United States",
+      "category": "CAREER_BLOG",
+      "niche": "Workplace Trends & Professional Advice",
+      "method": "FORM",
+      "overallScore": 84,
+      "tailoredContent": "The Asymmetric Application Problem: Why Volume Job Hunting Fails and What Actually Works",
+      "targetUrl": "https://talentxcel.in"
+    },
+    {
+      "platformId": "REAL_0602",
+      "platformName": "TechCareers Blog",
+      "domain": "techcareers.com",
+      "canonicalDomain": "techcareers.com",
+      "country": "Canada",
+      "category": "TECH_COMMUNITY",
+      "niche": "Engineering Careers & Tech Placement",
+      "method": "EMAIL",
+      "overallScore": 84,
+      "tailoredContent": "Building Public Proof of Work: Why a Live Web Service Beats 50 Certifications",
+      "targetUrl": "https://talentxcel.in/careers"
+    }
+  ]
+}

@@ -40,6 +40,7 @@ import { getStandardAvatarUrl } from '@/utils/avatarUtils';
 import { getPublicProfilePath } from '@/utils/userProfileSlug';
 import { formatDistanceToNow } from 'date-fns';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 
 interface ProfileSummary {
   id: string;
@@ -54,6 +55,8 @@ interface ProfileSummary {
   username?: string | null;
   is_online?: boolean | null;
   last_seen?: string | null;
+  last_heartbeat_at?: string | null;
+  presence_visibility?: string | null;
   skills?: string[] | null;
 }
 
@@ -190,7 +193,7 @@ export const Connections: React.FC = () => {
         const chunk = allPartnerIds.slice(i, i + chunkSize);
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, full_name, title, headline, profile_picture_url, location, current_company, slug, custom_profile_url, username, is_online, last_seen, skills')
+          .select('id, full_name, title, headline, profile_picture_url, location, current_company, slug, custom_profile_url, username, is_online, last_seen, last_heartbeat_at, presence_visibility, skills')
           .in('id', chunk);
 
         if (error || !data || data.length === 0) {
@@ -219,6 +222,8 @@ export const Connections: React.FC = () => {
           username: p.username,
           is_online: Boolean(p.is_online),
           last_seen: p.last_seen,
+          last_heartbeat_at: p.last_heartbeat_at,
+          presence_visibility: p.presence_visibility,
           skills: p.skills || []
         });
       }
@@ -702,9 +707,14 @@ export const Connections: React.FC = () => {
                               {initialsFor(profile.full_name)}
                             </AvatarFallback>
                           </Avatar>
-                          {profile.is_online && (
-                            <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-card rounded-full shadow-2xs" title="Online now" />
-                          )}
+                          <PresenceIndicator
+                            isOnline={profile.is_online}
+                            lastSeen={profile.last_seen}
+                            lastHeartbeatAt={profile.last_heartbeat_at}
+                            visibility={profile.presence_visibility}
+                            variant="dot"
+                            dotClassName="absolute bottom-0 right-0 w-3.5 h-3.5 border-2 border-white dark:border-card"
+                          />
                         </Link>
 
                         <div className="space-y-0.5">
@@ -728,15 +738,24 @@ export const Connections: React.FC = () => {
                           )}
                         </div>
 
-                        <div className="pt-1 flex items-center justify-center gap-1">
-                          <Badge variant="outline" className="text-[9.5px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300">
-                            Connected ✓
-                          </Badge>
-                          {connected_at && (
-                            <span className="text-[9px] text-muted-foreground">
-                              {formatTimeAgo(connected_at)}
-                            </span>
-                          )}
+                        <div className="pt-1 flex flex-col items-center justify-center gap-1">
+                          <div className="flex items-center justify-center gap-1">
+                            <Badge variant="outline" className="text-[9.5px] font-bold px-2 py-0.5 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300">
+                              Connected ✓
+                            </Badge>
+                            {connected_at && (
+                              <span className="text-[9px] text-muted-foreground">
+                                {formatTimeAgo(connected_at)}
+                              </span>
+                            )}
+                          </div>
+                          <PresenceIndicator
+                            isOnline={profile.is_online}
+                            lastSeen={profile.last_seen}
+                            lastHeartbeatAt={profile.last_heartbeat_at}
+                            visibility={profile.presence_visibility}
+                            variant="compact"
+                          />
                         </div>
                       </div>
 
@@ -791,19 +810,30 @@ export const Connections: React.FC = () => {
                               {initialsFor(profile.full_name)}
                             </AvatarFallback>
                           </Avatar>
-                          {profile.is_online && (
-                            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full" />
-                          )}
+                          <PresenceIndicator
+                            isOnline={profile.is_online}
+                            lastSeen={profile.last_seen}
+                            lastHeartbeatAt={profile.last_heartbeat_at}
+                            visibility={profile.presence_visibility}
+                            variant="dot"
+                            dotClassName="absolute bottom-0 right-0 w-2.5 h-2.5 border-2 border-white dark:border-card"
+                          />
                         </Link>
                         <div className="min-w-0">
                           <Link to={profileLink} className="font-extrabold text-xs text-foreground hover:text-blue-600 truncate block">
                             {profile.full_name}
                           </Link>
                           <p className="text-[11px] text-muted-foreground truncate">{profile.title}</p>
-                          <p className="text-[10px] text-slate-400 truncate">
-                            {profile.current_company ? `${profile.current_company} • ` : ''}
-                            {profile.location || 'India'}
-                          </p>
+                          <div className="flex items-center gap-2 text-[10px] text-slate-400 truncate">
+                            <span>{profile.current_company ? `${profile.current_company} • ` : ''}{profile.location || 'India'}</span>
+                            <PresenceIndicator
+                              isOnline={profile.is_online}
+                              lastSeen={profile.last_seen}
+                              lastHeartbeatAt={profile.last_heartbeat_at}
+                              visibility={profile.presence_visibility}
+                              variant="compact"
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -882,9 +912,14 @@ export const Connections: React.FC = () => {
                                 {initialsFor(profile.full_name)}
                               </AvatarFallback>
                             </Avatar>
-                            {profile.is_online && (
-                              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full shadow-2xs" />
-                            )}
+                            <PresenceIndicator
+                              isOnline={profile.is_online}
+                              lastSeen={profile.last_seen}
+                              lastHeartbeatAt={profile.last_heartbeat_at}
+                              visibility={profile.presence_visibility}
+                              variant="dot"
+                              dotClassName="absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full shadow-2xs"
+                            />
                           </Link>
 
                           <div className="min-w-0 flex-1 space-y-1">
@@ -898,6 +933,13 @@ export const Connections: React.FC = () => {
                               <span className="text-[10px] text-muted-foreground">
                                 Invited {formatTimeAgo(created_at)}
                               </span>
+                              <PresenceIndicator
+                                isOnline={profile.is_online}
+                                lastSeen={profile.last_seen}
+                                lastHeartbeatAt={profile.last_heartbeat_at}
+                                visibility={profile.presence_visibility}
+                                variant="compact"
+                              />
                             </div>
 
                             <p className="text-xs text-muted-foreground line-clamp-1">{profile.title}</p>

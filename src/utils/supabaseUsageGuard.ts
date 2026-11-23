@@ -605,7 +605,7 @@ export const usageGuardFetch: typeof fetch = async (input, init) => {
         }
 
         // Body cloning only runs in DEV — doubles memory/CPU on Micro compute plan in production.
-        if (!bytes && response.ok && import.meta.env.DEV) {
+        if (!bytes && response.ok && import.meta.env?.DEV) {
           const isSmallResult = !rowCount || rowCount <= 500;
           if (isSmallResult) {
             try {

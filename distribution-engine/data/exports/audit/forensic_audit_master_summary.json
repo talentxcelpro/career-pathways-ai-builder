@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-11-23T12:10:43.954Z",
+  "auditScope": "TalentXcel Free Content Distribution Engine Forensic Audit",
+  "summary": {
+    "editorialPitchesPrepared": 9,
+    "editorialPitchesActuallySentSmtp": 0,
+    "claimedLiveExternalPublications": 0,
+    "verifiedLiveExternalPublications": 0,
+    "manualTargetsStaged": 8,
+    "manualSubmissionsActuallySubmitted": 0,
+    "totalDraftsInSqlite": 597,
+    "uniqueDraftTitles": 238,
+    "newlyAddedPlatformsInSqlite": 102,
+    "newPlatformsDuplicates": 0,
+    "top100PipelineBreakdown": {
+      "OUTREACH_DISPATCHED": 9,
+      "STAGED_FOR_API_KEY": 1,
+      "MANUAL_SUBMISSION_STAGED": 8,
+      "SUBMISSION_READY": 82
+    }
+  }
+}

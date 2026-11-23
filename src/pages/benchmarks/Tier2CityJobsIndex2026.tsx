@@ -14,11 +14,14 @@ import {
   MapPin, 
   ShieldCheck, 
   FileSpreadsheet, 
-  ExternalLink 
+  ExternalLink,
+  Code2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainLinks';
+import { EmbedGeneratorModal } from '@/components/embed/EmbedGeneratorModal';
+import { embedRegistry } from '@/services/embed/EmbedRegistry';
 
 interface Tier2CityIndexRow {
   city: string;
@@ -46,6 +49,7 @@ const TIER2_INDEX_DATA: Tier2CityIndexRow[] = [
 export default function Tier2CityJobsIndex2026() {
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
   const canonicalUrl = 'https://jobs.talentxcel.in/benchmarks/tier-2-city-jobs-index-2026';
 
@@ -174,6 +178,13 @@ export default function Tier2CityJobsIndex2026() {
                 className="border-slate-700 hover:bg-slate-800 text-slate-200 gap-2 text-sm"
               >
                 <Copy className="w-4 h-4" /> Cite This Study
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setIsEmbedModalOpen(true)}
+                className="border-slate-700 bg-slate-900 hover:bg-slate-800 text-slate-200 gap-2 text-sm"
+              >
+                <Code2 className="w-4 h-4 text-blue-400" /> Embed Market Index
               </Button>
             </div>
           </div>
@@ -320,6 +331,13 @@ export default function Tier2CityJobsIndex2026() {
         <div className="mt-12 border-t border-slate-800">
           <SubdomainMeshFooter />
         </div>
+
+        {/* Universal Embed Generator Modal */}
+        <EmbedGeneratorModal
+          asset={embedRegistry.getAsset('job_market', 'indore')}
+          isOpen={isEmbedModalOpen}
+          onClose={() => setIsEmbedModalOpen(false)}
+        />
       </div>
     </>
   );

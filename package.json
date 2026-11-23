@@ -55,7 +55,10 @@
     "distrib:stage-priority": "node distribution-engine/cli.cjs stage-priority",
     "distrib:export": "node distribution-engine/cli.cjs export",
     "distrib:run": "node distribution-engine/cli.cjs run-all",
-    "distrib:test": "node --test distribution-engine/test/distributionEngine.test.cjs"
+    "distrib:test": "node --test distribution-engine/test/distributionEngine.test.cjs",
+    "embed:test": "npx tsx scripts/test-embed-distribution-engine.ts",
+    "embed:growth:test": "npx tsx scripts/test-embed-growth-engine.ts",
+    "embed:integrity:test": "npx tsx scripts/test-embed-data-integrity.ts"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",

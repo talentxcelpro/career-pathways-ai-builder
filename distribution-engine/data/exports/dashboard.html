@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalentXcel — Global Free Content Distribution Engine Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --accent: #8b5cf6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 2rem;
+    }
+    .header {
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #1e3a8a;
+      color: #93c5fd;
+      margin-bottom: 0.5rem;
+    }
+    h1 { font-size: 1.875rem; font-weight: 700; margin-bottom: 0.5rem; }
+    p.subtitle { color: var(--text-muted); font-size: 1rem; }
+    .grid-kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+    }
+    .card-title { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .card-value { font-size: 2rem; font-weight: 700; color: var(--text); }
+    .card-progress { margin-top: 0.75rem; }
+    .progress-bar-bg { background: #334155; height: 8px; border-radius: 4px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: var(--primary); border-radius: 4px; }
+    .progress-bar-fill.success { background: var(--success); }
+    .progress-bar-fill.accent { background: var(--accent); }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem; }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: #111827;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    tr:hover { background: rgba(255, 255, 255, 0.02); }
+    .status-pill {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .status-approved { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .status-staged { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .status-dispatched { background: rgba(14, 165, 233, 0.25); color: #38bdf8; border: 1px solid rgba(14, 165, 233, 0.4); }
+    .status-manual { background: rgba(245, 158, 11, 0.25); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+    .status-api { background: rgba(168, 85, 247, 0.25); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .status-ready { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+    .footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="badge">TALENTXCEL ORGANIC ENGINE — PHASE 1</span>
+    <h1>Global Free Content Distribution Engine</h1>
+    <p class="subtitle">Auditable long-tail platform discovery, algorithmic verification, and contextual distribution tracking.</p>
+  </div>
+
+  <div class="grid-kpi">
+    <div class="card">
+      <div class="card-title">Discovered Platforms</div>
+      <div class="card-value">10,602</div>
+      <div class="card-progress">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" style="width: 100%;"></div>
+        </div>
+        <div class="progress-meta">
+          <span>Target: 10,000</span>
+          <span>106%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Verified Free Platforms</div>
+      <div class="card-value" style="color: #34d399;">7,925</div>
+      <div class="card-progress">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill success" style="width: 100%;"></div>
+        </div>
+        <div class="progress-meta">
+          <span>Target: 1,000</span>
+          <span>793%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Priority Staging (Top 200)</div>
+      <div class="card-value" style="color: #a78bfa;">547</div>
+      <div class="card-progress">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill accent" style="width: 100%;"></div>
+        </div>
+        <div class="progress-meta">
+          <span>Target: 200</span>
+          <span>274%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Active Dispatches</div>
+      <div class="card-value" style="color: #38bdf8;">9</div>
+      <div class="card-progress">
+        <div class="progress-meta" style="margin-top: 0.75rem;">
+          <span>9 Pitches • 8 Manual • 1 API</span>
+          <span style="color: #34d399;">MX/DNS Verified</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Verified Live Publications</div>
+      <div class="card-value" style="color: #94a3b8;">0</div>
+      <div class="card-progress">
+        <div class="progress-meta" style="margin-top: 0.75rem;">
+          <span>Strict External Verification</span>
+          <span>0 Fabricated</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="margin-bottom: 1rem;">Quality Score Distribution</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Quality Tier</th>
+            <th>Score Range</th>
+            <th>Count</th>
+            <th>Operational Policy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color: #34d399;">Premier</strong></td>
+            <td>85 - 100 pts</td>
+            <td>3,743</td>
+            <td>Immediate Priority Dispatch</td>
+          </tr>
+          <tr>
+            <td><strong style="color: #60a5fa;">Qualified</strong></td>
+            <td>70 - 84 pts</td>
+            <td>4,982</td>
+            <td>Approved Free Inventory</td>
+          </tr>
+          <tr>
+            <td><strong style="color: #f59e0b;">Marginal</strong></td>
+            <td>50 - 69 pts</td>
+            <td>1,477</td>
+            <td>Quarantined for Review</td>
+          </tr>
+          <tr>
+            <td><strong style="color: #ef4444;">Rejected</strong></td>
+            <td>0 - 49 pts</td>
+            <td>400</td>
+            <td>Spam / Penalty Disqualified</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom: 1rem;">Geographic Distribution (10 Regions)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Region / Country</th>
+            <th>Candidates</th>
+            <th>Avg Quality</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+            <tr>
+              <td>United States</td>
+              <td>1,080</td>
+              <td>79.4/100</td>
+            </tr>
+          
+            <tr>
+              <td>United Kingdom</td>
+              <td>1,079</td>
+              <td>76.4/100</td>
+            </tr>
+          
+            <tr>
+              <td>Canada</td>
+              <td>1,062</td>
+              <td>79.6/100</td>
+            </tr>
+          
+            <tr>
+              <td>Australia</td>
+              <td>1,057</td>
+              <td>74.2/100</td>
+            </tr>
+          
+            <tr>
+              <td>Africa (Multi)</td>
+              <td>1,056</td>
+              <td>79.6/100</td>
+            </tr>
+          
+            <tr>
+              <td>Europe (Multi)</td>
+              <td>1,056</td>
+              <td>79.6/100</td>
+            </tr>
+          
+            <tr>
+              <td>Latin America (Multi)</td>
+              <td>1,056</td>
+              <td>74.2/100</td>
+            </tr>
+          
+            <tr>
+              <td>Southeast Asia (Multi)</td>
+              <td>1,056</td>
+              <td>79.6/100</td>
+            </tr>
+          
+            <tr>
+              <td>Middle East (Multi)</td>
+              <td>1,055</td>
+              <td>76.3/100</td>
+            </tr>
+          
+            <tr>
+              <td>India</td>
+              <td>1,023</td>
+              <td>79.2/100</td>
+            </tr>
+          
+            <tr>
+              <td>Ireland</td>
+              <td>3</td>
+              <td>81.3/100</td>
+            </tr>
+          
+            <tr>
+              <td>Chile</td>
+              <td>2</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>France</td>
+              <td>2</td>
+              <td>80/100</td>
+            </tr>
+          
+            <tr>
+              <td>Germany</td>
+              <td>2</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>Netherlands</td>
+              <td>2</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>Singapore</td>
+              <td>2</td>
+              <td>80/100</td>
+            </tr>
+          
+            <tr>
+              <td>Argentina</td>
+              <td>1</td>
+              <td>80/100</td>
+            </tr>
+          
+            <tr>
+              <td>Bulgaria</td>
+              <td>1</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>China</td>
+              <td>1</td>
+              <td>80/100</td>
+            </tr>
+          
+            <tr>
+              <td>Colombia</td>
+              <td>1</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>Denmark</td>
+              <td>1</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>Greece</td>
+              <td>1</td>
+              <td>80/100</td>
+            </tr>
+          
+            <tr>
+              <td>Luxembourg</td>
+              <td>1</td>
+              <td>80/100</td>
+            </tr>
+          
+            <tr>
+              <td>Norway</td>
+              <td>1</td>
+              <td>84/100</td>
+            </tr>
+          
+            <tr>
+              <td>Switzerland</td>
+              <td>1</td>
+              <td>80/100</td>
+            </tr>
+          
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom: 2rem;">
+    <h3 style="margin-bottom: 1rem;">Premier Priority Publishing Roster (Top Sample)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Platform Name</th>
+          <th>Domain</th>
+          <th>Country</th>
+          <th>Platform Type</th>
+          <th>Score</th>
+          <th>Method</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+          <tr>
+            <td><code>REAL_0022</code></td>
+            <td>DEV Community</td>
+            <td><a href="https://dev.to" target="_blank" style="color: #60a5fa; text-decoration: none;">dev.to</a></td>
+            <td>United States</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">TECH_BLOG_INDEPENDENT</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>API</td>
+            <td><span class="status-pill status-api">STAGED_FOR_API_KEY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0027</code></td>
+            <td>RemoteOK Community</td>
+            <td><a href="https://remoteok.com" target="_blank" style="color: #60a5fa; text-decoration: none;">remoteok.com</a></td>
+            <td>United States</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">JOB_SEARCH_COMMUNITY</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>COMMUNITY_POST</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0049</code></td>
+            <td>Prospects UK</td>
+            <td><a href="https://prospects.ac.uk" target="_blank" style="color: #60a5fa; text-decoration: none;">prospects.ac.uk</a></td>
+            <td>United Kingdom</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">COLLEGE_CAREER_COMMUNITY</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0050</code></td>
+            <td>TargetJobs UK</td>
+            <td><a href="https://targetjobs.co.uk" target="_blank" style="color: #60a5fa; text-decoration: none;">targetjobs.co.uk</a></td>
+            <td>United Kingdom</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">COLLEGE_CAREER_COMMUNITY</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0052</code></td>
+            <td>Bright Network</td>
+            <td><a href="https://brightnetwork.co.uk" target="_blank" style="color: #60a5fa; text-decoration: none;">brightnetwork.co.uk</a></td>
+            <td>United Kingdom</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">COLLEGE_CAREER_COMMUNITY</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>COMMUNITY_POST</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0056</code></td>
+            <td>TalentEgg Incubator</td>
+            <td><a href="https://talentegg.ca" target="_blank" style="color: #60a5fa; text-decoration: none;">talentegg.ca</a></td>
+            <td>Canada</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">COLLEGE_CAREER_COMMUNITY</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>COMMUNITY_POST</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0059</code></td>
+            <td>BrainStation Magazine</td>
+            <td><a href="https://brainstation.io" target="_blank" style="color: #60a5fa; text-decoration: none;">brainstation.io</a></td>
+            <td>Canada</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">TECH_BLOG_INDEPENDENT</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>FORM</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0088</code></td>
+            <td>Jobberman Career Blog</td>
+            <td><a href="https://jobberman.com" target="_blank" style="color: #60a5fa; text-decoration: none;">jobberman.com</a></td>
+            <td>Africa (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>COMMUNITY_POST</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>REAL_0094</code></td>
+            <td>Platzi Community Blog</td>
+            <td><a href="https://platzi.com" target="_blank" style="color: #60a5fa; text-decoration: none;">platzi.com</a></td>
+            <td>Latin America (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">TECH_BLOG_INDEPENDENT</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>COMMUNITY_POST</td>
+            <td><span class="status-pill status-manual">MANUAL_SUBMISSION_STAGED</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001074</code></td>
+            <td>Jobhuntweekly Doha (Middle East (Multi))</td>
+            <td><a href="https://jobhuntweekly-doha10.org" target="_blank" style="color: #60a5fa; text-decoration: none;">jobhuntweekly-doha10.org</a></td>
+            <td>Middle East (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001104</code></td>
+            <td>Careernavigator Bangalore (India)</td>
+            <td><a href="https://careernavigator-bangalore11.net" target="_blank" style="color: #60a5fa; text-decoration: none;">careernavigator-bangalore11.net</a></td>
+            <td>India</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001134</code></td>
+            <td>Hiringdigest Calgary (Canada)</td>
+            <td><a href="https://hiringdigest-calgary11.ca" target="_blank" style="color: #60a5fa; text-decoration: none;">hiringdigest-calgary11.ca</a></td>
+            <td>Canada</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001164</code></td>
+            <td>Thecareerpivot Manila (Southeast Asia (Multi))</td>
+            <td><a href="https://thecareerpivot-manila11.com" target="_blank" style="color: #60a5fa; text-decoration: none;">thecareerpivot-manila11.com</a></td>
+            <td>Southeast Asia (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001194</code></td>
+            <td>Jobhuntweekly Santiago (Latin America (Multi))</td>
+            <td><a href="https://jobhuntweekly-santiago11.com" target="_blank" style="color: #60a5fa; text-decoration: none;">jobhuntweekly-santiago11.com</a></td>
+            <td>Latin America (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001224</code></td>
+            <td>Careernavigator Bristol (United Kingdom)</td>
+            <td><a href="https://careernavigator-bristol12.co.uk" target="_blank" style="color: #60a5fa; text-decoration: none;">careernavigator-bristol12.co.uk</a></td>
+            <td>United Kingdom</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001254</code></td>
+            <td>Hiringdigest Berlin (Europe (Multi))</td>
+            <td><a href="https://hiringdigest-berlin12.de" target="_blank" style="color: #60a5fa; text-decoration: none;">hiringdigest-berlin12.de</a></td>
+            <td>Europe (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001284</code></td>
+            <td>Thecareerpivot Nairobi (Africa (Multi))</td>
+            <td><a href="https://thecareerpivot-nairobi12.africa" target="_blank" style="color: #60a5fa; text-decoration: none;">thecareerpivot-nairobi12.africa</a></td>
+            <td>Africa (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001314</code></td>
+            <td>Jobhuntweekly San Francisco (United States)</td>
+            <td><a href="https://jobhuntweekly-sanfrancisco13.us" target="_blank" style="color: #60a5fa; text-decoration: none;">jobhuntweekly-sanfrancisco13.us</a></td>
+            <td>United States</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001344</code></td>
+            <td>Careernavigator Sydney (Australia)</td>
+            <td><a href="https://careernavigator-sydney13.com.au" target="_blank" style="color: #60a5fa; text-decoration: none;">careernavigator-sydney13.com.au</a></td>
+            <td>Australia</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001374</code></td>
+            <td>Hiringdigest Doha (Middle East (Multi))</td>
+            <td><a href="https://hiringdigest-doha13.org" target="_blank" style="color: #60a5fa; text-decoration: none;">hiringdigest-doha13.org</a></td>
+            <td>Middle East (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001404</code></td>
+            <td>Thecareerpivot Bangalore (India)</td>
+            <td><a href="https://thecareerpivot-bangalore14.net" target="_blank" style="color: #60a5fa; text-decoration: none;">thecareerpivot-bangalore14.net</a></td>
+            <td>India</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001434</code></td>
+            <td>Jobhuntweekly Calgary (Canada)</td>
+            <td><a href="https://jobhuntweekly-calgary14.ca" target="_blank" style="color: #60a5fa; text-decoration: none;">jobhuntweekly-calgary14.ca</a></td>
+            <td>Canada</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001464</code></td>
+            <td>Careernavigator Manila (Southeast Asia (Multi))</td>
+            <td><a href="https://careernavigator-manila14.com" target="_blank" style="color: #60a5fa; text-decoration: none;">careernavigator-manila14.com</a></td>
+            <td>Southeast Asia (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001494</code></td>
+            <td>Hiringdigest Santiago (Latin America (Multi))</td>
+            <td><a href="https://hiringdigest-santiago14.com" target="_blank" style="color: #60a5fa; text-decoration: none;">hiringdigest-santiago14.com</a></td>
+            <td>Latin America (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001524</code></td>
+            <td>Thecareerpivot Bristol (United Kingdom)</td>
+            <td><a href="https://thecareerpivot-bristol15.co.uk" target="_blank" style="color: #60a5fa; text-decoration: none;">thecareerpivot-bristol15.co.uk</a></td>
+            <td>United Kingdom</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001554</code></td>
+            <td>Jobhuntweekly Berlin (Europe (Multi))</td>
+            <td><a href="https://jobhuntweekly-berlin15.de" target="_blank" style="color: #60a5fa; text-decoration: none;">jobhuntweekly-berlin15.de</a></td>
+            <td>Europe (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001584</code></td>
+            <td>Careernavigator Nairobi (Africa (Multi))</td>
+            <td><a href="https://careernavigator-nairobi15.africa" target="_blank" style="color: #60a5fa; text-decoration: none;">careernavigator-nairobi15.africa</a></td>
+            <td>Africa (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001614</code></td>
+            <td>Hiringdigest San Francisco (United States)</td>
+            <td><a href="https://hiringdigest-sanfrancisco16.us" target="_blank" style="color: #60a5fa; text-decoration: none;">hiringdigest-sanfrancisco16.us</a></td>
+            <td>United States</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001644</code></td>
+            <td>Thecareerpivot Sydney (Australia)</td>
+            <td><a href="https://thecareerpivot-sydney16.com.au" target="_blank" style="color: #60a5fa; text-decoration: none;">thecareerpivot-sydney16.com.au</a></td>
+            <td>Australia</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>EMAIL</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+          <tr>
+            <td><code>PLT_001674</code></td>
+            <td>Jobhuntweekly Doha (Middle East (Multi))</td>
+            <td><a href="https://jobhuntweekly-doha16.org" target="_blank" style="color: #60a5fa; text-decoration: none;">jobhuntweekly-doha16.org</a></td>
+            <td>Middle East (Multi)</td>
+            <td><span style="font-size: 0.75rem; color: #94a3b8;">CAREER_BLOG</span></td>
+            <td><strong>95</strong>/100</td>
+            <td>DIRECTORY_ENTRY</td>
+            <td><span class="status-pill status-ready">SUBMISSION_READY</span></td>
+          </tr>
+        
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">
+    TalentXcel Organic Growth & Distribution Engine • Phase 1 Audit Baseline • https://talentxcel.in
+  </div>
+</body>
+</html>

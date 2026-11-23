@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
+import { PresenceIndicator } from './PresenceIndicator';
 
 interface RealTimePresenceProps {
   userId?: string;
   showLastSeen?: boolean;
-  variant?: 'dot' | 'badge' | 'text';
+  variant?: 'dot' | 'badge' | 'text' | 'compact';
   initialOnline?: boolean;
   initialLastSeen?: string | null;
+  initialHeartbeatAt?: string | null;
+  presenceVisibility?: string | null;
+  className?: string;
 }
 
 export const RealTimePresence: React.FC<RealTimePresenceProps> = ({
@@ -16,29 +19,41 @@ export const RealTimePresence: React.FC<RealTimePresenceProps> = ({
   variant = 'dot',
   initialOnline = false,
   initialLastSeen = null,
+  initialHeartbeatAt = null,
+  presenceVisibility = null,
+  className = '',
 }) => {
   const [presenceData, setPresenceData] = useState<{
     isOnline: boolean;
     lastSeen: string | null;
-  }>({ isOnline: initialOnline, lastSeen: initialLastSeen });
+    lastHeartbeatAt: string | null;
+    visibility: string | null;
+  }>({
+    isOnline: initialOnline,
+    lastSeen: initialLastSeen,
+    lastHeartbeatAt: initialHeartbeatAt,
+    visibility: presenceVisibility
+  });
 
   useEffect(() => {
-    if (!userId || initialOnline) return;
+    // If initial presence was provided or no userId, skip network request
+    if (!userId || (initialOnline && initialHeartbeatAt)) return;
 
-    // Lightweight fetch without per-item Realtime channels to prevent WAL sender overload
     let mounted = true;
     const fetchPresence = async () => {
       try {
         const { data } = await supabase
           .from('profiles')
-          .select('is_online, last_seen')
+          .select('is_online, last_seen, last_heartbeat_at, presence_visibility')
           .eq('id', userId)
           .maybeSingle();
 
         if (mounted && data) {
           setPresenceData({
             isOnline: Boolean(data.is_online),
-            lastSeen: data.last_seen || null
+            lastSeen: data.last_seen || null,
+            lastHeartbeatAt: data.last_heartbeat_at || null,
+            visibility: data.presence_visibility || 'everyone'
           });
         }
       } catch {}
@@ -48,50 +63,19 @@ export const RealTimePresence: React.FC<RealTimePresenceProps> = ({
     return () => {
       mounted = false;
     };
-  }, [userId, initialOnline]);
+  }, [userId, initialOnline, initialHeartbeatAt]);
 
-  const getLastSeenText = (lastSeen: string | null): string => {
-    if (!lastSeen) return 'Never';
-    
-    const lastSeenDate = new Date(lastSeen);
-    const now = new Date();
-    const diffMs = now.getTime() - lastSeenDate.getTime();
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMinutes < 1) return 'Just now';
-    if (diffMinutes < 60) return `${diffMinutes}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return 'Over a week ago';
-  };
-
-  if (variant === 'dot') {
-    return (
-      <div className={`h-3 w-3 rounded-full ${
-        presenceData.isOnline ? 'bg-green-500' : 'bg-gray-400'
-      }`} />
-    );
-  }
-
-  if (variant === 'badge') {
-    return (
-      <Badge variant={presenceData.isOnline ? 'default' : 'secondary'} className="text-xs">
-        {presenceData.isOnline ? 'Online' : (showLastSeen ? getLastSeenText(presenceData.lastSeen) : 'Offline')}
-      </Badge>
-    );
-  }
-
-  if (variant === 'text') {
-    return (
-      <span className={`text-xs ${
-        presenceData.isOnline ? 'text-green-600' : 'text-gray-500'
-      }`}>
-        {presenceData.isOnline ? 'Online' : (showLastSeen ? `Last seen ${getLastSeenText(presenceData.lastSeen)}` : 'Offline')}
-      </span>
-    );
-  }
-
-  return null;
+  return (
+    <PresenceIndicator
+      isOnline={presenceData.isOnline}
+      lastSeen={presenceData.lastSeen}
+      lastHeartbeatAt={presenceData.lastHeartbeatAt}
+      visibility={presenceData.visibility}
+      variant={variant === 'compact' ? 'compact' : variant}
+      hideIfOffline={!showLastSeen}
+      className={className}
+    />
+  );
 };
+
+export default RealTimePresence;

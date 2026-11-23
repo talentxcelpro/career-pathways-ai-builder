@@ -40,6 +40,17 @@
       });
     </script>
 
+    <!-- Dynamic Canonical Initialization (Prevents duplicate apex canonical conflicts on subpages) -->
+    <script>
+      (function() {
+        var p = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
+        var canonicalUrl = 'https://talentxcel.in' + (p === '/' ? '/' : p);
+        var link = document.createElement('link');
+        link.rel = 'canonical';
+        link.href = canonicalUrl;
+        document.head.appendChild(link);
+      })();
+    </script>
     <!-- Optimal title tag (53 characters, within 50-60 char boundary) -->
     <title>TalentXcel Colleges — Connect Campus Talent with Career Opportunities</title>
     <!-- Optimal meta description (154 characters, within 140-160 char boundary) -->
@@ -116,10 +127,10 @@
     <!-- 3. BreadcrumbList Schema -->
     <!-- 4. FAQPage Schema for Voice Assistants & LLM Question Answering -->
     <!-- 5. WebPage Schema with Speakable Specification -->
-    <script type="module" crossorigin src="/assets/index-B1XqAqnz.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/vendor-DFPi9jNE.js">
+    <script type="module" crossorigin src="/assets/index-DQI7Ktwd.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-DoOd2BZW.js">
     <link rel="stylesheet" crossorigin href="/assets/vendor-DxzzN9QP.css">
-    <link rel="stylesheet" crossorigin href="/assets/index-D0vwvgH1.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-D1U2uGU2.css">
   <link rel="canonical" href="https://talentxcel.in/colleges" />
 
 <script type="application/ld+json">
@@ -261,6 +272,6 @@
     </main>
 
     <!-- Chunk Error Handler - Must load before main script -->
-    <script src="/chunk-error-handler.js"></script>
+    <script src="/chunk-error-handler.js"></script>
   </body>
 </html>

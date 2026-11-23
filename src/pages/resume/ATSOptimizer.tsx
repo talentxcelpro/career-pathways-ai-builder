@@ -15,6 +15,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { ViralShareModal } from '@/components/viral/ViralShareModal';
+import { EmbedGeneratorModal } from '@/components/embed/EmbedGeneratorModal';
+import { embedRegistry } from '@/services/embed/EmbedRegistry';
+import { Code2 } from 'lucide-react';
 import { GrowthEventTracker } from '@/lib/autonomous-os/growthEventTracker';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTieredAccess } from '@/hooks/useTieredAccess';
@@ -91,6 +94,7 @@ export const ATSOptimizer: React.FC = () => {
   const [isScanning, setIsScanning] = useState(false);
   const [report, setReport] = useState<ATSReport | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isEmbedModalOpen, setIsEmbedModalOpen] = useState(false);
 
   // Target Job Context (when arriving from an active vacancy)
   const [targetJob, setTargetJob] = useState<TargetJobContext | null>(null);
@@ -544,6 +548,15 @@ export const ATSOptimizer: React.FC = () => {
                 size="sm"
                 buttonText="Share Tool"
               />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEmbedModalOpen(true)}
+                className="text-xs h-8 gap-1.5 border-slate-700 bg-slate-900/80 hover:bg-slate-800 text-slate-200"
+              >
+                <Code2 className="w-3.5 h-3.5 text-blue-400" />
+                <span>Embed Benchmark</span>
+              </Button>
             </div>
           </div>
         </div>
@@ -1254,6 +1267,12 @@ export const ATSOptimizer: React.FC = () => {
               }
             }
           }}
+        />
+        {/* Universal Embed Generator Modal */}
+        <EmbedGeneratorModal
+          asset={embedRegistry.getAsset('resume', 'software-engineer')}
+          isOpen={isEmbedModalOpen}
+          onClose={() => setIsEmbedModalOpen(false)}
         />
       </div>
     </>

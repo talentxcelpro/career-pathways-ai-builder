@@ -1,0 +1,219 @@
+[
+  {
+    "name": "Launching Next",
+    "url": "https://www.launchingnext.com/submit/",
+    "type": "STARTUP_DIRECTORY",
+    "status": 200,
+    "hasForm": true,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "formAction": "",
+    "inputNames": [
+      "description",
+      "keywords",
+      "twitter:card",
+      "twitter:site",
+      "twitter:creator",
+      "twitter:title",
+      "twitter:description",
+      "viewport"
+    ],
+    "title": "Submit Your Project | Launching Next"
+  },
+  {
+    "name": "KillerStartups",
+    "url": "https://www.killerstartups.com/submit-startup/",
+    "type": "STARTUP_DIRECTORY",
+    "status": 301,
+    "location": "https://killerstartups.com/submit-startup/",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": []
+  },
+  {
+    "name": "Startup Stash",
+    "url": "https://startupstash.com/submit-a-tool/",
+    "type": "SAAS_DIRECTORY",
+    "status": 404,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "viewport",
+      "robots",
+      "generator"
+    ],
+    "title": "Page not found - Startup Stash"
+  },
+  {
+    "name": "BetaList",
+    "url": "https://betalist.com/submit",
+    "type": "STARTUP_DIRECTORY",
+    "status": 302,
+    "location": "https://betalist.com/submissions/new",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": []
+  },
+  {
+    "name": "SaaSHub",
+    "url": "https://www.saashub.com/submit",
+    "type": "SAAS_DIRECTORY",
+    "status": 200,
+    "hasForm": true,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "formAction": "/list",
+    "inputNames": [
+      "theme-color",
+      "view-transition",
+      "csrf-param",
+      "csrf-token",
+      "viewport",
+      "turbo-prefetch",
+      "turbo-refresh-scroll",
+      "path"
+    ],
+    "title": "SaaSHub Submit - Top Submitted Products of Last 30 days"
+  },
+  {
+    "name": "TechRound UK",
+    "url": "https://techround.co.uk/submit-your-startup/",
+    "type": "STARTUP_NEWS",
+    "status": 404,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "viewport",
+      "robots"
+    ],
+    "title": "Page not found - TechRound"
+  },
+  {
+    "name": "StartupTalky",
+    "url": "https://startuptalky.com/submit-guest-post/",
+    "type": "STARTUP_BLOG",
+    "status": 404,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "viewport",
+      "robots",
+      "color-scheme",
+      "theme-color"
+    ],
+    "title": "StartupTalky- Business News, Insights and Stories"
+  },
+  {
+    "name": "TechStory India",
+    "url": "https://techstory.in/submit-a-story/",
+    "type": "STARTUP_NEWS",
+    "status": 403,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "robots",
+      "viewport"
+    ],
+    "title": "Just a moment..."
+  },
+  {
+    "name": "Uneed Best",
+    "url": "https://www.uneed.best/submit-a-tool",
+    "type": "SAAS_DIRECTORY",
+    "status": 200,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "viewport"
+    ],
+    "title": "Add your product to Uneed | Uneed"
+  },
+  {
+    "name": "MicroLaunch",
+    "url": "https://microlaunch.net/submit",
+    "type": "STARTUP_DIRECTORY",
+    "status": 307,
+    "location": "/premium#pricing",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": []
+  },
+  {
+    "name": "DZone Contribute",
+    "url": "https://dzone.com/pages/contribute",
+    "type": "CONTRIBUTOR_PORTAL",
+    "status": 403,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "robots",
+      "viewport"
+    ],
+    "title": "Just a moment..."
+  },
+  {
+    "name": "Dev.to API / Web",
+    "url": "https://dev.to/new",
+    "type": "OPEN_BLOGGING",
+    "status": 200,
+    "hasForm": true,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "formAction": "/search",
+    "inputNames": [
+      "last-updated",
+      "user-signed-in",
+      "head-cached-at",
+      "environment",
+      "search-script",
+      "mermaid-script",
+      "page-embed-sandbox-script",
+      "comment-textarea-script"
+    ],
+    "title": "New Post - DEV Community"
+  },
+  {
+    "name": "Hashnode",
+    "url": "https://hashnode.com",
+    "type": "OPEN_BLOGGING",
+    "status": 200,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "viewport",
+      "next-size-adjust",
+      "apple-mobile-web-app-title",
+      "description",
+      "twitter:card",
+      "twitter:title",
+      "twitter:description",
+      "twitter:image"
+    ],
+    "title": "Hashnode: a blog that gets cited by ChatGPT, Google and Perplexity"
+  },
+  {
+    "name": "Techboard Australia",
+    "url": "https://techboard.com.au/claim-profile",
+    "type": "STARTUP_DIRECTORY",
+    "status": 404,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "hasAuth": false,
+    "inputNames": [
+      "viewport",
+      "theme-color",
+      "robots"
+    ],
+    "title": "Page not found - Techboard"
+  }
+]

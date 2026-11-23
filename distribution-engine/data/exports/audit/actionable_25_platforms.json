@@ -1,0 +1,281 @@
+{
+  "timestamp": "2026-11-23T13:18:19.859Z",
+  "totalActionable": 37,
+  "actionablePlatforms": [
+    {
+      "name": "Undercover Recruiter",
+      "domain": "undercoverrecruiter.com",
+      "verifiedPathwayUrl": "https://theundercoverrecruiter.com/contact-candidates-dos-donts/",
+      "httpStatus": 200,
+      "pageTitle": "The Do&#039;s and Don&#039;ts of Contacting Candidates",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "RECRUITMENT_BLOG",
+      "assignedTopic": "Job Search Strategy"
+    },
+    {
+      "name": "KDnuggets",
+      "domain": "kdnuggets.com",
+      "verifiedPathwayUrl": "https://www.kdnuggets.com/contact.html",
+      "httpStatus": 200,
+      "pageTitle": "Contact KDnuggets - KDnuggets",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_BLOG_INDEPENDENT",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "Mac's List",
+      "domain": "macslist.org",
+      "verifiedPathwayUrl": "https://www.macslist.org/about/contact-us",
+      "httpStatus": 200,
+      "pageTitle": "Contact Mac&#039;s List - Visit Our Portland Office or Call Us",
+      "hasForm": false,
+      "hasEmail": true,
+      "category": "CAREER_BLOG",
+      "assignedTopic": "Career Networking"
+    },
+    {
+      "name": "CareerCloud",
+      "domain": "careercloud.com",
+      "verifiedPathwayUrl": "https://careercloud.com/contact-us/",
+      "httpStatus": 200,
+      "pageTitle": "",
+      "hasForm": false,
+      "hasEmail": true,
+      "category": "CAREER_BLOG",
+      "assignedTopic": "ATS Resume Optimization"
+    },
+    {
+      "name": "Cultivated Culture",
+      "domain": "cultivatedculture.com",
+      "verifiedPathwayUrl": "https://cultivatedculture.com/contact/",
+      "httpStatus": 200,
+      "pageTitle": "Contact - Cultivated Culture",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "CAREER_BLOG",
+      "assignedTopic": "LinkedIn Optimization"
+    },
+    {
+      "name": "Work In Tech UK",
+      "domain": "workintech.co.uk",
+      "verifiedPathwayUrl": "https://workintech.co.uk/contact",
+      "httpStatus": 200,
+      "pageTitle": "",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_BLOG_INDEPENDENT",
+      "assignedTopic": "Professional Networking"
+    },
+    {
+      "name": "HRzone UK",
+      "domain": "hrzone.com",
+      "verifiedPathwayUrl": "https://hrzone.com/contact-us/",
+      "httpStatus": 200,
+      "pageTitle": "Contact us - HRZone",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "HR_BLOG",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "StudentJob UK",
+      "domain": "studentjob.co.uk",
+      "verifiedPathwayUrl": "https://www.studentjob.co.uk/contact",
+      "httpStatus": 200,
+      "pageTitle": "Contact Reaction | StudentJob UK",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "COLLEGE_CAREER_COMMUNITY",
+      "assignedTopic": "Graduate Career Development"
+    },
+    {
+      "name": "DevClass",
+      "domain": "devclass.com",
+      "verifiedPathwayUrl": "https://www.devclass.com/",
+      "httpStatus": 200,
+      "pageTitle": "DevClass: News and Analysis on Modern Software Development",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_BLOG_INDEPENDENT",
+      "assignedTopic": "ATS Resume Optimization"
+    },
+    {
+      "name": "InfoQ",
+      "domain": "infoq.com",
+      "verifiedPathwayUrl": "https://www.infoq.com",
+      "httpStatus": 200,
+      "pageTitle": "",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_BLOG_INDEPENDENT",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "Changelog",
+      "domain": "changelog.com",
+      "verifiedPathwayUrl": "https://changelog.com",
+      "httpStatus": 200,
+      "pageTitle": "Podcasts for developers",
+      "hasForm": true,
+      "hasEmail": false,
+      "category": "TECH_COMMUNITY",
+      "assignedTopic": "Professional Networking"
+    },
+    {
+      "name": "Analytics Vidhya",
+      "domain": "analyticsvidhya.com",
+      "verifiedPathwayUrl": "https://www.analyticsvidhya.com",
+      "httpStatus": 200,
+      "pageTitle": "Analytics Vidhya | The ultimate place for Generative AI, Data Science and Data Engineering",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_COMMUNITY",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "CareerFoundry",
+      "domain": "careerfoundry.com",
+      "verifiedPathwayUrl": "https://careerfoundry.com/en/",
+      "httpStatus": 200,
+      "pageTitle": "",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "CAREER_BLOG",
+      "assignedTopic": "Career Transitions"
+    },
+    {
+      "name": "RecruitingDaily",
+      "domain": "recruitingdaily.com",
+      "verifiedPathwayUrl": "https://recruitingdaily.com",
+      "httpStatus": 200,
+      "pageTitle": "Homepage - RecruitingDaily",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "HR_BLOG",
+      "assignedTopic": "Job Search Strategy"
+    },
+    {
+      "name": "HR Morning",
+      "domain": "hrmorning.com",
+      "verifiedPathwayUrl": "https://www.hrmorning.com",
+      "httpStatus": 200,
+      "pageTitle": "HRMorning - HR News and Insights",
+      "hasForm": true,
+      "hasEmail": false,
+      "category": "HR_BLOG",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "Job Board Doctor",
+      "domain": "jobboarddoctor.com",
+      "verifiedPathwayUrl": "https://www.jobboarddoctor.com/",
+      "httpStatus": 200,
+      "pageTitle": "Job Board and Talent Acquisition Tech | Job Board Doctor",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "RECRUITMENT_BLOG",
+      "assignedTopic": "Job Search Strategy"
+    },
+    {
+      "name": "Startup Grind",
+      "domain": "startupgrind.com",
+      "verifiedPathwayUrl": "https://www.startupgrind.com",
+      "httpStatus": 200,
+      "pageTitle": "",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "FOUNDER_COMMUNITY",
+      "assignedTopic": "Professional Networking"
+    },
+    {
+      "name": "SaaStr",
+      "domain": "saastr.com",
+      "verifiedPathwayUrl": "https://www.saastr.com",
+      "httpStatus": 200,
+      "pageTitle": "",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "FOUNDER_COMMUNITY",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "Startupticker Switzerland",
+      "domain": "startupticker.ch",
+      "verifiedPathwayUrl": "https://www.startupticker.ch/en/international",
+      "httpStatus": 200,
+      "pageTitle": "startupticker.ch News Startupticker.ch | The Swiss Startup News channel",
+      "hasForm": true,
+      "hasEmail": true,
+      "category": "STARTUP_PUBLICATION_INDEPENDENT",
+      "assignedTopic": "Career Transitions"
+    },
+    {
+      "name": "Starter Story",
+      "domain": "starterstory.com",
+      "verifiedPathwayUrl": "https://www.starterstory.com",
+      "httpStatus": 200,
+      "pageTitle": "Starter Story — The Researched Database of Real, Profitable Businesses",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "STARTUP_PUBLICATION_INDEPENDENT",
+      "assignedTopic": "Career Transitions"
+    },
+    {
+      "name": "MicroConf",
+      "domain": "microconf.com",
+      "verifiedPathwayUrl": "https://microconf.com",
+      "httpStatus": 200,
+      "pageTitle": "MicroConf - The Original Community for Bootstrapped SaaS Founders",
+      "hasForm": false,
+      "hasEmail": true,
+      "category": "FOUNDER_COMMUNITY",
+      "assignedTopic": "Career Transitions"
+    },
+    {
+      "name": "Mind the Product",
+      "domain": "mindtheproduct.com",
+      "verifiedPathwayUrl": "https://www.mindtheproduct.com",
+      "httpStatus": 200,
+      "pageTitle": "#1 Product Community - Mind the Product",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_COMMUNITY",
+      "assignedTopic": "Skills-Based Hiring"
+    },
+    {
+      "name": "GrowthRocks",
+      "domain": "growthrocks.com",
+      "verifiedPathwayUrl": "https://growthrocks.com",
+      "httpStatus": 200,
+      "pageTitle": "Growth Hacking Agency | Growth Marketing Agency | GrowthRocks",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "TECH_BLOG_INDEPENDENT",
+      "assignedTopic": "Job Search Strategy"
+    },
+    {
+      "name": "Virtual Vocations",
+      "domain": "virtualvocations.com",
+      "verifiedPathwayUrl": "https://www.virtualvocations.com",
+      "httpStatus": 200,
+      "pageTitle": "Best Remote and Work from Home Jobs - Virtual Vocations",
+      "hasForm": true,
+      "hasEmail": false,
+      "category": "JOB_SEARCH_COMMUNITY",
+      "assignedTopic": "Remote Job Hunting"
+    },
+    {
+      "name": "JustRemote",
+      "domain": "justremote.co",
+      "verifiedPathwayUrl": "https://justremote.co",
+      "httpStatus": 200,
+      "pageTitle": "Remote Jobs: Design, Marketing, Programming, Writing &amp; More",
+      "hasForm": false,
+      "hasEmail": false,
+      "category": "JOB_SEARCH_COMMUNITY",
+      "assignedTopic": "Remote Job Hunting"
+    }
+  ]
+}

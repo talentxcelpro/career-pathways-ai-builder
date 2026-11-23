@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import MediaPreview from "@/components/posts/MediaPreview";
+import { PresenceIndicator } from './PresenceIndicator';
 
 interface ModernMessengerProps {
   isOpen: boolean;
@@ -382,10 +383,13 @@ const ModernMessenger: React.FC<ModernMessengerProps> = ({ isOpen, onClose }) =>
                       <h3 className="font-semibold text-slate-900">
                         {formatDisplayName(getOtherParticipant(conversation))}
                       </h3>
-                      <div className="flex items-center gap-2">
-                        <Circle className="h-2 w-2 fill-green-500 text-green-500" />
-                        <span className="text-sm text-slate-500">Active now</span>
-                      </div>
+                      <PresenceIndicator
+                        isOnline={getOtherParticipant(conversation)?.is_online}
+                        lastSeen={getOtherParticipant(conversation)?.last_seen}
+                        lastHeartbeatAt={getOtherParticipant(conversation)?.last_heartbeat_at}
+                        visibility={getOtherParticipant(conversation)?.presence_visibility}
+                        variant="compact"
+                      />
                     </div>
                   </div>
                   

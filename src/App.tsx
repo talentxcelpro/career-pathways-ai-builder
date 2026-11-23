@@ -75,6 +75,10 @@ const UnsubscribePage = lazy(() => import('@/pages/email/UnsubscribePage'));
 const DirectoryHubPage = lazy(() => import('@/pages/directory/DirectoryHubPage'));
 const IndiaTechSalaryReport2026 = lazy(() => import('@/pages/benchmarks/IndiaTechSalaryReport2026'));
 const Tier2CityJobsIndex2026 = lazy(() => import('@/pages/benchmarks/Tier2CityJobsIndex2026'));
+const EmbedDirectoryPage = lazy(() => import('@/pages/embed/EmbedDirectoryPage'));
+const EmbedStandaloneView = lazy(() => import('@/pages/embed/EmbedStandaloneView'));
+const EmbedDistributionAdmin = lazy(() => import('@/pages/admin/EmbedDistributionAdmin'));
+const EmbedGrowthCampaignDashboard = lazy(() => import('@/pages/admin/EmbedGrowthCampaignDashboard'));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -1183,6 +1187,10 @@ const App = () => {
                                                                   <Route path="/resume/:role" element={<Suspense fallback={null}><UnifiedResumeBuilder /></Suspense>} />
 
                                   {/* Phase 2 Ecosystem Loops: Public Reels, Recruiter OS Embeds & Explore Hub */}
+                                  <Route path="/embeds" element={<Suspense fallback={<div className="min-h-screen bg-[#070b14] flex items-center justify-center text-white text-xs">Loading Embed Directory...</div>}><EmbedDirectoryPage /></Suspense>} />
+                                  <Route path="/embed/:category/:slug" element={<Suspense fallback={null}><EmbedStandaloneView /></Suspense>} />
+                                  <Route path="/embed/:assetId" element={<Suspense fallback={null}><EmbedStandaloneView /></Suspense>} />
+                                  <Route path="/embed/jobs/:employerSlug" element={<Suspense fallback={null}><EmbedStandaloneView /></Suspense>} />
                                                                                                       
                                  <Route path="/profile/:username" element={<UniversalProfileRouteHandler />} />
 
@@ -1341,6 +1349,8 @@ const App = () => {
                                                                                                                                     <Route path="/admin/social-marketing" element={<AdminLayout><SocialMarketingDashboard /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/studio" element={<AdminLayout><SocialContentStudio /></AdminLayout>} />
                                  <Route path="/admin/social-marketing/calendar" element={<AdminLayout><SocialMarketingCalendar /></AdminLayout>} />
+                                 <Route path="/admin/embeds" element={<AdminLayout><Suspense fallback={null}><EmbedDistributionAdmin /></Suspense></AdminLayout>} />
+                                 <Route path="/admin/embed-growth" element={<AdminLayout><Suspense fallback={null}><EmbedGrowthCampaignDashboard /></Suspense></AdminLayout>} />
                                  {/* Explicit Public Learning Provider Directory Routes */}
                                  <Route path="/learning/providers" element={<AllProvidersPage />} />
                                  <Route path="/learning/providers/:slug" element={<ProviderPage />} />

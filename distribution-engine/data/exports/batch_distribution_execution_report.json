@@ -1,0 +1,679 @@
+{
+  "batchSize": 35,
+  "timestamp": "2026-11-23T05:47:03.251Z",
+  "platformsProcessed": [
+    {
+      "index": 1,
+      "platformId": "REAL_0005",
+      "platformName": "HR Katha",
+      "canonicalDomain": "hrkatha.com",
+      "country": "India",
+      "platformType": "HR_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://hrkatha.com/contact-us",
+      "httpStatus": 200,
+      "latencyMs": 4504,
+      "isLive": true,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for editor@hrkatha.com. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 2,
+      "platformId": "REAL_0006",
+      "platformName": "BW People",
+      "canonicalDomain": "bwpeople.businessworld.in",
+      "country": "India",
+      "platformType": "HR_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://bwpeople.businessworld.in/contact-us",
+      "httpStatus": 403,
+      "latencyMs": 123,
+      "isLive": false,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for bwpeople@businessworld.in. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 3,
+      "platformId": "REAL_0008",
+      "platformName": "Analytics India Magazine",
+      "canonicalDomain": "analyticsindiamag.com",
+      "country": "India",
+      "platformType": "TECH_BLOG_INDEPENDENT",
+      "method": "EMAIL",
+      "targetEndpoint": "https://analyticsindiamag.com/write-for-us",
+      "httpStatus": 404,
+      "latencyMs": 892,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 404: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 4,
+      "platformId": "REAL_0012",
+      "platformName": "Silicon India",
+      "canonicalDomain": "siliconindia.com",
+      "country": "India",
+      "platformType": "TECH_BLOG_INDEPENDENT",
+      "method": "EMAIL",
+      "targetEndpoint": "https://siliconindia.com/contact_us",
+      "httpStatus": 403,
+      "latencyMs": 1288,
+      "isLive": false,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for editor@siliconindia.com. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 5,
+      "platformId": "REAL_0015",
+      "platformName": "Youth4work Blog",
+      "canonicalDomain": "youth4work.com",
+      "country": "India",
+      "platformType": "CAREER_BLOG",
+      "method": "FORM",
+      "targetEndpoint": "https://youth4work.com/articles",
+      "httpStatus": 404,
+      "latencyMs": 5140,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 404: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 6,
+      "platformId": "REAL_0016",
+      "platformName": "Internshala Career Hub",
+      "canonicalDomain": "internshala.com",
+      "country": "India",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://blog.internshala.com/submit-story",
+      "httpStatus": 404,
+      "latencyMs": 2970,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 404: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 7,
+      "platformId": "REAL_0017",
+      "platformName": "CareerGuide Blog",
+      "canonicalDomain": "careerguide.com",
+      "country": "India",
+      "platformType": "CAREER_BLOG",
+      "method": "FORM",
+      "targetEndpoint": "https://careerguide.com/blog",
+      "httpStatus": 408,
+      "latencyMs": 6323,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 408: Connection timed out",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 8,
+      "platformId": "REAL_0022",
+      "platformName": "DEV Community",
+      "canonicalDomain": "dev.to",
+      "country": "United States",
+      "platformType": "TECH_BLOG_INDEPENDENT",
+      "method": "API",
+      "targetEndpoint": "https://dev.to/new",
+      "httpStatus": 200,
+      "latencyMs": 1044,
+      "isLive": true,
+      "operationalStatus": "API_AUTH_REQUIRED",
+      "details": "Authorized publisher API token required by external platform API endpoint.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 9,
+      "platformId": "REAL_0027",
+      "platformName": "RemoteOK Community",
+      "canonicalDomain": "remoteok.com",
+      "country": "United States",
+      "platformType": "JOB_SEARCH_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://remoteok.com",
+      "httpStatus": 200,
+      "latencyMs": 1702,
+      "isLive": true,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://remoteok.com. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 10,
+      "platformId": "REAL_0032",
+      "platformName": "Work It Daily",
+      "canonicalDomain": "workitdaily.com",
+      "country": "United States",
+      "platformType": "CAREER_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://www.workitdaily.com/contact-us",
+      "httpStatus": 200,
+      "latencyMs": 472,
+      "isLive": true,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for support@workitdaily.com. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 11,
+      "platformId": "REAL_0033",
+      "platformName": "Career Contessa",
+      "canonicalDomain": "careercontessa.com",
+      "country": "United States",
+      "platformType": "CAREER_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://www.careercontessa.com/write-for-us",
+      "httpStatus": 200,
+      "latencyMs": 1049,
+      "isLive": true,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for editorial@careercontessa.com. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 12,
+      "platformId": "REAL_0034",
+      "platformName": "Ask a Manager",
+      "canonicalDomain": "askamanager.org",
+      "country": "United States",
+      "platformType": "CAREER_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://www.askamanager.org/ask-a-question",
+      "httpStatus": 200,
+      "latencyMs": 1217,
+      "isLive": true,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for alison@askamanager.org. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 13,
+      "platformId": "REAL_0036",
+      "platformName": "Workology",
+      "canonicalDomain": "workology.com",
+      "country": "United States",
+      "platformType": "HR_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://workology.com/write-for-workology",
+      "httpStatus": 404,
+      "latencyMs": 2325,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 404: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 14,
+      "platformId": "REAL_0049",
+      "platformName": "Prospects UK",
+      "canonicalDomain": "prospects.ac.uk",
+      "country": "United Kingdom",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "DIRECTORY_ENTRY",
+      "targetEndpoint": "https://www.prospects.ac.uk/careers-advice",
+      "httpStatus": 200,
+      "latencyMs": 724,
+      "isLive": true,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://www.prospects.ac.uk/careers-advice. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 15,
+      "platformId": "REAL_0050",
+      "platformName": "TargetJobs UK",
+      "canonicalDomain": "targetjobs.co.uk",
+      "country": "United Kingdom",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "DIRECTORY_ENTRY",
+      "targetEndpoint": "https://targetjobs.co.uk/careers-advice",
+      "httpStatus": 200,
+      "latencyMs": 16628,
+      "isLive": true,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://targetjobs.co.uk/careers-advice. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 16,
+      "platformId": "REAL_0051",
+      "platformName": "Careermap UK",
+      "canonicalDomain": "careermap.co.uk",
+      "country": "United Kingdom",
+      "platformType": "CAREER_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://careermap.co.uk/contact-us",
+      "httpStatus": 404,
+      "latencyMs": 1213,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 404: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 17,
+      "platformId": "REAL_0052",
+      "platformName": "Bright Network",
+      "canonicalDomain": "brightnetwork.co.uk",
+      "country": "United Kingdom",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://www.brightnetwork.co.uk/about-us",
+      "httpStatus": 403,
+      "latencyMs": 264,
+      "isLive": false,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://www.brightnetwork.co.uk/about-us. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 18,
+      "platformId": "REAL_0056",
+      "platformName": "TalentEgg Incubator",
+      "canonicalDomain": "talentegg.ca",
+      "country": "Canada",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://talentegg.ca/incubator",
+      "httpStatus": 200,
+      "latencyMs": 2779,
+      "isLive": true,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://talentegg.ca/incubator. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 19,
+      "platformId": "REAL_0057",
+      "platformName": "Canadian HR Reporter",
+      "canonicalDomain": "hrreporter.com",
+      "country": "Canada",
+      "platformType": "HR_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://www.hrreporter.com/contact-us",
+      "httpStatus": 200,
+      "latencyMs": 1689,
+      "isLive": true,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for editor@hrreporter.com. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 20,
+      "platformId": "REAL_0059",
+      "platformName": "BrainStation Magazine",
+      "canonicalDomain": "brainstation.io",
+      "country": "Canada",
+      "platformType": "TECH_BLOG_INDEPENDENT",
+      "method": "FORM",
+      "targetEndpoint": "https://brainstation.io/magazine",
+      "httpStatus": 403,
+      "latencyMs": 462,
+      "isLive": false,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://brainstation.io/magazine. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 21,
+      "platformId": "REAL_0065",
+      "platformName": "HRD Australia",
+      "canonicalDomain": "hcamag.com",
+      "country": "Australia",
+      "platformType": "HR_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://www.hcamag.com/au/contact-us",
+      "httpStatus": 200,
+      "latencyMs": 2343,
+      "isLive": true,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for editor@keymedia.com. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 22,
+      "platformId": "REAL_0076",
+      "platformName": "Glints Career Hub",
+      "canonicalDomain": "glints.com",
+      "country": "Southeast Asia (Multi)",
+      "platformType": "CAREER_BLOG",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://glints.com/sg/blog",
+      "httpStatus": 404,
+      "latencyMs": 2767,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 404: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 23,
+      "platformId": "REAL_0083",
+      "platformName": "Techpoint Africa",
+      "canonicalDomain": "techpoint.africa",
+      "country": "Africa (Multi)",
+      "platformType": "STARTUP_NEWS_INDEPENDENT",
+      "method": "EMAIL",
+      "targetEndpoint": "https://techpoint.africa/contact",
+      "httpStatus": 403,
+      "latencyMs": 405,
+      "isLive": false,
+      "operationalStatus": "OUTREACH_STAGED",
+      "details": "Custom pitch queued for editorial@techpoint.africa. Follow-up scheduled for 2026-11-30. Zero bulk spam compliance enforced.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 24,
+      "platformId": "REAL_0088",
+      "platformName": "Jobberman Career Blog",
+      "canonicalDomain": "jobberman.com",
+      "country": "Africa (Multi)",
+      "platformType": "CAREER_BLOG",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://www.jobberman.com/discover",
+      "httpStatus": 200,
+      "latencyMs": 2109,
+      "isLive": true,
+      "operationalStatus": "MANUAL_ACTION_REQUIRED",
+      "details": "Staged for manual submission via https://www.jobberman.com/discover. Reason: Platform requires user registration, interactive CAPTCHA, or authenticated web form. Direct bot bypass prohibited.",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 25,
+      "platformId": "REAL_0094",
+      "platformName": "Platzi Community Blog",
+      "canonicalDomain": "platzi.com",
+      "country": "Latin America (Multi)",
+      "platformType": "TECH_BLOG_INDEPENDENT",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://platzi.com/blog",
+      "httpStatus": 308,
+      "latencyMs": 348,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 308: Connection failed",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 26,
+      "platformId": "REAL_0099",
+      "platformName": "Austin Remote Work Tribune",
+      "canonicalDomain": "remoteworktribune-austin.com",
+      "country": "United States",
+      "platformType": "JOB_SEARCH_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://remoteworktribune-austin.com/submit",
+      "httpStatus": 0,
+      "latencyMs": 85,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND remoteworktribune-austin.com",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 27,
+      "platformId": "REAL_0100",
+      "platformName": "San Francisco Career Pulse Dispatch",
+      "canonicalDomain": "careerpulsedispatch-sanfrancisco.com",
+      "country": "United States",
+      "platformType": "INDEPENDENT_NEWSLETTER",
+      "method": "EMAIL",
+      "targetEndpoint": "https://careerpulsedispatch-sanfrancisco.com/submit",
+      "httpStatus": 0,
+      "latencyMs": 83,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND careerpulsedispatch-sanfrancisco.com",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 28,
+      "platformId": "REAL_0102",
+      "platformName": "Manchester Career Navigator",
+      "canonicalDomain": "careernavigator-manchester.co.uk",
+      "country": "United Kingdom",
+      "platformType": "CAREER_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://careernavigator-manchester.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 235,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND careernavigator-manchester.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 29,
+      "platformId": "REAL_0104",
+      "platformName": "Birmingham Campus Career Wire",
+      "canonicalDomain": "campuscareerwire-birmingham.co.uk",
+      "country": "United Kingdom",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "FORM",
+      "targetEndpoint": "https://campuscareerwire-birmingham.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 54,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND campuscareerwire-birmingham.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 30,
+      "platformId": "REAL_0109",
+      "platformName": "London Remote Work Tribune",
+      "canonicalDomain": "remoteworktribune-london.co.uk",
+      "country": "United Kingdom",
+      "platformType": "JOB_SEARCH_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://remoteworktribune-london.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 56,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND remoteworktribune-london.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 31,
+      "platformId": "REAL_0110",
+      "platformName": "Manchester Career Pulse Dispatch",
+      "canonicalDomain": "careerpulsedispatch-manchester.co.uk",
+      "country": "United Kingdom",
+      "platformType": "INDEPENDENT_NEWSLETTER",
+      "method": "EMAIL",
+      "targetEndpoint": "https://careerpulsedispatch-manchester.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 96,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND careerpulsedispatch-manchester.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 32,
+      "platformId": "REAL_0112",
+      "platformName": "Birmingham Career Navigator",
+      "canonicalDomain": "careernavigator-birmingham.co.uk",
+      "country": "United Kingdom",
+      "platformType": "CAREER_BLOG",
+      "method": "EMAIL",
+      "targetEndpoint": "https://careernavigator-birmingham.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 135,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND careernavigator-birmingham.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 33,
+      "platformId": "REAL_0114",
+      "platformName": "Leeds Campus Career Wire",
+      "canonicalDomain": "campuscareerwire-leeds.co.uk",
+      "country": "United Kingdom",
+      "platformType": "COLLEGE_CAREER_COMMUNITY",
+      "method": "FORM",
+      "targetEndpoint": "https://campuscareerwire-leeds.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 134,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND campuscareerwire-leeds.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 34,
+      "platformId": "REAL_0119",
+      "platformName": "Edinburgh Remote Work Tribune",
+      "canonicalDomain": "remoteworktribune-edinburgh.co.uk",
+      "country": "United Kingdom",
+      "platformType": "JOB_SEARCH_COMMUNITY",
+      "method": "COMMUNITY_POST",
+      "targetEndpoint": "https://remoteworktribune-edinburgh.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 55,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND remoteworktribune-edinburgh.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    },
+    {
+      "index": 35,
+      "platformId": "REAL_0120",
+      "platformName": "Birmingham Career Pulse Dispatch",
+      "canonicalDomain": "careerpulsedispatch-birmingham.co.uk",
+      "country": "United Kingdom",
+      "platformType": "INDEPENDENT_NEWSLETTER",
+      "method": "EMAIL",
+      "targetEndpoint": "https://careerpulsedispatch-birmingham.co.uk/submit",
+      "httpStatus": 0,
+      "latencyMs": 53,
+      "isLive": false,
+      "operationalStatus": "REJECTED_UNREACHABLE",
+      "details": "Endpoint failed with HTTP 0: getaddrinfo ENOTFOUND careerpulsedispatch-birmingham.co.uk",
+      "contentPrepared": {
+        "title": "The Asymmetric Application Problem: Modern Job Search Tactics",
+        "targetUrl": "https://talentxcel.in"
+      }
+    }
+  ],
+  "summary": {
+    "actualSubmissionsAttempted": 1,
+    "successfulPublicationsVerified": 0,
+    "pendingReviewOrDispatch": 16,
+    "manualActionRequired": 8,
+    "rejectedOrUnreachable": 18,
+    "editorialOutreachStaged": 9
+  }
+}

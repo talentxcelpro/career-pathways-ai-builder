@@ -464,8 +464,7 @@ export const PageSpecificBottomNav: React.FC<PageSpecificBottomNavProps> = ({ cl
   console.log('PageSpecificBottomNav - isMobile:', isMobile, 'currentPath:', location.pathname);
   
   // Don't render on desktop or in certain contexts
-  if (!isMobile) {
-    console.log('PageSpecificBottomNav - Not mobile, returning null');
+  if (!isMobile || location.pathname.startsWith('/embed/')) {
     return null;
   }
 

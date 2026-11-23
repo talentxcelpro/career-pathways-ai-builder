@@ -7,6 +7,7 @@ import { resolvePostAuthDestination } from '@/utils/intentRouting';
 import { attributeStoredReferral } from '@/utils/referralTracker';
 
 import { syncSessionFromCrossSubdomainCookie } from '@/lib/auth/crossSubdomainStorage';
+import { useActivityHeartbeat } from '@/hooks/useActivityHeartbeat';
 
 interface OptimizedAuthContextType {
   user: User | null;
@@ -251,6 +252,27 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
     // Get initial session with transparent refresh recovery
     const initAuth = async () => {
       try {
+        // Support hash tokens (magiclink / OAuth implicit fragment) when flowType is pkce
+        if (typeof window !== 'undefined' && window.location.hash && window.location.hash.includes('access_token=')) {
+          try {
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const accessToken = hashParams.get('access_token');
+            const refreshToken = hashParams.get('refresh_token');
+            if (accessToken && refreshToken) {
+              const { data: hashData, error: hashError } = await supabase.auth.setSession({
+                access_token: accessToken,
+                refresh_token: refreshToken
+              });
+              if (!hashError && hashData.session) {
+                // Clear hash from URL cleanly without page reload
+                window.history.replaceState(null, '', window.location.pathname + window.location.search);
+              }
+            }
+          } catch (e) {
+            console.warn('[OptimizedAuth] Hash session ingestion non-fatal:', e);
+          }
+        }
+
         let { data: { session } } = await supabase.auth.getSession();
         
         // Transparent session recovery: If getSession() returns null or an expired session,
@@ -348,7 +370,13 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
 
   return (
     <OptimizedAuthContext.Provider value={value}>
+      <ActivityHeartbeatMount />
       {children}
     </OptimizedAuthContext.Provider>
   );
+};
+
+const ActivityHeartbeatMount = () => {
+  useActivityHeartbeat();
+  return null;
 };
