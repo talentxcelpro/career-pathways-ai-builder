@@ -48,7 +48,14 @@
     "backlink:reconcile-phase4": "node backlink-engine/src/autonomous/run-phase4-reconciliation.cjs",
     "backlink:test-phase4": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs backlink-engine/test/phase4.test.cjs",
     "backlink:classify-phase4-1": "node backlink-engine/src/autonomous/run-phase4-1-classification.cjs",
-    "backlink:test-phase4-1": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs backlink-engine/test/phase4.test.cjs backlink-engine/test/phase4-1.test.cjs"
+    "backlink:test-phase4-1": "node --test backlink-engine/test/autonomous.test.cjs backlink-engine/test/phase2.test.cjs backlink-engine/test/phase3.test.cjs backlink-engine/test/phase4.test.cjs backlink-engine/test/phase4-1.test.cjs",
+    "distrib:status": "node distribution-engine/cli.cjs status",
+    "distrib:discover": "node distribution-engine/cli.cjs discover",
+    "distrib:seed-content": "node distribution-engine/cli.cjs seed-content",
+    "distrib:stage-priority": "node distribution-engine/cli.cjs stage-priority",
+    "distrib:export": "node distribution-engine/cli.cjs export",
+    "distrib:run": "node distribution-engine/cli.cjs run-all",
+    "distrib:test": "node --test distribution-engine/test/distributionEngine.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.1142.0",
