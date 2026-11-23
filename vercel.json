@@ -46,6 +46,48 @@
       ]
     },
     {
+      "source": "/embed/(.*)",
+      "headers": [
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: blob: https:; font-src 'self' https: data:; connect-src 'self' https://*.talentxcel.in https://*.supabase.co https://dthlgsnakhoftinssokm.supabase.co; frame-ancestors *;"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "ALLOWALL"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/api/embed/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
@@ -1917,6 +1959,18 @@
     {
       "source": "/api/seo/:path*",
       "destination": "/api/seo/:path*"
+    },
+    {
+      "source": "/api/embed/asset",
+      "destination": "/api/embed/asset"
+    },
+    {
+      "source": "/api/embed/telemetry",
+      "destination": "/api/embed/telemetry"
+    },
+    {
+      "source": "/api/embed/:path*",
+      "destination": "/api/embed/:path*"
     },
     {
       "source": "/api/badge",

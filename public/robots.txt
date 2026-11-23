@@ -190,6 +190,8 @@ Allow: /
 Disallow: /api/auth/
 Disallow: /api/user/
 Disallow: /api/private/
+Disallow: /embed/
+Disallow: /api/embed/
 
 # Allow search engine rendering assets
 Allow: /assets/
