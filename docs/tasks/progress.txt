@@ -1,0 +1,68 @@
+# Progress: TalentXcel Network Exact Online Presence & Last Seen System
+
+## Status: COMPLETE & VERIFIED
+
+### 1. Forensic Audit Findings
+- **Database Schema**:
+  - `public.profiles` had legacy `is_online BOOLEAN` and `last_seen TIMESTAMPTZ`.
+  - `public.user_presence` existed with `user_id`, `is_online`, `last_seen`, `current_module`, `current_page`, `device_type`, `updated_at`.
+  - In past performance migrations (`20261114000000` & `20261120050000`), `user_presence` was intentionally removed from `supabase_realtime` CDC publication to prevent WAL/disk I/O overload from continuous DB writes.
+  - Legacy RPC `update_user_presence(user_uuid, is_online_status)` lacked `auth.uid() = user_uuid` authorization check.
+  - `api/profile/record-activity.ts` lacked JWT token verification.
+- **Client Presence Logic**:
+  - No global heartbeat hook was running; `useUserPresence` was only called on isolated widgets (`People.tsx`).
+  - Heuristic "Active just now" was computed if `updated_at` was < 1 hour old or if `is_online = true`, resulting in stale "active" labels.
+  - Profile cards on `People.tsx` triggered N+1 separate queries via `RealTimePresence`.
+  - Messenger pages (`ExecutiveMessenger.tsx`, `ModernMessenger.tsx`) displayed hardcoded "🟢 Active Now".
+  - Profile detail page (`SlugProfile.tsx`) did not render online/last-seen status beneath headline/location.
+
+### 2. Implementation Summary
+- **Database Architecture & Migration**:
+  - Migration: `supabase/migrations/20261123200000_exact_online_presence_and_last_seen.sql` (applied and verified).
+  - Rollback migration: `supabase/migrations/20261123200000_exact_online_presence_and_last_seen_rollback.sql`.
+  - Added `last_heartbeat_at TIMESTAMPTZ` and `presence_visibility TEXT` ('everyone', 'connections_only', 'nobody') to `profiles`, `user_presence`, and `user_messaging_settings`.
+  - Indexes: `idx_profiles_presence_lookup` on `(id, is_online, last_heartbeat_at, presence_visibility)` and `idx_user_presence_heartbeat`.
+  - Upgraded RPC `update_user_presence(user_uuid, is_online_status)` with `auth.uid() = user_uuid` authorization.
+  - Created secure RPC `record_presence_heartbeat(p_is_online, p_module, p_page, p_device_type)`.
+  - Created secure RPC `set_presence_visibility(p_visibility)`.
+  - Created batch RPC `get_batch_presence(p_user_ids UUID[])` enforcing privacy checks server-side (only returns timestamps if viewer meets visibility rules).
+- **Client Heartbeat & Utilities**:
+  - `src/utils/presenceFormatter.ts`: Full status hierarchy ("Active now", "Active X minutes ago", "Active today at HH:MM AM/PM", "Active yesterday at HH:MM AM/PM", "Active MMM DD at HH:MM AM/PM"), deterministic timezone and AM/PM formatters, 120s online threshold.
+  - `src/hooks/useActivityHeartbeat.ts`: Global visibility-aware hook mounted in `OptimizedAuthProvider`. 60s active throttle, 5-minute idle timeout, 45s hidden tab offline delay, reconnection resilience, singleton loop.
+  - `src/components/network/PresenceIndicator.tsx`: Reusable indicator supporting `dot`, `text`, `compact`, `badge`, and `header` variants.
+  - `src/hooks/useUserPresence.ts`: Updated to delegate directly to `useActivityHeartbeat`.
+  - `src/components/network/RealTimePresence.tsx`: Upgraded to wrap `PresenceIndicator` without N+1 queries.
+  - `api/profile/record-activity.ts`: Hardened with JWT caller validation.
+- **UI Locations Updated**:
+  - `src/pages/network/Discover.tsx`: Exact time-relative presence, dot and text, batched with profile queries.
+  - `src/pages/network/Connections.tsx`: Exact time-relative presence across grid, list, and pending request cards.
+  - `src/pages/network/People.tsx`: Direct `PresenceIndicator` beneath location/headline without N+1 query storms.
+  - `src/pages/NetworkPage.tsx`: Integrated `formatPresence` and `PresenceIndicator` on network directory cards.
+  - `src/pages/SlugProfile.tsx`: Rendered presence indicator directly beneath location/headline and on side contact panel using `get_batch_presence`.
+  - `src/components/network/ExecutiveMessenger.tsx`: Replaced hardcoded "Active Now" in header and conversation list items with live `PresenceIndicator` and 30s refetch.
+  - `src/components/network/MessageConversationHeader.tsx`: Replaced hardcoded indicators with `PresenceIndicator`.
+  - `src/pages/network/MessageConversation.tsx`: Integrated 30s refetch on conversation partner presence.
+  - `src/components/network/ModernMessenger.tsx`: Replaced hardcoded "Active now" with `PresenceIndicator`.
+  - `src/components/messaging/EnhancedChatArea.tsx`: Replaced legacy `getOnlineStatus` with `PresenceIndicator`.
+  - `src/pages/network/MessageSettings.tsx` & `src/pages/profile/ProfileSettings.tsx`: Added 3-tier privacy selector ("Everyone", "Connections only", "Nobody") synced via `set_presence_visibility`.
+
+### 3. Verification & Test Results
+- **Unit & Scenario Tests**:
+  - `test/presenceFormatter.test.ts`: 8/8 tests passed.
+  - `test/presenceScenarios.test.ts`: 21/21 scenarios passed (covering all 20 requirements from Section 13).
+- **TypeScript Check**:
+  - `npx tsc --noEmit`: 0 errors.
+- **Production Build**:
+  - `npm run build`: Exited with code 0 (Vite v5.4.10, 7305 modules transformed, static SEO pre-rendering & subdomain routing finalized).
+- **Database & Security Review**:
+  - Migration applied on live Supabase project `dthlgsnakhoftinssokm`.
+  - RPC caller authentication and RLS verified.
+
+
+---
+
+# Feature: Private Profile Visitor Analytics (TalentXcel.in)
+## Status: In Progress - Step 1: Forensic Audit
+- Audit existing profile view tracking and unique view counters.
+- Inspect Supabase tables (`profile_views`, `analytics`, etc.), RPCs, and RLS policies.
+- Identify where `19 Profile Views (8 unique)` is rendered and how data is fetched.

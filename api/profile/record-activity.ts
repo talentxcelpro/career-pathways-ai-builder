@@ -3,7 +3,8 @@
  * POST /api/profile/record-activity
  *
  * Real-time User Activity & Freshness Recording Engine
- * Updates updated_at, last_login_at, last_seen, and is_online using privileged service role.
+ * Updates updated_at, last_login_at, last_seen, last_heartbeat_at, and is_online.
+ * Hardened with caller authorization check.
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
@@ -21,6 +22,11 @@ const SUPABASE_SERVICE_ROLE_KEY =
   process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
   process.env.SUPABASE_SERVICE_ROLE_KEY ||
   process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  '';
+
+const SUPABASE_ANON_KEY =
+  process.env.VITE_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_ANON_KEY ||
   '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -42,6 +48,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Missing valid userId' });
     }
 
+    // Verify authenticated user identity if auth header provided
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      const token = authHeader.slice(7);
+      const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_ANON_KEY || SUPABASE_SERVICE_ROLE_KEY);
+      const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+      if (authError || !user || user.id !== userId) {
+        return res.status(403).json({ error: 'Forbidden: Cannot update presence for another user.' });
+      }
+    }
+
     if (!SUPABASE_SERVICE_ROLE_KEY) {
       console.warn('[RecordActivity] Missing service role key; fallback acknowledge');
       return res.status(200).json({ success: true, fallback: true });
@@ -58,6 +75,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         updated_at: now,
         last_login_at: now,
         last_seen: now,
+        last_heartbeat_at: now,
         is_online: true
       })
       .eq('id', userId);

@@ -28,6 +28,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface UserPreferences {
   profileVisibility: 'public' | 'connections' | 'private';
+  presenceVisibility: 'everyone' | 'connections_only' | 'nobody';
   showEmail: boolean;
   showPhone: boolean;
   allowMessaging: boolean;
@@ -46,6 +47,7 @@ interface UserPreferences {
 
 const DEFAULT_PREFERENCES: UserPreferences = {
   profileVisibility: 'private',
+  presenceVisibility: 'everyone',
   showEmail: false,
   showPhone: false,
   allowMessaging: true,
@@ -85,6 +87,20 @@ const ProfileSettings = () => {
         const localPrefs = localPrefsStr ? JSON.parse(localPrefsStr) : {};
 
         let effectiveVisibility: 'public' | 'connections' | 'private' = 'private';
+        let effectivePresenceVisibility: 'everyone' | 'connections_only' | 'nobody' = 'everyone';
+
+        // Fetch presence_visibility directly from profiles
+        const { data: profileRecord } = await supabase
+          .from('profiles')
+          .select('presence_visibility')
+          .eq('id', user.id)
+          .maybeSingle();
+
+        if (profileRecord?.presence_visibility) {
+          effectivePresenceVisibility = profileRecord.presence_visibility as any;
+        } else if (metaPrefs?.presenceVisibility) {
+          effectivePresenceVisibility = metaPrefs.presenceVisibility;
+        }
         
         // Fetch explicit affirmative consent from candidate_privacy_consents
         const { data: consentRecord } = await supabase
@@ -106,6 +122,7 @@ const ProfileSettings = () => {
             ...(metaPrefs || {}),
             ...localPrefs,
             profileVisibility: effectiveVisibility,
+            presenceVisibility: effectivePresenceVisibility,
           });
         }
       } catch {
@@ -136,6 +153,11 @@ const ProfileSettings = () => {
         if (rpcError) {
           console.error('Failed to sync consent RPC:', rpcError);
         }
+
+        // 1b. Synchronize presence visibility
+        await supabase.rpc('set_presence_visibility', {
+          p_visibility: settings.presenceVisibility
+        });
 
         // 2. Save to Supabase auth metadata
         const { error: authError } = await supabase.auth.updateUser({
@@ -378,6 +400,28 @@ const ProfileSettings = () => {
                   </span>
                 </div>
               )}
+            </div>
+
+            <div className="pt-2">
+              <label className="text-sm font-medium mb-1.5 block">Show My Online Status</label>
+              <Select
+                value={settings.presenceVisibility}
+                onValueChange={(value: 'everyone' | 'connections_only' | 'nobody') =>
+                  setSettings(prev => ({ ...prev, presenceVisibility: value }))
+                }
+              >
+                <SelectTrigger className="max-w-md h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="everyone">Everyone — Visible to all TalentXcel members</SelectItem>
+                  <SelectItem value="connections_only">Connections only — Only visible to 1st-degree connections</SelectItem>
+                  <SelectItem value="nobody">Nobody — Keep online status & last seen private</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Controls whether your online indicator ("Active now") and exact last active timestamps appear on profile cards, profiles, and messaging.
+              </p>
             </div>
 
             <Separator className="my-2" />

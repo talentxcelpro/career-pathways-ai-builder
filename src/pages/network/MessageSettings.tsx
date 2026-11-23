@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Bell, Shield, Eye, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -16,6 +17,7 @@ interface MessagingSettings {
   read_receipts: boolean;
   typing_indicators: boolean;
   online_status: boolean;
+  presence_visibility: 'everyone' | 'connections_only' | 'nobody';
   auto_accept_connections: boolean;
   filter_requests: boolean;
 }
@@ -27,6 +29,7 @@ const defaultSettings: MessagingSettings = {
   read_receipts: true,
   typing_indicators: true,
   online_status: true,
+  presence_visibility: 'everyone',
   auto_accept_connections: true,
   filter_requests: false,
 };
@@ -61,6 +64,7 @@ const MessageSettings: React.FC = () => {
             read_receipts: data.read_receipts ?? true,
             typing_indicators: data.typing_indicators ?? true,
             online_status: data.online_status ?? true,
+            presence_visibility: (data.presence_visibility as any) || (data.online_status === false ? 'nobody' : 'everyone'),
             auto_accept_connections: data.auto_accept_connections ?? true,
             filter_requests: data.filter_requests ?? false,
           });
@@ -87,11 +91,17 @@ const MessageSettings: React.FC = () => {
 
     setIsSaving(true);
     try {
+      // Sync presence visibility across profiles and user_presence via secure RPC
+      await supabase.rpc('set_presence_visibility', {
+        p_visibility: settings.presence_visibility
+      });
+
       const { error } = await supabase
         .from('user_messaging_settings' as any)
         .upsert({
           user_id: user.id,
           ...settings,
+          online_status: settings.presence_visibility !== 'nobody',
           updated_at: new Date().toISOString()
         });
 
@@ -207,16 +217,32 @@ const MessageSettings: React.FC = () => {
                   />
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="pt-2 border-t border-border/40 space-y-2">
                   <div>
-                    <Label htmlFor="online-status">Online status</Label>
-                    <p className="text-sm text-gray-600 dark:text-muted-foreground">Show when you're active on TalentXcel</p>
+                    <Label htmlFor="online-status" className="font-semibold text-foreground">Show my online status</Label>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground">
+                      Control who can see when you are active and your exact last seen time
+                    </p>
                   </div>
-                  <Switch 
-                    id="online-status" 
-                    checked={settings.online_status}
-                    onCheckedChange={() => handleToggle('online_status')}
-                  />
+                  <Select
+                    value={settings.presence_visibility}
+                    onValueChange={(val: 'everyone' | 'connections_only' | 'nobody') =>
+                      setSettings(prev => ({
+                        ...prev,
+                        presence_visibility: val,
+                        online_status: val !== 'nobody'
+                      }))
+                    }
+                  >
+                    <SelectTrigger id="online-status" className="w-full max-w-sm h-9 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="everyone">Everyone (All TalentXcel members)</SelectItem>
+                      <SelectItem value="connections_only">Connections only (1st-degree connections only)</SelectItem>
+                      <SelectItem value="nobody">Nobody (Hide online status & last seen)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>

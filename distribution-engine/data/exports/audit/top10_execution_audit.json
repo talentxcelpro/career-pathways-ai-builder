@@ -1,0 +1,126 @@
+{
+  "timestamp": "2026-11-23T13:02:48.695Z",
+  "totalAudited": 10,
+  "results": [
+    {
+      "platformId": "REAL_0503",
+      "platformName": "Peerlist",
+      "domain": "peerlist.io",
+      "endpoint": "https://peerlist.io/submit",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 403,
+      "title": "Beyond the Endless Feed: Why Algorithmic Noise Is Killing Professional Networking",
+      "targetUrl": "https://talentxcel.in/network",
+      "outcome": "FAILED_HTTP_UNREACHABLE",
+      "details": "Target endpoint returned HTTP 403 (Failed)"
+    },
+    {
+      "platformId": "REAL_0502",
+      "platformName": "Showwcase",
+      "domain": "showwcase.com",
+      "endpoint": "https://www.showwcase.com/post",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 404,
+      "title": "Building Public Proof of Work: Why a Live Web Service Beats 50 Certifications",
+      "targetUrl": "https://talentxcel.in/careers",
+      "outcome": "FAILED_HTTP_UNREACHABLE",
+      "details": "Target endpoint returned HTTP 404 (Failed)"
+    },
+    {
+      "platformId": "REAL_0501",
+      "platformName": "HackerNoon",
+      "domain": "hackernoon.com",
+      "endpoint": "https://hackernoon.com/write",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 301,
+      "title": "ATS Tokenization and Semantic Search: How Modern Applicant Tracking Systems Actually Parse Resumes",
+      "targetUrl": "https://talentxcel.in/resume",
+      "outcome": "BLOCKED_AUTH_REQUIRED",
+      "details": "Community publishing platform requires authenticated member profile to create posts."
+    },
+    {
+      "platformId": "REAL_0538",
+      "platformName": "Uneed Best",
+      "domain": "uneed.best",
+      "endpoint": "https://www.uneed.best/submit-a-tool",
+      "method": "FORM",
+      "httpStatus": 200,
+      "title": "TalentXcel: ATS Resume Optimization & Cryptographic Career Passport Infrastructure",
+      "targetUrl": "https://talentxcel.in",
+      "outcome": "BLOCKED_AUTH_REQUIRED",
+      "details": "Community publishing platform requires authenticated member profile to create posts."
+    },
+    {
+      "platformId": "REAL_0537",
+      "platformName": "MicroLaunch",
+      "domain": "microlaunch.net",
+      "endpoint": "https://microlaunch.net/submit",
+      "method": "FORM",
+      "httpStatus": 307,
+      "title": "TalentXcel: Free Transparent Career Infrastructure for Global Talent",
+      "targetUrl": "https://talentxcel.in",
+      "outcome": "BLOCKED_AUTH_REQUIRED",
+      "details": "Community publishing platform requires authenticated member profile to create posts."
+    },
+    {
+      "platformId": "REAL_0026",
+      "platformName": "SaaSHub",
+      "domain": "saashub.com",
+      "endpoint": "https://www.saashub.com/submit",
+      "method": "FORM",
+      "httpStatus": 200,
+      "title": "TalentXcel: ATS Resume Optimization & Verified Career Network",
+      "targetUrl": "https://talentxcel.in/resume",
+      "outcome": "BLOCKED_AUTH_REQUIRED",
+      "details": "Submission form is gated behind user login session."
+    },
+    {
+      "platformId": "REAL_0534",
+      "platformName": "Bootstrappers",
+      "domain": "bootstrappers.com",
+      "endpoint": "https://bootstrappers.com/submit",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 0,
+      "title": "Building Public Proof of Work: Why a Live Web Service Beats 50 Certifications",
+      "targetUrl": "https://talentxcel.in/careers",
+      "outcome": "FAILED_HTTP_UNREACHABLE",
+      "details": "Target endpoint returned HTTP 0 (socket hang up)"
+    },
+    {
+      "platformId": "REAL_0545",
+      "platformName": "ProductLed",
+      "domain": "productled.com",
+      "endpoint": "https://productled.com/community",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 200,
+      "title": "Beyond the Endless Feed: Why Algorithmic Noise Is Killing Professional Networking",
+      "targetUrl": "https://talentxcel.in/network",
+      "outcome": "BLOCKED_CAPTCHA_GATED",
+      "details": "Endpoint requires interactive CAPTCHA / bot verification challenge. Automated submission blocked by system policy."
+    },
+    {
+      "platformId": "REAL_0554",
+      "platformName": "FreeCodeCamp Community",
+      "domain": "freecodecamp.org",
+      "endpoint": "https://forum.freecodecamp.org",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 200,
+      "title": "ATS Tokenization and Semantic Search: How Modern Applicant Tracking Systems Actually Parse Resumes",
+      "targetUrl": "https://talentxcel.in/resume",
+      "outcome": "BLOCKED_AUTH_REQUIRED",
+      "details": "Endpoint requires authenticated author/contributor account login. Session credentials not configured."
+    },
+    {
+      "platformId": "REAL_0550",
+      "platformName": "StartupNation",
+      "domain": "startupnation.com",
+      "endpoint": "https://startupnation.com/community",
+      "method": "COMMUNITY_POST",
+      "httpStatus": 403,
+      "title": "The Hidden Job Market Architecture: Engineering Career Transitions Through Strategic Value Demonstration",
+      "targetUrl": "https://talentxcel.in/careers",
+      "outcome": "FAILED_HTTP_UNREACHABLE",
+      "details": "Target endpoint returned HTTP 403 (Failed)"
+    }
+  ]
+}

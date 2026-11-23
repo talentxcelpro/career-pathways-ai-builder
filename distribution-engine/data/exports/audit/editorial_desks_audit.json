@@ -1,0 +1,141 @@
+[
+  {
+    "name": "People Matters",
+    "url": "https://www.peoplematters.in/article-submission-guidelines",
+    "status": 307,
+    "location": "/404",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": true,
+    "emails": []
+  },
+  {
+    "name": "Analytics India Mag",
+    "url": "https://analyticsindiamag.com/write-for-us/",
+    "status": 301,
+    "location": "/write-for-us",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": []
+  },
+  {
+    "name": "Feedough",
+    "url": "https://www.feedough.com/write-for-us/",
+    "status": 404,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [
+      "cropped-sdAsset-1@4x.png"
+    ],
+    "title": "Page not found - Feedough"
+  },
+  {
+    "name": "Career Contessa",
+    "url": "https://www.careercontessa.com/write-for-us/",
+    "status": 301,
+    "location": "http://www.careercontessa.com/about/",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "301 Moved Permanently"
+  },
+  {
+    "name": "Workology",
+    "url": "https://workology.com/write-for-workology/",
+    "status": 404,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "Page not found - Workology"
+  },
+  {
+    "name": "TechStory",
+    "url": "https://techstory.in/submit-a-story/",
+    "status": 403,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "Just a moment..."
+  },
+  {
+    "name": "YourStory",
+    "url": "https://yourstory.com/submit-story",
+    "status": 200,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "YourStory | YourStory"
+  },
+  {
+    "name": "Ask a Manager",
+    "url": "https://www.askamanager.org/ask-a-question",
+    "status": 403,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "Just a moment..."
+  },
+  {
+    "name": "HR Bartender",
+    "url": "https://www.hrbartender.com/contact/",
+    "status": null,
+    "error": "write EPROTO D84E0000:error:0A000410:SSL routines:ssl3_read_bytes:ssl/tls alert handshake failure:openssl\\ssl\\record\\rec_layer_s3.c:918:SSL alert number 40\n"
+  },
+  {
+    "name": "BusinessCloud UK",
+    "url": "https://businesscloud.co.uk/contact/",
+    "status": 200,
+    "hasForm": false,
+    "hasCaptcha": true,
+    "isEditorial": false,
+    "emails": [],
+    "title": "Contact us - BusinessCloud"
+  },
+  {
+    "name": "Startups.co.uk",
+    "url": "https://startups.co.uk/contact-us/",
+    "status": 200,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "Contact us | Get in Touch with Startups.co.uk"
+  },
+  {
+    "name": "Techcouver",
+    "url": "https://techcouver.com/contact/",
+    "status": 301,
+    "location": "https://techcouver.com/2020/12/14/contact-tracing-2021-iihf-world-juniors-edmonton/",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": []
+  },
+  {
+    "name": "Startup Daily AU",
+    "url": "https://www.startupdaily.net/contact/",
+    "status": 301,
+    "location": "https://www.startupdaily.net/contact-us/",
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": []
+  },
+  {
+    "name": "InnovationAus",
+    "url": "https://www.innovationaus.com/contact/",
+    "status": 403,
+    "hasForm": false,
+    "hasCaptcha": false,
+    "isEditorial": false,
+    "emails": [],
+    "title": "Just a moment..."
+  }
+]

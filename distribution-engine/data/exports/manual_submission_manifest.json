@@ -1,0 +1,246 @@
+{
+  "timestamp": "2026-11-23T11:16:50.395Z",
+  "totalAudited": 8,
+  "results": [
+    {
+      "platform": "Prospects UK",
+      "domain": "prospects.ac.uk",
+      "country": "United Kingdom",
+      "liveStatus": 200,
+      "endpointVerified": "https://www.prospects.ac.uk",
+      "submissionPathway": "https://www.prospects.ac.uk/careers-advice",
+      "hasCaptcha": false,
+      "hasLogin": false,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "Prospects UK accepts authoritative graduate advice contributions from accredited career service providers and education bodies.",
+      "tailoredPayload": {
+        "title": "The Graduate Transition Protocol: Translating Academic Projects into High-Signal Portfolio Evidence",
+        "targetPlatform": "Prospects UK",
+        "domain": "prospects.ac.uk",
+        "country": "United Kingdom",
+        "targetUrl": "https://talentxcel.in/resume",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "UK university students and graduate job seekers",
+        "pathwayUrl": "https://www.prospects.ac.uk/careers-advice",
+        "submissionPathwayNotes": "Prospects UK accepts authoritative graduate advice contributions from accredited career service providers and education bodies.",
+        "requiresAuthOrCaptcha": false,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "targetjobs UK",
+      "domain": "targetjobs.co.uk",
+      "country": "United Kingdom",
+      "liveStatus": 200,
+      "endpointVerified": "https://targetjobs.co.uk",
+      "submissionPathway": "https://targetjobs.co.uk/careers-advice",
+      "hasCaptcha": false,
+      "hasLogin": false,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "targetjobs accepts career advice and employer insights via their GTI editorial partnership and contributor network.",
+      "tailoredPayload": {
+        "title": "The UK Graduate Job Search Playbook: Navigating Assessment Centres & Technical Screening",
+        "targetPlatform": "targetjobs UK",
+        "domain": "targetjobs.co.uk",
+        "country": "United Kingdom",
+        "targetUrl": "https://talentxcel.in/jobs",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "UK graduates and early career entrants",
+        "pathwayUrl": "https://targetjobs.co.uk/careers-advice",
+        "submissionPathwayNotes": "targetjobs accepts career advice and employer insights via their GTI editorial partnership and contributor network.",
+        "requiresAuthOrCaptcha": false,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "TalentEgg",
+      "domain": "talentegg.ca",
+      "country": "Canada",
+      "liveStatus": 200,
+      "endpointVerified": "https://talentegg.ca",
+      "submissionPathway": "https://talentegg.ca/incubator",
+      "hasCaptcha": false,
+      "hasLogin": true,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "TalentEgg Incubator accepts student career contributor articles and employer spotlights via direct editorial submission.",
+      "tailoredPayload": {
+        "title": "Canadian Tech Hiring: Overcoming the First-Job Experience Paradox with Public Proof of Work",
+        "targetPlatform": "TalentEgg",
+        "domain": "talentegg.ca",
+        "country": "Canada",
+        "targetUrl": "https://talentxcel.in/resume",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "Canadian college and university graduates",
+        "pathwayUrl": "https://talentegg.ca/incubator",
+        "submissionPathwayNotes": "TalentEgg Incubator accepts student career contributor articles and employer spotlights via direct editorial submission.",
+        "requiresAuthOrCaptcha": true,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "Remote OK",
+      "domain": "remoteok.com",
+      "country": "United States",
+      "liveStatus": 200,
+      "endpointVerified": "https://remoteok.com",
+      "submissionPathway": "https://remoteok.com/post",
+      "hasCaptcha": false,
+      "hasLogin": true,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "RemoteOK job/resource posting requires employer account authentication and Stripe payment for standard listings, or community contribution via founder channel.",
+      "tailoredPayload": {
+        "title": "The Asynchronous Literacy Standard: What Distributed Teams Actually Screen For",
+        "targetPlatform": "Remote OK",
+        "domain": "remoteok.com",
+        "country": "United States",
+        "targetUrl": "https://talentxcel.in/careers",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "Global remote workers and asynchronous engineering candidates",
+        "pathwayUrl": "https://remoteok.com/post",
+        "submissionPathwayNotes": "RemoteOK job/resource posting requires employer account authentication and Stripe payment for standard listings, or community contribution via founder channel.",
+        "requiresAuthOrCaptcha": true,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "Jobberman",
+      "domain": "jobberman.com",
+      "country": "Nigeria / West Africa",
+      "liveStatus": 200,
+      "endpointVerified": "https://www.jobberman.com",
+      "submissionPathway": "https://www.jobberman.com/career-advice",
+      "hasCaptcha": false,
+      "hasLogin": false,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "Jobberman Career Advice desk accepts expert career development and employability contributor pieces.",
+      "tailoredPayload": {
+        "title": "West African Tech & Professional Careers: Navigating the Remote Global Opportunity Wave",
+        "targetPlatform": "Jobberman",
+        "domain": "jobberman.com",
+        "country": "Nigeria / West Africa",
+        "targetUrl": "https://talentxcel.in/jobs",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "Nigerian and West African graduates and career changers",
+        "pathwayUrl": "https://www.jobberman.com/career-advice",
+        "submissionPathwayNotes": "Jobberman Career Advice desk accepts expert career development and employability contributor pieces.",
+        "requiresAuthOrCaptcha": false,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "Bright Network",
+      "domain": "brightnetwork.co.uk",
+      "country": "United Kingdom",
+      "liveStatus": 403,
+      "endpointVerified": "https://www.brightnetwork.co.uk/career-path-guides",
+      "submissionPathway": "https://www.brightnetwork.co.uk/career-path-guides",
+      "hasCaptcha": false,
+      "hasLogin": false,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "Bright Network partners with emerging talent platforms for student advice features and technical sector guides.",
+      "tailoredPayload": {
+        "title": "De-Mystifying Technical Screening: How High-Signal Candidates Stand Out in Competitive Graduate Schemes",
+        "targetPlatform": "Bright Network",
+        "domain": "brightnetwork.co.uk",
+        "country": "United Kingdom",
+        "targetUrl": "https://talentxcel.in/resume",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "Ambitious UK graduates and university members",
+        "pathwayUrl": "https://www.brightnetwork.co.uk/career-path-guides",
+        "submissionPathwayNotes": "Bright Network partners with emerging talent platforms for student advice features and technical sector guides.",
+        "requiresAuthOrCaptcha": false,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "BrainStation",
+      "domain": "brainstation.io",
+      "country": "Canada / US",
+      "liveStatus": 403,
+      "endpointVerified": "https://brainstation.io/magazine",
+      "submissionPathway": "https://brainstation.io/magazine",
+      "hasCaptcha": false,
+      "hasLogin": false,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "BrainStation Magazine accepts thought leadership pieces on digital skills, tech careers, and bootcamp graduate transition advice.",
+      "tailoredPayload": {
+        "title": "Beyond Bootcamps: How Self-Directed Proof of Work Bridges the Junior Developer Experience Gap",
+        "targetPlatform": "BrainStation",
+        "domain": "brainstation.io",
+        "country": "Canada / US",
+        "targetUrl": "https://talentxcel.in/resume",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "Tech boot campers, career switchers, digital product designers",
+        "pathwayUrl": "https://brainstation.io/magazine",
+        "submissionPathwayNotes": "BrainStation Magazine accepts thought leadership pieces on digital skills, tech careers, and bootcamp graduate transition advice.",
+        "requiresAuthOrCaptcha": false,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    },
+    {
+      "platform": "Platzi",
+      "domain": "platzi.com",
+      "country": "LATAM",
+      "liveStatus": 200,
+      "endpointVerified": "https://platzi.com",
+      "submissionPathway": "https://platzi.com/blog",
+      "hasCaptcha": false,
+      "hasLogin": false,
+      "operationalStatus": "STAGED_FOR_MANUAL_SUBMISSION",
+      "actionReason": "Platzi community posting requires Platzi student/teacher account login to publish Spanish tech tutorials to the Platzi Blog / Forum.",
+      "tailoredPayload": {
+        "title": "Construyendo Pruebas de Trabajo Públicas: Cómo Desarrolladores en LATAM Acceden a Empleos Remotos Globales",
+        "targetPlatform": "Platzi",
+        "domain": "platzi.com",
+        "country": "LATAM",
+        "targetUrl": "https://talentxcel.in/resume",
+        "anchorText": "TalentXcel Career Infrastructure",
+        "targetAudience": "Spanish-speaking developers, tech learners, and remote workers in Latin America",
+        "pathwayUrl": "https://platzi.com/blog",
+        "submissionPathwayNotes": "Platzi community posting requires Platzi student/teacher account login to publish Spanish tech tutorials to the Platzi Blog / Forum.",
+        "requiresAuthOrCaptcha": false,
+        "contentOutline": [
+          "Introduction: Current hiring paradigm and the friction facing candidates.",
+          "Core Framework: 3 actionable methodologies tailored to the platform's specific demographic.",
+          "Proof of Work Case Study: Real-world implementation with zero vanity metrics.",
+          "Resource Reference: Transparent, non-commercial attribution to TalentXcel tools."
+        ]
+      }
+    }
+  ]
+}

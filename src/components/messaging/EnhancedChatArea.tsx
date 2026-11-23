@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from 'react-router-dom';
 import MediaPreview from "@/components/posts/MediaPreview";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 
 interface EnhancedChatAreaProps {
   selectedConversation: string | null;
@@ -49,7 +50,7 @@ export const EnhancedChatArea: React.FC<EnhancedChatAreaProps> = ({
         .from('profiles')
         .select(`
           id, full_name, profile_picture_url, title, 
-          current_company, location, is_online, last_seen
+          current_company, location, is_online, last_seen, last_heartbeat_at, presence_visibility
         `)
         .eq('id', selectedConversation)
         .single();
@@ -163,9 +164,15 @@ export const EnhancedChatArea: React.FC<EnhancedChatAreaProps> = ({
                   <span> · {conversationProfile.current_company}</span>
                 )}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {getOnlineStatus()}
-              </p>
+              <div className="pt-0.5">
+                <PresenceIndicator
+                  isOnline={conversationProfile?.is_online}
+                  lastSeen={conversationProfile?.last_seen}
+                  lastHeartbeatAt={conversationProfile?.last_heartbeat_at}
+                  visibility={conversationProfile?.presence_visibility}
+                  variant="compact"
+                />
+              </div>
             </div>
           </div>
           <div className="flex space-x-2">

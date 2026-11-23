@@ -8,6 +8,7 @@ import {
 } from '@/types/publisherAdoption';
 import { EmbedAssetCategory } from '@/types/embed';
 import { embedRegistry } from '@/services/embed/EmbedRegistry';
+import { INDIAN_INSTITUTIONS_CATALOG } from '@/data/indianInstitutionsCatalog';
 
 export interface MatchingResult {
   suggestedEmbedCategory: EmbedAssetCategory;
@@ -152,15 +153,60 @@ export class PublisherScoringEngine {
 
     // 1. Colleges & Placement Cells
     if (category === 'college') {
-      // Check if this college exists in our verified registry
+      const cleanDomain = domain.toLowerCase().replace(/^www\./, '');
       const cleanName = publisherName.toLowerCase();
-      const colAsset = embedRegistry.getAsset('college', 'indian-institute-of-technology-madras');
+
+      // Check if this college exists in our verified catalog by official website or source URL
+      let inst = INDIAN_INSTITUTIONS_CATALOG.find((i) => {
+        const site = i.identity?.officialWebsite?.toLowerCase() || '';
+        const src = i.verification?.officialSourceUrl?.toLowerCase() || '';
+        return site.includes(cleanDomain) || src.includes(cleanDomain);
+      });
+
+      if (!inst) {
+        // Keyword / city mapping for major IITs, NITs, and institutes
+        const acronyms: Record<string, string> = {
+          'iitm.ac.in': 'madras',
+          'iitd.ac.in': 'delhi',
+          'iitb.ac.in': 'bombay',
+          'iitk.ac.in': 'kanpur',
+          'iitkgp.ac.in': 'kharagpur',
+          'iitr.ac.in': 'roorkee',
+          'iitg.ac.in': 'guwahati',
+          'iith.ac.in': 'hyderabad',
+          'bits-pilani.ac.in': 'bits-pilani',
+          'nitt.edu': 'tiruchirappalli'
+        };
+        const term = acronyms[cleanDomain];
+        if (term) {
+          inst = INDIAN_INSTITUTIONS_CATALOG.find((i) => {
+            if (cleanDomain.startsWith('iit') && !i.slug.startsWith('indian-institute-of-technology')) {
+              return false;
+            }
+            if (cleanDomain === 'nitt.edu' && !i.slug.startsWith('national-institute-of-technology')) {
+              return false;
+            }
+            return i.slug.includes(term) || i.name.toLowerCase().includes(term);
+          });
+        }
+      }
+
+      if (!inst) {
+        // Fallback substring matching on institutional name
+        inst = INDIAN_INSTITUTIONS_CATALOG.find((i) =>
+          i.name.toLowerCase().includes(cleanName) || cleanName.includes(i.name.toLowerCase())
+        );
+      }
+
+      // Generate deterministic slug for this specific institution
+      const collegeSlug = inst ? inst.slug : cleanName.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const colAsset = embedRegistry.buildCollegeAsset(collegeSlug);
 
       return {
         suggestedEmbedCategory: 'college',
-        suggestedAssetId: colAsset?.id || 'txc-college-indian-institute-of-technology-madras',
+        suggestedAssetId: colAsset?.id || `txc-college-${collegeSlug}`,
         suggestedAssetTitle: `${publisherName} Verified Placement & ROI Card`,
-        canonicalAssetUrl: colAsset?.canonicalUrl || 'https://www.talentxcel.in/colleges',
+        canonicalAssetUrl: colAsset?.canonicalUrl || `https://www.talentxcel.in/colleges/${collegeSlug}`,
         matchingRationale: `Official institutional placement cells and alumni blogs benefit from verified, tamper-proof placement statistics with live NIRF metrics and top recruiter partners.`,
         suggestedPlacement: `Placement Cell Portal (e.g. /placements, /career-services, or Student Notice Board)`
       };

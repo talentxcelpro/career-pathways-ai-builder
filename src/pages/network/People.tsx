@@ -35,6 +35,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProfileViews } from '@/hooks/useProfileViews';
 import { useUserPresence } from '@/hooks/useUserPresence';
 import { RealTimePresence } from '@/components/network/RealTimePresence';
+import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 import { toast } from 'sonner';
 
 // Public member directory backed by profiles that members explicitly mark public
@@ -56,6 +57,10 @@ interface GlobalTalentProfile {
   is_verified?: boolean;
   activity_snippet?: string;
   activity_type?: 'reel' | 'post' | 'hiring' | 'achievement';
+  is_online?: boolean | null;
+  last_seen?: string | null;
+  last_heartbeat_at?: string | null;
+  presence_visibility?: string | null;
 }
 
 const GLOBAL_SPOTLIGHT_LEADERS: GlobalTalentProfile[] = [];
@@ -118,7 +123,7 @@ const People: React.FC = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, profile_visibility, verification_status, created_at')
+        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, profile_visibility, verification_status, created_at, is_online, last_seen, last_heartbeat_at, presence_visibility')
         .eq('profile_visibility', 'public')
         .not('full_name', 'is', null)
         .neq('full_name', '')
@@ -212,6 +217,10 @@ const People: React.FC = () => {
           skills: rawSkills.slice(0, 4),
           profile_photo_url: photo,
           is_verified: db.verification_status === 'verified',
+          is_online: db.is_online,
+          last_seen: db.last_seen,
+          last_heartbeat_at: db.last_heartbeat_at,
+          presence_visibility: db.presence_visibility,
         };
       });
 
@@ -680,7 +689,14 @@ const People: React.FC = () => {
                                   {generateInitials(person.full_name)}
                                 </AvatarFallback>
                               </Avatar>
-                              <RealTimePresence userId={person.id} variant="dot" />
+                              <PresenceIndicator
+                                isOnline={person.is_online}
+                                lastSeen={person.last_seen}
+                                lastHeartbeatAt={person.last_heartbeat_at}
+                                visibility={person.presence_visibility}
+                                variant="dot"
+                                dotClassName="absolute bottom-0 right-0 w-3 h-3 border-2 border-white dark:border-slate-800 shadow-2xs"
+                              />
                             </div>
 
                             <div className="flex items-center gap-1.5">
@@ -733,6 +749,16 @@ const People: React.FC = () => {
                                 <span className="truncate">{person.location}</span>
                               </div>
                             )}
+
+                            <div className="pt-0.5">
+                              <PresenceIndicator
+                                isOnline={person.is_online}
+                                lastSeen={person.last_seen}
+                                lastHeartbeatAt={person.last_heartbeat_at}
+                                visibility={person.presence_visibility}
+                                variant="compact"
+                              />
+                            </div>
                           </div>
 
                           {/* Skills Pills */}

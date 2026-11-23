@@ -1,0 +1,112 @@
+[
+  {
+    "target_id": "TARGET_01",
+    "channel": "EDITORIAL_PITCH",
+    "publication": "People Matters",
+    "domain": "peoplematters.in",
+    "canonical_target": "https://talentxcel.in/passport",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (AWS SES / SMTP unconfigured)"
+  },
+  {
+    "target_id": "TARGET_02",
+    "channel": "EDITORIAL_PITCH",
+    "publication": "HR Katha",
+    "domain": "hrkatha.com",
+    "canonical_target": "https://talentxcel.in/resume",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (AWS SES / SMTP unconfigured)"
+  },
+  {
+    "target_id": "TARGET_03",
+    "channel": "EDITORIAL_PITCH",
+    "publication": "BW People",
+    "domain": "businessworld.in",
+    "canonical_target": "https://talentxcel.in/passport",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (AWS SES / SMTP unconfigured)"
+  },
+  {
+    "target_id": "TARGET_04",
+    "channel": "EDITORIAL_PITCH",
+    "publication": "Silicon India",
+    "domain": "siliconindia.com",
+    "canonical_target": "https://talentxcel.in/careers",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (AWS SES / SMTP unconfigured)"
+  },
+  {
+    "target_id": "TARGET_05",
+    "channel": "EDITORIAL_PITCH",
+    "publication": "Work It Daily",
+    "domain": "workitdaily.com",
+    "canonical_target": "https://talentxcel.in/careers",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (AWS SES / SMTP unconfigured)"
+  },
+  {
+    "target_id": "TARGET_06",
+    "channel": "EDITORIAL_PITCH",
+    "publication": "StartupTalky",
+    "domain": "startuptalky.com",
+    "canonical_target": "https://talentxcel.in",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (AWS SES / SMTP unconfigured)"
+  },
+  {
+    "target_id": "TARGET_07",
+    "channel": "API_PUBLISHING",
+    "publication": "DEV Community",
+    "domain": "dev.to",
+    "canonical_target": "https://talentxcel.in/resume",
+    "current_status": "CONTENT_READY",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "AUTHORIZATION_REQUIRED (DEVTO_API_KEY unconfigured)"
+  },
+  {
+    "target_id": "TARGET_08",
+    "channel": "STARTUP_DIRECTORY",
+    "publication": "Launching Next",
+    "domain": "launchingnext.com",
+    "canonical_target": "https://talentxcel.in",
+    "current_status": "HUMAN_ACTION_REQUIRED",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "Math anti-bot check requires interactive human entry"
+  },
+  {
+    "target_id": "TARGET_09",
+    "channel": "STARTUP_DIRECTORY",
+    "publication": "SaaSHub",
+    "domain": "saashub.com",
+    "canonical_target": "https://talentxcel.in",
+    "current_status": "HUMAN_ACTION_REQUIRED",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "User OAuth authentication required"
+  },
+  {
+    "target_id": "TARGET_10",
+    "channel": "STARTUP_DIRECTORY",
+    "publication": "BetaList",
+    "domain": "betalist.com",
+    "canonical_target": "https://talentxcel.in",
+    "current_status": "HUMAN_ACTION_REQUIRED",
+    "live_publication_url": null,
+    "backlink_verified": false,
+    "blocker": "Founder OAuth login required"
+  }
+]

@@ -1,0 +1,106 @@
+[
+  {
+    "name": "DevClass",
+    "domain": "devclass.com",
+    "bestPathway": null
+  },
+  {
+    "name": "InfoQ",
+    "domain": "infoq.com",
+    "bestPathway": null
+  },
+  {
+    "name": "Changelog",
+    "domain": "changelog.com",
+    "bestPathway": {
+      "path": "/community",
+      "status": 200,
+      "hasForm": true,
+      "isCaptcha": false,
+      "isEditorial": false,
+      "hasAuthGate": false,
+      "bodyLength": 31815
+    }
+  },
+  {
+    "name": "Analytics Vidhya",
+    "domain": "analyticsvidhya.com",
+    "bestPathway": null
+  },
+  {
+    "name": "CareerFoundry",
+    "domain": "careerfoundry.com",
+    "bestPathway": null
+  },
+  {
+    "name": "RecruitingDaily",
+    "domain": "recruitingdaily.com",
+    "bestPathway": null
+  },
+  {
+    "name": "HR Morning",
+    "domain": "hrmorning.com",
+    "bestPathway": null
+  },
+  {
+    "name": "Job Board Doctor",
+    "domain": "jobboarddoctor.com",
+    "bestPathway": null
+  },
+  {
+    "name": "Startup Grind",
+    "domain": "startupgrind.com",
+    "bestPathway": null
+  },
+  {
+    "name": "SaaStr",
+    "domain": "saastr.com",
+    "bestPathway": null
+  },
+  {
+    "name": "Startupticker Switzerland",
+    "domain": "startupticker.ch",
+    "bestPathway": null
+  },
+  {
+    "name": "Starter Story",
+    "domain": "starterstory.com",
+    "bestPathway": null
+  },
+  {
+    "name": "MicroConf",
+    "domain": "microconf.com",
+    "bestPathway": {
+      "path": "/connect",
+      "status": 200,
+      "hasForm": false,
+      "isCaptcha": true,
+      "isEditorial": false,
+      "hasAuthGate": true,
+      "bodyLength": 30178
+    }
+  },
+  {
+    "name": "Mind the Product",
+    "domain": "mindtheproduct.com",
+    "bestPathway": null
+  },
+  {
+    "name": "GrowthRocks",
+    "domain": "growthrocks.com",
+    "bestPathway": null
+  },
+  {
+    "name": "JustRemote",
+    "domain": "justremote.co",
+    "bestPathway": {
+      "path": "/post-a-job",
+      "status": 200,
+      "hasForm": false,
+      "isCaptcha": false,
+      "isEditorial": false,
+      "hasAuthGate": false,
+      "bodyLength": 31705
+    }
+  }
+]

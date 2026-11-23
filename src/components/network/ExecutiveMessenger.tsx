@@ -28,6 +28,7 @@ import {
 import { generateGeminiSmartReply } from '@/utils/geminiAi';
 import { ExecutiveCallModal } from '@/components/network/ExecutiveCallModal';
 import { ScheduleMeetingModal, ScheduledMeetingData } from '@/components/network/ScheduleMeetingModal';
+import { PresenceIndicator } from './PresenceIndicator';
 
 interface Message {
   id: string;
@@ -182,7 +183,8 @@ export const ExecutiveMessenger: React.FC = () => {
 
       return map;
     },
-    enabled: allParticipantIds.length > 0
+    enabled: allParticipantIds.length > 0,
+    refetchInterval: 30000
   });
 
   // Active selected conversation details
@@ -587,7 +589,14 @@ export const ExecutiveMessenger: React.FC = () => {
                         {displayName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white dark:ring-card"></span>
+                    <PresenceIndicator
+                      isOnline={profile?.is_online}
+                      lastSeen={profile?.last_seen}
+                      lastHeartbeatAt={profile?.last_heartbeat_at}
+                      visibility={profile?.presence_visibility}
+                      variant="dot"
+                      dotClassName="absolute bottom-0 right-0 w-2.5 h-2.5 ring-2 ring-white dark:ring-card"
+                    />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -627,7 +636,14 @@ export const ExecutiveMessenger: React.FC = () => {
                     {partnerName.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-slate-900"></span>
+                <PresenceIndicator
+                  isOnline={partnerProfile?.is_online}
+                  lastSeen={partnerProfile?.last_seen}
+                  lastHeartbeatAt={partnerProfile?.last_heartbeat_at}
+                  visibility={partnerProfile?.presence_visibility}
+                  variant="dot"
+                  dotClassName="absolute bottom-0 right-0 w-2.5 h-2.5 ring-2 ring-slate-900"
+                />
               </div>
 
               <div className="min-w-0">
@@ -635,9 +651,18 @@ export const ExecutiveMessenger: React.FC = () => {
                   <h3 className="text-sm font-extrabold text-white truncate">{partnerName}</h3>
                   <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
                 </div>
-                <p className="text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1.5">
-                  <span className="text-emerald-400 font-bold">🟢 Active Now</span> • {partnerTitle}
-                </p>
+                <div className="text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1.5">
+                  <PresenceIndicator
+                    isOnline={partnerProfile?.is_online}
+                    lastSeen={partnerProfile?.last_seen}
+                    lastHeartbeatAt={partnerProfile?.last_heartbeat_at}
+                    visibility={partnerProfile?.presence_visibility}
+                    variant="compact"
+                    textClassName="text-slate-300"
+                  />
+                  <span>•</span>
+                  <span>{partnerTitle}</span>
+                </div>
               </div>
             </div>
 

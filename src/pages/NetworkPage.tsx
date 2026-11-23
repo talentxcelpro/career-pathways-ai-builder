@@ -39,6 +39,8 @@ import { EventlessNetworking } from '@/components/network/advanced/EventlessNetw
 import { NetworkingWithProof } from '@/components/network/advanced/NetworkingWithProof';
 import { InterestFirstNetwork } from '@/components/network/advanced/InterestFirstNetwork';
 import { ChatrNetworkBanner } from '@/components/network/ChatrNetworkBanner';
+import { formatPresence } from '@/utils/presenceFormatter';
+import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 
 interface NetworkProfile {
   id: string;
@@ -51,6 +53,9 @@ interface NetworkProfile {
   mutualConnections: number;
   isOnline: boolean;
   lastActive: string;
+  lastSeen?: string | null;
+  lastHeartbeatAt?: string | null;
+  visibility?: string | null;
   connectionStatus: 'connected' | 'pending' | 'none';
   industry: string;
   experience: string;
@@ -168,22 +173,34 @@ const NetworkPage = () => {
   };
 
   // Convert real user data to NetworkProfile format
-  const convertToNetworkProfile = (user: any, connectionStatus: 'connected' | 'pending' | 'none' = 'none'): NetworkProfile => ({
-    id: user.id,
-    name: user.full_name || 'Unknown User',
-    title: user.title || user.headline || 'Professional',
-    company: user.current_company || 'Company',
-    location: user.location || 'Location',
-    avatar: user.profile_picture_url || '',
-    skills: user.skills || [],
-    mutualConnections: Math.floor(Math.random() * 20), // TODO: Calculate real mutual connections
-    isOnline: user.is_online || false,
-    lastActive: user.is_online ? 'Active now' : getLastSeenText(user.last_seen),
-    connectionStatus,
-    industry: 'Technology', // TODO: Add industry to profiles table
-    experience: '3+ years', // TODO: Calculate from profile data
-    email: user.email
-  });
+  const convertToNetworkProfile = (user: any, connectionStatus: 'connected' | 'pending' | 'none' = 'none'): NetworkProfile => {
+    const formatted = formatPresence({
+      is_online: user.is_online,
+      last_seen: user.last_seen,
+      last_heartbeat_at: user.last_heartbeat_at,
+      visibility: user.presence_visibility
+    });
+
+    return {
+      id: user.id,
+      name: user.full_name || 'Unknown User',
+      title: user.title || user.headline || 'Professional',
+      company: user.current_company || 'Company',
+      location: user.location || 'Location',
+      avatar: user.profile_picture_url || '',
+      skills: user.skills || [],
+      mutualConnections: Math.floor(Math.random() * 20),
+      isOnline: formatted.isOnline,
+      lastActive: formatted.label,
+      lastSeen: user.last_seen,
+      lastHeartbeatAt: user.last_heartbeat_at,
+      visibility: user.presence_visibility,
+      connectionStatus,
+      industry: 'Technology',
+      experience: '3+ years',
+      email: user.email
+    };
+  };
 
   // Convert discover users to profiles
   const discoverProfiles = users.map(user => convertToNetworkProfile(user, 'none'));
@@ -319,7 +336,13 @@ const NetworkPage = () => {
                 Pending
               </Badge>
             )}
-            <span className="text-[10px] text-muted-foreground font-medium">{profile.lastActive}</span>
+            <PresenceIndicator
+              isOnline={profile.isOnline}
+              lastSeen={profile.lastSeen}
+              lastHeartbeatAt={profile.lastHeartbeatAt}
+              visibility={profile.visibility}
+              variant="compact"
+            />
           </div>
         </div>
       

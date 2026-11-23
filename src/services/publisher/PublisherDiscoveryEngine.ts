@@ -444,13 +444,8 @@ export class PublisherDiscoveryEngine {
         niche: item.relevantTopic
       });
 
-      const sampleAsset = embedRegistry.getAsset(matched.suggestedEmbedCategory, 'qa_to_sde') ||
-        embedRegistry.getAsset('college', 'indian-institute-of-technology-madras') || {
-          canonicalUrl: matched.canonicalAssetUrl,
-          id: matched.suggestedAssetId
-        };
-
-      const embedSnippet = `<iframe src="https://www.talentxcel.in/embed/${matched.suggestedEmbedCategory}/qa_to_sde" width="100%" height="340" style="border:none;border-radius:12px;" loading="lazy"></iframe>`;
+      const assetSlug = matched.suggestedAssetId.replace(/^txc-[a-z_]+-/, '');
+      const embedSnippet = `<iframe src="https://www.talentxcel.in/embed/${matched.suggestedEmbedCategory}/${assetSlug}" width="100%" height="340" style="border:none;border-radius:12px;" loading="lazy" title="${matched.suggestedAssetTitle} — TalentXcel"></iframe>`;
 
       // 3. Bespoke Outreach Drafts
       const drafts = outreachGenerator.generateDrafts({

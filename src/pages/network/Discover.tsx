@@ -36,6 +36,8 @@ import { TalentXcelLogo } from "@/components/common/TalentXcelLogo";
 import { SEOHead } from '@/components/seo/SEOHead';
 import { NetworkRelationshipControls, NetworkRelationshipBadge } from '@/components/network/NetworkRelationshipControls';
 import { useNetworkRelationships } from '@/hooks/useNetworkRelationships';
+import { formatPresence } from '@/utils/presenceFormatter';
+import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 
 interface ProfileRecord {
   id: string;
@@ -54,7 +56,10 @@ interface ProfileRecord {
   created_at: string;
   last_login_at?: string | null;
   last_seen?: string | null;
+  last_heartbeat_at?: string | null;
+  presence_visibility?: string | null;
   is_online?: boolean | null;
+  isOnlineUser: boolean;
   completenessScore: number;
   hoursSinceUpdate: number;
   isRecentActive: boolean;
@@ -154,7 +159,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online')
+        .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online, last_heartbeat_at, presence_visibility')
         .not('full_name', 'is', null)
         .order('updated_at', { ascending: false })
         .limit(100);
@@ -186,7 +191,7 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
           try {
             const { data: myProfile } = await supabase
               .from('profiles')
-              .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online')
+              .select('id, full_name, title, profile_picture_url, headline, location, current_company, about, skills, slug, custom_profile_url, username, updated_at, created_at, last_seen, last_login_at, is_online, last_heartbeat_at, presence_visibility')
               .eq('id', user.id)
               .maybeSingle();
             if (myProfile) {
@@ -226,31 +231,27 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
 
           const hoursSinceUpdate = updateTime > 0 ? (now - updateTime) / (1000 * 60 * 60) : 999999;
           
-          // Freshness: Recent Active if active within last 72 hours, online, or self
-          const isRecentActive = isSelf || p.is_online === true || hoursSinceUpdate <= 72;
-          const isComplete = completeness >= 50;
+          const formattedPresence = formatPresence({
+            is_online: isSelf ? true : p.is_online,
+            last_seen: isSelf ? new Date().toISOString() : p.last_seen,
+            last_heartbeat_at: isSelf ? new Date().toISOString() : p.last_heartbeat_at,
+            visibility: p.presence_visibility
+          }, { shortYesterday: true });
 
-          let freshnessLabel = 'TalentXcel Member';
+          let freshnessLabel = formattedPresence.label || 'TalentXcel Member';
           if (isSelf) {
             freshnessLabel = 'Active now (You)';
-          } else if (p.is_online || hoursSinceUpdate < 1) {
-            freshnessLabel = 'Active just now';
-          } else if (hoursSinceUpdate < 24) {
-            const h = Math.floor(hoursSinceUpdate);
-            freshnessLabel = h <= 1 ? 'Active 1h ago' : `Active ${h}h ago`;
-          } else if (hoursSinceUpdate < 48) {
-            freshnessLabel = 'Active yesterday';
-          } else if (hoursSinceUpdate < 168) {
-            const d = Math.floor(hoursSinceUpdate / 24);
-            freshnessLabel = `Active ${d}d ago`;
-          } else if (hoursSinceUpdate <= 336) {
-            freshnessLabel = 'Active this month';
           }
+
+          const isOnlineUser = isSelf || formattedPresence.isOnline;
+          const isRecentActive = isSelf || formattedPresence.isRecent;
+          const isComplete = completeness >= 50;
 
           return {
             ...p,
             completenessScore: completeness,
             hoursSinceUpdate,
+            isOnlineUser,
             isRecentActive,
             isComplete,
             freshnessLabel,
@@ -625,9 +626,9 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
                                       {initials}
                                     </AvatarFallback>
                                   </Avatar>
-                                  {person.isRecentActive && (
+                                  {person.isOnlineUser && (
                                     <span 
-                                      className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-card rounded-full shadow-2xs animate-pulse" 
+                                      className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white dark:border-card rounded-full shadow-2xs" 
                                       title={person.freshnessLabel} 
                                     />
                                   )}
@@ -662,16 +663,14 @@ export const Discover: React.FC<DiscoverProps> = ({ isEmbedded = false }) => {
 
                                   {/* Real-time freshness status & relationship pills */}
                                   <div className="flex flex-wrap items-center justify-center gap-1 pt-1">
-                                    <span className={`inline-flex items-center gap-1 text-[9.5px] font-bold px-2 py-0.5 rounded-full ${
+                                    <span className={`inline-flex items-center gap-1.5 text-[9.5px] font-bold px-2 py-0.5 rounded-full ${
                                       person.isSelf
                                         ? 'bg-blue-100 text-blue-800 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-300'
-                                        : person.hoursSinceUpdate < 24
+                                        : person.isOnlineUser
                                           ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200'
-                                          : person.hoursSinceUpdate < 72
-                                            ? 'bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200'
-                                            : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200/80'
+                                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200/80'
                                     }`}>
-                                      {person.isRecentActive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />}
+                                      <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${person.isOnlineUser ? 'bg-emerald-500' : 'bg-slate-400'}`} />
                                       <span>{person.freshnessLabel}</span>
                                     </span>
                                     {!person.isSelf && (

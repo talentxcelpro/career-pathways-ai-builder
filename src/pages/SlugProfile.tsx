@@ -14,6 +14,8 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { ProfileSidebarNav } from '@/components/navigation/ProfileSidebarNav';
 import { CareerPassportEmbedBadge } from '@/components/passport/CareerPassportEmbedBadge';
+import { PresenceIndicator } from '@/components/network/PresenceIndicator';
+import { ProfileVisitorsDialog } from '@/components/profile/ProfileVisitorsDialog';
 
 import { 
   Loader2, 
@@ -59,6 +61,7 @@ const SlugProfile = () => {
 
   const { user, session, loading: authLoading, isAuthenticated } = useOptimizedAuth();
   const [aboutExpanded, setAboutExpanded] = useState(false);
+  const [isVisitorsOpen, setIsVisitorsOpen] = useState(false);
 
   const { data: profile, isLoading, error } = useSlugProfile(rawSlug || cleanUsername);
   const { data: stats } = useAccurateProfileStats(profile?.id);
@@ -115,6 +118,25 @@ const SlugProfile = () => {
       };
     },
     enabled: Boolean(user?.id && profile?.id),
+  });
+
+  // Privacy-aware Presence Data Query
+  const { data: presenceData } = useQuery({
+    queryKey: ['profile-presence-status', profile?.id],
+    queryFn: async () => {
+      if (!profile?.id || profile.id.startsWith('txc-')) return null;
+      const isProfileUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(profile.id);
+      if (!isProfileUUID) return null;
+
+      const { data, error } = await supabase.rpc('get_batch_presence', {
+        p_user_ids: [profile.id]
+      });
+      if (error || !data || data.length === 0) return null;
+      return data[0];
+    },
+    enabled: Boolean(profile?.id && !isOwnProfile),
+    staleTime: 30000,
+    refetchInterval: 30000
   });
 
   const { trackElementRef } = useViewportProfileTracking(
@@ -512,6 +534,15 @@ const handleMessage = async () => {
                           </a>
                         </span>
                       )}
+                      <PresenceIndicator
+                        isOnline={isOwnProfile ? true : presenceData?.is_online}
+                        lastSeen={isOwnProfile ? new Date().toISOString() : presenceData?.last_seen}
+                        lastHeartbeatAt={isOwnProfile ? new Date().toISOString() : presenceData?.last_heartbeat_at}
+                        visibility={isOwnProfile ? 'everyone' : presenceData?.visibility}
+                        isVisible={isOwnProfile ? true : presenceData?.is_visible}
+                        variant="compact"
+                        className="bg-slate-800/80 px-2.5 py-0.5 rounded-full border border-slate-700/60"
+                      />
                     </div>
                   </div>
                 </div>
@@ -602,8 +633,34 @@ const handleMessage = async () => {
                   </div>
                   <div>
                     <div className="text-xl md:text-2xl font-bold">{stats?.profileViews ?? 0}</div>
-                    <div className="text-xs text-muted-foreground font-medium">
-                      Profile Views <span className="text-primary font-semibold">({stats?.uniqueViewers ?? 0} unique)</span>
+                    <div className="text-xs text-muted-foreground font-medium flex items-center gap-1.5 flex-wrap">
+                      <span>Profile Views</span>
+                      {isOwnProfile ? (
+                        <>
+                          <span className="text-muted-foreground/60 select-none">·</span>
+                          <span className="text-primary font-semibold">
+                            {stats?.uniqueViewers ?? 0} unique
+                          </span>
+                          <span className="text-muted-foreground/60 select-none">·</span>
+                          <button
+                            type="button"
+                            onClick={() => setIsVisitorsOpen(true)}
+                            className="inline-flex items-center gap-1 font-semibold text-primary hover:text-primary/80 hover:underline underline-offset-4 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 rounded transition-all cursor-pointer group"
+                            aria-label={`View who visited your profile (${stats?.uniqueViewers ?? 0} unique visitors)`}
+                            title="View who visited your profile"
+                          >
+                            <span>View visitors</span>
+                            <ExternalLink className="h-3 w-3 opacity-70 group-hover:opacity-100 transition-opacity" />
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-muted-foreground/60 select-none">·</span>
+                          <span className="text-primary font-semibold">
+                            {stats?.uniqueViewers ?? 0} unique
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -811,6 +868,17 @@ const handleMessage = async () => {
                       </div>
                     )}
 
+                    <div className="flex items-center gap-3 text-sm pt-0.5">
+                      <PresenceIndicator
+                        isOnline={isOwnProfile ? true : presenceData?.is_online}
+                        lastSeen={isOwnProfile ? new Date().toISOString() : presenceData?.last_seen}
+                        lastHeartbeatAt={isOwnProfile ? new Date().toISOString() : presenceData?.last_heartbeat_at}
+                        visibility={isOwnProfile ? 'everyone' : presenceData?.visibility}
+                        isVisible={isOwnProfile ? true : presenceData?.is_visible}
+                        variant="compact"
+                      />
+                    </div>
+
                     {/* Horizontal Social Icons Bar */}
                     <div className="pt-3 border-t border-border/40 flex items-center gap-2">
                       {profile.linkedin_url && (
@@ -934,6 +1002,14 @@ const handleMessage = async () => {
 
           </div>
         </div>
+
+        {/* Private Profile Visitors Modal */}
+        {isOwnProfile && (
+          <ProfileVisitorsDialog
+            open={isVisitorsOpen}
+            onOpenChange={setIsVisitorsOpen}
+          />
+        )}
       </main>
     </>
   );

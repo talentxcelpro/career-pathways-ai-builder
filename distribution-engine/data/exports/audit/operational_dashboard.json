@@ -1,0 +1,16 @@
+{
+  "confirmed_emails_sent": 0,
+  "confirmed_emails_delivered": 0,
+  "editorial_responses": 0,
+  "confirmed_submissions": 0,
+  "published_placements": 0,
+  "independently_verified_backlinks": 0,
+  "pending_human_actions": 5,
+  "pending_authorizations": 10,
+  "blockers": [
+    "AWS SES / SMTP credentials not configured (blocks 9 editorial email dispatches)",
+    "DEVTO_API_KEY not configured (blocks DEV.to API automated publishing)",
+    "Interactive anti-bot challenge (Launching Next math check 2+3=5 requires human submission)",
+    "Interactive OAuth / account creation required (SaaSHub, BetaList, MicroLaunch, Uneed)"
+  ]
+}

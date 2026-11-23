@@ -12,9 +12,9 @@ const pilotIds = [
 ];
 
 async function syncPilotToDb() {
-  console.log('======================================================');
-  console.log('PERSISTING 20 PILOT RECORDS TO PRODUCTION DATABASE');
-  console.log('======================================================\n');
+  console.log('========================================================================');
+  console.log('UPDATING 20 CORRECTED PILOT RECORDS IN PRODUCTION DATABASE (SUPABASE)');
+  console.log('========================================================================\n');
 
   const statements: string[] = [];
 
@@ -27,7 +27,7 @@ async function syncPilotToDb() {
     const draftsJson = JSON.stringify(opp.outreachDrafts).replace(/'/g, "''");
     const scoreJson = JSON.stringify(opp.score).replace(/'/g, "''");
 
-    // Upsert into embed_publisher_opportunities
+    // Full upsert into embed_publisher_opportunities
     statements.push(`
       INSERT INTO public.embed_publisher_opportunities (
         id, name, domain, website_url, category, country, region,
@@ -59,7 +59,22 @@ async function syncPilotToDb() {
         NOW(),
         NOW()
       ) ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        domain = EXCLUDED.domain,
+        website_url = EXCLUDED.website_url,
+        category = EXCLUDED.category,
+        relevant_topic = EXCLUDED.relevant_topic,
+        target_page_url = EXCLUDED.target_page_url,
+        suggested_asset_id = EXCLUDED.suggested_asset_id,
+        suggested_embed_category = EXCLUDED.suggested_embed_category,
+        opportunity_score = EXCLUDED.opportunity_score,
+        priority = EXCLUDED.priority,
         pipeline_stage = 'contact_ready',
+        adoption_level = 1,
+        contact_page_url = EXCLUDED.contact_page_url,
+        public_contact_email = EXCLUDED.public_contact_email,
+        score_breakdown = EXCLUDED.score_breakdown,
+        outreach_drafts = EXCLUDED.outreach_drafts,
         updated_at = NOW();
     `);
 
@@ -72,7 +87,7 @@ async function syncPilotToDb() {
         'draft_reviewed',
         'pilot_auditor',
         '${opp.publicContactEmail ? 'email' : 'contact_form'}',
-        'Stage: contact_ready. Target validated for ${batch}.',
+        'Stage: contact_ready. Pre-dispatch forensic correction verified: personalized asset slug and dynamic iframe embed corrected for ${batch}.',
         NOW()
       );
     `);
@@ -86,14 +101,43 @@ async function syncPilotToDb() {
   console.log('Applying to linked Supabase production project...');
   execSync(`npx supabase db query --linked -f ${sqlFile}`, { stdio: 'inherit' });
 
-  console.log('\nVerification: Checking database row count...');
-  const checkSql = `SELECT count(*) FROM public.embed_publisher_opportunities;`;
-  fs.writeFileSync('scripts/check-count.sql', checkSql, 'utf8');
+  console.log('\nVerification Query 1: Total records in embed_publisher_opportunities...');
+  fs.writeFileSync('scripts/check-count.sql', 'SELECT count(*) FROM public.embed_publisher_opportunities;', 'utf8');
   execSync(`npx supabase db query --linked -f scripts/check-count.sql`, { stdio: 'inherit' });
 
-  console.log('\n======================================================');
-  console.log('PILOT PIPELINE SYNCHRONIZATION COMPLETE');
-  console.log('======================================================');
+  console.log('\nVerification Query 2: Inspecting corrected assets for pub-opp-0001, pub-opp-0002, pub-opp-0003, pub-opp-0101...');
+  const checkAssetsSql = `
+    SELECT id, name, domain, suggested_asset_id, suggested_embed_category, pipeline_stage
+    FROM public.embed_publisher_opportunities
+    WHERE id IN ('pub-opp-0001', 'pub-opp-0002', 'pub-opp-0003', 'pub-opp-0101')
+    ORDER BY id ASC;
+  `;
+  fs.writeFileSync('scripts/check-assets.sql', checkAssetsSql, 'utf8');
+  execSync(`npx supabase db query --linked -f scripts/check-assets.sql`, { stdio: 'inherit' });
+
+  console.log('\nVerification Query 3: Inspecting pub-opp-0002 (IIT Delhi) live emailBody snippet...');
+  const checkDelhiSql = `
+    SELECT id, name, substring(outreach_drafts->>'emailBody' from 1 for 500) as email_body_preview
+    FROM public.embed_publisher_opportunities
+    WHERE id = 'pub-opp-0002';
+  `;
+  fs.writeFileSync('scripts/check-delhi.sql', checkDelhiSql, 'utf8');
+  execSync(`npx supabase db query --linked -f scripts/check-delhi.sql`, { stdio: 'inherit' });
+
+  console.log('\nVerification Query 4: Checking pre-dispatch correction entries in publisher_outreach_log...');
+  const checkLogSql = `
+    SELECT publisher_id, action, operator_id, channel, notes, created_at
+    FROM public.publisher_outreach_log
+    WHERE notes LIKE '%Pre-dispatch forensic correction%'
+    ORDER BY created_at DESC
+    LIMIT 5;
+  `;
+  fs.writeFileSync('scripts/check-log.sql', checkLogSql, 'utf8');
+  execSync(`npx supabase db query --linked -f scripts/check-log.sql`, { stdio: 'inherit' });
+
+  console.log('\n========================================================================');
+  console.log('CORRECTED PILOT PIPELINE DATABASE SYNCHRONIZATION COMPLETE');
+  console.log('========================================================================');
 }
 
 syncPilotToDb().catch(console.error);
