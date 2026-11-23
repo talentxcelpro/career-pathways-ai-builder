@@ -1,12 +1,9 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Briefcase, User, ArrowRight, Zap } from 'lucide-react';
+import { ArrowRight, Zap } from 'lucide-react';
 import { GuestJobApplyModal } from './GuestJobApplyModal';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
-import ComprehensiveJobApplicationForm from './ComprehensiveJobApplicationForm';
 
 interface PublicJobApplyButtonProps {
   jobId: string;
@@ -24,6 +21,7 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
   companyName,
 }) => {
   const { user: currentUser } = useAuth();
+  const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
 
   const handleApplyClick = () => {
     GrowthFunnelTracker.track('apply_cta_clicked', {
@@ -37,8 +35,6 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
     // Always provide zero-friction 1-click modal for applicants
     setShowGuestModal(true);
   };
-
-  
 
   return (
     <>
