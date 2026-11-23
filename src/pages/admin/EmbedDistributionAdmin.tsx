@@ -67,7 +67,9 @@ export const EmbedDistributionAdmin: React.FC = () => {
               <Activity className="w-3.5 h-3.5" />
               <span>Global Organic Distribution</span>
             </Badge>
-            <span className="text-xs text-slate-400 font-mono">Telemetry v1.0</span>
+            <Badge className={`text-[10px] font-mono border ${publishers.length > 0 ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' : 'bg-slate-800 text-slate-400 border-slate-700'}`}>
+              {publishers.length > 0 ? 'LIVE TELEMETRY' : 'NO LIVE TELEMETRY YET'}
+            </Badge>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white">
             Embed Distribution &amp; Publisher Monitor
@@ -128,7 +130,9 @@ export const EmbedDistributionAdmin: React.FC = () => {
               <MousePointerClick className="w-4 h-4 text-purple-400" />
             </div>
             <div className="text-2xl font-black text-purple-400">{stats.totalClicks.toLocaleString()}</div>
-            <p className="text-[11px] text-purple-300">14.6% Attribution CTR</p>
+            <p className="text-[11px] text-purple-300">
+              {stats.totalRenders > 0 ? `${((stats.totalClicks / stats.totalRenders) * 100).toFixed(1)}% Attribution CTR` : '0.0% Attribution CTR'}
+            </p>
           </CardContent>
         </Card>
 

@@ -1,14 +1,16 @@
 // src/pages/admin/EmbedGrowthCampaignDashboard.tsx
-// TalentXcel Global Embed Adoption Engine â€” Publisher Acquisition & Campaign Command Center
+// TalentXcel Global Embed Adoption Engine — Publisher Acquisition & Campaign Command Center
+// Enhanced with Data-Driven Live Status, Test Isolation, and Outreach Persistence
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { publisherDiscovery } from '@/services/publisher/PublisherDiscoveryEngine';
 import {
   PublisherOpportunity,
   PublisherCategory,
   PublisherPipelineStage,
-  OpportunityPriority
+  OpportunityPriority,
+  CampaignFunnelStats
 } from '@/types/publisherAdoption';
 import {
   Users,
@@ -34,7 +36,10 @@ import {
   ChevronRight,
   XCircle,
   RefreshCw,
-  Award
+  Award,
+  Database,
+  Radio,
+  Clock
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -50,6 +55,8 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 
+type DashboardDataStatus = 'LIVE PRODUCTION DATA' | 'NO LIVE ACTIVITY YET' | 'TEST DATA' | 'DATA UNAVAILABLE';
+
 export const EmbedGrowthCampaignDashboard: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<PublisherCategory | 'all'>('all');
   const [selectedPriority, setSelectedPriority] = useState<OpportunityPriority | 'all'>('all');
@@ -58,7 +65,40 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
   const [selectedOpportunity, setSelectedOpportunity] = useState<PublisherOpportunity | null>(null);
   const [hasCopiedSnippet, setHasCopiedSnippet] = useState<string | null>(null);
 
-  const stats = useMemo(() => publisherDiscovery.getFunnelStats(), []);
+  // Data Integrity & Operational States
+  const [isTestSandboxMode, setIsTestSandboxMode] = useState<boolean>(false);
+  const [dataStatus, setDataStatus] = useState<DashboardDataStatus>('NO LIVE ACTIVITY YET');
+  const [lastRefreshedAt, setLastRefreshedAt] = useState<string>(new Date().toLocaleTimeString());
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isPersisting, setIsPersisting] = useState<boolean>(false);
+
+  // Dynamic Funnel Statistics
+  const [stats, setStats] = useState<CampaignFunnelStats>(() =>
+    publisherDiscovery.getFunnelStats({ includeFixtures: false })
+  );
+
+  const refreshDashboardData = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      if (isTestSandboxMode) {
+        setDataStatus('TEST DATA');
+        setStats(publisherDiscovery.getFunnelStats({ includeFixtures: true }));
+      } else {
+        const syncResult = await publisherDiscovery.fetchLiveStateFromDb();
+        setDataStatus(syncResult.status);
+        setStats(publisherDiscovery.getFunnelStats({ includeFixtures: false }));
+      }
+      setLastRefreshedAt(new Date().toLocaleTimeString());
+    } catch {
+      setDataStatus('DATA UNAVAILABLE');
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [isTestSandboxMode]);
+
+  useEffect(() => {
+    refreshDashboardData();
+  }, [refreshDashboardData]);
 
   const opportunities = useMemo(() => {
     return publisherDiscovery.listOpportunities({
@@ -69,12 +109,32 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
     });
   }, [selectedCategory, selectedPriority, selectedStage, searchQuery]);
 
-  const handleStageChange = (id: string, stage: PublisherPipelineStage) => {
-    publisherDiscovery.updatePipelineStage(id, stage);
-    if (selectedOpportunity && selectedOpportunity.id === id) {
-      setSelectedOpportunity({ ...selectedOpportunity, pipelineStage: stage });
+  const handleStageChange = async (id: string, stage: PublisherPipelineStage, notes?: string) => {
+    setIsPersisting(true);
+    try {
+      const res = await publisherDiscovery.persistPipelineAction(
+        id,
+        stage,
+        'admin@talentxcel.in',
+        notes || `Stage updated via growth dashboard`
+      );
+
+      if (res.success && res.opportunity) {
+        if (selectedOpportunity && selectedOpportunity.id === id) {
+          setSelectedOpportunity({
+            ...selectedOpportunity,
+            pipelineStage: stage,
+            adoptionLevel: res.opportunity.adoptionLevel
+          });
+        }
+        await refreshDashboardData();
+        toast.success(`Pipeline stage persisted: ${stage.replace('_', ' ').toUpperCase()}`);
+      } else {
+        toast.error(`Failed to update stage: ${res.error || 'Unknown error'}`);
+      }
+    } finally {
+      setIsPersisting(false);
     }
-    toast.success(`Pipeline stage updated to: ${stage.replace('_', ' ').toUpperCase()}`);
   };
 
   const copyToClipboard = (text: string, label: string) => {
@@ -87,19 +147,40 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto text-white font-sans">
       <Helmet>
-        <title>Global Embed Adoption Engine â€” Campaign Command Center | TalentXcel</title>
+        <title>Global Embed Adoption Engine — Campaign Command Center | TalentXcel</title>
       </Helmet>
 
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1.5">
             <Badge className="bg-blue-600/20 text-blue-400 border-blue-500/30 text-xs font-semibold gap-1">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Phase 2 Adoption Engine</span>
             </Badge>
-            <span className="text-xs text-slate-400 font-mono">300 Target Pilot</span>
+
+            {/* Explicit Data Status Pill */}
+            <Badge
+              className={`text-xs font-mono font-bold flex items-center gap-1.5 px-2.5 py-0.5 border ${
+                dataStatus === 'LIVE PRODUCTION DATA'
+                  ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                  : dataStatus === 'NO LIVE ACTIVITY YET'
+                  ? 'bg-sky-500/10 text-sky-300 border-sky-500/30'
+                  : dataStatus === 'TEST DATA'
+                  ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                  : 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+              }`}
+            >
+              <Radio className="w-2.5 h-2.5 animate-pulse" />
+              <span>STATUS: {dataStatus}</span>
+            </Badge>
+
+            <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
+              <Clock className="w-3 h-3 text-slate-500" />
+              <span>Updated: {lastRefreshedAt}</span>
+            </span>
           </div>
+
           <h1 className="text-2xl sm:text-3xl font-black text-white">
             Publisher Acquisition &amp; Embed Campaign Dashboard
           </h1>
@@ -108,7 +189,30 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Test Sandbox Toggle */}
+          <button
+            onClick={() => setIsTestSandboxMode(!isTestSandboxMode)}
+            className={`text-xs px-3 h-9 rounded-xl font-bold border transition-all flex items-center gap-1.5 ${
+              isTestSandboxMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-400 border-slate-800'
+            }`}
+          >
+            <Database className="w-3.5 h-3.5" />
+            <span>{isTestSandboxMode ? 'Sandbox: Fixtures ON' : 'Sandbox: Off (Live Mode)'}</span>
+          </button>
+
+          <Button
+            onClick={refreshDashboardData}
+            disabled={isRefreshing}
+            variant="outline"
+            className="border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs h-9 rounded-xl flex items-center gap-1.5"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </Button>
+
           <Button
             onClick={() => window.open('/embeds', '_blank')}
             variant="outline"
@@ -120,13 +224,31 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
 
           <Button
             onClick={() => window.open('/admin/embeds', '_blank')}
-            className="bg-blue-600 hover:bg-blue-500 text-white text-xs h-9 px-3.5 rounded-xl font-bold flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-500 text-white text-xs h-9 px-3.5 rounded-xl font-bold flex items-center gap-1.5 shadow-md shadow-blue-600/20"
           >
             <span>Telemetry Center</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
+
+      {/* Test Sandbox Warning Banner */}
+      {isTestSandboxMode && (
+        <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-300">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>
+              <strong>TEST SANDBOX PREVIEW ACTIVE:</strong> Showing isolated demonstration fixtures. Real production campaign operations remain unaffected and zero-state.
+            </span>
+          </div>
+          <button
+            onClick={() => setIsTestSandboxMode(false)}
+            className="text-amber-400 hover:underline font-bold text-[11px] shrink-0"
+          >
+            Switch to Pure Live Mode
+          </button>
+        </div>
+      )}
 
       {/* KPI Overview Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
@@ -158,7 +280,9 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
           <CardContent className="p-3.5 space-y-1">
             <span className="text-slate-400 text-[11px] block truncate">Embeds Adopted</span>
             <div className="text-xl sm:text-2xl font-black text-purple-400">{stats.embedsAdopted}</div>
-            <p className="text-[10px] text-purple-300">Live External Placements</p>
+            <p className="text-[10px] text-purple-300">
+              {stats.embedsAdopted > 0 ? 'Live External Placements' : '0 Placements (Awaiting Launch)'}
+            </p>
           </CardContent>
         </Card>
 
@@ -166,15 +290,21 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
           <CardContent className="p-3.5 space-y-1">
             <span className="text-slate-400 text-[11px] block truncate">Verified Backlinks</span>
             <div className="text-xl sm:text-2xl font-black text-amber-400">{stats.adoptionsVerified}</div>
-            <p className="text-[10px] text-amber-300">DOM Confirmed</p>
+            <p className="text-[10px] text-amber-300">
+              {stats.adoptionsVerified > 0 ? 'DOM Confirmed' : '0 Verified (Awaiting DOM)'}
+            </p>
           </CardContent>
         </Card>
 
         <Card className="bg-slate-900/80 border-slate-800 text-white rounded-2xl">
           <CardContent className="p-3.5 space-y-1">
             <span className="text-slate-400 text-[11px] block truncate">Referral Visits</span>
-            <div className="text-xl sm:text-2xl font-black text-rose-400">{stats.referralVisits.toLocaleString()}</div>
-            <p className="text-[10px] text-rose-300">Inbound Organic Traffic</p>
+            <div className="text-xl sm:text-2xl font-black text-rose-400">
+              {stats.referralVisits.toLocaleString()}
+            </div>
+            <p className="text-[10px] text-rose-300">
+              {stats.referralVisits > 0 ? 'Inbound Organic Traffic' : '0 Inbound Visits'}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -216,6 +346,7 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
               <option value="contact_ready">Contact Ready</option>
               <option value="contacted">Contacted</option>
               <option value="interested">Interested</option>
+              <option value="embed_offered">Embed Offered</option>
               <option value="embed_adopted">Embed Adopted</option>
               <option value="adoption_verified">Adoption Verified</option>
               <option value="declined">Declined</option>
@@ -224,9 +355,9 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
         </div>
 
         {/* Category Pills */}
-        <div className="flex flex-wrap gap-1.5 pt-1 text-xs">
+        <div className="flex gap-1.5 overflow-x-auto pb-1 text-xs">
           {[
-            { id: 'all', label: 'All Sectors' },
+            { id: 'all', label: 'All Sectors (300)' },
             { id: 'college', label: 'Higher Ed & Placement Cells' },
             { id: 'career', label: 'Career & Education Portals' },
             { id: 'technology', label: 'Tech & Engineering Platforms' },
@@ -236,7 +367,7 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
             <button
               key={c.id}
               onClick={() => setSelectedCategory(c.id as any)}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all whitespace-nowrap ${
                 selectedCategory === c.id
                   ? 'bg-blue-600 text-white shadow-sm'
                   : 'bg-slate-900 text-slate-400 hover:text-white'
@@ -358,125 +489,120 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
                 {selectedOpportunity.name}
               </DialogTitle>
               <DialogDescription className="text-xs text-slate-400 flex items-center gap-2">
-                <span>{selectedOpportunity.domain}</span>
-                <span>â€¢</span>
-                <span>{selectedOpportunity.relevantTopic}</span>
+                <span>{selectedOpportunity.country}</span>
+                <span>•</span>
+                <span className="font-mono text-blue-400">{selectedOpportunity.domain}</span>
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-5 pt-3">
-              {/* 1. Opportunity Score Breakdown */}
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-300">
-                  <span>100-Point Scoring Breakdown</span>
-                  <span className="text-emerald-400 font-mono font-black">{selectedOpportunity.score.totalScore} / 100</span>
+              {/* 1. Opportunity Rationale & Match */}
+              <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+                <div className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                  <Award className="w-4 h-4 text-amber-400" />
+                  <span>Asset Matching Rationale</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-[11px]">
-                  <div className="p-2 bg-slate-900 rounded-lg">
-                    <span className="text-slate-400 block">Relevance</span>
-                    <strong className="text-blue-400">{selectedOpportunity.score.contentRelevance} / 30</strong>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {selectedOpportunity.matchingRationale}
+                </p>
+                <div className="pt-2 flex flex-wrap gap-2 text-xs">
+                  <div className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-400">
+                    <span className="text-slate-500">Asset: </span>
+                    <strong className="text-white">{selectedOpportunity.suggestedAssetTitle}</strong>
                   </div>
-                  <div className="p-2 bg-slate-900 rounded-lg">
-                    <span className="text-slate-400 block">Embed Fit</span>
-                    <strong className="text-purple-400">{selectedOpportunity.score.embedOpportunity} / 25</strong>
-                  </div>
-                  <div className="p-2 bg-slate-900 rounded-lg">
-                    <span className="text-slate-400 block">Quality</span>
-                    <strong className="text-emerald-400">{selectedOpportunity.score.publisherQuality} / 20</strong>
-                  </div>
-                  <div className="p-2 bg-slate-900 rounded-lg">
-                    <span className="text-slate-400 block">Audience</span>
-                    <strong className="text-amber-400">{selectedOpportunity.score.audienceRelevance} / 15</strong>
-                  </div>
-                  <div className="p-2 bg-slate-900 rounded-lg">
-                    <span className="text-slate-400 block">Feasibility</span>
-                    <strong className="text-rose-400">{selectedOpportunity.score.outreachFeasibility} / 10</strong>
+                  <div className="bg-slate-950 px-2.5 py-1 rounded-lg border border-slate-800 text-slate-400">
+                    <span className="text-slate-500">Placement: </span>
+                    <strong className="text-white">{selectedOpportunity.suggestedPlacement}</strong>
                   </div>
                 </div>
-                {selectedOpportunity.score.scoringNotes && (
-                  <div className="text-[10px] text-slate-400 space-y-0.5 pt-1">
-                    {selectedOpportunity.score.scoringNotes.map((n, idx) => (
-                      <p key={idx}>âœ” {n}</p>
-                    ))}
-                  </div>
+              </div>
+
+              {/* 2. Public Contact Channel Info */}
+              <div className="p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div>
+                  <span className="text-slate-400 block text-[11px]">Public Contact Channel</span>
+                  <span className="font-mono text-white font-bold">
+                    {selectedOpportunity.publicContactEmail || 'Public Web Contact Form'}
+                  </span>
+                </div>
+                {selectedOpportunity.contactPageUrl && (
+                  <Button
+                    onClick={() => window.open(selectedOpportunity.contactPageUrl, '_blank')}
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs h-8"
+                  >
+                    <span>Open Contact Page</span>
+                    <ExternalLink className="w-3 h-3 ml-1" />
+                  </Button>
                 )}
               </div>
 
-              {/* 2. Matched Asset & Value Proposition */}
-              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1.5 text-xs">
-                <div className="flex items-center justify-between font-bold">
-                  <span className="text-blue-400">Matched Intelligence Asset:</span>
-                  <Badge className="bg-blue-600/20 text-blue-300 text-[10px]">
-                    {selectedOpportunity.suggestedEmbedCategory}
-                  </Badge>
+              {/* 3. Bespoke Outreach Drafts */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                    <Mail className="w-3.5 h-3.5 text-blue-400" />
+                    <span>Human-Approved Outreach Drafts</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400">Strict Anti-Spam Guardrail</span>
                 </div>
-                <p className="font-bold text-white text-sm">{selectedOpportunity.suggestedAssetTitle}</p>
-                <p className="text-slate-400 text-[11px] leading-relaxed">
-                  <strong>Rationale:</strong> {selectedOpportunity.matchingRationale}
-                </p>
-                <p className="text-slate-400 text-[11px]">
-                  <strong>Target Placement:</strong> {selectedOpportunity.suggestedPlacement}
-                </p>
-              </div>
-
-              {/* 3. Bespoke Outreach Drafts Tabs */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
-                  Human-Approved Outreach Drafts
-                </label>
 
                 <Tabs defaultValue="email" className="w-full">
-                  <TabsList className="bg-slate-900 border border-slate-800 text-xs">
-                    <TabsTrigger value="email">Email Draft</TabsTrigger>
-                    <TabsTrigger value="form">Contact Form</TabsTrigger>
-                    <TabsTrigger value="social">Social Connect</TabsTrigger>
-                    <TabsTrigger value="followup">Follow-Up 1</TabsTrigger>
+                  <TabsList className="bg-slate-900 border border-slate-800 grid grid-cols-4 h-9">
+                    <TabsTrigger value="email" className="text-xs data-[state=active]:bg-blue-600">Email Draft</TabsTrigger>
+                    <TabsTrigger value="form" className="text-xs data-[state=active]:bg-blue-600">Contact Form</TabsTrigger>
+                    <TabsTrigger value="social" className="text-xs data-[state=active]:bg-blue-600">Social Pitch</TabsTrigger>
+                    <TabsTrigger value="followup" className="text-xs data-[state=active]:bg-blue-600">Follow-up 1</TabsTrigger>
                   </TabsList>
 
-                  {/* Email Tab */}
+                  {/* Email Draft Tab */}
                   <TabsContent value="email" className="space-y-2 mt-2">
-                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 font-mono text-[11px]">
-                      <div className="text-slate-400 border-b border-slate-800 pb-1">
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-mono text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                      <div className="text-slate-500 pb-2 border-b border-slate-900 mb-2">
                         <strong>Subject:</strong> {selectedOpportunity.outreachDrafts.emailSubject}
                       </div>
-                      <pre className="whitespace-pre-wrap break-all text-slate-300 max-h-48 overflow-y-auto font-sans text-xs leading-relaxed">
-                        {selectedOpportunity.outreachDrafts.emailBody}
-                      </pre>
+                      {selectedOpportunity.outreachDrafts.emailBody}
                     </div>
                     <Button
-                      onClick={() => copyToClipboard(selectedOpportunity.outreachDrafts.emailBody, 'Email Draft')}
+                      onClick={() =>
+                        copyToClipboard(
+                          `Subject: ${selectedOpportunity.outreachDrafts.emailSubject}\n\n${selectedOpportunity.outreachDrafts.emailBody}`,
+                          'Email Draft'
+                        )
+                      }
                       className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      <span>{hasCopiedSnippet === 'Email Draft' ? 'Copied Email!' : 'Copy Email Body'}</span>
+                      <span>{hasCopiedSnippet === 'Email Draft' ? 'Copied to Clipboard!' : 'Copy Email & Subject'}</span>
                     </Button>
                   </TabsContent>
 
                   {/* Contact Form Tab */}
                   <TabsContent value="form" className="space-y-2 mt-2">
-                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-sans text-xs text-slate-300 leading-relaxed max-h-48 overflow-y-auto">
+                    <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-sans text-xs text-slate-300 leading-relaxed">
                       {selectedOpportunity.outreachDrafts.contactFormMessage}
                     </div>
                     <Button
-                      onClick={() => copyToClipboard(selectedOpportunity.outreachDrafts.contactFormMessage, 'Contact Form Message')}
+                      onClick={() => copyToClipboard(selectedOpportunity.outreachDrafts.contactFormMessage, 'Contact Form Pitch')}
                       className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      <span>{hasCopiedSnippet === 'Contact Form Message' ? 'Copied Message!' : 'Copy Form Message'}</span>
+                      <span>{hasCopiedSnippet === 'Contact Form Pitch' ? 'Copied Form Message!' : 'Copy Form Message'}</span>
                     </Button>
                   </TabsContent>
 
-                  {/* Social Tab */}
+                  {/* Social Pitch Tab */}
                   <TabsContent value="social" className="space-y-2 mt-2">
                     <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 font-sans text-xs text-slate-300 leading-relaxed">
-                      {selectedOpportunity.outreachDrafts.socialMessage}
+                      {selectedOpportunity.outreachDrafts.socialPitch}
                     </div>
                     <Button
-                      onClick={() => copyToClipboard(selectedOpportunity.outreachDrafts.socialMessage, 'Social Message')}
+                      onClick={() => copyToClipboard(selectedOpportunity.outreachDrafts.socialPitch, 'Social Pitch')}
                       className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs h-9 rounded-xl flex items-center justify-center gap-1.5"
                     >
                       <Copy className="w-3.5 h-3.5" />
-                      <span>{hasCopiedSnippet === 'Social Message' ? 'Copied Message!' : 'Copy Social Message'}</span>
+                      <span>{hasCopiedSnippet === 'Social Pitch' ? 'Copied Social Pitch!' : 'Copy Social Pitch'}</span>
                     </Button>
                   </TabsContent>
 
@@ -496,13 +622,17 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
                 </Tabs>
               </div>
 
-              {/* 4. Action Stage Transition Controls */}
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-2">
-                <span className="text-xs font-bold text-slate-400">Update Stage:</span>
+              {/* 4. Action Stage Transition Controls with Database Persistence */}
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-slate-300 block">Outreach Workflow Action</span>
+                  <span className="text-[10px] text-slate-500">Persists state to Supabase publisher_outreach_log</span>
+                </div>
 
                 <div className="flex flex-wrap gap-1.5">
                   <Button
                     onClick={() => handleStageChange(selectedOpportunity.id, 'contacted')}
+                    disabled={isPersisting}
                     size="sm"
                     className="bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 border border-blue-500/30 text-xs h-8"
                   >
@@ -510,6 +640,7 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
                   </Button>
                   <Button
                     onClick={() => handleStageChange(selectedOpportunity.id, 'interested')}
+                    disabled={isPersisting}
                     size="sm"
                     className="bg-purple-600/20 text-purple-400 hover:bg-purple-600/30 border border-purple-500/30 text-xs h-8"
                   >
@@ -517,6 +648,7 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
                   </Button>
                   <Button
                     onClick={() => handleStageChange(selectedOpportunity.id, 'adoption_verified')}
+                    disabled={isPersisting}
                     size="sm"
                     className="bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30 text-xs h-8"
                   >
@@ -524,6 +656,7 @@ export const EmbedGrowthCampaignDashboard: React.FC = () => {
                   </Button>
                   <Button
                     onClick={() => handleStageChange(selectedOpportunity.id, 'declined')}
+                    disabled={isPersisting}
                     size="sm"
                     className="bg-rose-600/20 text-rose-400 hover:bg-rose-600/30 border border-rose-500/30 text-xs h-8"
                   >

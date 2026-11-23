@@ -1,8 +1,9 @@
 // src/services/publisher/AdoptionVerificationService.ts
-// TalentXcel Global Embed Adoption Engine â€” Multi-Level Adoption Verification Engine
+// TalentXcel Global Embed Adoption Engine — Multi-Level Adoption Verification Engine
 
 import { AdoptionVerificationLevel, PublisherPipelineStage } from '@/types/publisherAdoption';
 import { embedTelemetry } from '@/services/embed/EmbedTelemetryService';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface VerificationResult {
   publisherDomain: string;
@@ -12,14 +13,17 @@ export interface VerificationResult {
   domVerified: boolean;
   verifiedAt: string;
   notes: string;
+  isTestFixture?: boolean;
 }
 
 export class AdoptionVerificationService {
   private static instance: AdoptionVerificationService;
   private verifiedDomains: Map<string, VerificationResult> = new Map();
+  private isTestMode: boolean = false;
 
   private constructor() {
-    this.seedVerifiedAdoptions();
+    // Clean production default: Do NOT seed mock fixtures in operational constructor!
+    // Test environments or sandbox toggles must explicitly call loadTestFixtures().
   }
 
   public static getInstance(): AdoptionVerificationService {
@@ -29,13 +33,17 @@ export class AdoptionVerificationService {
     return AdoptionVerificationService.instance;
   }
 
-  private seedVerifiedAdoptions(): void {
-    // Verified pilot adoptions
+  /**
+   * Explicitly load test fixtures for unit tests or isolated demonstration sandboxes.
+   * NEVER called in production operational workflows.
+   */
+  public loadTestFixtures(): void {
+    this.isTestMode = true;
     const pilots = [
-      { domain: 'iitm.ac.in', level: 5 as AdoptionVerificationLevel, notes: 'Official Placement Cell verified embed' },
-      { domain: 'careers360.com', level: 5 as AdoptionVerificationLevel, notes: 'Higher Ed article editorial link verified' },
-      { domain: 'peoplematters.in', level: 5 as AdoptionVerificationLevel, notes: 'HR Tech workforce article verified' },
-      { domain: 'dev.to', level: 4 as AdoptionVerificationLevel, notes: 'Observed telemetry impressions from post' }
+      { domain: 'iitm.ac.in', level: 5 as AdoptionVerificationLevel, notes: '[TEST FIXTURE] Official Placement Cell verified embed' },
+      { domain: 'careers360.com', level: 5 as AdoptionVerificationLevel, notes: '[TEST FIXTURE] Higher Ed article editorial link verified' },
+      { domain: 'peoplematters.in', level: 5 as AdoptionVerificationLevel, notes: '[TEST FIXTURE] HR Tech workforce article verified' },
+      { domain: 'dev.to', level: 4 as AdoptionVerificationLevel, notes: '[TEST FIXTURE] Observed telemetry impressions from post' }
     ];
 
     for (const p of pilots) {
@@ -46,9 +54,26 @@ export class AdoptionVerificationService {
         hasTelemetryObservation: true,
         domVerified: p.level === 5,
         verifiedAt: new Date().toISOString(),
-        notes: p.notes
+        notes: p.notes,
+        isTestFixture: true
       });
     }
+  }
+
+  /**
+   * Clear all verified domains (for testing clean slate or resetting cache)
+   */
+  public clearVerifications(): void {
+    this.verifiedDomains.clear();
+    this.isTestMode = false;
+  }
+
+  public isUsingTestFixtures(): boolean {
+    return this.isTestMode;
+  }
+
+  public listVerifiedAdoptions(): VerificationResult[] {
+    return Array.from(this.verifiedDomains.values());
   }
 
   /**
@@ -108,6 +133,77 @@ export class AdoptionVerificationService {
     };
     this.verifiedDomains.set(cleanDomain, res);
     return res;
+  }
+
+  /**
+   * Asynchronously load verified adoptions from Supabase `embed_adoptions` table
+   */
+  public async fetchVerifiedAdoptionsFromDb(): Promise<VerificationResult[]> {
+    try {
+      const { data, error } = await supabase
+        .from('embed_adoptions' as any)
+        .select('*');
+
+      if (error || !data) {
+        return this.listVerifiedAdoptions();
+      }
+
+      for (const row of (data as any[])) {
+        const cleanDomain = String(row.domain).toLowerCase();
+        this.verifiedDomains.set(cleanDomain, {
+          publisherDomain: cleanDomain,
+          adoptionLevel: Number(row.verification_level) as AdoptionVerificationLevel,
+          stage: Number(row.verification_level) >= 5 ? 'adoption_verified' : 'embed_adopted',
+          hasTelemetryObservation: Boolean(row.has_telemetry),
+          domVerified: Boolean(row.dom_verified),
+          verifiedAt: row.verified_at || row.created_at || new Date().toISOString(),
+          notes: row.notes || 'Persisted from Supabase embed_adoptions'
+        });
+      }
+
+      return this.listVerifiedAdoptions();
+    } catch {
+      return this.listVerifiedAdoptions();
+    }
+  }
+
+  /**
+   * Persist a verified adoption to Supabase
+   */
+  public async persistAdoption(params: {
+    publisherId?: string;
+    domain: string;
+    assetId: string;
+    targetPageUrl?: string;
+    level: AdoptionVerificationLevel;
+    domVerified?: boolean;
+    hasTelemetry?: boolean;
+    notes?: string;
+    verifiedBy?: string;
+  }): Promise<VerificationResult> {
+    const cleanDomain = params.domain.toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const result = this.markVerified(cleanDomain, params.notes || 'Verified placement confirmed');
+
+    try {
+      await supabase
+        .from('embed_adoptions' as any)
+        .upsert({
+          publisher_id: params.publisherId || null,
+          domain: cleanDomain,
+          asset_id: params.assetId,
+          target_page_url: params.targetPageUrl || null,
+          verification_level: params.level,
+          dom_verified: params.domVerified ?? true,
+          has_telemetry: params.hasTelemetry ?? false,
+          notes: params.notes || null,
+          verified_by: params.verifiedBy || 'system_admin',
+          verified_at: new Date().toISOString()
+        }, { onConflict: 'domain' });
+    } catch {
+      // In offline or preview sandbox, local Map stores result
+    }
+
+    return result;
   }
 }
 

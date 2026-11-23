@@ -14,6 +14,7 @@ import {
   EmployerEmbedData,
   EmbedRegistryStats
 } from '@/types/embed';
+import { embedTelemetry } from '@/services/embed/EmbedTelemetryService';
 
 import { INDIAN_INSTITUTIONS_CATALOG } from '@/data/indianInstitutionsCatalog';
 import { TOP_50_INDIAN_HUBS } from '@/data/tier2LocationsData';
@@ -593,12 +594,17 @@ export class EmbedRegistry {
       }
     }
 
+    const publisherInsights = embedTelemetry.getPublisherDomainInsights();
+    const liveRenders = publisherInsights.reduce((acc, p) => acc + p.totalImpressions, 0);
+    const liveClicks = publisherInsights.reduce((acc, p) => acc + p.totalClicks, 0);
+    const uniquePublishers = publisherInsights.length;
+
     return {
       totalAssets: assets.length,
       activeAssets: assets.filter((a) => a.status === 'active').length,
-      totalRenders: 12450,
-      totalClicks: 1820,
-      uniquePublishers: 42,
+      totalRenders: liveRenders,
+      totalClicks: liveClicks,
+      uniquePublishers,
       categoryBreakdown: breakdown
     };
   }
