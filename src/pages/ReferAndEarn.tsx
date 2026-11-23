@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEnhancedSEO } from '@/hooks/useEnhancedSEO';
 import { Button } from '@/components/ui/button';
@@ -29,7 +29,18 @@ import { TalentXcelNotificationLogo } from '@/assets/talentxcel-notification-log
 
 const ReferAndEarn: React.FC = () => {
   const navigate = useNavigate();
-  const { referralData, loading, generateReferralLink, copyReferralLink, shareOnPlatform } = useReferralSystem();
+  const { referrals, myReferralCode, isLoading: loading, generateReferralCode, shareReferral } = useReferralSystem();
+
+  const referralData = useMemo(() => ({
+    referral_code: myReferralCode || '',
+    successful_referrals: referrals.filter(r => r.status === 'completed').length,
+    current_tier: 1,
+    total_rewards_earned: referrals.filter(r => r.status === 'completed').reduce((acc, r) => acc + (r.reward_amount || 0), 0)
+  }), [myReferralCode, referrals]);
+
+  const copyReferralLink = () => shareReferral('copy');
+  const shareOnPlatform = (platform: 'whatsapp' | 'twitter' | 'linkedin' | 'copy') => shareReferral(platform);
+  const generateReferralLink = generateReferralCode;
   const { triggerHaptic } = useHapticFeedback();
 
   useEnhancedSEO({

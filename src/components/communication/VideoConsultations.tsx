@@ -12,6 +12,17 @@ import { useCommunication } from "@/hooks/useCommunication";
 import { useAuth } from "@/contexts/AuthContext";
 import { format, addDays } from "date-fns";
 
+function safeFormatDate(dateVal: any, pattern: string, fallback: string = ''): string {
+  if (!dateVal) return fallback;
+  try {
+    const d = new Date(dateVal);
+    if (isNaN(d.getTime())) return fallback;
+    return format(d, pattern);
+  } catch {
+    return fallback;
+  }
+}
+
 const VideoConsultations = () => {
   const { user } = useAuth();
   const { videoConsultations, consultationAvailability, bookConsultation, isLoading } = useCommunication();

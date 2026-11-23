@@ -150,7 +150,7 @@ const SalaryGuidePage: React.FC = () => {
               </Badge>
               <Badge variant="outline" className="border-emerald-400/40 bg-emerald-500/10 text-emerald-300 font-semibold px-3 py-1 text-xs">
                 <ShieldCheck className="w-3 h-3 mr-1 text-emerald-400" />
-                Verified Market Intelligence
+                Modeled Benchmark Estimate
               </Badge>
             </div>
 
@@ -159,7 +159,7 @@ const SalaryGuidePage: React.FC = () => {
             </h1>
 
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
-              Comprehensive compensation distribution, percentile benchmarks, and take-home in-hand breakdown for <strong className="text-white">{roleName}</strong> professionals in <strong className="text-white">{locationName}</strong>. Compiled from verified industry requisitions and candidate disclosures.
+              Comprehensive compensation distribution, percentile benchmarks, and take-home in-hand breakdown for <strong className="text-white">{roleName}</strong> professionals in <strong className="text-white">{locationName}</strong>. Estimated from normalized industry compensation models and regional cost-of-living adjustments.
             </p>
 
             {/* Quick Actions */}
@@ -225,7 +225,7 @@ const SalaryGuidePage: React.FC = () => {
                 <div className="text-2xl font-bold tracking-tight text-foreground">
                   {formatLakhs(benchmark.p90)}
                 </div>
-                <p className="text-[11px] text-muted-foreground">Top-tier verified compensation</p>
+                <p className="text-[11px] text-muted-foreground">Upper-tier compensation band (90th %)</p>
               </CardContent>
             </Card>
 

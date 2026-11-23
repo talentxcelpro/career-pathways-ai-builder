@@ -43,6 +43,8 @@ const LOCATION_ALIAS_MAP: Record<string, string[]> = {
 /**
  * Expands a location into its comprehensive geographic aliases.
  */
+const norm = (str?: string) => (str || '').toLowerCase().trim();
+
 function expandLocationAliases(locations: string[]): string[] {
   const result = new Set<string>();
   for (const loc of locations) {

@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { UserAvatar } from '@/components/common/UserAvatar';
 import { getAvatarProps } from '@/utils/avatarUtils';
 import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, Eye, RefreshCw, Plus } from 'lucide-react';
