@@ -29,7 +29,7 @@ export const config = {
     '/career-map/:path*',
     '/resume/:path*',
     '/learning/:path*',
-    '/talent-score*',
+    '/talent-score/:path*',
     '/network/:path*',
     '/talent/:path*',
     '/communities/:path*'

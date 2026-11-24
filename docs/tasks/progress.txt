@@ -472,3 +472,10 @@
   - `https://passport.talentxcel.in/sitemap.xml`: Downloaded by Google with **0 errors, 0 warnings**.
   - `https://talentxcel.in/sitemap-base.xml` (containing `/talent-score` and `/passport`): Downloaded by Google with **0 errors, 0 warnings**.
 - **Real-Time Google WebSub Hub:** Pinged PubSubHubbub for instant feed indexation across `/feeds/feed-jobs.xml`, `/feeds/feed-salary.xml`, `/feeds/feed-colleges.xml`, and `/feeds/feed-government.xml` (all returned HTTP 204).
+
+### 5. Vercel Deployment & Edge Middleware Root Cause Resolution (2026-11-24)
+- **Problem**: Vercel production deployment failed at 4m 33s / 4m 42s (`8620ead` and `1eca890`) with an Edge Middleware packaging error.
+- **Root Cause Forensic**: In `middleware.ts`, `config.matcher` included `'/talent-score*'`. The `@vercel/node` and Vercel edge runtime route compiler utilizes `path-to-regexp@6.1.0`. In `path-to-regexp@6`, a wildcard asterisk without a parameter name throws `Unexpected MODIFIER at 13, expected END`.
+- **Fix Applied**: Updated `middleware.ts` matcher from `'/talent-score*'` to `'/talent-score/:path*'`, which correctly compiles and matches both `/talent-score` and nested paths.
+- **Verification**: Evaluated all 13 `middleware.ts` routes through `path-to-regexp@6.1.0` -> 100% PASS. Tested full local build (`npm run build`) -> Exit code 0, 7,316 modules bundled, 14,244 static documents rendered. Verified `npx tsx scripts/test-seo-render-entities.ts` -> 10/10 PASS.
+

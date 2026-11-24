@@ -3310,7 +3310,8 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
 
       const wordCount = countRenderedWords(bodyContent);
-      const isIndexReady = evaluateIndexabilityThreshold(hasRecordThreshold ? 3 : 0, wordCount);
+      const hasPostContent = Boolean(post.content && post.content.trim().length >= 40);
+      const isIndexReady = evaluateIndexabilityThreshold(hasPostContent ? 3 : 0, wordCount);
       robotsDirective = isIndexReady ? 'index, follow' : 'noindex, follow';
 
       jsonLdSchema = {
