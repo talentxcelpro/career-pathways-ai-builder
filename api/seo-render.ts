@@ -5170,6 +5170,15 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
     description = 'Explore comprehensive career progression roadmaps, high-demand skills, and verified certification pathways on TalentXcel Careers.';
     canonical = 'https://talentxcel.in/career-map';
     h1 = 'AI Career Progression & Role Pathways';
+    robotsDirective = 'index, follow';
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "@id": "https://talentxcel.in/career-map#webpage",
+      "name": "TalentXcel AI Career Roadmaps",
+      "url": "https://talentxcel.in/career-map",
+      "description": "Explore comprehensive career progression roadmaps, high-demand skills, and verified certification pathways."
+    };
     bodyContent = `
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">Career Progression Roadmaps &amp; Role Pathways</h2>
@@ -5585,6 +5594,26 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       description = 'Test your resume against applicant tracking systems free in 5 seconds. Identify missing keywords, formatting errors, and recruiter match score on TalentXcel.';
       canonical = 'https://talentxcel.in/resume/ats-check';
       h1 = 'Free In-Browser ATS Resume Checker';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "@id": "https://talentxcel.in/resume/ats-check#software",
+        "name": "TalentXcel Free ATS Resume Checker",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All modern web browsers",
+        "url": "https://talentxcel.in/resume/ats-check",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "provider": {
+          "@type": "Organization",
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
+        },
+        "description": "Instant in-browser applicant tracking system (ATS) resume scanner evaluating keyword density, formatting readability, and recruiter match scoring."
+      };
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-2xl font-bold text-white">Instant In-Browser ATS Resume Scanner</h2>
@@ -5617,6 +5646,19 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       description = 'Explore comprehensive career progression roadmaps, high-demand skills, and verified certification pathways on TalentXcel Careers.';
       canonical = 'https://talentxcel.in/career-map';
       h1 = 'AI Career Progression & Role Pathways';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://talentxcel.in/career-map#webpage",
+        "name": "TalentXcel AI Career Roadmaps",
+        "url": "https://talentxcel.in/career-map",
+        "provider": {
+          "@type": "Organization",
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
+        },
+        "description": "Comprehensive career progression roadmaps, high-demand skills analysis, and verified transition pathways."
+      };
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-2xl font-bold text-white">Career Pathways &amp; Progression Maps</h2>

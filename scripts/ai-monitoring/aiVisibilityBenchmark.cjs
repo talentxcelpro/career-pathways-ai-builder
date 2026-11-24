@@ -1,7 +1,8 @@
 // scripts/ai-monitoring/aiVisibilityBenchmark.cjs
 // AI Search Visibility, Recommendation & Citation Monitoring Framework.
-// Tracks TalentXcel brand mentions, recommendations, citations, source URLs, and competitive positioning
-// across Tier 1 (ChatGPT, Gemini, Perplexity, Claude, Copilot) and Tier 2 (Grok, DeepSeek, Mistral, You.com).
+// DATA CLASSIFICATION: SIMULATED — NOT LIVE AI SEARCH DATA
+// NOTE: This benchmark is an internal simulation test harness evaluating schema completeness
+// and keyword density. It does NOT execute live external API calls or represent real-world search engine rankings.
 
 const fs = require('fs');
 const path = require('path');

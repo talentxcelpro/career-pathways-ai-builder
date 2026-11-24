@@ -1,5 +1,7 @@
 {
   "auditDate": "2026-11-24",
+  "dataClassification": "SIMULATED — NOT LIVE AI SEARCH DATA",
+  "warning": "These metrics were calculated by an internal heuristic scoring model for CI testing, not live search queries.",
   "totalQueriesTested": 64,
   "uniqueQueryTemplates": 8,
   "platformsAudited": 8,
