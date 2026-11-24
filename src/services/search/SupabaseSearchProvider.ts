@@ -107,7 +107,12 @@ export class SupabaseSearchProvider implements SearchProvider {
       skills: (params.skills || []).map(s => s.trim().toLowerCase()).sort(),
       page: Math.max(1, params.page || 1),
       limit: Math.min(50, Math.max(1, params.limit || 20)),
-      sort: (params.sortBy || 'created_at').trim().toLowerCase()
+      sort: (params.sortBy || 'created_at').trim().toLowerCase(),
+      industries: (params.industries || []).map(s => s.trim().toLowerCase()).sort(),
+      cities: (params.cities || []).map(s => s.trim().toLowerCase()).sort(),
+      fresher: params.is_fresher ?? null,
+      intern: params.is_internship ?? null,
+      workModes: (params.work_modes || []).map(s => s.trim().toLowerCase()).sort()
     };
     return `jobs-search:${JSON.stringify(n)}`;
   }
@@ -198,7 +203,12 @@ export class SupabaseSearchProvider implements SearchProvider {
       p_max_salary: params.max_salary || 0,
       p_is_remote: params.is_remote || false,
       p_skills: params.skills || [],
-      p_sort_by: (params.sortBy || 'created_at').trim()
+      p_sort_by: (params.sortBy || 'created_at').trim(),
+      p_industries: params.industries || [],
+      p_cities: params.cities || [],
+      p_is_fresher: params.is_fresher ?? null,
+      p_is_internship: params.is_internship ?? null,
+      p_work_modes: params.work_modes || []
     });
 
     if (error) throw error;
@@ -220,7 +230,12 @@ export class SupabaseSearchProvider implements SearchProvider {
           p_max_salary: params.max_salary || 0,
           p_is_remote: params.is_remote || false,
           p_skills: params.skills || [],
-          p_sort_by: (params.sortBy || 'created_at').trim()
+          p_sort_by: (params.sortBy || 'created_at').trim(),
+          p_industries: params.industries || [],
+          p_cities: params.cities || [],
+          p_is_fresher: params.is_fresher ?? null,
+          p_is_internship: params.is_internship ?? null,
+          p_work_modes: params.work_modes || []
         });
         if (!retryRes.error && retryRes.data?.jobs?.length) {
           data = retryRes.data;

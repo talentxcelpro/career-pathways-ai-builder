@@ -1520,6 +1520,216 @@ async function prerender() {
         });
       }
 
+      // ── 5B.2 Geographic Network Discovery Hub Pages (Global, Country, State, City Hubs) ─────────
+      const GEOGRAPHIC_HUBS: Array<{
+        route: string;
+        title: string;
+        desc: string;
+        h1: string;
+        country: string;
+        division?: string;
+        city?: string;
+        flag: string;
+        keywords: string[];
+      }> = [
+        {
+          route: '/network/india',
+          title: 'India Professional Network | Connect with Leaders & Engineers | TalentXcel',
+          desc: 'Join India\'s premier professional talent network. Discover verified software engineers, product leaders, local tech communities, and discussions on TalentXcel.',
+          h1: '🇮🇳 India Professional Network',
+          country: 'India',
+          flag: '🇮🇳',
+          keywords: ['india', 'bengaluru', 'mumbai', 'delhi', 'noida', 'pune', 'hyderabad']
+        },
+        {
+          route: '/network/india/karnataka/bengaluru',
+          title: 'Bengaluru Tech & Professional Network | TalentXcel',
+          desc: 'Connect with verified AI engineers, startup founders, and engineering leaders in Bengaluru (Bangalore), Karnataka on TalentXcel.',
+          h1: '🇮🇳 Bengaluru Professional Network & Tech Community',
+          country: 'India',
+          division: 'Karnataka',
+          city: 'Bengaluru',
+          flag: '🇮🇳',
+          keywords: ['bengaluru', 'bangalore', 'whitefield', 'electronic city', 'koramangala']
+        },
+        {
+          route: '/network/india/uttar-pradesh/noida',
+          title: 'Noida Professional & IT Network | Uttar Pradesh | TalentXcel',
+          desc: 'Discover verified tech talent, developers, and corporate leaders in Noida & Delhi NCR on TalentXcel.',
+          h1: '🇮🇳 Noida Professional Network — Delhi NCR',
+          country: 'India',
+          division: 'Uttar Pradesh',
+          city: 'Noida',
+          flag: '🇮🇳',
+          keywords: ['noida', 'greater noida', 'delhi ncr', 'uttar pradesh']
+        },
+        {
+          route: '/network/india/maharashtra/mumbai',
+          title: 'Mumbai Financial Tech & Professional Network | TalentXcel',
+          desc: 'Connect with fintech architects, corporate executives, and software engineers in Mumbai, Maharashtra on TalentXcel.',
+          h1: '🇮🇳 Mumbai Professional Network — Maharashtra',
+          country: 'India',
+          division: 'Maharashtra',
+          city: 'Mumbai',
+          flag: '🇮🇳',
+          keywords: ['mumbai', 'bombay', 'bkc', 'fintech']
+        },
+        {
+          route: '/network/united-states',
+          title: 'United States Professional Network | Silicon Valley & Beyond | TalentXcel',
+          desc: 'Discover top engineers, product strategists, and executive mentors across the United States on TalentXcel.',
+          h1: '🇺🇸 United States Professional Network',
+          country: 'United States',
+          flag: '🇺🇸',
+          keywords: ['us', 'usa', 'silicon valley', 'san francisco', 'new york', 'seattle', 'austin']
+        },
+        {
+          route: '/network/united-states/california/san-francisco',
+          title: 'San Francisco Bay Area Tech & AI Network | TalentXcel',
+          desc: 'Connect with frontier AI researchers, venture leaders, and distributed systems engineers in San Francisco & Silicon Valley on TalentXcel.',
+          h1: '🇺🇸 San Francisco Bay Area Professional Network',
+          country: 'United States',
+          division: 'California',
+          city: 'San Francisco',
+          flag: '🇺🇸',
+          keywords: ['san francisco', 'sf', 'bay area', 'silicon valley', 'palo alto']
+        },
+        {
+          route: '/network/united-states/new-york/new-york',
+          title: 'New York City Tech & Finance Network | TalentXcel',
+          desc: 'Connect with fintech leaders, media tech innovators, and software developers in New York City on TalentXcel.',
+          h1: '🇺🇸 New York City Professional Network',
+          country: 'United States',
+          division: 'New York',
+          city: 'New York',
+          flag: '🇺🇸',
+          keywords: ['new york', 'nyc', 'manhattan', 'brooklyn']
+        },
+        {
+          route: '/network/united-kingdom/london',
+          title: 'London Tech & Professional Network | United Kingdom | TalentXcel',
+          desc: 'Discover verified fintech engineers, deep learning researchers, and startup founders in London, United Kingdom on TalentXcel.',
+          h1: '🇬🇧 London Professional Network & Tech Community',
+          country: 'United Kingdom',
+          city: 'London',
+          flag: '🇬🇧',
+          keywords: ['london', 'uk', 'shoreditch', 'canary wharf']
+        },
+        {
+          route: '/network/united-arab-emirates/dubai',
+          title: 'Dubai & UAE Professional Network | TalentXcel',
+          desc: 'Join verified tech leaders, sovereign AI architects, and executive mentors in Dubai & UAE on TalentXcel.',
+          h1: '🇦🇪 Dubai Professional Talent Network — UAE',
+          country: 'United Arab Emirates',
+          city: 'Dubai',
+          flag: '🇦🇪',
+          keywords: ['dubai', 'uae', 'difc', 'internet city']
+        },
+        {
+          route: '/network/canada/ontario/toronto',
+          title: 'Toronto Tech Corridor Professional Network | TalentXcel',
+          desc: 'Connect with machine learning engineers, SaaS builders, and engineering leaders in Toronto, Ontario on TalentXcel.',
+          h1: '🇨🇦 Toronto Professional Network — Ontario',
+          country: 'Canada',
+          division: 'Ontario',
+          city: 'Toronto',
+          flag: '🇨🇦',
+          keywords: ['toronto', 'ontario', 'gta', 'waterloo']
+        },
+        {
+          route: '/network/singapore/singapore',
+          title: 'Singapore APAC Tech & Web3 Professional Network | TalentXcel',
+          desc: 'Discover verified software architects, algorithmic trading engineers, and corporate executives in Singapore on TalentXcel.',
+          h1: '🇸🇬 Singapore Professional Talent Network',
+          country: 'Singapore',
+          city: 'Singapore',
+          flag: '🇸🇬',
+          keywords: ['singapore', 'apac', 'cbd', 'one-north']
+        }
+      ];
+
+      for (const geoHub of GEOGRAPHIC_HUBS) {
+        const hubCanonical = `${BASE_URL}${geoHub.route}`;
+        const hubPosts = dbPosts
+          .filter(p => {
+            const text = ((p.content || '') + ' ' + (p.headline || '') + ' ' + (p.location || '') + ' ' + (p.hashtags || []).join(' ')).toLowerCase();
+            return geoHub.keywords.some(k => text.includes(k));
+          })
+          .slice(0, 15);
+
+        const hubDiscussions = hubPosts.length > 0 ? hubPosts : dbPosts.slice(0, 6);
+        const hubComments = await Promise.all(hubDiscussions.map(p => fetchPublicComments(p.id)));
+        const hubArticlesHtml = hubDiscussions.map((post, i) => renderFeedArticle(post, hubComments[i])).join('\n');
+
+        const breadcrumbs = [
+          { name: 'Home', url: BASE_URL },
+          { name: 'Network', url: networkCanonical },
+          { name: geoHub.country, url: `${BASE_URL}/network/${geoHub.keywords[0]}` }
+        ];
+
+        if (geoHub.division) {
+          breadcrumbs.push({ name: geoHub.division, url: `${BASE_URL}/network/${geoHub.keywords[0]}/${geoHub.division.toLowerCase().replace(/\s+/g, '-')}` });
+        }
+        if (geoHub.city) {
+          breadcrumbs.push({ name: geoHub.city, url: hubCanonical });
+        }
+
+        const geoBreadcrumbSchema = buildBreadcrumbSchema(breadcrumbs);
+        const placeSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'Place',
+          name: geoHub.city || geoHub.division || geoHub.country,
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: geoHub.city || undefined,
+            addressRegion: geoHub.division || undefined,
+            addressCountry: geoHub.country,
+          },
+          description: geoHub.desc,
+        };
+
+        const hubCollectionSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'CollectionPage',
+          name: geoHub.title,
+          description: geoHub.desc,
+          url: hubCanonical,
+          publisher: { '@id': `${BASE_URL}/#organization` },
+        };
+
+        writePrerenderedPage(geoHub.route, {
+          title: geoHub.title,
+          description: geoHub.desc,
+          canonical: hubCanonical,
+          h1: geoHub.h1,
+          bodyContentHtml: `
+            <div class="space-y-8 max-w-4xl mx-auto py-4">
+              <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 border border-blue-900/40 rounded-3xl p-6 sm:p-8 space-y-4 text-white">
+                <nav class="text-xs text-blue-300 flex items-center gap-1.5 flex-wrap">
+                  <a href="/network" class="hover:text-white">← Global Network</a>
+                  <span>/</span>
+                  <span class="text-white font-bold">${escapeHtml(geoHub.city || geoHub.country)}</span>
+                </nav>
+                <h1 class="text-2xl sm:text-3xl font-black">${escapeHtml(geoHub.h1)}</h1>
+                <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(geoHub.desc)}</p>
+                <div class="flex flex-wrap gap-2 pt-2">
+                  <span class="px-3 py-1 rounded-full bg-blue-500/20 text-cyan-300 border border-blue-400/30 text-xs font-bold">Verified Professionals</span>
+                  <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-bold">Local Communities</span>
+                  <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold">Discussions & Events</span>
+                </div>
+              </div>
+              <div class="space-y-4">
+                <h2 class="text-lg font-bold text-white">Discussions in ${escapeHtml(geoHub.city || geoHub.country)}</h2>
+                <div class="space-y-6">${hubArticlesHtml}</div>
+              </div>
+              <div class="pt-4 text-center">
+                <a href="/network" class="text-sm text-blue-400 hover:text-blue-300 font-bold">Explore All Global Hubs →</a>
+              </div>
+            </div>`,
+          jsonLd: [hubCollectionSchema, placeSchema, geoBreadcrumbSchema],
+        });
+      }
+
       // ── 5C. Individual Post Pages: /post/:id and /network/posts/:id ─────────
       // Process up to 300 posts with comments
       let postProcessCount = 0;

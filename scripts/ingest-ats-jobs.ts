@@ -3,6 +3,9 @@ import { readFileSync, existsSync } from 'fs';
 import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import { generateSitemaps } from './generate-sitemap';
+import { resolveIndianCity, INDIAN_100_EMPLOYMENT_CENTRES } from '../src/config/jobs/indianLocationsTaxonomy';
+import { UnifiedIndustryClassifier } from '../src/lib/jobs/unifiedIndustryClassifier';
+import { generateJobSlug } from '../src/utils/seoUrls';
 
 export interface RawJobPayload {
   external_id: string;
@@ -34,8 +37,10 @@ export interface ValidationResult {
   resolvedCityId?: string;
   resolvedCitySlug?: string;
   resolvedCityName?: string;
+  resolvedCityState?: string;
   resolvedRoleId?: string;
   resolvedRoleSlug?: string;
+  classifiedIndustry?: any;
   sanitizedDescription?: string;
 }
 
@@ -173,61 +178,98 @@ export function validateJobPayload(
     reasons.push('Point 1 Failed: Missing job description');
   }
 
-  // Point 2: Exact canonical_cities match with CITY_ALIAS_MAP support
+  // Point 2: 100 Indian Employment Centres + canonical_cities + Remote
   let resolvedCityId: string | undefined;
   let resolvedCitySlug: string | undefined;
   let resolvedCityName: string | undefined;
-  if (context?.canonicalCities && payload.location) {
-    const locLower = payload.location.toLowerCase();
-    const matched = context.canonicalCities.find((c) => {
-      const cSlug = c.slug.toLowerCase();
-      const cName = c.name.toLowerCase();
-      if (
-        locLower === cSlug ||
-        locLower === cName ||
-        locLower.includes(cName) ||
-        locLower.includes(cSlug.replace(/-/g, ' '))
-      ) {
-        return true;
-      }
-      for (const [aliasKey, targetSlug] of Object.entries(CITY_ALIAS_MAP)) {
-        if (locLower.includes(aliasKey) && (cSlug === targetSlug || cSlug === aliasKey)) {
+  let resolvedCityState: string | undefined;
+
+  if (payload.location) {
+    const indianCity = resolveIndianCity(payload.location);
+    if (indianCity) {
+      resolvedCityId = indianCity.id;
+      resolvedCitySlug = indianCity.slug;
+      resolvedCityName = indianCity.name;
+      resolvedCityState = indianCity.state;
+    } else if (context?.canonicalCities) {
+      const locLower = payload.location.toLowerCase();
+      const matched = context.canonicalCities.find((c) => {
+        const cSlug = c.slug.toLowerCase();
+        const cName = c.name.toLowerCase();
+        if (
+          locLower === cSlug ||
+          locLower === cName ||
+          locLower.includes(cName) ||
+          locLower.includes(cSlug.replace(/-/g, ' '))
+        ) {
           return true;
         }
-      }
-      return false;
-    });
+        for (const [aliasKey, targetSlug] of Object.entries(CITY_ALIAS_MAP)) {
+          if (locLower.includes(aliasKey) && (cSlug === targetSlug || cSlug === aliasKey)) {
+            return true;
+          }
+        }
+        return false;
+      });
 
-    if (matched) {
-      resolvedCityId = matched.id;
-      resolvedCitySlug = matched.slug;
-      resolvedCityName = matched.name;
-    } else {
-      reasons.push(`Point 2 Failed: Location "${payload.location}" does not match canonical_cities taxonomy`);
+      if (matched) {
+        resolvedCityId = matched.id;
+        resolvedCitySlug = matched.slug;
+        resolvedCityName = matched.name;
+      }
+    }
+
+    if (!resolvedCityName) {
+      if (/remote|wfh|work from home/i.test(payload.location)) {
+        resolvedCityId = 'remote';
+        resolvedCitySlug = 'remote';
+        resolvedCityName = 'Remote';
+        resolvedCityState = 'India';
+      } else if (/india|pan india|all india/i.test(payload.location)) {
+        resolvedCityId = 'india';
+        resolvedCitySlug = 'india';
+        resolvedCityName = 'India';
+        resolvedCityState = 'India';
+      } else {
+        reasons.push(`Point 2 Failed: Location "${payload.location}" does not match Indian employment centres directory`);
+      }
     }
   }
 
-  // Point 3: canonical_roles taxonomy resolution
+  // Point 3: Canonical role taxonomy resolution OR UnifiedIndustryClassifier (20 Industries)
   let resolvedRoleId: string | undefined;
   let resolvedRoleSlug: string | undefined;
-  if (context?.canonicalRoles && payload.title) {
-    const titleLower = payload.title.toLowerCase();
-    const matched = context.canonicalRoles.find((r: any) => {
-      const rName = (r.name || r.title || '').toLowerCase();
-      const rSlug = (r.slug || '').toLowerCase();
-      return (
-        titleLower === rSlug ||
-        titleLower === rName ||
-        titleLower.includes(rName) ||
-        titleLower.includes(rSlug.replace(/-/g, ' ')) ||
-        (rName.length > 5 && rName.split(' ').every((w: string) => titleLower.includes(w)))
-      );
+  let classifiedIndustry: any;
+
+  if (payload.title) {
+    if (context?.canonicalRoles) {
+      const titleLower = payload.title.toLowerCase();
+      const matched = context.canonicalRoles.find((r: any) => {
+        const rName = (r.name || r.title || '').toLowerCase();
+        const rSlug = (r.slug || '').toLowerCase();
+        return (
+          titleLower === rSlug ||
+          titleLower === rName ||
+          titleLower.includes(rName) ||
+          titleLower.includes(rSlug.replace(/-/g, ' ')) ||
+          (rName.length > 5 && rName.split(' ').every((w: string) => titleLower.includes(w)))
+        );
+      });
+      if (matched) {
+        resolvedRoleId = matched.id;
+        resolvedRoleSlug = matched.slug;
+      }
+    }
+
+    // Modern 20-industry multi-layer classification
+    classifiedIndustry = UnifiedIndustryClassifier.classify({
+      title: payload.title,
+      company_name: payload.company_name,
+      description: payload.description,
     });
-    if (matched) {
-      resolvedRoleId = matched.id;
-      resolvedRoleSlug = matched.slug;
-    } else {
-      reasons.push(`Point 3 Failed: Title "${payload.title}" cannot be resolved in canonical_roles taxonomy`);
+
+    if (!resolvedRoleId && !classifiedIndustry?.industryName) {
+      reasons.push(`Point 3 Failed: Title "${payload.title}" cannot be resolved into 20-industry taxonomy`);
     }
   }
 
@@ -263,9 +305,25 @@ export function validateJobPayload(
     }
   }
 
-  // Point 6: >= 300 char description check (anti-thin content)
-  if (payload.description && payload.description.trim().length < 300) {
-    reasons.push(`Point 6 Failed: Thin description (${payload.description.trim().length} chars < 300 chars threshold)`);
+  // Point 6: >= 300 char description check (anti-thin content) with raw_data fallback
+  let descToCheck = payload.description || '';
+  if (descToCheck.trim().length < 300 && payload.raw_data) {
+    const rawData = payload.raw_data;
+    const richContent =
+      rawData.content ||
+      rawData.description ||
+      rawData.descriptionHtml ||
+      rawData.descriptionPlain ||
+      rawData.jobAd?.sections?.jobDescription?.text ||
+      rawData.jobAd?.sections?.qualifications?.text;
+    if (richContent && typeof richContent === 'string' && richContent.trim().length >= 300) {
+      descToCheck = decodeHtmlEntities(richContent);
+      payload.description = descToCheck;
+    }
+  }
+
+  if (descToCheck.trim().length < 300) {
+    reasons.push(`Point 6 Failed: Thin description (${descToCheck.trim().length} chars < 300 chars threshold)`);
   }
 
   // Point 7: Anti-spam lexicon filter
@@ -328,8 +386,10 @@ export function validateJobPayload(
     resolvedCityId,
     resolvedCitySlug,
     resolvedCityName,
+    resolvedCityState,
     resolvedRoleId,
     resolvedRoleSlug,
+    classifiedIndustry,
     sanitizedDescription: cleanedText,
   };
 }
@@ -895,13 +955,39 @@ export async function runAtsIngestionBatch(
         const finalSalaryMax = payload.salary_max || benchmark.max;
         const finalSalaryRange = `₹${(finalSalaryMin / 100000).toFixed(1)}L - ₹${(finalSalaryMax / 100000).toFixed(1)}L PA`;
 
+        const isFresher = /fresher|graduate trainee|trainee|entry[- ]level|0[- ]1 years|0 years/i.test(
+          payload.title + ' ' + (payload.description || '')
+        );
+        const isIntern = /intern|internship|apprentice/i.test(
+          payload.title + ' ' + (payload.employment_type || '')
+        );
+        const indClass =
+          validation.classifiedIndustry ||
+          UnifiedIndustryClassifier.classify({
+            title: payload.title,
+            company_name: payload.company_name,
+            description: payload.description,
+          });
+
+        const jobCityName = validation.resolvedCityName || 'India';
+        const jobSlug = generateJobSlug(
+          payload.title,
+          jobCityName,
+          jobId.slice(0, 8),
+          isFresher ? 'fresher' : 'experienced'
+        );
+        const canonicalUrl = `https://talentxcel.in/jobs/${jobSlug}`;
+
         newJobsToInsert.push({
           id: jobId,
           title: payload.title,
+          slug: jobSlug,
+          canonical_url: canonicalUrl,
           company_name: payload.company_name,
           company_id: companyId || null,
           location: payload.location,
-          location_city: validation.resolvedCityName || 'Bangalore',
+          location_city: jobCityName,
+          location_state: validation.resolvedCityState || 'India',
           city_id: validation.resolvedCityId || null,
           role_id: validation.resolvedRoleId || null,
           description: validation.sanitizedDescription || payload.description,
@@ -909,7 +995,18 @@ export async function runAtsIngestionBatch(
           external_url: payload.apply_url,
           is_active: true,
           is_remote: /remote/i.test(payload.location),
-          employment_type: payload.employment_type || 'Full-time',
+          employment_type: payload.employment_type || (isIntern ? 'Internship' : 'Full-time'),
+          experience_level: isFresher ? 'fresher' : 'experienced',
+          industry: indClass.industryName,
+          subindustry: indClass.subindustryName || null,
+          is_fresher_eligible: isFresher,
+          is_internship: isIntern,
+          is_paid_internship: isIntern,
+          is_apprenticeship: /apprentice/i.test(payload.title),
+          is_graduate_trainee: /graduate trainee|trainee/i.test(payload.title),
+          is_part_time:
+            /part[- ]time/i.test(payload.employment_type || '') || /part[- ]time/i.test(payload.title),
+          index_eligibility: true,
           salary_min: finalSalaryMin,
           salary_max: finalSalaryMax,
           salary_range: finalSalaryRange,
@@ -925,9 +1022,9 @@ export async function runAtsIngestionBatch(
           updated_at: nowIso,
         });
 
-        // Enqueue individual JobPosting URL into indexing_outbox
+        // Enqueue individual JobPosting URL into indexing_outbox (authoritative apex canonical)
         newOutboxItems.push({
-          url: `https://jobs.talentxcel.in/jobs/${jobId}`,
+          url: canonicalUrl,
           action: 'URL_UPDATED',
           priority: 1,
         });

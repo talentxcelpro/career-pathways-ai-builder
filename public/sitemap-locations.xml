@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://talentxcel.in/locations/ahmedabad</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/bangalore</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://talentxcel.in/locations/bhopal</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -61,11 +51,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/locations/kolkata</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://talentxcel.in/locations/lucknow</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
@@ -81,17 +66,7 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/locations/noida</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://talentxcel.in/locations/patna</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/pune</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>

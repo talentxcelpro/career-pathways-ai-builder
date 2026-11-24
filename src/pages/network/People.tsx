@@ -37,6 +37,7 @@ import { useUserPresence } from '@/hooks/useUserPresence';
 import { RealTimePresence } from '@/components/network/RealTimePresence';
 import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 import { toast } from 'sonner';
+import { resolveLocation } from '@/lib/geography/resolver';
 
 // Public member directory backed by profiles that members explicitly mark public
 interface GlobalTalentProfile {
@@ -171,13 +172,23 @@ const People: React.FC = () => {
         const loc = db.location || '';
         
         let hub: GlobalTalentProfile['hub'] = 'unknown';
-        const lowerLoc = loc.toLowerCase();
-        if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha') || lowerLoc.includes('abu dhabi')) hub = 'dubai';
-        else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco') || lowerLoc.includes('seattle') || lowerLoc.includes('austin')) hub = 'us';
-        else if (lowerLoc.includes('uk') || lowerLoc.includes('london') || lowerLoc.includes('berlin') || lowerLoc.includes('europe') || lowerLoc.includes('germany') || lowerLoc.includes('paris')) hub = 'europe';
-        else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi') || lowerLoc.includes('hyderabad') || lowerLoc.includes('noida') || lowerLoc.includes('pune')) hub = 'india';
-        else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul') || lowerLoc.includes('sydney')) hub = 'apac';
-        else if (lowerLoc.includes('remote')) hub = 'remote';
+        const resolvedGeo = resolveLocation(loc);
+        if (resolvedGeo) {
+          if (resolvedGeo.country.id === 'IN') hub = 'india';
+          else if (resolvedGeo.country.id === 'US') hub = 'us';
+          else if (resolvedGeo.country.id === 'GB' || resolvedGeo.country.id === 'DE') hub = 'europe';
+          else if (resolvedGeo.country.id === 'AE') hub = 'dubai';
+          else if (resolvedGeo.country.id === 'SG' || resolvedGeo.country.id === 'AU') hub = 'apac';
+          else if (resolvedGeo.country.id === 'GLOBAL') hub = 'remote';
+        } else {
+          const lowerLoc = loc.toLowerCase();
+          if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha') || lowerLoc.includes('abu dhabi')) hub = 'dubai';
+          else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco') || lowerLoc.includes('seattle') || lowerLoc.includes('austin')) hub = 'us';
+          else if (lowerLoc.includes('uk') || lowerLoc.includes('london') || lowerLoc.includes('berlin') || lowerLoc.includes('europe') || lowerLoc.includes('germany') || lowerLoc.includes('paris')) hub = 'europe';
+          else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi') || lowerLoc.includes('hyderabad') || lowerLoc.includes('noida') || lowerLoc.includes('pune')) hub = 'india';
+          else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul') || lowerLoc.includes('sydney')) hub = 'apac';
+          else if (lowerLoc.includes('remote')) hub = 'remote';
+        }
 
         const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
           ? db.skills 

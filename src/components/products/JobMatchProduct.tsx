@@ -495,7 +495,7 @@ export const JobMatchProduct: React.FC = () => {
       }
 
       // 2. Fetch ALL authentic active vacancies directly from Supabase via parallel range batches
-      const FIELDS = 'id, title, company_name, location, location_city, location_state, employment_type, is_remote, work_mode, salary_min, salary_max, salary_currency, applicant_location_requirements, description, department, industry, external_url, skills_required, application_deadline, expires_at, created_at, job_summary, min_experience, max_experience, is_featured, views_count, applications_count, experience_level';
+      const FIELDS = 'id, title, company_name, location, location_city, location_state, employment_type, is_remote, work_mode, salary_min, salary_max, salary_currency, applicant_location_requirements, description, department, industry, subindustry, is_fresher_eligible, is_internship, is_paid_internship, is_apprenticeship, is_graduate_trainee, is_part_time, external_url, skills_required, application_deadline, expires_at, created_at, job_summary, min_experience, max_experience, is_featured, views_count, applications_count, experience_level';
       const totalActive = (count && count > 0) ? count : 2500;
       const batchCount = Math.ceil(totalActive / 1000);
       const batchPromises = [];
@@ -710,13 +710,16 @@ export const JobMatchProduct: React.FC = () => {
         }
       }
 
-      // Sub-tab filter (All Jobs | Remote | Freshers | High Paying)
+      // Sub-tab filter (All Jobs | Remote | Freshers | Internships | High Paying)
       if (selectedSubTab === 'remote') {
         const isRem = job.is_remote || (job.work_mode || '').toLowerCase() === 'remote' || (job.location || '').toLowerCase().includes('remote');
         if (!isRem) return false;
       } else if (selectedSubTab === 'freshers') {
-        const isFresher = (job.min_experience || 0) <= 1 || (job.title || '').toLowerCase().includes('trainee') || (job.title || '').toLowerCase().includes('intern') || (job.title || '').toLowerCase().includes('fresher');
+        const isFresher = job.is_fresher_eligible || job.experience_level === 'fresher' || (job.min_experience || 0) <= 1 || (job.title || '').toLowerCase().includes('trainee') || (job.title || '').toLowerCase().includes('intern') || (job.title || '').toLowerCase().includes('fresher');
         if (!isFresher) return false;
+      } else if (selectedSubTab === 'internships') {
+        const isIntern = job.is_internship || job.is_paid_internship || (job.employment_type || '').toLowerCase().includes('intern') || (job.title || '').toLowerCase().includes('intern');
+        if (!isIntern) return false;
       } else if (selectedSubTab === 'high_paying') {
         const isHigh = (job.salary_max || job.salary_min || 0) >= 1000000;
         if (!isHigh) return false;

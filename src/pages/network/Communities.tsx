@@ -47,6 +47,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate, useParams } from 'react-router-dom';
+import { resolveLocation } from '@/lib/geography/resolver';
 
 export interface ProfessionalCommunity {
   id: string;
@@ -271,6 +272,31 @@ export const Communities: React.FC = () => {
 
         return dbGroups.map((g: any) => {
           const host = creatorMap.get(g.created_by);
+          const fullText = `${g.name} ${g.description || ''} ${g.rules || ''}`;
+          const resolvedGeo = resolveLocation(fullText);
+
+          let hub: ProfessionalCommunity['hub'] = 'remote';
+          let hub_label = 'Worldwide';
+
+          if (resolvedGeo) {
+            if (resolvedGeo.country.id === 'IN') {
+              hub = 'india';
+              hub_label = resolvedGeo.city ? `${resolvedGeo.city.name} & India` : 'India Tech Hubs';
+            } else if (resolvedGeo.country.id === 'US') {
+              hub = 'us';
+              hub_label = resolvedGeo.city ? `${resolvedGeo.city.name} / US` : 'Silicon Valley / US';
+            } else if (resolvedGeo.country.id === 'AE') {
+              hub = 'dubai';
+              hub_label = 'Dubai & MENA';
+            } else if (resolvedGeo.country.id === 'GB' || resolvedGeo.country.id === 'DE') {
+              hub = 'europe';
+              hub_label = 'London & Europe';
+            } else if (resolvedGeo.country.id === 'SG' || resolvedGeo.country.id === 'AU') {
+              hub = 'apac';
+              hub_label = 'Singapore & APAC';
+            }
+          }
+
           return {
             id: g.id,
             name: g.name,
@@ -278,8 +304,8 @@ export const Communities: React.FC = () => {
             description: g.description || 'A collaborative professional community on TalentXcel.',
             category: (g.category as any) || 'general',
             category_label: CATEGORY_FILTERS.find(f => f.id === g.category)?.label || 'General Community',
-            hub: 'remote',
-            hub_label: 'Worldwide',
+            hub,
+            hub_label,
             member_count: g.member_count || 1,
             online_count: 0,
             is_private: !g.is_public,

@@ -397,6 +397,9 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
           max_salary: filters.salary_max,
           is_remote: isRemoteEffective,
           skills: filters.skills,
+          industries: filters.industry,
+          work_modes: filters.work_mode,
+          is_fresher: mappedLevels.includes('fresher') ? true : undefined,
           page: 1,
           limit: hasSecondary ? 60 : pageSize,
           sortBy
@@ -504,6 +507,9 @@ export const useJobsCriticalPath = (filters: JobFilters, sortBy: string = 'poste
         max_salary: filters.salary_max,
         is_remote: isRemoteEffective,
         skills: filters.skills,
+        industries: filters.industry,
+        work_modes: filters.work_mode,
+        is_fresher: mappedLevels.includes('fresher') ? true : undefined,
         page: nextPage,
         limit: hasSecondary ? 60 : pageSize,
         sortBy

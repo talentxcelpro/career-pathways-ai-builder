@@ -13,6 +13,11 @@ export interface SearchParams {
   page?: number;
   limit?: number;
   sortBy?: string;
+  industries?: string[];
+  cities?: string[];
+  is_fresher?: boolean;
+  is_internship?: boolean;
+  work_modes?: string[];
 }
 
 export interface SearchResult {

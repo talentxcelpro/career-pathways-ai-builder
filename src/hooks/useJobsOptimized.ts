@@ -11,6 +11,11 @@ interface JobFilters {
   salary_max: number;
   is_remote: boolean;
   skills: string[];
+  industries?: string[];
+  cities?: string[];
+  is_fresher?: boolean;
+  is_internship?: boolean;
+  work_modes?: string[];
 }
 
 interface OptimizedJobsResult {
@@ -55,7 +60,12 @@ export const useJobsOptimized = (
         p_max_salary: filters.salary_max || 0,
         p_is_remote: filters.is_remote || false,
         p_skills: filters.skills,
-        p_sort_by: sortBy
+        p_sort_by: sortBy,
+        p_industries: filters.industries || [],
+        p_cities: filters.cities || [],
+        p_is_fresher: filters.is_fresher ?? null,
+        p_is_internship: filters.is_internship ?? null,
+        p_work_modes: filters.work_modes || []
       });
 
       if (error) {
@@ -100,7 +110,12 @@ export const useJobsOptimized = (
         p_max_salary: filters.salary_max || 0,
         p_is_remote: filters.is_remote || false,
         p_skills: filters.skills,
-        p_sort_by: sortBy
+        p_sort_by: sortBy,
+        p_industries: filters.industries || [],
+        p_cities: filters.cities || [],
+        p_is_fresher: filters.is_fresher ?? null,
+        p_is_internship: filters.is_internship ?? null,
+        p_work_modes: filters.work_modes || []
       });
 
       if (error) {
@@ -149,7 +164,12 @@ export const useJobsOptimized = (
               p_max_salary: filters.salary_max || 0,
               p_is_remote: filters.is_remote || false,
               p_skills: filters.skills,
-              p_sort_by: sortBy
+              p_sort_by: sortBy,
+              p_industries: filters.industries || [],
+              p_cities: filters.cities || [],
+              p_is_fresher: filters.is_fresher ?? null,
+              p_is_internship: filters.is_internship ?? null,
+              p_work_modes: filters.work_modes || []
             });
             if (error) throw error;
             const result = data as any;

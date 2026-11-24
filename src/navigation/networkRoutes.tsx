@@ -37,6 +37,7 @@ const SkillSwap = lazy(() => import('../pages/network/SkillSwap'));
 const VideoIntros = lazy(() => import('../pages/network/VideoIntros'));
 const Verified = lazy(() => import('../pages/network/Verified'));
 const Communities = lazy(() => import('../pages/network/Communities'));
+const GeographicNetworkHub = lazy(() => import('../pages/network/GeographicNetworkHub'));
 const Leaderboards = lazy(() => import('../pages/network/Leaderboards'));
 const CreatorStudio = lazy(() => import('../pages/network/CreatorStudio'));
 const TXCMining = lazy(() => import('../pages/TXCMining'));
@@ -221,6 +222,12 @@ export const networkRoutes = [
     page: <Suspense fallback={null}><Communities /></Suspense>,
   },
   {
+    title: "Community Detail",
+    to: "/network/communities/:slug",
+    page: <Suspense fallback={null}><Communities /></Suspense>,
+    isPublic: true,
+  },
+  {
     title: "Leaderboards",
     to: "/network/leaderboards",
     page: <Suspense fallback={null}><Leaderboards /></Suspense>,
@@ -229,6 +236,34 @@ export const networkRoutes = [
     title: "Creator Studio",
     to: "/network/creator-studio",
     page: <Suspense fallback={null}><CreatorStudio /></Suspense>,
+    isPublic: true,
+  },
+  // ============================================================================
+  // GEOGRAPHIC NETWORK HUBS (Country -> Division/Region -> City -> Facet)
+  // Scalable, validated routing structure for Global Discovery Engine
+  // ============================================================================
+  {
+    title: "Country Network Hub",
+    to: "/network/:country",
+    page: <Suspense fallback={null}><GeographicNetworkHub /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "Division or Direct City Network Hub",
+    to: "/network/:country/:division",
+    page: <Suspense fallback={null}><GeographicNetworkHub /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "City Network Hub",
+    to: "/network/:country/:division/:city",
+    page: <Suspense fallback={null}><GeographicNetworkHub /></Suspense>,
+    isPublic: true,
+  },
+  {
+    title: "City Facet Network Hub",
+    to: "/network/:country/:division/:city/:facet",
+    page: <Suspense fallback={null}><GeographicNetworkHub /></Suspense>,
     isPublic: true,
   },
 ];
