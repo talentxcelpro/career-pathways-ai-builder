@@ -79,6 +79,8 @@ const EmbedDirectoryPage = lazy(() => import('@/pages/embed/EmbedDirectoryPage')
 const EmbedStandaloneView = lazy(() => import('@/pages/embed/EmbedStandaloneView'));
 const EmbedDistributionAdmin = lazy(() => import('@/pages/admin/EmbedDistributionAdmin'));
 const EmbedGrowthCampaignDashboard = lazy(() => import('@/pages/admin/EmbedGrowthCampaignDashboard'));
+const PeerEndorsementPage = lazy(() => import('@/pages/passport/PeerEndorsementPage'));
+const ReferralShortlinkRedirect = lazy(() => import('@/components/referral/ReferralShortlinkRedirect'));
 
 import { GoogleAnalytics } from "./components/analytics/GoogleAnalytics";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
@@ -391,6 +393,7 @@ const App = () => {
           <BrowserRouter>
             <TopLoadingBar />
             <ScrollRestoration />
+            <GoogleAnalytics measurementId="G-CMYNTTNT56" />
             <OptimizedAuthProvider>
                           <GoogleOneTapLogin autoSelect={true} />
               <VoicePlayerProvider>
@@ -1414,6 +1417,10 @@ const App = () => {
                                  <Route path="/europe/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
                                  <Route path="/world" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
                                  <Route path="/world/:subSurface" element={<Suspense fallback={<div>Loading...</div>}><RegionalMarketHub /></Suspense>} />
+
+                                 {/* Viral Growth & Referral Shortlink Routing */}
+                                 <Route path="/r/:code" element={<Suspense fallback={<PageFallbackSkeleton />}><ReferralShortlinkRedirect /></Suspense>} />
+                                 <Route path="/verify/:username" element={<Suspense fallback={<PageFallbackSkeleton />}><PeerEndorsementPage /></Suspense>} />
 
                                 {/* Legacy /resume-scanner redirect before username catch-all */}
                                  <Route path="/resume-scanner" element={<Navigate to="/resume/ats-check" replace />} />

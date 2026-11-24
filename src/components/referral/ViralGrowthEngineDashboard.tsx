@@ -454,8 +454,10 @@ export const ViralGrowthEngineDashboard: React.FC = () => {
   const buildReferralUrl = useCallback((channel: ReferralChannel) => {
     const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
     const base = isLocal ? 'https://talentxcel.in' : (typeof window !== 'undefined' ? window.location.origin : 'https://talentxcel.in');
-    const codeParam = referralCode ? `&ref=${encodeURIComponent(referralCode)}` : '';
-    return `${base}/network?tab=refer-and-earn${codeParam}&utm_source=${channel}&utm_medium=referral`;
+    const codeParam = referralCode ? encodeURIComponent(referralCode) : '';
+    return codeParam 
+      ? `${base}/r/${codeParam}?utm_source=${channel}&utm_medium=referral`
+      : `${base}/auth?mode=signup&utm_source=${channel}&utm_medium=referral`;
   }, [referralCode]);
 
   // Copy handler

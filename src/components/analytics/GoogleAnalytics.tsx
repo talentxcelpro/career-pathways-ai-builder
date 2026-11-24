@@ -6,7 +6,7 @@ interface GoogleAnalyticsProps {
 }
 
 export const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ 
-  measurementId = 'G-XXXXXXXXXX'
+  measurementId = 'G-CMYNTTNT56'
 }) => {
   const location = useLocation();
   const lastTrackedPathRef = useRef<string>('');
