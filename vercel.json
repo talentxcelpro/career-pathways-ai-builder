@@ -1311,7 +1311,7 @@
       ]
     },
     {
-      "source": "/mobile-:path*",
+      "source": "/mobile-(.*)",
       "headers": [
         {
           "key": "Cache-Control",
