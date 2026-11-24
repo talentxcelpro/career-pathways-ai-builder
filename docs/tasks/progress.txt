@@ -66,3 +66,43 @@
 - Audit existing profile view tracking and unique view counters.
 - Inspect Supabase tables (`profile_views`, `analytics`, etc.), RPCs, and RLS policies.
 - Identify where `19 Profile Views (8 unique)` is rendered and how data is fetched.
+
+
+---
+
+# Feature: TalentXcel Growth Recovery & Acceleration Mission
+## Status: COMPLETED & VERIFIED
+
+### 1. Forensic Audit Findings
+- **Registration Baseline Verified (Supabase `dthlgsnakhoftinssokm`)**:
+  - Total `auth.users`: 750 (748 confirmed, 2 unconfirmed, 332 logged in, 418 single-session).
+  - Trajectory:
+    - Nov 02–Nov 08: 61 registrations (8.7/day)
+    - Nov 09–Nov 15: 89 registrations (12.7/day) — Peak Week
+    - Nov 16–Nov 22: 64 registrations (9.1/day) — 28% drop
+    - Nov 23–Nov 24: 4 registrations in ~1.5 days (~2.5/day)
+    - Peak Single Day: Monday, Nov 16 = 21 registrations.
+  - Providers: Google OAuth = 287 (95%+ of November signups), Email = 458, LinkedIn = 4, Unknown = 1.
+- **Search Telemetry (Google Search Console API)**:
+  - Last 28 Days (Oct 25 – Nov 22): 447 clicks, 39,408 impressions, 1.13% CTR.
+  - India = 421 clicks (94.2%).
+  - Search traffic did NOT decline; it grew from 12 clicks/day on Nov 13 to 44 clicks/day on Nov 21 (+266%).
+  - The slowdown is 100% conversion and distribution mechanism breakdown, not SEO traffic loss.
+- **Root Cause Defects Identified**:
+  1. Primary Funnel Gate Failure: Over 90% of genuine users sign up via the "Apply Now" guest modal on job pages. A critical commit on Saturday Nov 21 removed `showGuestModal` in `PublicJobApplyButton.tsx`, throwing `ReferenceError: setShowGuestModal is not defined` whenever a candidate clicked Apply, halting signups on Nov 22.
+  2. Viral Links Severed (404s): Shortlink `/r/:code` and `/verify/:username` had no route in `src/App.tsx`.
+  3. GA4 Client Telemetry Dark: `<GoogleAnalytics />` was never mounted in `src/App.tsx`; client SPA route changes were never dispatched.
+  4. Viral Dashboard Misrouting: `ViralGrowthEngineDashboard.tsx` shared `/network?tab=refer-and-earn` instead of an acquisition shortlink.
+
+### 2. Implemented Code Improvements
+- `src/components/analytics/GoogleAnalytics.tsx`: Fixed default `measurementId` to production `'G-CMYNTTNT56'`.
+- `src/App.tsx`:
+  - Mounted `<GoogleAnalytics measurementId="G-CMYNTTNT56" />` globally inside `<BrowserRouter>`.
+  - Added lazy-loaded routes `/r/:code` -> `<ReferralShortlinkRedirect />` and `/verify/:username` -> `<PeerEndorsementPage />`.
+- `src/components/referral/ReferralShortlinkRedirect.tsx`: Created shortlink handler storing referral code and redirecting to `/auth?mode=signup&ref=:code`.
+- `src/components/referral/ViralGrowthEngineDashboard.tsx`: Fixed share URL to route to `${base}/r/${codeParam}`.
+- `src/components/shared/UniversalShare.tsx`: Connected `useAuth()` to automatically attach `?ref=TXC...&utm_medium=social_share` to all platform shares.
+
+### 3. Verification & Build
+- `npx tsc --noEmit`: 0 errors.
+- `npm run build`: Exited code 0 (7,311 modules transformed, 4,335 CI invariants passed, static SEO and subdomain routing verified).

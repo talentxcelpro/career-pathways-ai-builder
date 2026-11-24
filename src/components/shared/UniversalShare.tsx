@@ -19,6 +19,7 @@ import {
   Youtube
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface ShareableContent {
   id: string;
@@ -50,6 +51,7 @@ export const UniversalShare: React.FC<UniversalShareProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const generateShareUrl = () => {
     const baseUrl = window.location.origin;
@@ -64,8 +66,15 @@ export const UniversalShare: React.FC<UniversalShareProps> = ({
       article: `/network/articles/${content.id}`,
       profile: `/network/people/${content.id}`
     };
+
+    const basePath = pathMap[content.type] || `/jobs/${content.id}`;
+    let refParam = '';
+    if (user?.id) {
+      const code = 'TXC' + user.id.replace(/-/g, '').slice(0, 8).toUpperCase();
+      refParam = `?ref=${code}&utm_medium=social_share`;
+    }
     
-    return `${baseUrl}${pathMap[content.type]}`;
+    return `${baseUrl}${basePath}${refParam}`;
   };
 
   const generateShareMessage = (platform: string) => {
