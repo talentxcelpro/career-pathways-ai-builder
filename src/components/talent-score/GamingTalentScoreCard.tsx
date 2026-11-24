@@ -21,10 +21,10 @@ export interface GamingTalentScoreCardProps {
 }
 
 export const GamingTalentScoreCard: React.FC<GamingTalentScoreCardProps> = ({
-  score = 823,
-  displayName = 'TalentXcelServices',
-  title = 'Director Operations',
-  company = 'TalentXcel Services',
+  score = 820,
+  displayName = 'Global Leader',
+  title = 'Executive Leadership',
+  company = 'Global Enterprise Network',
   actionText = 'View & Earn in Gaming Hub',
   actionRoute = '/gamification',
   onActionClick,
@@ -39,7 +39,7 @@ export const GamingTalentScoreCard: React.FC<GamingTalentScoreCardProps> = ({
   const navigate = useNavigate();
 
   // Clamp score between 100 and 1000
-  const normalizedScore = Math.min(Math.max(Number(score) || 823, 100), 1000);
+  const normalizedScore = Math.min(Math.max(Number(score) || 820, 100), 1000);
   const progressRatio = normalizedScore / 1000;
 
   // Determine tier name based on score
@@ -72,7 +72,7 @@ export const GamingTalentScoreCard: React.FC<GamingTalentScoreCardProps> = ({
   // Dynamic stats
   const rank = rankOverride || `#${Math.floor(4821 * (1 - normalizedScore / 1000)) || 853}`;
   const growthDelta = growthDeltaOverride || `+${Math.round(normalizedScore * 0.08) || 66}`;
-  const syncFidelity = syncFidelityOverride || '98%';
+  const syncFidelity = syncFidelityOverride || '94%';
 
   const handleAction = () => {
     if (onActionClick) {
@@ -89,7 +89,7 @@ export const GamingTalentScoreCard: React.FC<GamingTalentScoreCardProps> = ({
       : title
     : company
     ? `Professional at ${company}`
-    : 'Director Operations at TalentXcel Services';
+    : 'Executive Leadership';
 
   return (
     <div

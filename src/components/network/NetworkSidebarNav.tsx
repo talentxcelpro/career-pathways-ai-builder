@@ -8,6 +8,7 @@ import {
   Trophy, 
   Gift, 
   Store,
+  Flame,
   ExternalLink,
   Users, 
   UserPlus, 
@@ -67,6 +68,16 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
       description: 'Live Career RPG & Quests',
       badge: 'RPG',
       isLiveLink: true
+    },
+    {
+      id: 'grow',
+      label: 'Grow',
+      icon: Flame,
+      iconColor: 'text-amber-500',
+      description: 'TalentScore & career velocity',
+      badge: 'TalentScore',
+      to: '/talent-score',
+      href: 'https://talentxcel.in/talent-score'
     },
     {
       id: 'refer-and-earn',
@@ -196,7 +207,7 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
-          const itemHref = item.to || (item.isLiveLink ? '/gamification' : `/network?tab=${item.id}`);
+          const itemHref = (item as any).href || item.to || (item.isLiveLink ? '/gamification' : `/network?tab=${item.id}`);
 
           return (
             <a
