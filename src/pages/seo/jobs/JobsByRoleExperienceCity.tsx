@@ -77,7 +77,7 @@ export const JobsByRoleExperienceCity: React.FC = () => {
   }
 
   const { role, experience, location, canonicalUrl, isInternational, pageTitle, pageDescription } = resolved;
-  const robotsDirective = indexability?.robotsDirective || 'noindex, follow';
+  const robotsDirective = indexability?.robotsDirective || (jobs.length > 0 ? 'index, follow' : 'noindex, follow');
 
   // Schema.org BreadcrumbList
   const breadcrumbSchema = {

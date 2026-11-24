@@ -400,8 +400,9 @@ export async function runIndexingDispatcher(options: {
       continue;
     }
 
-    // Live dispatch
-    const res = await publishUrlToGoogle(item.url, accessToken, item.action);
+    // Live dispatch (normalize subdomain to canonical https://talentxcel.in)
+    const submitUrl = item.url.replace(/^https:\/\/jobs\.talentxcel\.in/, 'https://talentxcel.in');
+    const res = await publishUrlToGoogle(submitUrl, accessToken, item.action);
 
     if (res.status === 200) {
       telemetry.submittedSuccess++;

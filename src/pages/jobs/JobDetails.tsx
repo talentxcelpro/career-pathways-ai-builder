@@ -27,7 +27,8 @@ import {
   Banknote,
   AlertCircle,
   Bookmark,
-  Send
+  Send,
+  MessageCircle
 } from 'lucide-react';
 import { formatSalaryRange } from '@/utils/currencyUtils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -773,6 +774,20 @@ export default function JobDetails() {
                   <Sparkles className="w-3.5 h-3.5 text-blue-400" />
                   Check Match
                 </Button>
+                <Button
+                  onClick={() => {
+                    const jobUrl = `${getPublicJobUrl(job.seo_slug || slugOrId)}?utm_source=whatsapp&utm_medium=job_share`;
+                    const salaryTxt = (job.salary_min && job.salary_max)
+                      ? `₹${(job.salary_min / 100000).toFixed(1)}L - ₹${(job.salary_max / 100000).toFixed(1)}L PA`
+                      : 'Best in Industry';
+                    const waMsg = `🚀 *Hiring: ${job.title}*\n🏢 *Company:* ${companyName}\n📍 *Location:* ${job.location || 'India'}\n💰 *Salary:* ${salaryTxt}\n\n👉 *Direct Apply in 1 Tap:* ${jobUrl}`;
+                    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waMsg)}`, '_blank');
+                  }}
+                  className="bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs px-4 py-2.5 h-auto rounded-xl flex items-center gap-1.5 shadow-md shadow-emerald-600/20"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 fill-white" />
+                  Share on WhatsApp
+                </Button>
                 <SocialShare
                   contentType="job"
                   contentId={job.id}
@@ -829,6 +844,20 @@ export default function JobDetails() {
                   >
                     <Bookmark className={`w-4 h-4 mr-1.5 ${isSaved ? 'fill-amber-400' : ''}`} />
                     {isSaved ? 'Job Saved' : 'Save Job'}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      const jobUrl = `${getPublicJobUrl(job.seo_slug || slugOrId)}?utm_source=whatsapp&utm_medium=job_share`;
+                      const salaryTxt = (job.salary_min && job.salary_max)
+                        ? `₹${(job.salary_min / 100000).toFixed(1)}L - ₹${(job.salary_max / 100000).toFixed(1)}L PA`
+                        : 'Best in Industry';
+                      const waMsg = `🚀 *Hiring: ${job.title}*\n🏢 *Company:* ${companyName}\n📍 *Location:* ${job.location || 'India'}\n💰 *Salary:* ${salaryTxt}\n\n👉 *Direct Apply in 1 Tap:* ${jobUrl}`;
+                      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(waMsg)}`, '_blank');
+                    }}
+                    className="bg-[#25D366] hover:bg-[#20ba59] text-white font-bold text-xs h-10 px-4 rounded-xl flex items-center gap-1.5 shadow-md shadow-emerald-600/20"
+                  >
+                    <MessageCircle className="w-4 h-4 fill-white" />
+                    Share with Friends
                   </Button>
                 </div>
               </section>

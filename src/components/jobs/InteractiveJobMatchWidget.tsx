@@ -207,7 +207,11 @@ export const InteractiveJobMatchWidget: React.FC<InteractiveJobMatchWidgetProps>
       job_title: job.title,
       score: calculatedScore,
     });
-    navigate(`/auth?mode=signup&source=job_match&jobId=${encodeURIComponent(job.id)}`);
+    if (onApplyClick) {
+      onApplyClick();
+    } else {
+      navigate(`/auth?mode=signup&source=job_match&jobId=${encodeURIComponent(job.id)}`);
+    }
   };
 
   const shareUrl = getPublicJobUrl(job.seo_slug || job.id);

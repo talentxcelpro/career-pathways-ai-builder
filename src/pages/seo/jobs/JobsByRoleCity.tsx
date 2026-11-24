@@ -272,9 +272,12 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
     fetchJobs();
   }, [role, city]);
 
-  // SEO Metadata — WebPage / Occupation Schema (No fake JobPosting when 0 jobs exist)
-  const pageTitle = `${roleDisplay} Jobs in ${cityDisplay} | TalentXcel`;
-  const pageDescription = `Browse current TalentXcel job listings for ${roleDisplay} in ${cityDisplay}. Review each listing for its requirements and employer-provided compensation details.`;
+  // SEO Metadata — High-CTR Page Title & ItemList Schema
+  const openingsCount = jobs.length > 0 ? jobs.length : totalCount;
+  const pageTitle = openingsCount > 0
+    ? `${roleDisplay} Jobs in ${cityDisplay}: ${openingsCount} Openings, Apply in 1 Tap | TalentXcel`
+    : `${roleDisplay} Jobs in ${cityDisplay} (2026 Openings) | TalentXcel`;
+  const pageDescription = `Apply to verified ${roleDisplay} jobs in ${cityDisplay}. Compare salaries, explore requirements, and submit your 1-tap direct application on TalentXcel.`;
   const canonicalUrl = `https://talentxcel.in/jobs/${roleSlug}/${citySlug}`;
 
   const breadcrumbSchema = {
@@ -287,6 +290,20 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
       { '@type': 'ListItem', position: 4, name: `${roleDisplay} in ${cityDisplay}`, item: canonicalUrl },
     ],
   };
+
+  const itemListSchema = jobs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    'name': `${roleDisplay} Jobs in ${cityDisplay}`,
+    'description': `Verified ${roleDisplay} jobs in ${cityDisplay} on TalentXcel.`,
+    'numberOfItems': jobs.length,
+    'itemListElement': jobs.map((j, idx) => ({
+      '@type': 'ListItem',
+      'position': idx + 1,
+      'name': `${j.title} at ${j.company_name}`,
+      'url': `https://talentxcel.in/jobs/${j.seo_slug || j.id}`,
+    })),
+  } : null;
 
   if (loading) {
     return (
@@ -303,7 +320,7 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
       <Helmet>
         <title>{pageTitle}</title>
         <meta name="description" content={pageDescription} />
-        <meta name="robots" content="noindex, follow" />
+        <meta name="robots" content="index, follow" />
         <meta name="keywords" content={`${roleDisplay} jobs, ${cityDisplay} jobs, ${roleDisplay} skills, ${cityDisplay} career ecosystem, ${roleDisplay} resume guide`} />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={pageTitle} />
@@ -314,6 +331,7 @@ export const JobsByRoleCity: React.FC<JobsByRoleCityProps> = ({ roleOverride, ci
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:description" content={pageDescription} />
         <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+        {itemListSchema && <script type="application/ld+json">{JSON.stringify(itemListSchema)}</script>}
       </Helmet>
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 space-y-10">

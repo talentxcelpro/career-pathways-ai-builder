@@ -365,8 +365,28 @@ export async function generateProductionSitemaps() {
     }))
   );
 
-  // 7C. Verified Combinatorial pSEO Hubs (from mv_eligible_seo_hubs >= 5 unexpired jobs)
+  // 7C. Verified Combinatorial pSEO Hubs (Role × City Multiplier Matrix + mv_eligible_seo_hubs)
   let comboEntriesList: SitemapEntry[] = [];
+
+  const CANONICAL_HUB_ROLES = [
+    'software-engineer', 'associate-data-analyst', 'junior-software-engineer',
+    'junior-qa-automation-engineer', 'junior-backend-developer', 'devops-cloud-engineer',
+    'banking-associate', 'digital-marketing-specialist', 'product-growth-analyst',
+    'graduate-engineer-trainee', 'management-trainee', 'senior-staff-engineer',
+    'data-analyst', 'product-manager'
+  ];
+
+  // Programmatic multiplier: Canonical Roles × Verified Metro Cities
+  INDEXABLE_METRO_SLUGS.forEach((city) => {
+    CANONICAL_HUB_ROLES.forEach((role) => {
+      comboEntriesList.push({
+        path: `/jobs/${role}/${city}`,
+        changefreq: 'daily',
+        priority: '0.85',
+      });
+    });
+  });
+
   try {
     const { data: dbCombos } = await supabase
       .from('mv_eligible_seo_hubs')
