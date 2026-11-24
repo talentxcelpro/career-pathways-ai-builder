@@ -1,0 +1,28 @@
+# Save as .github/workflows/smoke-test.yml
+# Add a repo secret ALERT_WEBHOOK_URL (Slack/Discord incoming webhook) for failure alerts.
+name: live-smoke-test
+on:
+  schedule:
+    - cron: '*/30 * * * *'   # every 30 min (GitHub cron can lag a few minutes)
+  workflow_dispatch: {}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/e2e-live-smoke-test.cjs
+        env:
+          CI: 'true'
+          ALERT_WEBHOOK_URL: ${{ secrets.ALERT_WEBHOOK_URL }}
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-failure
+          path: smoke-failure.png
