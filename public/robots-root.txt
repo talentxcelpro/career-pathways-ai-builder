@@ -117,11 +117,13 @@ Allow: /explore
 
 
 # ------------------------------
-# User-Triggered Interactive Fetchers (ChatGPT User On-Demand Browsing)
-# Treated independently from search engine indexers; permitted for authenticated user requests
+# User-Triggered Interactive Fetchers & AI Search Engine Crawlers
+# Allows ChatGPT and search assistants to browse and cite live public jobs & location directories
 # ------------------------------
 
 User-agent: ChatGPT-User
+Allow: /jobs/
+Allow: /locations/
 Allow: /u/
 Allow: /talent
 Allow: /network
@@ -129,15 +131,14 @@ Allow: /salary
 Allow: /resume
 Allow: /explore
 
-
-# ------------------------------
-# Foundation Model Pre-Training & Bulk Scraping Crawlers
-# Explicitly DISALLOWED to protect candidate career passport data and edge crawl budget from bulk LLM training.
-# Decision on GPTBot is strictly independent of OAI-SearchBot (Searchbot is allowed, GPTBot training is blocked).
-# ------------------------------
-
 User-agent: GPTBot
-Disallow: /
+Allow: /jobs/
+Allow: /locations/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /employer/dashboard/
+Disallow: /passport/edit/
 
 User-agent: anthropic-ai
 Disallow: /
