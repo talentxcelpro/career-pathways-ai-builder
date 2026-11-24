@@ -1,0 +1,375 @@
+{
+  "auditTimestamp": "2026-11-24T16:13:40.042Z",
+  "authTotals": {
+    "active_7d": 46,
+    "confirmed_users": 748,
+    "signed_in_users": 332,
+    "total_users": 750
+  },
+  "registrationTimeSeries": [
+    {
+      "email_signups": 0,
+      "google_signups": 2,
+      "reg_date": "2026-11-24",
+      "total_signups": 2
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 2,
+      "reg_date": "2026-11-23",
+      "total_signups": 2
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 1,
+      "reg_date": "2026-11-22",
+      "total_signups": 1
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 7,
+      "reg_date": "2026-11-21",
+      "total_signups": 7
+    },
+    {
+      "email_signups": 1,
+      "google_signups": 5,
+      "reg_date": "2026-11-20",
+      "total_signups": 6
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 9,
+      "reg_date": "2026-11-19",
+      "total_signups": 9
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 10,
+      "reg_date": "2026-11-18",
+      "total_signups": 10
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 10,
+      "reg_date": "2026-11-17",
+      "total_signups": 10
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 21,
+      "reg_date": "2026-11-16",
+      "total_signups": 21
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 10,
+      "reg_date": "2026-11-15",
+      "total_signups": 10
+    },
+    {
+      "email_signups": 1,
+      "google_signups": 16,
+      "reg_date": "2026-11-14",
+      "total_signups": 17
+    },
+    {
+      "email_signups": 1,
+      "google_signups": 17,
+      "reg_date": "2026-11-13",
+      "total_signups": 18
+    },
+    {
+      "email_signups": 2,
+      "google_signups": 13,
+      "reg_date": "2026-11-12",
+      "total_signups": 15
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 11,
+      "reg_date": "2026-11-11",
+      "total_signups": 11
+    },
+    {
+      "email_signups": 1,
+      "google_signups": 7,
+      "reg_date": "2026-11-10",
+      "total_signups": 8
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 10,
+      "reg_date": "2026-11-09",
+      "total_signups": 10
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 6,
+      "reg_date": "2026-11-08",
+      "total_signups": 6
+    },
+    {
+      "email_signups": 1,
+      "google_signups": 11,
+      "reg_date": "2026-11-07",
+      "total_signups": 12
+    },
+    {
+      "email_signups": 1,
+      "google_signups": 11,
+      "reg_date": "2026-11-06",
+      "total_signups": 13
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 15,
+      "reg_date": "2026-11-05",
+      "total_signups": 16
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 8,
+      "reg_date": "2026-11-04",
+      "total_signups": 8
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 3,
+      "reg_date": "2026-11-03",
+      "total_signups": 3
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 3,
+      "reg_date": "2026-11-02",
+      "total_signups": 3
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 2,
+      "reg_date": "2026-11-01",
+      "total_signups": 2
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 0,
+      "reg_date": "2026-10-31",
+      "total_signups": 1
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 2,
+      "reg_date": "2026-10-29",
+      "total_signups": 2
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 1,
+      "reg_date": "2026-10-28",
+      "total_signups": 1
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 2,
+      "reg_date": "2026-10-27",
+      "total_signups": 2
+    },
+    {
+      "email_signups": 0,
+      "google_signups": 1,
+      "reg_date": "2026-10-26",
+      "total_signups": 1
+    }
+  ],
+  "profileActivation": {
+    "fully_activated": 16,
+    "has_about": 19,
+    "has_company": 5,
+    "has_headline": 71,
+    "has_location": 26,
+    "has_name": 803,
+    "has_skills": 49,
+    "is_public": 786,
+    "total_profiles": 803
+  },
+  "connectionsMetrics": {
+    "accepted_connections": 2740,
+    "pending_connections": 222,
+    "total_connections": 2963,
+    "unique_recipients": 749,
+    "unique_requesters": 24
+  },
+  "topConnectedUsers": [
+    {
+      "connection_count": 739,
+      "user_id": "5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062"
+    },
+    {
+      "connection_count": 651,
+      "user_id": "24d8c093-decd-4476-86c5-1c98a5448753"
+    },
+    {
+      "connection_count": 650,
+      "user_id": "ad20dfcb-bbbd-45d6-ac25-38b473e73eaf"
+    },
+    {
+      "connection_count": 650,
+      "user_id": "61b6d8bb-bbea-41c5-8ca4-152c4bc5d599"
+    },
+    {
+      "connection_count": 21,
+      "user_id": "0951f595-abd6-4463-9d8b-58a6d0548fc7"
+    },
+    {
+      "connection_count": 15,
+      "user_id": "e19b30cf-2fe5-4cbf-85f0-9e76c4182eb0"
+    },
+    {
+      "connection_count": 15,
+      "user_id": "5ff9310f-316c-464c-aeb3-9a606a07bb4d"
+    },
+    {
+      "connection_count": 11,
+      "user_id": "1d0aa253-6579-4877-b5eb-142696ca3725"
+    },
+    {
+      "connection_count": 11,
+      "user_id": "2818b6a6-2673-488c-b1c7-c3a8b2de08e0"
+    },
+    {
+      "connection_count": 10,
+      "user_id": "100b2ace-5de8-403f-ad4e-eedad15c47e8"
+    }
+  ],
+  "distributionLedger": [
+    {
+      "channel": "telegram",
+      "content_type": "job_alert",
+      "count": 3,
+      "status": "dispatched",
+      "total_clicks": 0,
+      "total_conversions": 0
+    },
+    {
+      "channel": "whatsapp",
+      "content_type": "job_alert",
+      "count": 1,
+      "status": "dispatched",
+      "total_clicks": 0,
+      "total_conversions": 0
+    },
+    {
+      "channel": "linkedin",
+      "content_type": "talent_spotlight",
+      "count": 1,
+      "status": "dispatched",
+      "total_clicks": 0,
+      "total_conversions": 0
+    },
+    {
+      "channel": "email",
+      "content_type": "career_digest",
+      "count": 1,
+      "status": "dispatched",
+      "total_clicks": 0,
+      "total_conversions": 0
+    }
+  ],
+  "referralAttributions": [
+    {
+      "channel": "shortlink",
+      "count": 1,
+      "status": "signed_up"
+    },
+    {
+      "channel": "shortlink",
+      "count": 1,
+      "status": "visited"
+    }
+  ],
+  "geoGates": [
+    {
+      "city_count": 33,
+      "indexation_gate": "indexable",
+      "total_jobs": 928,
+      "total_pros": 14
+    },
+    {
+      "city_count": 13,
+      "indexation_gate": "emerging",
+      "total_jobs": 17,
+      "total_pros": 4
+    },
+    {
+      "city_count": 1150,
+      "indexation_gate": "incubating",
+      "total_jobs": 0,
+      "total_pros": 0
+    }
+  ],
+  "inventoryTiers": [
+    {
+      "cluster_count": 4,
+      "entity_type": "skill",
+      "readiness_tier": "GHOST_PROTECTED",
+      "total_jobs": 0,
+      "total_pros": 0
+    },
+    {
+      "cluster_count": 4,
+      "entity_type": "career_segment",
+      "readiness_tier": "HIGH_DENSITY",
+      "total_jobs": 1650,
+      "total_pros": 1410
+    },
+    {
+      "cluster_count": 1,
+      "entity_type": "skill",
+      "readiness_tier": "COMMUNITY_INCUBATING",
+      "total_jobs": 0,
+      "total_pros": 0
+    },
+    {
+      "cluster_count": 13,
+      "entity_type": "skill",
+      "readiness_tier": "HIGH_DENSITY",
+      "total_jobs": 149,
+      "total_pros": 332
+    },
+    {
+      "cluster_count": 3,
+      "entity_type": "industry",
+      "readiness_tier": "GHOST_PROTECTED",
+      "total_jobs": 1,
+      "total_pros": 0
+    },
+    {
+      "cluster_count": 6,
+      "entity_type": "industry",
+      "readiness_tier": "HIGH_DENSITY",
+      "total_jobs": 801,
+      "total_pros": 4
+    },
+    {
+      "cluster_count": 2,
+      "entity_type": "skill",
+      "readiness_tier": "MEDIUM_DENSITY",
+      "total_jobs": 4,
+      "total_pros": 2
+    },
+    {
+      "cluster_count": 1,
+      "entity_type": "industry",
+      "readiness_tier": "MEDIUM_DENSITY",
+      "total_jobs": 2,
+      "total_pros": 0
+    }
+  ],
+  "gscSummary": {
+    "totalRows": 1000,
+    "totalClicks": 147,
+    "totalImpressions": 5021,
+    "overallCtr": "2.93%"
+  }
+}

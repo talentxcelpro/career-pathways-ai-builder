@@ -1,0 +1,579 @@
+{
+  "executedAt": "2026-11-24T16:27:31.103Z",
+  "totalApplicantProfilesEvaluated": 54,
+  "profilesSuccessfullyActivated": 53,
+  "activationDetails": [
+    {
+      "userId": "1d0aa253-6579-4877-b5eb-142696ca3725",
+      "name": "Gaurav Bhatia",
+      "updatedFields": [
+        "resume_url"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Delhi",
+      "skillsCount": 3
+    },
+    {
+      "userId": "bd89e35e-3ca5-41aa-bcd4-24dd8df94733",
+      "name": "Test Candidate",
+      "updatedFields": [
+        "resume_url",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 2
+    },
+    {
+      "userId": "019beb8b-e913-429c-83b5-5e47ee8beb07",
+      "name": "Test Candidate",
+      "updatedFields": [
+        "resume_url",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 2
+    },
+    {
+      "userId": "3ac980bc-4ea1-4978-bdc8-62f425194c8a",
+      "name": "Reality Test Candidate",
+      "updatedFields": [
+        "resume_url"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 3
+    },
+    {
+      "userId": "703154d5-0417-4a47-a600-749f4606da85",
+      "name": "Reality Test Candidate",
+      "updatedFields": [
+        "resume_url"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 3
+    },
+    {
+      "userId": "d6986d03-4acb-4b3f-8f41-c936785fecd1",
+      "name": "Test Candidate",
+      "updatedFields": [
+        "resume_url",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 2
+    },
+    {
+      "userId": "db8982a0-cc25-4f26-85b4-490a7720cfaf",
+      "name": "Arpit Tripathi",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Prayagraj",
+      "skillsCount": 10
+    },
+    {
+      "userId": "5c19e3aa-d439-401d-b3a1-db2aa840f4a0",
+      "name": "Arjun Bhairav",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "RAMACHANDRAPURAM",
+      "skillsCount": 2
+    },
+    {
+      "userId": "15ef0aa5-3652-4d2a-a1e7-86fee986e055",
+      "name": "Sonal Miskin",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Hubballi",
+      "skillsCount": 10
+    },
+    {
+      "userId": "e181c640-b961-436d-982a-9855a43cb8ba",
+      "name": "Divya Prajapati",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Vadodara",
+      "skillsCount": 2
+    },
+    {
+      "userId": "e8921a99-0cfe-4e25-94a5-dbad563fea9f",
+      "name": "BALA MANOJ GOLAMARI",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Warangal",
+      "skillsCount": 2
+    },
+    {
+      "userId": "a749d6d7-5eda-43f7-91a1-75da60b1c961",
+      "name": "Priyanshi Mishra",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Lucknow",
+      "skillsCount": 2
+    },
+    {
+      "userId": "54a0e905-e749-48f9-999b-e6f8b3c24db8",
+      "name": "Siddharth Sagar",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "jamshepur",
+      "skillsCount": 2
+    },
+    {
+      "userId": "35e687b1-0fd2-44e3-8f30-5c83ab1ba89b",
+      "name": "Naresh Kumar Patel",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Bilaspur",
+      "skillsCount": 2
+    },
+    {
+      "userId": "58fb46d8-5f87-4329-9cbb-c315a757784f",
+      "name": "Aniket Kalgavkar",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Satara",
+      "skillsCount": 10
+    },
+    {
+      "userId": "0800467e-706f-4402-aab4-85f40fe79e60",
+      "name": "Bikram Besra",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Bhubaneswar",
+      "skillsCount": 2
+    },
+    {
+      "userId": "657aea90-0772-4de4-8821-e2b0ae66bd85",
+      "name": "Sai subramanyam Mansingh",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "bhubaneswar",
+      "skillsCount": 2
+    },
+    {
+      "userId": "ba0d2ede-b3e9-4c9c-8901-70261a4b2c29",
+      "name": "Mahak Gupta",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Aligarh",
+      "skillsCount": 2
+    },
+    {
+      "userId": "1bdb56a7-08c6-4116-8cde-ad6b418bd56a",
+      "name": "anuraj r p",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "alappuzha",
+      "skillsCount": 2
+    },
+    {
+      "userId": "c3d16c85-3122-4c39-970f-c8310cc27298",
+      "name": "Divya Patil",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Surat",
+      "skillsCount": 10
+    },
+    {
+      "userId": "d455603c-fb6c-4f7a-816c-43eabc5e9c3f",
+      "name": "ananth shetty",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Udupi",
+      "skillsCount": 2
+    },
+    {
+      "userId": "9d6fd141-1358-4b79-9a77-264b30c29f44",
+      "name": "Harsh Vaidya",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Vadodara",
+      "skillsCount": 2
+    },
+    {
+      "userId": "e23c75d0-1c7b-4df0-8f9d-687235cd4c5a",
+      "name": "Battula Anuja",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Vijayawada",
+      "skillsCount": 2
+    },
+    {
+      "userId": "5a551939-1675-4e41-8aaa-e765ce5b1b2e",
+      "name": "Thozha Priyan",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "arcot",
+      "skillsCount": 2
+    },
+    {
+      "userId": "77df7246-b7d1-45c0-a6cf-ae1f3b39417d",
+      "name": "Larson Fernando",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Chennai",
+      "skillsCount": 2
+    },
+    {
+      "userId": "121bdcf4-951a-45c8-a052-3d5ce18329f4",
+      "name": "Priyanka Ugar",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Belagavi",
+      "skillsCount": 2
+    },
+    {
+      "userId": "245fd662-cdce-414a-8d7a-dda88473bbbd",
+      "name": "Rakesh Narayana",
+      "updatedFields": [
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 2
+    },
+    {
+      "userId": "e9ec6259-944e-4912-a675-b7f56686844b",
+      "name": "Saiyad Ayanuddin Vahiruddin",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Valsad",
+      "skillsCount": 2
+    },
+    {
+      "userId": "c68d2738-e121-49ad-8914-ce8b9f0441f6",
+      "name": "bharath vanapalli",
+      "updatedFields": [
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": null,
+      "skillsCount": 2
+    },
+    {
+      "userId": "fc745c6d-736b-4080-a8a1-00bd821b64a8",
+      "name": "Ritesh sharma",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Haridwar",
+      "skillsCount": 2
+    },
+    {
+      "userId": "18af676d-e4f8-4f79-8283-6b3089c2fdf0",
+      "name": "Rutuja Thosar",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Aurangabad",
+      "skillsCount": 2
+    },
+    {
+      "userId": "4d0e6da7-d445-4fd8-842e-724d9b0d94e0",
+      "name": "naveen sriskandharaja",
+      "updatedFields": [
+        "location",
+        "resume_url",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Erode",
+      "skillsCount": 2
+    },
+    {
+      "userId": "c68ff7a3-dff8-4a20-950a-880d5e312ed0",
+      "name": "Jensu",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Maradu",
+      "skillsCount": 2
+    },
+    {
+      "userId": "bfb2417f-75fe-4794-93c7-0168992ae5bd",
+      "name": "Kethika UV",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Calicut",
+      "skillsCount": 10
+    },
+    {
+      "userId": "204b435b-a078-46be-abc7-fbbb05dd5a0e",
+      "name": "Sourav Krishna",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Thrissur",
+      "skillsCount": 2
+    },
+    {
+      "userId": "3871da53-6c57-40db-9464-1f5a5865f05a",
+      "name": "Esther Belzia",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Tirunelveli",
+      "skillsCount": 2
+    },
+    {
+      "userId": "74e11797-308a-4043-87e0-00b30de64778",
+      "name": "khushal Kamble",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "nagpur",
+      "skillsCount": 10
+    },
+    {
+      "userId": "d372fa33-da00-4c94-8d9d-9dc06b3ad0ff",
+      "name": "Soham Ghayal",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Ahmedabad",
+      "skillsCount": 10
+    },
+    {
+      "userId": "206b5c79-ad79-4b5d-9ac5-0057d44f9b67",
+      "name": "ASHISH RANASINGH",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Bhubaneswar",
+      "skillsCount": 2
+    },
+    {
+      "userId": "d8eda0d3-3bb1-4e13-a8cd-8e6aa7f033c4",
+      "name": "Annapurna",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Hubali-Dharwad",
+      "skillsCount": 10
+    },
+    {
+      "userId": "4d810163-9e3e-4795-bf1a-8c06b4901ff9",
+      "name": "Rohith",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Palakkad, Kerala",
+      "skillsCount": 2
+    },
+    {
+      "userId": "2efbaf96-9907-4e6b-aeab-60d2de03f890",
+      "name": "Jiganesha",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Indore",
+      "skillsCount": 2
+    },
+    {
+      "userId": "7a92f5ba-7d52-4ccc-9675-9e10614e0a3a",
+      "name": "Bhargav Naganaboina",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Warangal",
+      "skillsCount": 2
+    },
+    {
+      "userId": "048149b7-e737-4abc-95c9-4321c74e418c",
+      "name": "Sangeeta Das",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Guwahati",
+      "skillsCount": 2
+    },
+    {
+      "userId": "3d4a6826-a464-4a8a-9d04-494b6535ac6d",
+      "name": "Raj Yadav",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Dehradun",
+      "skillsCount": 2
+    },
+    {
+      "userId": "5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062",
+      "name": "TalentXcel Services",
+      "updatedFields": [
+        "location"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Noida",
+      "skillsCount": 10
+    },
+    {
+      "userId": "68d4c066-a4d8-4317-a014-860cd0a1dd7e",
+      "name": "dheeraj srinivas",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Vadodara",
+      "skillsCount": 2
+    },
+    {
+      "userId": "03fe1fad-c1fe-4300-8edc-f8e956fa26b5",
+      "name": "Fazlur Rahman Khan",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Aligarh",
+      "skillsCount": 2
+    },
+    {
+      "userId": "1020724f-6f06-457d-986e-423e2371f7fd",
+      "name": "Anjana Minj",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Bilaspur",
+      "skillsCount": 2
+    },
+    {
+      "userId": "4743c5eb-d511-4250-932c-517dbbcdc7cf",
+      "name": "Srushti Akki",
+      "updatedFields": [
+        "location",
+        "resume_url",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "solapur",
+      "skillsCount": 2
+    },
+    {
+      "userId": "5052dc3d-24ce-4cee-b433-73e238d43bbd",
+      "name": "Meher Abbas",
+      "updatedFields": [
+        "location",
+        "resume_url",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Razole",
+      "skillsCount": 2
+    },
+    {
+      "userId": "86864158-3890-4cb9-9d78-14671fa5d5e3",
+      "name": "Jayanto Goswami",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "Ranchi",
+      "skillsCount": 2
+    },
+    {
+      "userId": "a1f96c4d-c2ca-4d19-abb7-08d601dee787",
+      "name": "Anant Dev Mishra",
+      "updatedFields": [
+        "location",
+        "skills"
+      ],
+      "activatedHeadline": null,
+      "activatedLocation": "GURGAON",
+      "skillsCount": 2
+    }
+  ]
+}

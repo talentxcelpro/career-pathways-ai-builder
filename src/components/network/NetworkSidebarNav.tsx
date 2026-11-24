@@ -20,8 +20,7 @@ import {
   BookOpen,
   Bookmark,
   Clock,
-  Settings,
-  MapPin
+  Settings
 } from "lucide-react";
 
 interface NetworkSidebarNavProps {
@@ -142,13 +141,6 @@ export const NetworkSidebarNav: React.FC<NetworkSidebarNavProps> = ({
   ];
 
   const navigationItems = [
-    {
-      to: '/network/india',
-      label: 'Geographic Hubs',
-      icon: MapPin,
-      iconColor: 'text-cyan-600',
-      bgColor: 'bg-cyan-500/10 dark:bg-cyan-950/50'
-    },
     {
       to: '/network/verified',
       label: 'Verified',

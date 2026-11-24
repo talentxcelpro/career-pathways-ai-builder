@@ -37,7 +37,6 @@ import { useUserPresence } from '@/hooks/useUserPresence';
 import { RealTimePresence } from '@/components/network/RealTimePresence';
 import { PresenceIndicator } from '@/components/network/PresenceIndicator';
 import { toast } from 'sonner';
-import { resolveLocation } from '@/lib/geography/resolver';
 
 // Public member directory backed by profiles that members explicitly mark public
 interface GlobalTalentProfile {
@@ -122,20 +121,34 @@ const People: React.FC = () => {
   const { data: dbProfiles } = useQuery({
     queryKey: ['global-talent-profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, profile_visibility, verification_status, created_at, is_online, last_seen, last_heartbeat_at, presence_visibility')
-        .eq('profile_visibility', 'public')
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // 1. Authenticated session: query profiles table with live presence data
+      if (session) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, profile_visibility, verification_status, created_at, is_online, last_seen, last_heartbeat_at, presence_visibility')
+          .eq('profile_visibility', 'public')
+          .not('full_name', 'is', null)
+          .neq('full_name', '')
+          .order('created_at', { ascending: false })
+          .limit(100);
+
+        if (!error && data && data.length > 0) {
+          return data;
+        }
+      }
+
+      // 2. Anonymous / search crawler: query public_profiles view directly (clean & fast)
+      const { data: pubData } = await supabase
+        .from('public_profiles')
+        .select('id, full_name, username, headline, title, location, profile_photo_url, profile_picture_url, skills, verification_status, created_at')
         .not('full_name', 'is', null)
         .neq('full_name', '')
         .order('created_at', { ascending: false })
         .limit(100);
 
-      if (error) {
-        console.warn('Could not fetch DB profiles:', error);
-        return [];
-      }
-      return data || [];
+      return pubData || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes cache to eliminate egress & query storms
   });
@@ -172,23 +185,13 @@ const People: React.FC = () => {
         const loc = db.location || '';
         
         let hub: GlobalTalentProfile['hub'] = 'unknown';
-        const resolvedGeo = resolveLocation(loc);
-        if (resolvedGeo) {
-          if (resolvedGeo.country.id === 'IN') hub = 'india';
-          else if (resolvedGeo.country.id === 'US') hub = 'us';
-          else if (resolvedGeo.country.id === 'GB' || resolvedGeo.country.id === 'DE') hub = 'europe';
-          else if (resolvedGeo.country.id === 'AE') hub = 'dubai';
-          else if (resolvedGeo.country.id === 'SG' || resolvedGeo.country.id === 'AU') hub = 'apac';
-          else if (resolvedGeo.country.id === 'GLOBAL') hub = 'remote';
-        } else {
-          const lowerLoc = loc.toLowerCase();
-          if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha') || lowerLoc.includes('abu dhabi')) hub = 'dubai';
-          else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco') || lowerLoc.includes('seattle') || lowerLoc.includes('austin')) hub = 'us';
-          else if (lowerLoc.includes('uk') || lowerLoc.includes('london') || lowerLoc.includes('berlin') || lowerLoc.includes('europe') || lowerLoc.includes('germany') || lowerLoc.includes('paris')) hub = 'europe';
-          else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi') || lowerLoc.includes('hyderabad') || lowerLoc.includes('noida') || lowerLoc.includes('pune')) hub = 'india';
-          else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul') || lowerLoc.includes('sydney')) hub = 'apac';
-          else if (lowerLoc.includes('remote')) hub = 'remote';
-        }
+        const lowerLoc = loc.toLowerCase();
+        if (lowerLoc.includes('dubai') || lowerLoc.includes('uae') || lowerLoc.includes('doha') || lowerLoc.includes('abu dhabi')) hub = 'dubai';
+        else if (lowerLoc.includes('us') || lowerLoc.includes('california') || lowerLoc.includes('york') || lowerLoc.includes('francisco') || lowerLoc.includes('seattle') || lowerLoc.includes('austin')) hub = 'us';
+        else if (lowerLoc.includes('uk') || lowerLoc.includes('london') || lowerLoc.includes('berlin') || lowerLoc.includes('europe') || lowerLoc.includes('germany') || lowerLoc.includes('paris')) hub = 'europe';
+        else if (lowerLoc.includes('india') || lowerLoc.includes('bengaluru') || lowerLoc.includes('mumbai') || lowerLoc.includes('delhi') || lowerLoc.includes('hyderabad') || lowerLoc.includes('noida') || lowerLoc.includes('pune')) hub = 'india';
+        else if (lowerLoc.includes('singapore') || lowerLoc.includes('tokyo') || lowerLoc.includes('seoul') || lowerLoc.includes('sydney')) hub = 'apac';
+        else if (lowerLoc.includes('remote')) hub = 'remote';
 
         const rawSkills = Array.isArray(db.skills) && db.skills.length > 0 
           ? db.skills 

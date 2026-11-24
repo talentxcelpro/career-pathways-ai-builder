@@ -287,6 +287,34 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
           const res = await supabase.from('job_applications').insert(insertPayload).select('id').single();
           newApp = res.data;
           insertErr = res.error;
+
+          // Seamless backend profile auto-activation: sync provided application details into profile
+          try {
+            const profileUpdates: Record<string, any> = {};
+            if (currentLocation && currentLocation.trim()) {
+              profileUpdates.location = currentLocation.trim();
+            }
+            if (phone && phone.trim()) {
+              profileUpdates.phone = phone.trim();
+            }
+            if (linkedinUrl && linkedinUrl.trim()) {
+              profileUpdates.linkedin_url = linkedinUrl.trim();
+            }
+            if (uploadedResumeUrl) {
+              profileUpdates.resume_url = uploadedResumeUrl;
+            }
+            if (job.title && job.title.trim()) {
+              profileUpdates.headline = `${job.title} Practitioner`;
+            }
+            if (Object.keys(profileUpdates).length > 0) {
+              await supabase
+                .from('profiles')
+                .update(profileUpdates)
+                .eq('id', candidateId);
+            }
+          } catch (profSyncErr) {
+            console.warn('Profile activation sync notice:', profSyncErr);
+          }
         }
 
         // Local tracking persistence (ensures candidate dashboard and tracker show application immediately)

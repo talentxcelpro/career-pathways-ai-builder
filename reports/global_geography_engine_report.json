@@ -1,0 +1,233 @@
+{
+  "totalCitiesEvaluated": 1196,
+  "indexableCitiesCount": 33,
+  "emergingCitiesCount": 13,
+  "incubatingCitiesCount": 1150,
+  "topPriorityCities": [
+    {
+      "slug": "noida",
+      "cityName": "Noida",
+      "country": "India",
+      "activeJobs": 5,
+      "consentedPros": 7,
+      "priorityScore": 82.5,
+      "gate": "indexable"
+    },
+    {
+      "slug": "hyderabad",
+      "cityName": "Hyderabad",
+      "country": "India",
+      "activeJobs": 21,
+      "consentedPros": 2,
+      "priorityScore": 70,
+      "gate": "indexable"
+    },
+    {
+      "slug": "delhi",
+      "cityName": "Delhi",
+      "country": "India",
+      "activeJobs": 15,
+      "consentedPros": 1,
+      "priorityScore": 70,
+      "gate": "indexable"
+    },
+    {
+      "slug": "bangalore",
+      "cityName": "Bangalore",
+      "country": "India",
+      "activeJobs": 135,
+      "consentedPros": 1,
+      "priorityScore": 65,
+      "gate": "indexable"
+    },
+    {
+      "slug": "bhopal",
+      "cityName": "Bhopal",
+      "country": "India",
+      "activeJobs": 35,
+      "consentedPros": 1,
+      "priorityScore": 65,
+      "gate": "indexable"
+    },
+    {
+      "slug": "gurgaon",
+      "cityName": "Gurgaon",
+      "country": "India",
+      "activeJobs": 12,
+      "consentedPros": 1,
+      "priorityScore": 65,
+      "gate": "indexable"
+    },
+    {
+      "slug": "lucknow",
+      "cityName": "Lucknow",
+      "country": "India",
+      "activeJobs": 11,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "mumbai",
+      "cityName": "Mumbai",
+      "country": "India",
+      "activeJobs": 18,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "nagpur",
+      "cityName": "Nagpur",
+      "country": "India",
+      "activeJobs": 28,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "chennai",
+      "cityName": "Chennai",
+      "country": "India",
+      "activeJobs": 14,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "coimbatore",
+      "cityName": "Coimbatore",
+      "country": "India",
+      "activeJobs": 40,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "visakhapatnam",
+      "cityName": "Visakhapatnam",
+      "country": "India",
+      "activeJobs": 30,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "surat",
+      "cityName": "Surat",
+      "country": "India",
+      "activeJobs": 31,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "vadodara",
+      "cityName": "Vadodara",
+      "country": "India",
+      "activeJobs": 26,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "jaipur",
+      "cityName": "Jaipur",
+      "country": "India",
+      "activeJobs": 33,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "indore",
+      "cityName": "Indore",
+      "country": "India",
+      "activeJobs": 44,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "kochi",
+      "cityName": "Kochi",
+      "country": "India",
+      "activeJobs": 35,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "chandigarh",
+      "cityName": "Chandigarh",
+      "country": "India",
+      "activeJobs": 43,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "patna",
+      "cityName": "Patna",
+      "country": "India",
+      "activeJobs": 27,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "bhubaneswar",
+      "cityName": "Bhubaneswar",
+      "country": "India",
+      "activeJobs": 31,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "dehradun",
+      "cityName": "Dehradun",
+      "country": "India",
+      "activeJobs": 26,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "jammu",
+      "cityName": "Jammu",
+      "country": "India",
+      "activeJobs": 55,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "guwahati",
+      "cityName": "Guwahati",
+      "country": "India",
+      "activeJobs": 26,
+      "consentedPros": 0,
+      "priorityScore": 60,
+      "gate": "indexable"
+    },
+    {
+      "slug": "kolkata",
+      "cityName": "Kolkata",
+      "country": "India",
+      "activeJobs": 9,
+      "consentedPros": 0,
+      "priorityScore": 57.5,
+      "gate": "indexable"
+    },
+    {
+      "slug": "ahmedabad",
+      "cityName": "Ahmedabad",
+      "country": "India",
+      "activeJobs": 6,
+      "consentedPros": 0,
+      "priorityScore": 50,
+      "gate": "indexable"
+    }
+  ]
+}

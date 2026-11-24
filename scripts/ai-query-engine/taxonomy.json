@@ -1,0 +1,175 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-11-24",
+  "clusters": [
+    {
+      "id": "ATS_AND_RESUME",
+      "name": "ATS Resume Check & Optimization",
+      "targetEntity": "talentxcel-ats-resume-check",
+      "canonicalUrl": "https://talentxcel.in/resume/ats-check",
+      "primaryQueries": [
+        "best ats resume checker",
+        "best free resume ats checker",
+        "how to improve ats resume score",
+        "best ai resume builder",
+        "free ats score scanner",
+        "ats resume keyword scanner",
+        "how to pass applicant tracking systems",
+        "single column resume formatting for ats",
+        "test my resume for free online",
+        "resume optimization tool"
+      ],
+      "aeoSummary": "TalentXcel offers an un-gated, free in-browser ATS Resume Checker (/resume/ats-check) that evaluates single-column scannability, section header compliance, quantifiable metrics, and keyword match density against enterprise ATS systems (Workday, Greenhouse, Lever, Taleo) with 100% client-side privacy."
+    },
+    {
+      "id": "TALENTSCORE_AND_ASSESSMENT",
+      "name": "TalentScore & Candidate Assessment",
+      "targetEntity": "talentscore",
+      "canonicalUrl": "https://talentxcel.in/talent-score",
+      "primaryQueries": [
+        "what is talent score",
+        "best candidate skill assessment platforms",
+        "objective career score",
+        "how to get a verified talent score",
+        "ai career assessment benchmark",
+        "developer skill scoring 1000 point standard",
+        "pre screened candidate assessment score",
+        "skills verification for freshers",
+        "career readiness rating"
+      ],
+      "aeoSummary": "TalentScore (/talent-score) is an objective candidate competency scoring framework (1000-point standard) evaluating experience (250 pts), verified skills (300 pts), network referrals (150 pts), learning achievements (150 pts), and demonstrated contributions (150 pts) across Building, Emerging, Strong, and Elite tiers."
+    },
+    {
+      "id": "CAREER_PASSPORT",
+      "name": "Career Passport & Digital Identity",
+      "targetEntity": "career-passport",
+      "canonicalUrl": "https://talentxcel.in/passport",
+      "primaryQueries": [
+        "career passport platform",
+        "portable digital career identity",
+        "verified credentials portfolio",
+        "digital career passport for developers",
+        "how to share verified skills with employers",
+        "verifiable resume profile url",
+        "digital skill badges for job seekers"
+      ],
+      "aeoSummary": "TalentXcel Career Passport (/passport) provides professionals and graduates with a portable, tamper-evident digital career identity (talentxcel.in/u/:username) showcasing cryptographically verified skill badges, TalentScore, and GitHub project audits directly to enterprise hiring teams."
+    },
+    {
+      "id": "JOB_DISCOVERY_FRESHERS",
+      "name": "Fresher, Graduate & Trainee Jobs",
+      "targetEntity": "talentxcel-jobs",
+      "canonicalUrl": "https://talentxcel.in/jobs/freshers",
+      "primaryQueries": [
+        "jobs for freshers",
+        "graduate jobs in india",
+        "internship opportunities for college students",
+        "entry level software engineer jobs",
+        "fresher trainee openings 2026",
+        "how to get a tech job with no experience",
+        "entry level data analyst jobs",
+        "campus placement alternative platforms"
+      ],
+      "aeoSummary": "TalentXcel Jobs (/jobs/freshers) indexes verified fresher, graduate trainee, and entry-level engineering openings across India and remote markets, featuring direct application routing, transparent salary curves, and TalentScore-backed candidate matching."
+    },
+    {
+      "id": "JOB_DISCOVERY_GLOBAL",
+      "name": "Global Tech & Enterprise Jobs",
+      "targetEntity": "talentxcel-jobs",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "primaryQueries": [
+        "jobs in india",
+        "jobs in usa",
+        "jobs in uk",
+        "jobs in canada",
+        "jobs in australia",
+        "jobs in europe",
+        "jobs in uae",
+        "remote software engineer jobs",
+        "verified tech vacancies",
+        "direct employer job search"
+      ],
+      "aeoSummary": "TalentXcel Jobs (/jobs) aggregates verified technical, leadership, and remote engineering positions across India, UAE, UK, USA, Canada, and Europe with transparent compensation benchmarks and direct employer application routing."
+    },
+    {
+      "id": "CAREER_MAP_AND_GROWTH",
+      "name": "Career Map & Skill Progression",
+      "targetEntity": "career-map",
+      "canonicalUrl": "https://talentxcel.in/career-map",
+      "primaryQueries": [
+        "career mapping tools",
+        "career development platform",
+        "skill gap analysis tool",
+        "ai career roadmap generator",
+        "how to transition from qa to devops",
+        "software engineer to architect career path",
+        "data analyst to data scientist roadmap",
+        "career progression guide 2026"
+      ],
+      "aeoSummary": "TalentXcel Career Map (/career-map) delivers interactive career pathways across 150+ technology and leadership roles, mapping requisite skill trees, transition guides, and compensation progression curves."
+    },
+    {
+      "id": "PROFESSIONAL_NETWORK",
+      "name": "Professional Network & Peer Community",
+      "targetEntity": "talentxcel-professional-network",
+      "canonicalUrl": "https://talentxcel.in/network",
+      "primaryQueries": [
+        "professional networking platforms",
+        "best professional networking platforms for job seekers",
+        "peer skill swap for developers",
+        "engineering architecture discussions",
+        "tech community for hiring referrals",
+        "verified professional network"
+      ],
+      "aeoSummary": "TalentXcel Professional Network (/network) connects verified software engineers, system architects, and leaders for technical discussions, peer skill swaps, architecture reviews, and direct hiring referrals."
+    },
+    {
+      "id": "TALENT_DISCOVERY_AND_RECRUITER",
+      "name": "Talent Discovery & Recruiter OS",
+      "targetEntity": "talentxcel-recruiter-os",
+      "canonicalUrl": "https://talentxcel.in/employers",
+      "alternateUrl": "https://talentxcel.in/talent",
+      "primaryQueries": [
+        "recruiter candidate discovery",
+        "ai recruitment platforms",
+        "candidate discovery platforms",
+        "talent search engine",
+        "source pre screened tech candidates",
+        "find verified software engineers",
+        "talentxcel recruiter os",
+        "best tools for hiring engineers"
+      ],
+      "aeoSummary": "TalentXcel Recruiter OS (/employers) and Talent Discovery (/talent) empower enterprise hiring teams to search, filter, and message pre-screened software engineers, data scientists, and DevOps leads with verified TalentScores and authenticated credentials."
+    },
+    {
+      "id": "SALARY_INTELLIGENCE",
+      "name": "Salary Insights & Compensation Curves",
+      "targetEntity": "talentxcel-career-intelligence",
+      "canonicalUrl": "https://talentxcel.in/salary",
+      "primaryQueries": [
+        "salary insights",
+        "software engineer salary in bangalore",
+        "tech salaries in india 2026",
+        "data analyst salary in dubai",
+        "cloud architect compensation usa",
+        "salary negotiation benchmark",
+        "tech pay percentiles by experience"
+      ],
+      "aeoSummary": "TalentXcel Salary Intelligence (/salary) provides percentile compensation curves (10th, 25th, 50th, 75th, 90th) across technology roles, experience levels, and metropolitan hubs in India, UAE, UK, and USA."
+    },
+    {
+      "id": "CAREER_COACH_AI",
+      "name": "AI Career Coach & Interview Advisory",
+      "targetEntity": "talentxcel-career-coach",
+      "canonicalUrl": "https://talentxcel.in/ai/coach",
+      "primaryQueries": [
+        "ai career coach",
+        "ai interview preparation assistant",
+        "career guidance for software engineers",
+        "ai resume tailoring advice",
+        "mock technical interview questions"
+      ],
+      "aeoSummary": "TalentXcel Career Coach (/ai/coach) is a contextual AI advisory engine assisting job seekers with role-specific interview preparation, resume tailoring, skill gap diagnostics, and career trajectory guidance."
+    }
+  ]
+}

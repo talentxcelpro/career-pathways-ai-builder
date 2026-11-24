@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ExternalLink, Crown, Zap, Star, User, CheckCircle2, Check, UserPlus } from "lucide-react";
+import { ExternalLink, Crown, Zap, Star, User, Briefcase, Search, CheckCircle2, Check, UserPlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useConnectionRequests } from "@/hooks/useConnectionRequests";
@@ -134,7 +134,44 @@ export const AdvertisingSidebar: React.FC<AdvertisingSidebarProps> = () => {
         </div>
       </div>
 
-      {/* 2. PEOPLE YOU MAY KNOW CARD - REAL AVATARS ONLY */}
+      {/* 2. PRO SPONSORED CARD 2: FIND YOUR DREAM JOB (30% more compact) */}
+      <div className="relative rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 p-3.5 text-white shadow-md overflow-hidden group">
+        <div className="flex items-center justify-between mb-2">
+          <Badge className="bg-emerald-400 hover:bg-emerald-400 text-slate-950 font-black text-[9px] px-2 py-0 rounded-full shadow-xs">
+            New
+          </Badge>
+        </div>
+
+        {/* 3D Briefcase Illustration (Scale reduced 30%) */}
+        <div className="relative w-full h-20 flex items-center justify-center my-1">
+          <div className="w-13 h-13 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-700 rounded-xl shadow-xl flex items-center justify-center border border-white/40 transform group-hover:scale-105 transition-transform duration-300">
+            <Briefcase className="h-6 w-6 text-white drop-shadow-sm" />
+          </div>
+
+          <div className="absolute bottom-0 right-14 p-1.5 rounded-full bg-amber-400 text-slate-950 shadow-md border border-white">
+            <Search className="h-3.5 w-3.5 stroke-[3]" />
+          </div>
+        </div>
+
+        <div className="space-y-1 mt-2 text-left">
+          <h3 className="font-bold text-sm tracking-tight text-white leading-tight">
+            Find Your Dream Job
+          </h3>
+          <p className="text-[11px] text-purple-100 leading-snug font-medium line-clamp-2">
+            Browse thousands of job opportunities from top companies.
+          </p>
+
+          <Button 
+            onClick={() => navigate('/jobs')}
+            className="w-full mt-2 h-7.5 rounded-xl bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white font-bold text-xs shadow-md flex items-center justify-center gap-1.5"
+          >
+            Browse Jobs
+            <ExternalLink className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+
+      {/* 3. PEOPLE YOU MAY KNOW CARD - REAL AVATARS ONLY */}
       <Card className="border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl p-3">
         <div className="flex items-center justify-between mb-2 px-1">
           <h3 className="text-xs font-extrabold text-foreground tracking-tight">People You May Know</h3>

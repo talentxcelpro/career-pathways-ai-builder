@@ -1,0 +1,19 @@
+{
+  "executedAt": "2026-11-24T15:59:39.448Z",
+  "dryRun": false,
+  "usersEvaluated": 20,
+  "cooldownProtectedUsers": 10,
+  "notificationsDispatched": 10,
+  "samplePayload": {
+    "user_id": "16c64c05-0dae-488a-9989-ef66c9be03eb",
+    "title": "Weekly Career Update: 2 new opportunities in your domain",
+    "message": "Explore new openings including Management Trainee - Hotel Operations at The Indian Hotels Company Limited (IHCL) on TalentXcel.",
+    "link": "/jobs",
+    "type": "retention_digest",
+    "category": "career_growth",
+    "priority": "high",
+    "relevance_score": 0.95,
+    "delivery_status": "delivered",
+    "is_read": false
+  }
+}

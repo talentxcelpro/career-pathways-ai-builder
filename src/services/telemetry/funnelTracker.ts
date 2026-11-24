@@ -12,7 +12,23 @@ export type FunnelEventName =
   | 'signup_completed'
   | 'passport_claimed'
   | 'endorsement_sent'
-  | 'network_connection_requested';
+  | 'network_connection_requested'
+  // TalentScore exact event suite
+  | 'talent_score_viewed'
+  | 'talent_score_page_view'
+  | 'talent_score_assessment_start'
+  | 'talent_score_industry_select'
+  | 'talent_score_calculated'
+  | 'talent_score_assessment_complete'
+  | 'talent_score_shared'
+  | 'talent_score_share'
+  | 'talent_score_registration_conversion'
+  // Passport exact event suite
+  | 'passport_viewed'
+  | 'passport_public_view'
+  | 'passport_shared'
+  | 'passport_share'
+  | 'passport_registration_conversion';
 
 function getOrCreateSessionId(): string {
   if (typeof window === 'undefined') return 'ssr_session';
@@ -39,6 +55,15 @@ export async function trackFunnelEvent(
       timestamp: new Date().toISOString()
     };
 
+    // Forward to GA4 if active
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      try {
+        (window as any).gtag('event', eventName, payloadMetadata);
+      } catch {
+        // Non-blocking GA4 notice
+      }
+    }
+
     // Fire non-blocking RPC call
     supabase
       .rpc('track_funnel_event', {
@@ -48,14 +73,12 @@ export async function trackFunnelEvent(
       })
       .then(({ error }) => {
         if (error) {
-          console.debug('[FunnelTracker] Event logged locally (RPC notice):', error.message);
+          // Non-blocking fallback telemetry logger
+          console.debug('[Telemetry] Event recorded locally:', eventName);
         }
-      })
-      .catch((err) => {
-        console.debug('[FunnelTracker] Async telemetry notice:', err);
       });
   } catch (err) {
-    // Fail-open: Never block the user experience for telemetry
-    console.debug('[FunnelTracker] Notice:', err);
+    // Non-blocking catch
+    console.debug('[Telemetry] Failed to record funnel event:', err);
   }
 }

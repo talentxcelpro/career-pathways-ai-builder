@@ -1,0 +1,4388 @@
+[
+  {
+    "rawQuery": "jobs for freshers in India",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "India",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in India on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in India",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "India",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in India on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in India",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "India",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in India",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "India",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in India."
+  },
+  {
+    "rawQuery": "software engineer salary in India",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "India",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in India."
+  },
+  {
+    "rawQuery": "data scientist salary in India",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "India",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in India."
+  },
+  {
+    "rawQuery": "data analyst salary in India",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "India",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in India."
+  },
+  {
+    "rawQuery": "cloud architect salary in India",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "India",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in India."
+  },
+  {
+    "rawQuery": "devops engineer salary in India",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "India",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in India."
+  },
+  {
+    "rawQuery": "jobs for freshers in United States",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "United States",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in United States on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in United States",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "United States",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in United States on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in United States",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "United States",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in United States",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "United States",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in United States."
+  },
+  {
+    "rawQuery": "software engineer salary in United States",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United States",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in United States."
+  },
+  {
+    "rawQuery": "data scientist salary in United States",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United States",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in United States."
+  },
+  {
+    "rawQuery": "data analyst salary in United States",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United States",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in United States."
+  },
+  {
+    "rawQuery": "cloud architect salary in United States",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United States",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in United States."
+  },
+  {
+    "rawQuery": "devops engineer salary in United States",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United States",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in United States."
+  },
+  {
+    "rawQuery": "jobs for freshers in United Kingdom",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "United Kingdom",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in United Kingdom on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in United Kingdom",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "United Kingdom",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in United Kingdom on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in United Kingdom",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in United Kingdom",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in United Kingdom."
+  },
+  {
+    "rawQuery": "software engineer salary in United Kingdom",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in United Kingdom."
+  },
+  {
+    "rawQuery": "data scientist salary in United Kingdom",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in United Kingdom."
+  },
+  {
+    "rawQuery": "data analyst salary in United Kingdom",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in United Kingdom."
+  },
+  {
+    "rawQuery": "cloud architect salary in United Kingdom",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in United Kingdom."
+  },
+  {
+    "rawQuery": "devops engineer salary in United Kingdom",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Kingdom",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in United Kingdom."
+  },
+  {
+    "rawQuery": "jobs for freshers in Canada",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Canada",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Canada on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Canada",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Canada",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Canada on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Canada",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Canada",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Canada",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Canada",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Canada."
+  },
+  {
+    "rawQuery": "software engineer salary in Canada",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Canada",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Canada."
+  },
+  {
+    "rawQuery": "data scientist salary in Canada",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Canada",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Canada."
+  },
+  {
+    "rawQuery": "data analyst salary in Canada",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Canada",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Canada."
+  },
+  {
+    "rawQuery": "cloud architect salary in Canada",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Canada",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Canada."
+  },
+  {
+    "rawQuery": "devops engineer salary in Canada",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Canada",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Canada."
+  },
+  {
+    "rawQuery": "jobs for freshers in Australia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Australia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Australia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Australia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Australia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Australia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Australia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Australia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Australia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Australia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Australia."
+  },
+  {
+    "rawQuery": "software engineer salary in Australia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Australia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Australia."
+  },
+  {
+    "rawQuery": "data scientist salary in Australia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Australia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Australia."
+  },
+  {
+    "rawQuery": "data analyst salary in Australia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Australia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Australia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Australia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Australia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Australia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Australia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Australia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Australia."
+  },
+  {
+    "rawQuery": "jobs for freshers in United Arab Emirates",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "United Arab Emirates",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in United Arab Emirates on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in United Arab Emirates",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "United Arab Emirates",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in United Arab Emirates on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in United Arab Emirates",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in United Arab Emirates",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in United Arab Emirates."
+  },
+  {
+    "rawQuery": "software engineer salary in United Arab Emirates",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in United Arab Emirates."
+  },
+  {
+    "rawQuery": "data scientist salary in United Arab Emirates",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in United Arab Emirates."
+  },
+  {
+    "rawQuery": "data analyst salary in United Arab Emirates",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in United Arab Emirates."
+  },
+  {
+    "rawQuery": "cloud architect salary in United Arab Emirates",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in United Arab Emirates."
+  },
+  {
+    "rawQuery": "devops engineer salary in United Arab Emirates",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "United Arab Emirates",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in United Arab Emirates."
+  },
+  {
+    "rawQuery": "jobs for freshers in Saudi Arabia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Saudi Arabia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Saudi Arabia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Saudi Arabia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Saudi Arabia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Saudi Arabia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Saudi Arabia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Saudi Arabia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Saudi Arabia."
+  },
+  {
+    "rawQuery": "software engineer salary in Saudi Arabia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Saudi Arabia."
+  },
+  {
+    "rawQuery": "data scientist salary in Saudi Arabia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Saudi Arabia."
+  },
+  {
+    "rawQuery": "data analyst salary in Saudi Arabia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Saudi Arabia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Saudi Arabia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Saudi Arabia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Saudi Arabia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Saudi Arabia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Saudi Arabia."
+  },
+  {
+    "rawQuery": "jobs for freshers in Germany",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Germany",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Germany on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Germany",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Germany",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Germany on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Germany",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Germany",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Germany",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Germany",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Germany."
+  },
+  {
+    "rawQuery": "software engineer salary in Germany",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Germany",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Germany."
+  },
+  {
+    "rawQuery": "data scientist salary in Germany",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Germany",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Germany."
+  },
+  {
+    "rawQuery": "data analyst salary in Germany",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Germany",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Germany."
+  },
+  {
+    "rawQuery": "cloud architect salary in Germany",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Germany",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Germany."
+  },
+  {
+    "rawQuery": "devops engineer salary in Germany",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Germany",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Germany."
+  },
+  {
+    "rawQuery": "jobs for freshers in Netherlands",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Netherlands",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Netherlands on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Netherlands",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Netherlands",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Netherlands on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Netherlands",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Netherlands",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Netherlands."
+  },
+  {
+    "rawQuery": "software engineer salary in Netherlands",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Netherlands."
+  },
+  {
+    "rawQuery": "data scientist salary in Netherlands",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Netherlands."
+  },
+  {
+    "rawQuery": "data analyst salary in Netherlands",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Netherlands."
+  },
+  {
+    "rawQuery": "cloud architect salary in Netherlands",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Netherlands."
+  },
+  {
+    "rawQuery": "devops engineer salary in Netherlands",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Netherlands",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Netherlands."
+  },
+  {
+    "rawQuery": "jobs for freshers in Singapore",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Singapore",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Singapore on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Singapore",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Singapore",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Singapore on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Singapore",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Singapore",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Singapore",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Singapore",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Singapore."
+  },
+  {
+    "rawQuery": "software engineer salary in Singapore",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Singapore",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Singapore."
+  },
+  {
+    "rawQuery": "data scientist salary in Singapore",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Singapore",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Singapore."
+  },
+  {
+    "rawQuery": "data analyst salary in Singapore",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Singapore",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Singapore."
+  },
+  {
+    "rawQuery": "cloud architect salary in Singapore",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Singapore",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Singapore."
+  },
+  {
+    "rawQuery": "devops engineer salary in Singapore",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Singapore",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Singapore."
+  },
+  {
+    "rawQuery": "jobs for freshers in Ireland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Ireland",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Ireland on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Ireland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Ireland",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Ireland on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Ireland",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Ireland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Ireland",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Ireland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Ireland."
+  },
+  {
+    "rawQuery": "software engineer salary in Ireland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Ireland",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Ireland."
+  },
+  {
+    "rawQuery": "data scientist salary in Ireland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Ireland",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Ireland."
+  },
+  {
+    "rawQuery": "data analyst salary in Ireland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Ireland",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Ireland."
+  },
+  {
+    "rawQuery": "cloud architect salary in Ireland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Ireland",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Ireland."
+  },
+  {
+    "rawQuery": "devops engineer salary in Ireland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Ireland",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Ireland."
+  },
+  {
+    "rawQuery": "jobs for freshers in Sweden",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Sweden",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Sweden on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Sweden",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Sweden",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Sweden on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Sweden",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Sweden",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Sweden",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Sweden",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Sweden."
+  },
+  {
+    "rawQuery": "software engineer salary in Sweden",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Sweden",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Sweden."
+  },
+  {
+    "rawQuery": "data scientist salary in Sweden",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Sweden",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Sweden."
+  },
+  {
+    "rawQuery": "data analyst salary in Sweden",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Sweden",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Sweden."
+  },
+  {
+    "rawQuery": "cloud architect salary in Sweden",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Sweden",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Sweden."
+  },
+  {
+    "rawQuery": "devops engineer salary in Sweden",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Sweden",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Sweden."
+  },
+  {
+    "rawQuery": "jobs for freshers in Switzerland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Switzerland",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Switzerland on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Switzerland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Switzerland",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Switzerland on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Switzerland",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Switzerland",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Switzerland."
+  },
+  {
+    "rawQuery": "software engineer salary in Switzerland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Switzerland."
+  },
+  {
+    "rawQuery": "data scientist salary in Switzerland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Switzerland."
+  },
+  {
+    "rawQuery": "data analyst salary in Switzerland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Switzerland."
+  },
+  {
+    "rawQuery": "cloud architect salary in Switzerland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Switzerland."
+  },
+  {
+    "rawQuery": "devops engineer salary in Switzerland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Switzerland",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Switzerland."
+  },
+  {
+    "rawQuery": "jobs for freshers in France",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "France",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in France on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in France",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "France",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in France on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in France",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "France",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in France",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "France",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in France."
+  },
+  {
+    "rawQuery": "software engineer salary in France",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "France",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in France."
+  },
+  {
+    "rawQuery": "data scientist salary in France",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "France",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in France."
+  },
+  {
+    "rawQuery": "data analyst salary in France",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "France",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in France."
+  },
+  {
+    "rawQuery": "cloud architect salary in France",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "France",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in France."
+  },
+  {
+    "rawQuery": "devops engineer salary in France",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "France",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in France."
+  },
+  {
+    "rawQuery": "jobs for freshers in Japan",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Japan",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Japan on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Japan",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Japan",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Japan on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Japan",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Japan",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Japan",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Japan",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Japan."
+  },
+  {
+    "rawQuery": "software engineer salary in Japan",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Japan",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Japan."
+  },
+  {
+    "rawQuery": "data scientist salary in Japan",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Japan",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Japan."
+  },
+  {
+    "rawQuery": "data analyst salary in Japan",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Japan",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Japan."
+  },
+  {
+    "rawQuery": "cloud architect salary in Japan",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Japan",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Japan."
+  },
+  {
+    "rawQuery": "devops engineer salary in Japan",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Japan",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Japan."
+  },
+  {
+    "rawQuery": "jobs for freshers in South Korea",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "South Korea",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in South Korea on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in South Korea",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "South Korea",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in South Korea on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in South Korea",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "South Korea",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in South Korea",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "South Korea",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in South Korea."
+  },
+  {
+    "rawQuery": "software engineer salary in South Korea",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Korea",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in South Korea."
+  },
+  {
+    "rawQuery": "data scientist salary in South Korea",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Korea",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in South Korea."
+  },
+  {
+    "rawQuery": "data analyst salary in South Korea",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Korea",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in South Korea."
+  },
+  {
+    "rawQuery": "cloud architect salary in South Korea",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Korea",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in South Korea."
+  },
+  {
+    "rawQuery": "devops engineer salary in South Korea",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Korea",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in South Korea."
+  },
+  {
+    "rawQuery": "jobs for freshers in Brazil",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Brazil",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Brazil on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Brazil",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Brazil",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Brazil on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Brazil",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Brazil",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Brazil",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Brazil",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Brazil."
+  },
+  {
+    "rawQuery": "software engineer salary in Brazil",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Brazil",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Brazil."
+  },
+  {
+    "rawQuery": "data scientist salary in Brazil",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Brazil",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Brazil."
+  },
+  {
+    "rawQuery": "data analyst salary in Brazil",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Brazil",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Brazil."
+  },
+  {
+    "rawQuery": "cloud architect salary in Brazil",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Brazil",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Brazil."
+  },
+  {
+    "rawQuery": "devops engineer salary in Brazil",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Brazil",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Brazil."
+  },
+  {
+    "rawQuery": "jobs for freshers in Mexico",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Mexico",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Mexico on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Mexico",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Mexico",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Mexico on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Mexico",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Mexico",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Mexico",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Mexico",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Mexico."
+  },
+  {
+    "rawQuery": "software engineer salary in Mexico",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Mexico",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Mexico."
+  },
+  {
+    "rawQuery": "data scientist salary in Mexico",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Mexico",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Mexico."
+  },
+  {
+    "rawQuery": "data analyst salary in Mexico",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Mexico",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Mexico."
+  },
+  {
+    "rawQuery": "cloud architect salary in Mexico",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Mexico",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Mexico."
+  },
+  {
+    "rawQuery": "devops engineer salary in Mexico",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Mexico",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Mexico."
+  },
+  {
+    "rawQuery": "jobs for freshers in South Africa",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "South Africa",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in South Africa on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in South Africa",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "South Africa",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in South Africa on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in South Africa",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "South Africa",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in South Africa",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "South Africa",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in South Africa."
+  },
+  {
+    "rawQuery": "software engineer salary in South Africa",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Africa",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in South Africa."
+  },
+  {
+    "rawQuery": "data scientist salary in South Africa",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Africa",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in South Africa."
+  },
+  {
+    "rawQuery": "data analyst salary in South Africa",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Africa",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in South Africa."
+  },
+  {
+    "rawQuery": "cloud architect salary in South Africa",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Africa",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in South Africa."
+  },
+  {
+    "rawQuery": "devops engineer salary in South Africa",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "South Africa",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in South Africa."
+  },
+  {
+    "rawQuery": "jobs for freshers in New Zealand",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "New Zealand",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in New Zealand on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in New Zealand",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "New Zealand",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in New Zealand on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in New Zealand",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in New Zealand",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in New Zealand."
+  },
+  {
+    "rawQuery": "software engineer salary in New Zealand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in New Zealand."
+  },
+  {
+    "rawQuery": "data scientist salary in New Zealand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in New Zealand."
+  },
+  {
+    "rawQuery": "data analyst salary in New Zealand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in New Zealand."
+  },
+  {
+    "rawQuery": "cloud architect salary in New Zealand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in New Zealand."
+  },
+  {
+    "rawQuery": "devops engineer salary in New Zealand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "New Zealand",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in New Zealand."
+  },
+  {
+    "rawQuery": "jobs for freshers in Poland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Poland",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Poland on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Poland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Poland",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Poland on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Poland",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Poland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Poland",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Poland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Poland."
+  },
+  {
+    "rawQuery": "software engineer salary in Poland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Poland",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Poland."
+  },
+  {
+    "rawQuery": "data scientist salary in Poland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Poland",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Poland."
+  },
+  {
+    "rawQuery": "data analyst salary in Poland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Poland",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Poland."
+  },
+  {
+    "rawQuery": "cloud architect salary in Poland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Poland",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Poland."
+  },
+  {
+    "rawQuery": "devops engineer salary in Poland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Poland",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Poland."
+  },
+  {
+    "rawQuery": "jobs for freshers in Spain",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Spain",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Spain on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Spain",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Spain",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Spain on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Spain",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Spain",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Spain",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Spain",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Spain."
+  },
+  {
+    "rawQuery": "software engineer salary in Spain",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Spain",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Spain."
+  },
+  {
+    "rawQuery": "data scientist salary in Spain",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Spain",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Spain."
+  },
+  {
+    "rawQuery": "data analyst salary in Spain",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Spain",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Spain."
+  },
+  {
+    "rawQuery": "cloud architect salary in Spain",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Spain",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Spain."
+  },
+  {
+    "rawQuery": "devops engineer salary in Spain",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Spain",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Spain."
+  },
+  {
+    "rawQuery": "jobs for freshers in Italy",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Italy",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Italy on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Italy",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Italy",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Italy on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Italy",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Italy",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Italy",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Italy",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Italy."
+  },
+  {
+    "rawQuery": "software engineer salary in Italy",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Italy",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Italy."
+  },
+  {
+    "rawQuery": "data scientist salary in Italy",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Italy",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Italy."
+  },
+  {
+    "rawQuery": "data analyst salary in Italy",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Italy",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Italy."
+  },
+  {
+    "rawQuery": "cloud architect salary in Italy",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Italy",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Italy."
+  },
+  {
+    "rawQuery": "devops engineer salary in Italy",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Italy",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Italy."
+  },
+  {
+    "rawQuery": "jobs for freshers in Israel",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Israel",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Israel on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Israel",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Israel",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Israel on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Israel",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Israel",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Israel",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Israel",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Israel."
+  },
+  {
+    "rawQuery": "software engineer salary in Israel",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Israel",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Israel."
+  },
+  {
+    "rawQuery": "data scientist salary in Israel",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Israel",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Israel."
+  },
+  {
+    "rawQuery": "data analyst salary in Israel",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Israel",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Israel."
+  },
+  {
+    "rawQuery": "cloud architect salary in Israel",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Israel",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Israel."
+  },
+  {
+    "rawQuery": "devops engineer salary in Israel",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Israel",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Israel."
+  },
+  {
+    "rawQuery": "jobs for freshers in Norway",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Norway",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Norway on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Norway",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Norway",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Norway on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Norway",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Norway",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Norway",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Norway",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Norway."
+  },
+  {
+    "rawQuery": "software engineer salary in Norway",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Norway",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Norway."
+  },
+  {
+    "rawQuery": "data scientist salary in Norway",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Norway",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Norway."
+  },
+  {
+    "rawQuery": "data analyst salary in Norway",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Norway",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Norway."
+  },
+  {
+    "rawQuery": "cloud architect salary in Norway",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Norway",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Norway."
+  },
+  {
+    "rawQuery": "devops engineer salary in Norway",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Norway",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Norway."
+  },
+  {
+    "rawQuery": "jobs for freshers in Denmark",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Denmark",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Denmark on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Denmark",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Denmark",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Denmark on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Denmark",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Denmark",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Denmark",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Denmark",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Denmark."
+  },
+  {
+    "rawQuery": "software engineer salary in Denmark",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Denmark",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Denmark."
+  },
+  {
+    "rawQuery": "data scientist salary in Denmark",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Denmark",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Denmark."
+  },
+  {
+    "rawQuery": "data analyst salary in Denmark",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Denmark",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Denmark."
+  },
+  {
+    "rawQuery": "cloud architect salary in Denmark",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Denmark",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Denmark."
+  },
+  {
+    "rawQuery": "devops engineer salary in Denmark",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Denmark",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Denmark."
+  },
+  {
+    "rawQuery": "jobs for freshers in Finland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Finland",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Finland on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Finland",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Finland",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Finland on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Finland",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Finland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Finland",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Finland",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Finland."
+  },
+  {
+    "rawQuery": "software engineer salary in Finland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Finland",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Finland."
+  },
+  {
+    "rawQuery": "data scientist salary in Finland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Finland",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Finland."
+  },
+  {
+    "rawQuery": "data analyst salary in Finland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Finland",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Finland."
+  },
+  {
+    "rawQuery": "cloud architect salary in Finland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Finland",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Finland."
+  },
+  {
+    "rawQuery": "devops engineer salary in Finland",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Finland",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Finland."
+  },
+  {
+    "rawQuery": "jobs for freshers in Austria",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Austria",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Austria on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Austria",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Austria",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Austria on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Austria",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Austria",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Austria",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Austria",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Austria."
+  },
+  {
+    "rawQuery": "software engineer salary in Austria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Austria",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Austria."
+  },
+  {
+    "rawQuery": "data scientist salary in Austria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Austria",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Austria."
+  },
+  {
+    "rawQuery": "data analyst salary in Austria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Austria",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Austria."
+  },
+  {
+    "rawQuery": "cloud architect salary in Austria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Austria",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Austria."
+  },
+  {
+    "rawQuery": "devops engineer salary in Austria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Austria",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Austria."
+  },
+  {
+    "rawQuery": "jobs for freshers in Belgium",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Belgium",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Belgium on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Belgium",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Belgium",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Belgium on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Belgium",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Belgium",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Belgium",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Belgium",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Belgium."
+  },
+  {
+    "rawQuery": "software engineer salary in Belgium",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Belgium",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Belgium."
+  },
+  {
+    "rawQuery": "data scientist salary in Belgium",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Belgium",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Belgium."
+  },
+  {
+    "rawQuery": "data analyst salary in Belgium",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Belgium",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Belgium."
+  },
+  {
+    "rawQuery": "cloud architect salary in Belgium",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Belgium",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Belgium."
+  },
+  {
+    "rawQuery": "devops engineer salary in Belgium",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Belgium",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Belgium."
+  },
+  {
+    "rawQuery": "jobs for freshers in Portugal",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Portugal",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Portugal on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Portugal",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Portugal",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Portugal on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Portugal",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Portugal",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Portugal",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Portugal",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Portugal."
+  },
+  {
+    "rawQuery": "software engineer salary in Portugal",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Portugal",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Portugal."
+  },
+  {
+    "rawQuery": "data scientist salary in Portugal",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Portugal",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Portugal."
+  },
+  {
+    "rawQuery": "data analyst salary in Portugal",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Portugal",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Portugal."
+  },
+  {
+    "rawQuery": "cloud architect salary in Portugal",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Portugal",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Portugal."
+  },
+  {
+    "rawQuery": "devops engineer salary in Portugal",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Portugal",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Portugal."
+  },
+  {
+    "rawQuery": "jobs for freshers in Malaysia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Malaysia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Malaysia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Malaysia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Malaysia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Malaysia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Malaysia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Malaysia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Malaysia."
+  },
+  {
+    "rawQuery": "software engineer salary in Malaysia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Malaysia."
+  },
+  {
+    "rawQuery": "data scientist salary in Malaysia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Malaysia."
+  },
+  {
+    "rawQuery": "data analyst salary in Malaysia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Malaysia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Malaysia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Malaysia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Malaysia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Malaysia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Malaysia."
+  },
+  {
+    "rawQuery": "jobs for freshers in Philippines",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Philippines",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Philippines on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Philippines",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Philippines",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Philippines on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Philippines",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Philippines",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Philippines",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Philippines",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Philippines."
+  },
+  {
+    "rawQuery": "software engineer salary in Philippines",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Philippines",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Philippines."
+  },
+  {
+    "rawQuery": "data scientist salary in Philippines",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Philippines",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Philippines."
+  },
+  {
+    "rawQuery": "data analyst salary in Philippines",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Philippines",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Philippines."
+  },
+  {
+    "rawQuery": "cloud architect salary in Philippines",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Philippines",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Philippines."
+  },
+  {
+    "rawQuery": "devops engineer salary in Philippines",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Philippines",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Philippines."
+  },
+  {
+    "rawQuery": "jobs for freshers in Indonesia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Indonesia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Indonesia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Indonesia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Indonesia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Indonesia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Indonesia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Indonesia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Indonesia."
+  },
+  {
+    "rawQuery": "software engineer salary in Indonesia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Indonesia."
+  },
+  {
+    "rawQuery": "data scientist salary in Indonesia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Indonesia."
+  },
+  {
+    "rawQuery": "data analyst salary in Indonesia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Indonesia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Indonesia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Indonesia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Indonesia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Indonesia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Indonesia."
+  },
+  {
+    "rawQuery": "jobs for freshers in Vietnam",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Vietnam",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Vietnam on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Vietnam",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Vietnam",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Vietnam on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Vietnam",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Vietnam",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Vietnam."
+  },
+  {
+    "rawQuery": "software engineer salary in Vietnam",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Vietnam."
+  },
+  {
+    "rawQuery": "data scientist salary in Vietnam",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Vietnam."
+  },
+  {
+    "rawQuery": "data analyst salary in Vietnam",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Vietnam."
+  },
+  {
+    "rawQuery": "cloud architect salary in Vietnam",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Vietnam."
+  },
+  {
+    "rawQuery": "devops engineer salary in Vietnam",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Vietnam",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Vietnam."
+  },
+  {
+    "rawQuery": "jobs for freshers in Thailand",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Thailand",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Thailand on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Thailand",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Thailand",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Thailand on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Thailand",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Thailand",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Thailand",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Thailand",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Thailand."
+  },
+  {
+    "rawQuery": "software engineer salary in Thailand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Thailand",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Thailand."
+  },
+  {
+    "rawQuery": "data scientist salary in Thailand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Thailand",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Thailand."
+  },
+  {
+    "rawQuery": "data analyst salary in Thailand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Thailand",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Thailand."
+  },
+  {
+    "rawQuery": "cloud architect salary in Thailand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Thailand",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Thailand."
+  },
+  {
+    "rawQuery": "devops engineer salary in Thailand",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Thailand",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Thailand."
+  },
+  {
+    "rawQuery": "jobs for freshers in Egypt",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Egypt",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Egypt on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Egypt",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Egypt",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Egypt on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Egypt",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Egypt",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Egypt",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Egypt",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Egypt."
+  },
+  {
+    "rawQuery": "software engineer salary in Egypt",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Egypt",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Egypt."
+  },
+  {
+    "rawQuery": "data scientist salary in Egypt",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Egypt",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Egypt."
+  },
+  {
+    "rawQuery": "data analyst salary in Egypt",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Egypt",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Egypt."
+  },
+  {
+    "rawQuery": "cloud architect salary in Egypt",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Egypt",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Egypt."
+  },
+  {
+    "rawQuery": "devops engineer salary in Egypt",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Egypt",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Egypt."
+  },
+  {
+    "rawQuery": "jobs for freshers in Nigeria",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Nigeria",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Nigeria on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Nigeria",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Nigeria",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Nigeria on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Nigeria",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Nigeria",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Nigeria."
+  },
+  {
+    "rawQuery": "software engineer salary in Nigeria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Nigeria."
+  },
+  {
+    "rawQuery": "data scientist salary in Nigeria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Nigeria."
+  },
+  {
+    "rawQuery": "data analyst salary in Nigeria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Nigeria."
+  },
+  {
+    "rawQuery": "cloud architect salary in Nigeria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Nigeria."
+  },
+  {
+    "rawQuery": "devops engineer salary in Nigeria",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Nigeria",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Nigeria."
+  },
+  {
+    "rawQuery": "jobs for freshers in Kenya",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Kenya",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Kenya on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Kenya",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Kenya",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Kenya on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Kenya",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Kenya",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Kenya",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Kenya",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Kenya."
+  },
+  {
+    "rawQuery": "software engineer salary in Kenya",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kenya",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Kenya."
+  },
+  {
+    "rawQuery": "data scientist salary in Kenya",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kenya",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Kenya."
+  },
+  {
+    "rawQuery": "data analyst salary in Kenya",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kenya",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Kenya."
+  },
+  {
+    "rawQuery": "cloud architect salary in Kenya",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kenya",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Kenya."
+  },
+  {
+    "rawQuery": "devops engineer salary in Kenya",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kenya",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Kenya."
+  },
+  {
+    "rawQuery": "jobs for freshers in Qatar",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Qatar",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Qatar on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Qatar",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Qatar",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Qatar on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Qatar",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Qatar",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Qatar",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Qatar",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Qatar."
+  },
+  {
+    "rawQuery": "software engineer salary in Qatar",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Qatar",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Qatar."
+  },
+  {
+    "rawQuery": "data scientist salary in Qatar",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Qatar",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Qatar."
+  },
+  {
+    "rawQuery": "data analyst salary in Qatar",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Qatar",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Qatar."
+  },
+  {
+    "rawQuery": "cloud architect salary in Qatar",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Qatar",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Qatar."
+  },
+  {
+    "rawQuery": "devops engineer salary in Qatar",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Qatar",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Qatar."
+  },
+  {
+    "rawQuery": "jobs for freshers in Kuwait",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Kuwait",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Kuwait on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Kuwait",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Kuwait",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Kuwait on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Kuwait",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Kuwait",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Kuwait."
+  },
+  {
+    "rawQuery": "software engineer salary in Kuwait",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Kuwait."
+  },
+  {
+    "rawQuery": "data scientist salary in Kuwait",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Kuwait."
+  },
+  {
+    "rawQuery": "data analyst salary in Kuwait",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Kuwait."
+  },
+  {
+    "rawQuery": "cloud architect salary in Kuwait",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Kuwait."
+  },
+  {
+    "rawQuery": "devops engineer salary in Kuwait",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Kuwait",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Kuwait."
+  },
+  {
+    "rawQuery": "jobs for freshers in Chile",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Chile",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Chile on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Chile",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Chile",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Chile on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Chile",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Chile",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Chile",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Chile",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Chile."
+  },
+  {
+    "rawQuery": "software engineer salary in Chile",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Chile",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Chile."
+  },
+  {
+    "rawQuery": "data scientist salary in Chile",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Chile",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Chile."
+  },
+  {
+    "rawQuery": "data analyst salary in Chile",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Chile",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Chile."
+  },
+  {
+    "rawQuery": "cloud architect salary in Chile",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Chile",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Chile."
+  },
+  {
+    "rawQuery": "devops engineer salary in Chile",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Chile",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Chile."
+  },
+  {
+    "rawQuery": "jobs for freshers in Colombia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Colombia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Colombia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Colombia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Colombia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Colombia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Colombia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Colombia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Colombia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Colombia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Colombia."
+  },
+  {
+    "rawQuery": "software engineer salary in Colombia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Colombia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Colombia."
+  },
+  {
+    "rawQuery": "data scientist salary in Colombia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Colombia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Colombia."
+  },
+  {
+    "rawQuery": "data analyst salary in Colombia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Colombia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Colombia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Colombia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Colombia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Colombia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Colombia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Colombia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Colombia."
+  },
+  {
+    "rawQuery": "jobs for freshers in Argentina",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Argentina",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Argentina on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Argentina",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Argentina",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Argentina on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Argentina",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Argentina",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Argentina",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Argentina",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Argentina."
+  },
+  {
+    "rawQuery": "software engineer salary in Argentina",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Argentina",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Argentina."
+  },
+  {
+    "rawQuery": "data scientist salary in Argentina",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Argentina",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Argentina."
+  },
+  {
+    "rawQuery": "data analyst salary in Argentina",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Argentina",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Argentina."
+  },
+  {
+    "rawQuery": "cloud architect salary in Argentina",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Argentina",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Argentina."
+  },
+  {
+    "rawQuery": "devops engineer salary in Argentina",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Argentina",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Argentina."
+  },
+  {
+    "rawQuery": "jobs for freshers in Czech Republic",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Czech Republic",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Czech Republic on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Czech Republic",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Czech Republic",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Czech Republic on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Czech Republic",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Czech Republic",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Czech Republic."
+  },
+  {
+    "rawQuery": "software engineer salary in Czech Republic",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Czech Republic."
+  },
+  {
+    "rawQuery": "data scientist salary in Czech Republic",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Czech Republic."
+  },
+  {
+    "rawQuery": "data analyst salary in Czech Republic",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Czech Republic."
+  },
+  {
+    "rawQuery": "cloud architect salary in Czech Republic",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Czech Republic."
+  },
+  {
+    "rawQuery": "devops engineer salary in Czech Republic",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Czech Republic",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Czech Republic."
+  },
+  {
+    "rawQuery": "jobs for freshers in Romania",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Romania",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Romania on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Romania",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Romania",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Romania on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Romania",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Romania",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Romania",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Romania",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Romania."
+  },
+  {
+    "rawQuery": "software engineer salary in Romania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Romania",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Romania."
+  },
+  {
+    "rawQuery": "data scientist salary in Romania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Romania",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Romania."
+  },
+  {
+    "rawQuery": "data analyst salary in Romania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Romania",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Romania."
+  },
+  {
+    "rawQuery": "cloud architect salary in Romania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Romania",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Romania."
+  },
+  {
+    "rawQuery": "devops engineer salary in Romania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Romania",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Romania."
+  },
+  {
+    "rawQuery": "jobs for freshers in Hungary",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Hungary",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Hungary on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Hungary",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Hungary",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Hungary on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Hungary",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Hungary",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Hungary",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Hungary",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Hungary."
+  },
+  {
+    "rawQuery": "software engineer salary in Hungary",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Hungary",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Hungary."
+  },
+  {
+    "rawQuery": "data scientist salary in Hungary",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Hungary",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Hungary."
+  },
+  {
+    "rawQuery": "data analyst salary in Hungary",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Hungary",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Hungary."
+  },
+  {
+    "rawQuery": "cloud architect salary in Hungary",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Hungary",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Hungary."
+  },
+  {
+    "rawQuery": "devops engineer salary in Hungary",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Hungary",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Hungary."
+  },
+  {
+    "rawQuery": "jobs for freshers in Greece",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Greece",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Greece on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Greece",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Greece",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Greece on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Greece",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Greece",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Greece",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Greece",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Greece."
+  },
+  {
+    "rawQuery": "software engineer salary in Greece",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Greece",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Greece."
+  },
+  {
+    "rawQuery": "data scientist salary in Greece",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Greece",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Greece."
+  },
+  {
+    "rawQuery": "data analyst salary in Greece",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Greece",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Greece."
+  },
+  {
+    "rawQuery": "cloud architect salary in Greece",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Greece",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Greece."
+  },
+  {
+    "rawQuery": "devops engineer salary in Greece",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Greece",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Greece."
+  },
+  {
+    "rawQuery": "jobs for freshers in Turkey",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Turkey",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Turkey on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Turkey",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Turkey",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Turkey on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Turkey",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Turkey",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Turkey",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Turkey",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Turkey."
+  },
+  {
+    "rawQuery": "software engineer salary in Turkey",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Turkey",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Turkey."
+  },
+  {
+    "rawQuery": "data scientist salary in Turkey",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Turkey",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Turkey."
+  },
+  {
+    "rawQuery": "data analyst salary in Turkey",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Turkey",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Turkey."
+  },
+  {
+    "rawQuery": "cloud architect salary in Turkey",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Turkey",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Turkey."
+  },
+  {
+    "rawQuery": "devops engineer salary in Turkey",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Turkey",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Turkey."
+  },
+  {
+    "rawQuery": "jobs for freshers in Estonia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Estonia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Estonia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Estonia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Estonia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Estonia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Estonia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Estonia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Estonia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Estonia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Estonia."
+  },
+  {
+    "rawQuery": "software engineer salary in Estonia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Estonia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Estonia."
+  },
+  {
+    "rawQuery": "data scientist salary in Estonia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Estonia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Estonia."
+  },
+  {
+    "rawQuery": "data analyst salary in Estonia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Estonia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Estonia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Estonia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Estonia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Estonia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Estonia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Estonia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Estonia."
+  },
+  {
+    "rawQuery": "jobs for freshers in Lithuania",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Lithuania",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Lithuania on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Lithuania",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Lithuania",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Lithuania on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Lithuania",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Lithuania",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Lithuania."
+  },
+  {
+    "rawQuery": "software engineer salary in Lithuania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Lithuania."
+  },
+  {
+    "rawQuery": "data scientist salary in Lithuania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Lithuania."
+  },
+  {
+    "rawQuery": "data analyst salary in Lithuania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Lithuania."
+  },
+  {
+    "rawQuery": "cloud architect salary in Lithuania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Lithuania."
+  },
+  {
+    "rawQuery": "devops engineer salary in Lithuania",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Lithuania",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Lithuania."
+  },
+  {
+    "rawQuery": "jobs for freshers in Latvia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Latvia",
+    "careerStage": "fresher",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified entry-level and fresher jobs in Latvia on TalentXcel."
+  },
+  {
+    "rawQuery": "tech internship opportunities in Latvia",
+    "intentCluster": "JOB_DISCOVERY_FRESHERS",
+    "country": "Latvia",
+    "careerStage": "student",
+    "targetCanonicalUrl": "https://talentxcel.in/jobs/freshers",
+    "targetEntityId": "talentxcel-jobs",
+    "aeoHeadline": "Verified internships for students in Latvia on TalentXcel."
+  },
+  {
+    "rawQuery": "best free ats resume checker in Latvia",
+    "intentCluster": "ATS_AND_RESUME",
+    "country": "Latvia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/resume/ats-check",
+    "targetEntityId": "talentxcel-ats-resume-check",
+    "aeoHeadline": "Free online ATS resume compatibility checker auditing formatting and keywords."
+  },
+  {
+    "rawQuery": "hire verified software engineers in Latvia",
+    "intentCluster": "TALENT_DISCOVERY_AND_RECRUITER",
+    "country": "Latvia",
+    "careerStage": "all",
+    "targetCanonicalUrl": "https://talentxcel.in/employers",
+    "targetEntityId": "talentxcel-recruiter-os",
+    "aeoHeadline": "Source pre-screened tech talent with verified TalentScore in Latvia."
+  },
+  {
+    "rawQuery": "software engineer salary in Latvia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Latvia",
+    "careerStage": "all",
+    "roleCategory": "software-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Software Engineer in Latvia."
+  },
+  {
+    "rawQuery": "data scientist salary in Latvia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Latvia",
+    "careerStage": "all",
+    "roleCategory": "data-scientist",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Scientist in Latvia."
+  },
+  {
+    "rawQuery": "data analyst salary in Latvia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Latvia",
+    "careerStage": "all",
+    "roleCategory": "data-analyst",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Data Analyst in Latvia."
+  },
+  {
+    "rawQuery": "cloud architect salary in Latvia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Latvia",
+    "careerStage": "all",
+    "roleCategory": "cloud-architect",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for Cloud Architect in Latvia."
+  },
+  {
+    "rawQuery": "devops engineer salary in Latvia",
+    "intentCluster": "SALARY_INTELLIGENCE",
+    "country": "Latvia",
+    "careerStage": "all",
+    "roleCategory": "devops-engineer",
+    "targetCanonicalUrl": "https://talentxcel.in/salary",
+    "targetEntityId": "talentxcel-career-intelligence",
+    "aeoHeadline": "Percentile compensation benchmarks for DevOps Engineer in Latvia."
+  }
+]

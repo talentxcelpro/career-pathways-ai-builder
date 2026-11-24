@@ -1,0 +1,1614 @@
+{
+  "generatedAt": "2026-11-24T16:19:36.826Z",
+  "totalEvaluatedOpportunities": 87,
+  "immediateDispatchQueue": [
+    {
+      "category": "city_hub",
+      "identifier": "noida",
+      "title": "Noida, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/noida",
+      "opportunityScore": 100,
+      "inventorySummary": "5 active jobs, 7 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Noida"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "hyderabad",
+      "title": "Hyderabad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/hyderabad",
+      "opportunityScore": 100,
+      "inventorySummary": "21 active jobs, 2 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Hyderabad"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bangalore",
+      "title": "Bangalore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bangalore",
+      "opportunityScore": 100,
+      "inventorySummary": "135 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bangalore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bhopal",
+      "title": "Bhopal, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bhopal",
+      "opportunityScore": 100,
+      "inventorySummary": "35 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bhopal"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "jammu",
+      "title": "Jammu, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/jammu",
+      "opportunityScore": 100,
+      "inventorySummary": "55 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Jammu"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "guwahati",
+      "title": "Guwahati, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/guwahati",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Guwahati"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "mumbai",
+      "title": "Mumbai, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/mumbai",
+      "opportunityScore": 100,
+      "inventorySummary": "18 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Mumbai"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "kochi",
+      "title": "Kochi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/kochi",
+      "opportunityScore": 100,
+      "inventorySummary": "35 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Kochi"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "nagpur",
+      "title": "Nagpur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/nagpur",
+      "opportunityScore": 100,
+      "inventorySummary": "28 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Nagpur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "visakhapatnam",
+      "title": "Visakhapatnam, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/visakhapatnam",
+      "opportunityScore": 100,
+      "inventorySummary": "30 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Visakhapatnam"
+    }
+  ],
+  "searchExpansionQueue": [
+    {
+      "category": "city_hub",
+      "identifier": "noida",
+      "title": "Noida, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/noida",
+      "opportunityScore": 100,
+      "inventorySummary": "5 active jobs, 7 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Noida"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "hyderabad",
+      "title": "Hyderabad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/hyderabad",
+      "opportunityScore": 100,
+      "inventorySummary": "21 active jobs, 2 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Hyderabad"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bangalore",
+      "title": "Bangalore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bangalore",
+      "opportunityScore": 100,
+      "inventorySummary": "135 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bangalore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bhopal",
+      "title": "Bhopal, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bhopal",
+      "opportunityScore": 100,
+      "inventorySummary": "35 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bhopal"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "jammu",
+      "title": "Jammu, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/jammu",
+      "opportunityScore": 100,
+      "inventorySummary": "55 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Jammu"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "guwahati",
+      "title": "Guwahati, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/guwahati",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Guwahati"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "mumbai",
+      "title": "Mumbai, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/mumbai",
+      "opportunityScore": 100,
+      "inventorySummary": "18 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Mumbai"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "kochi",
+      "title": "Kochi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/kochi",
+      "opportunityScore": 100,
+      "inventorySummary": "35 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Kochi"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "nagpur",
+      "title": "Nagpur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/nagpur",
+      "opportunityScore": 100,
+      "inventorySummary": "28 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Nagpur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "visakhapatnam",
+      "title": "Visakhapatnam, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/visakhapatnam",
+      "opportunityScore": 100,
+      "inventorySummary": "30 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Visakhapatnam"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "surat",
+      "title": "Surat, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/surat",
+      "opportunityScore": 100,
+      "inventorySummary": "31 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Surat"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "chandigarh",
+      "title": "Chandigarh, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/chandigarh",
+      "opportunityScore": 100,
+      "inventorySummary": "43 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Chandigarh"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "coimbatore",
+      "title": "Coimbatore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/coimbatore",
+      "opportunityScore": 100,
+      "inventorySummary": "40 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Coimbatore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "indore",
+      "title": "Indore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/indore",
+      "opportunityScore": 100,
+      "inventorySummary": "44 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Indore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "vadodara",
+      "title": "Vadodara, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/vadodara",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Vadodara"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "patna",
+      "title": "Patna, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/patna",
+      "opportunityScore": 100,
+      "inventorySummary": "27 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Patna"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "jaipur",
+      "title": "Jaipur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/jaipur",
+      "opportunityScore": 100,
+      "inventorySummary": "33 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Jaipur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "dehradun",
+      "title": "Dehradun, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/dehradun",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Dehradun"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bhubaneswar",
+      "title": "Bhubaneswar, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bhubaneswar",
+      "opportunityScore": 100,
+      "inventorySummary": "31 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bhubaneswar"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "delhi",
+      "title": "Delhi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/delhi",
+      "opportunityScore": 99,
+      "inventorySummary": "15 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Delhi"
+    }
+  ],
+  "allRankedOpportunities": [
+    {
+      "category": "city_hub",
+      "identifier": "noida",
+      "title": "Noida, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/noida",
+      "opportunityScore": 100,
+      "inventorySummary": "5 active jobs, 7 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Noida"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "hyderabad",
+      "title": "Hyderabad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/hyderabad",
+      "opportunityScore": 100,
+      "inventorySummary": "21 active jobs, 2 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Hyderabad"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bangalore",
+      "title": "Bangalore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bangalore",
+      "opportunityScore": 100,
+      "inventorySummary": "135 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bangalore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bhopal",
+      "title": "Bhopal, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bhopal",
+      "opportunityScore": 100,
+      "inventorySummary": "35 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bhopal"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "jammu",
+      "title": "Jammu, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/jammu",
+      "opportunityScore": 100,
+      "inventorySummary": "55 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Jammu"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "guwahati",
+      "title": "Guwahati, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/guwahati",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Guwahati"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "mumbai",
+      "title": "Mumbai, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/mumbai",
+      "opportunityScore": 100,
+      "inventorySummary": "18 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Mumbai"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "kochi",
+      "title": "Kochi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/kochi",
+      "opportunityScore": 100,
+      "inventorySummary": "35 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Kochi"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "nagpur",
+      "title": "Nagpur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/nagpur",
+      "opportunityScore": 100,
+      "inventorySummary": "28 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Nagpur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "visakhapatnam",
+      "title": "Visakhapatnam, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/visakhapatnam",
+      "opportunityScore": 100,
+      "inventorySummary": "30 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Visakhapatnam"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "surat",
+      "title": "Surat, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/surat",
+      "opportunityScore": 100,
+      "inventorySummary": "31 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Surat"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "chandigarh",
+      "title": "Chandigarh, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/chandigarh",
+      "opportunityScore": 100,
+      "inventorySummary": "43 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Chandigarh"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "coimbatore",
+      "title": "Coimbatore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/coimbatore",
+      "opportunityScore": 100,
+      "inventorySummary": "40 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Coimbatore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "indore",
+      "title": "Indore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/indore",
+      "opportunityScore": 100,
+      "inventorySummary": "44 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Indore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "vadodara",
+      "title": "Vadodara, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/vadodara",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Vadodara"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "patna",
+      "title": "Patna, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/patna",
+      "opportunityScore": 100,
+      "inventorySummary": "27 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Patna"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "jaipur",
+      "title": "Jaipur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/jaipur",
+      "opportunityScore": 100,
+      "inventorySummary": "33 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Jaipur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "dehradun",
+      "title": "Dehradun, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/dehradun",
+      "opportunityScore": 100,
+      "inventorySummary": "26 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Dehradun"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bhubaneswar",
+      "title": "Bhubaneswar, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bhubaneswar",
+      "opportunityScore": 100,
+      "inventorySummary": "31 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bhubaneswar"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "8fa066d6-ca56-4576-92b6-64c35c1a5908",
+      "title": "Management Trainee - Hotel Operations at The Indian Hotels Company Limited (IHCL)",
+      "canonicalUrl": "https://talentxcel.in/jobs/8fa066d6-ca56-4576-92b6-64c35c1a5908",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Mumbai",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "17c9a9e0-e34f-4259-a639-91ed46226ef8",
+      "title": "Legal Research Intern at Khaitan & Co",
+      "canonicalUrl": "https://talentxcel.in/jobs/17c9a9e0-e34f-4259-a639-91ed46226ef8",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Delhi",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "21b0ac80-a92f-4cdc-9651-276785e0e242",
+      "title": "Food & Beverage Operations Trainee at The Indian Hotels Company Limited (IHCL)",
+      "canonicalUrl": "https://talentxcel.in/jobs/21b0ac80-a92f-4cdc-9651-276785e0e242",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Bengaluru",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "29e0c6f5-b41a-4e55-bc40-4dd13cbec66e",
+      "title": "Media Editorial Intern at Bennett, Coleman & Co. Ltd. (The Times Group)",
+      "canonicalUrl": "https://talentxcel.in/jobs/29e0c6f5-b41a-4e55-bc40-4dd13cbec66e",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Mumbai",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "31d90562-b050-4943-8605-c872222aa571",
+      "title": "Retail Store Management Trainee at Reliance Retail Limited",
+      "canonicalUrl": "https://talentxcel.in/jobs/31d90562-b050-4943-8605-c872222aa571",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Ahmedabad",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "72100cc5-d484-40b1-b229-ac236161a3a4",
+      "title": "Clinical Data Management Intern at Dr. Reddy's Laboratories",
+      "canonicalUrl": "https://talentxcel.in/jobs/72100cc5-d484-40b1-b229-ac236161a3a4",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Hyderabad",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "56c6a395-da5b-42e5-87de-7b449aeff901",
+      "title": "Culinary Arts & Kitchen Intern at EIH Limited (The Oberoi Group)",
+      "canonicalUrl": "https://talentxcel.in/jobs/56c6a395-da5b-42e5-87de-7b449aeff901",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Udaipur",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "1dfac445-9977-4282-86df-24077d8ab514",
+      "title": "Cinema Operations Trainee at PVR INOX Limited",
+      "canonicalUrl": "https://talentxcel.in/jobs/1dfac445-9977-4282-86df-24077d8ab514",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Bengaluru",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "f9c38cd2-8b25-4a14-bfe9-7760dda8ff47",
+      "title": "Actuarial & Risk Analyst Trainee at HDFC ERGO General Insurance Company",
+      "canonicalUrl": "https://talentxcel.in/jobs/f9c38cd2-8b25-4a14-bfe9-7760dda8ff47",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Mumbai",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "18100be0-cb7d-4e87-a6c4-3875d8ac10ca",
+      "title": "Sound & Audio Production Intern at Saregama India Ltd",
+      "canonicalUrl": "https://talentxcel.in/jobs/18100be0-cb7d-4e87-a6c4-3875d8ac10ca",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Kolkata",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "0a0ceb06-97e2-4a5d-9b45-c7ae5106370d",
+      "title": "Hospital Operations Management Trainee at Apollo Hospitals Enterprise Ltd",
+      "canonicalUrl": "https://talentxcel.in/jobs/0a0ceb06-97e2-4a5d-9b45-c7ae5106370d",
+      "opportunityScore": 100,
+      "inventorySummary": "fresher | Chennai",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp"
+      ],
+      "targetAudience": "Graduates & Entry-Level Job Seekers"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "delhi",
+      "title": "Delhi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/delhi",
+      "opportunityScore": 99,
+      "inventorySummary": "15 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Delhi"
+    },
+    {
+      "category": "career_segment_hub",
+      "identifier": "career-changers",
+      "title": "Career Changers & Upskilling",
+      "canonicalUrl": "https://talentxcel.in/network/segments/career-changers",
+      "opportunityScore": 96,
+      "inventorySummary": "1000 jobs, 2 talent, 691 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Career Changers & Upskilling Specialists & Practitioners"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "financial-services",
+      "title": "Financial Services",
+      "canonicalUrl": "https://talentxcel.in/network/industries/financial-services",
+      "opportunityScore": 96,
+      "inventorySummary": "57 jobs, 0 talent, 1 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Financial Services Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "node-js",
+      "title": "Node.js",
+      "canonicalUrl": "https://talentxcel.in/network/skills/node-js",
+      "opportunityScore": 96,
+      "inventorySummary": "2 jobs, 31 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Node.js Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "postgresql",
+      "title": "PostgreSQL",
+      "canonicalUrl": "https://talentxcel.in/network/skills/postgresql",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 29 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "PostgreSQL Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "python",
+      "title": "Python",
+      "canonicalUrl": "https://talentxcel.in/network/skills/python",
+      "opportunityScore": 96,
+      "inventorySummary": "42 jobs, 4 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Python Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "git",
+      "title": "Git",
+      "canonicalUrl": "https://talentxcel.in/network/skills/git",
+      "opportunityScore": 96,
+      "inventorySummary": "44 jobs, 29 talent, 4 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Git Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "restful-apis",
+      "title": "RESTful APIs",
+      "canonicalUrl": "https://talentxcel.in/network/skills/restful-apis",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 29 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "RESTful APIs Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "ci-cd-pipelines",
+      "title": "CI/CD Pipelines",
+      "canonicalUrl": "https://talentxcel.in/network/skills/ci-cd-pipelines",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 29 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "CI/CD Pipelines Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "tailwind-css",
+      "title": "Tailwind CSS",
+      "canonicalUrl": "https://talentxcel.in/network/skills/tailwind-css",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 29 talent, 1 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Tailwind CSS Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "redux",
+      "title": "Redux",
+      "canonicalUrl": "https://talentxcel.in/network/skills/redux",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 29 talent, 1 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Redux Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "jest",
+      "title": "Jest",
+      "canonicalUrl": "https://talentxcel.in/network/skills/jest",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 29 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Jest Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "sql",
+      "title": "SQL",
+      "canonicalUrl": "https://talentxcel.in/network/skills/sql",
+      "opportunityScore": 96,
+      "inventorySummary": "0 jobs, 30 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "SQL Specialists & Practitioners"
+    },
+    {
+      "category": "career_segment_hub",
+      "identifier": "freshers",
+      "title": "Freshers & Entry-Level Talent",
+      "canonicalUrl": "https://talentxcel.in/network/segments/freshers",
+      "opportunityScore": 96,
+      "inventorySummary": "373 jobs, 704 talent, 4 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Freshers & Entry-Level Talent Specialists & Practitioners"
+    },
+    {
+      "category": "career_segment_hub",
+      "identifier": "internships",
+      "title": "Interns & Apprenticeships",
+      "canonicalUrl": "https://talentxcel.in/network/segments/internships",
+      "opportunityScore": 96,
+      "inventorySummary": "6 jobs, 703 talent, 10 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Interns & Apprenticeships Specialists & Practitioners"
+    },
+    {
+      "category": "career_segment_hub",
+      "identifier": "experienced",
+      "title": "Mid & Senior Professionals",
+      "canonicalUrl": "https://talentxcel.in/network/segments/experienced",
+      "opportunityScore": 96,
+      "inventorySummary": "271 jobs, 1 talent, 4 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Mid & Senior Professionals Specialists & Practitioners"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "technology",
+      "title": "Technology",
+      "canonicalUrl": "https://talentxcel.in/network/industries/technology",
+      "opportunityScore": 96,
+      "inventorySummary": "658 jobs, 4 talent, 6 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Technology Specialists & Practitioners"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "manufacturing",
+      "title": "Manufacturing",
+      "canonicalUrl": "https://talentxcel.in/network/industries/manufacturing",
+      "opportunityScore": 96,
+      "inventorySummary": "27 jobs, 0 talent, 0 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Manufacturing Specialists & Practitioners"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "automotive",
+      "title": "Automotive",
+      "canonicalUrl": "https://talentxcel.in/network/industries/automotive",
+      "opportunityScore": 96,
+      "inventorySummary": "30 jobs, 0 talent, 1 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Automotive Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "react",
+      "title": "React",
+      "canonicalUrl": "https://talentxcel.in/network/skills/react",
+      "opportunityScore": 96,
+      "inventorySummary": "54 jobs, 31 talent, 3 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "React Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "typescript",
+      "title": "TypeScript",
+      "canonicalUrl": "https://talentxcel.in/network/skills/typescript",
+      "opportunityScore": 96,
+      "inventorySummary": "5 jobs, 31 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "TypeScript Specialists & Practitioners"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "education-edtech",
+      "title": "Education & EdTech",
+      "canonicalUrl": "https://talentxcel.in/network/industries/education-edtech",
+      "opportunityScore": 94.5,
+      "inventorySummary": "16 jobs, 0 talent, 3 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Education & EdTech Specialists & Practitioners"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "gurgaon",
+      "title": "Gurgaon, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/gurgaon",
+      "opportunityScore": 93,
+      "inventorySummary": "12 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Gurgaon"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "chennai",
+      "title": "Chennai, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/chennai",
+      "opportunityScore": 93,
+      "inventorySummary": "14 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Chennai"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "3d788072-611b-4c9e-bb50-1ec50df55663",
+      "title": "Video Editor & Motion Graphics Designer at Zee Entertainment Enterprises Ltd",
+      "canonicalUrl": "https://talentxcel.in/jobs/3d788072-611b-4c9e-bb50-1ec50df55663",
+      "opportunityScore": 90,
+      "inventorySummary": "mid-level | Mumbai",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Experienced Domain Specialists"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "5456652a-c36e-4c07-9ca1-1f44d45a5e09",
+      "title": "Guest Relations Executive at EIH Limited (The Oberoi Group)",
+      "canonicalUrl": "https://talentxcel.in/jobs/5456652a-c36e-4c07-9ca1-1f44d45a5e09",
+      "opportunityScore": 90,
+      "inventorySummary": "mid-level | Delhi",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Experienced Domain Specialists"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "1e942a30-dbf6-40ef-b2d9-a1175ff58810",
+      "title": "OTT Content Operations Executive at Network18 Media & Investments Ltd",
+      "canonicalUrl": "https://talentxcel.in/jobs/1e942a30-dbf6-40ef-b2d9-a1175ff58810",
+      "opportunityScore": 90,
+      "inventorySummary": "mid-level | Mumbai",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Experienced Domain Specialists"
+    },
+    {
+      "category": "job_opportunity",
+      "identifier": "a50b35da-7dfe-4584-9b6a-9c80c3acf9b8",
+      "title": "Travel Operations & Ticketing Executive at MakeMyTrip India Pvt Ltd",
+      "canonicalUrl": "https://talentxcel.in/jobs/a50b35da-7dfe-4584-9b6a-9c80c3acf9b8",
+      "opportunityScore": 90,
+      "inventorySummary": "mid-level | Gurugram",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Experienced Domain Specialists"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "healthcare",
+      "title": "Healthcare",
+      "canonicalUrl": "https://talentxcel.in/network/industries/healthcare",
+      "opportunityScore": 88.5,
+      "inventorySummary": "13 jobs, 0 talent, 1 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "Healthcare Specialists & Practitioners"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "nashik",
+      "title": "Nashik, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/nashik",
+      "opportunityScore": 88,
+      "inventorySummary": "25 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Nashik"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "mysore",
+      "title": "Mysore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/mysore",
+      "opportunityScore": 88,
+      "inventorySummary": "28 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Mysore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "aurangabad",
+      "title": "Aurangabad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/aurangabad",
+      "opportunityScore": 88,
+      "inventorySummary": "22 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Aurangabad"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "solapur",
+      "title": "Solapur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/solapur",
+      "opportunityScore": 88,
+      "inventorySummary": "21 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Solapur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "agra",
+      "title": "Agra, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/agra",
+      "opportunityScore": 88,
+      "inventorySummary": "21 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Agra"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "kanpur",
+      "title": "Kanpur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/kanpur",
+      "opportunityScore": 88,
+      "inventorySummary": "22 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Kanpur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "lucknow",
+      "title": "Lucknow, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/lucknow",
+      "opportunityScore": 87,
+      "inventorySummary": "11 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Lucknow"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "kolkata",
+      "title": "Kolkata, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/kolkata",
+      "opportunityScore": 83,
+      "inventorySummary": "9 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Kolkata"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "ahmedabad",
+      "title": "Ahmedabad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/ahmedabad",
+      "opportunityScore": 77,
+      "inventorySummary": "6 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Ahmedabad"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "pune",
+      "title": "Pune, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/pune",
+      "opportunityScore": 73,
+      "inventorySummary": "4 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Pune"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "hapur",
+      "title": "Hapur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/hapur",
+      "opportunityScore": 73,
+      "inventorySummary": "27 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "whatsapp",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Hapur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "varanasi",
+      "title": "Varanasi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/varanasi",
+      "opportunityScore": 69,
+      "inventorySummary": "6 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Varanasi"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "jamshedpur",
+      "title": "Jamshedpur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/jamshedpur",
+      "opportunityScore": 67,
+      "inventorySummary": "1 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Jamshedpur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "munich",
+      "title": "Munich, Germany",
+      "canonicalUrl": "https://talentxcel.in/network/locations/munich",
+      "opportunityScore": 67,
+      "inventorySummary": "1 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Munich"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "machine-learning",
+      "title": "Machine Learning",
+      "canonicalUrl": "https://talentxcel.in/network/skills/machine-learning",
+      "opportunityScore": 61.5,
+      "inventorySummary": "2 jobs, 2 talent, 1 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Machine Learning Specialists & Practitioners"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "salem",
+      "title": "Salem, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/salem",
+      "opportunityScore": 59,
+      "inventorySummary": "3 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Salem"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "dhanbad",
+      "title": "Dhanbad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/dhanbad",
+      "opportunityScore": 57,
+      "inventorySummary": "2 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Dhanbad"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "mangalore",
+      "title": "Mangalore, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/mangalore",
+      "opportunityScore": 55,
+      "inventorySummary": "1 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Mangalore"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "bilaspur",
+      "title": "Bilaspur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/bilaspur",
+      "opportunityScore": 55,
+      "inventorySummary": "1 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Bilaspur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "kota",
+      "title": "Kota, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/kota",
+      "opportunityScore": 55,
+      "inventorySummary": "1 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Kota"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "ranchi",
+      "title": "Ranchi, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/ranchi",
+      "opportunityScore": 54,
+      "inventorySummary": "0 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Ranchi"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "aws",
+      "title": "AWS",
+      "canonicalUrl": "https://talentxcel.in/network/skills/aws",
+      "opportunityScore": 52.5,
+      "inventorySummary": "4 jobs, 0 talent, 1 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "AWS Specialists & Practitioners"
+    },
+    {
+      "category": "skill_hub",
+      "identifier": "power-bi",
+      "title": "Power BI",
+      "canonicalUrl": "https://talentxcel.in/network/skills/power-bi",
+      "opportunityScore": 51.3,
+      "inventorySummary": "0 jobs, 2 talent, 0 discussions",
+      "recommendedChannels": [
+        "telegram",
+        "devto",
+        "linkedin"
+      ],
+      "targetAudience": "Power BI Specialists & Practitioners"
+    },
+    {
+      "category": "industry_hub",
+      "identifier": "e-commerce-retail",
+      "title": "E-Commerce & Retail",
+      "canonicalUrl": "https://talentxcel.in/network/industries/e-commerce-retail",
+      "opportunityScore": 45,
+      "inventorySummary": "2 jobs, 0 talent, 0 discussions",
+      "recommendedChannels": [
+        "linkedin",
+        "email",
+        "whatsapp"
+      ],
+      "targetAudience": "E-Commerce & Retail Specialists & Practitioners"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "amravati",
+      "title": "Amravati, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/amravati",
+      "opportunityScore": 44,
+      "inventorySummary": "3 active jobs, 0 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Amravati"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "guntur",
+      "title": "Guntur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/guntur",
+      "opportunityScore": 42,
+      "inventorySummary": "0 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Guntur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "durgapur",
+      "title": "Durgapur, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/durgapur",
+      "opportunityScore": 42,
+      "inventorySummary": "0 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Durgapur"
+    },
+    {
+      "category": "city_hub",
+      "identifier": "palakkad",
+      "title": "Palakkad, India",
+      "canonicalUrl": "https://talentxcel.in/network/locations/palakkad",
+      "opportunityScore": 27,
+      "inventorySummary": "0 active jobs, 1 consented talent",
+      "recommendedChannels": [
+        "telegram",
+        "linkedin"
+      ],
+      "targetAudience": "Professionals & Job Seekers in Palakkad"
+    }
+  ]
+}

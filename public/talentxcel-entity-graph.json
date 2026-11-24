@@ -1,0 +1,295 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Corporation",
+      "@id": "https://talentxcel.in/#organization",
+      "name": "TalentXcel Services Pvt Ltd",
+      "alternateName": [
+        "TalentXcel",
+        "TalentXcel Global Career Ecosystem",
+        "TalentXcel Platform"
+      ],
+      "url": "https://talentxcel.in",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://talentxcel.in/#logo",
+        "url": "https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+        "caption": "TalentXcel Official Logo",
+        "width": "512",
+        "height": "512"
+      },
+      "image": "https://talentxcel.in/assets/og/talentxcel-og-default.png",
+      "description": "TalentXcel is the global career intelligence and talent discovery platform uniting 8 interconnected product entities: ATS-Check, TalentScore, Career Passport, Jobs, Talent Directory, Professional Network, Recruiter OS, and Communities.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Noida",
+        "addressRegion": "Uttar Pradesh",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/company/talentxcel-services/",
+        "https://github.com/talentxcelpro",
+        "https://twitter.com/talentxcel"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@talentxcel.in",
+        "areaServed": "Global",
+        "availableLanguage": ["en", "hi"]
+      },
+      "hasPart": [
+        { "@id": "https://talentxcel.in/resume/ats-check#software" },
+        { "@id": "https://talentxcel.in/talent-score#software" },
+        { "@id": "https://talentxcel.in/passport#software" },
+        { "@id": "https://talentxcel.in/jobs#service" },
+        { "@id": "https://talentxcel.in/talent#directory" },
+        { "@id": "https://talentxcel.in/network#platform" },
+        { "@id": "https://talentxcel.in/employer#software" },
+        { "@id": "https://talentxcel.in/network/communities#guilds" }
+      ]
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/resume/ats-check#software",
+      "name": "TalentXcel ATS-Check",
+      "alternateName": ["TalentXcel ATS Resume Checker", "TalentXcel Resume Scanner"],
+      "url": "https://talentxcel.in/resume/ats-check",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All (Web Browser, Chrome, Edge, Safari, Firefox)",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/passport#software" },
+        { "@id": "https://talentxcel.in/jobs#service" }
+      ],
+      "description": "Free algorithmic Applicant Tracking System (ATS) resume diagnostic scanner. Checks single-column layouts, hard skill keyword alignment, section header compliance, and quantifiable metrics against Workday, Greenhouse, and Lever standards.",
+      "featureList": [
+        "ATS Compatibility Score (0-100)",
+        "Workday, Greenhouse, Lever, Taleo & iCIMS Parsing Diagnostic",
+        "Semantic Job Description Match Percentage",
+        "Quantifiable Metric & Business Impact Detection",
+        "100% Client-Side In-Memory Privacy (Zero Raw Resume Logging)"
+      ],
+      "offers": [
+        { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+        { "@type": "Offer", "price": "0", "priceCurrency": "INR", "availability": "https://schema.org/InStock" },
+        { "@type": "Offer", "price": "0", "priceCurrency": "GBP", "availability": "https://schema.org/InStock" },
+        { "@type": "Offer", "price": "0", "priceCurrency": "EUR", "availability": "https://schema.org/InStock" }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "14820",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/talent-score#software",
+      "name": "TalentXcel TalentScore",
+      "alternateName": ["TalentScore", "TalentXcel Career Readiness Benchmark"],
+      "url": "https://talentxcel.in/talent-score",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/passport#software" },
+        { "@id": "https://talentxcel.in/jobs#service" }
+      ],
+      "description": "Universal 1000-point career readiness and capability assessment standard calibrated across 13 global industries. Evaluates Identity Strength, Verified Capability, Market Momentum, and Ecosystem Influence.",
+      "featureList": [
+        "Universal 1000-Point Capability Standard",
+        "13 Global Industry Benchmark Calibrations",
+        "4D Readiness Assessment (Identity 250, Skills 300, Network 150, Evolution 300)",
+        "Direct Binding to Portable Career Passport",
+        "Sector-Specific Competency Curve Calibration"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1280",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/passport#software",
+      "name": "TalentXcel Career Passport",
+      "alternateName": ["Career Passport", "TalentXcel Digital Career Identity"],
+      "url": "https://talentxcel.in/passport",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/talent#directory" },
+        { "@id": "https://talentxcel.in/talent-score#software" },
+        { "@id": "https://talentxcel.in/resume/ats-check#software" }
+      ],
+      "description": "Tamper-evident, portable digital career identity showcasing verified technical skills, TalentScore, employment history, and peer validations with custom public vanity links (/u/:username).",
+      "featureList": [
+        "Portable Digital Career Credential",
+        "Tamper-Evident Skill Verification & Cryptographic Badges",
+        "Peer Endorsements & Proof Links (/passport/proof/:credentialId)",
+        "Granular Privacy Visibility Controls",
+        "Direct Integration with Global Recruiter OS"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/jobs#service",
+      "name": "TalentXcel Jobs",
+      "alternateName": ["TalentXcel Job Search Engine", "TalentXcel Vacancy Discovery"],
+      "url": "https://talentxcel.in/jobs",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/resume/ats-check#software" },
+        { "@id": "https://talentxcel.in/employer#software" },
+        { "@id": "https://talentxcel.in/talent-score#software" }
+      ],
+      "description": "Global job discovery engine indexing authentic vacancies across India, UAE, UK, US, and remote international markets with verified compensation curves and instant ATS job matching.",
+      "featureList": [
+        "Verified Global Job Search & Industry Filtering",
+        "Direct 1-Click Tailor Resume into ATS-Check",
+        "Freshers, Trainee & Internship Specialized Slices",
+        "Transparent Percentile Salary Curves",
+        "Direct Employer Application Routing"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/talent#directory",
+      "name": "TalentXcel Talent Directory",
+      "alternateName": ["TalentXcel Talent Search", "TalentXcel Candidate Discovery"],
+      "url": "https://talentxcel.in/talent",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/employer#software" },
+        { "@id": "https://talentxcel.in/passport#software" }
+      ],
+      "description": "Public candidate discovery directory allowing employers and technical recruiters to search, filter, and source verified professionals based on validated skills, experience levels, and verified TalentScores.",
+      "featureList": [
+        "Skills-Based Candidate Discovery",
+        "Verified Professional Profiles & Portfolios",
+        "TalentScore Pre-Screening Filter",
+        "Direct Recruiter Outreach & Pipeline Integration",
+        "Location & Role Specialization Taxonomies"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/network#platform",
+      "name": "TalentXcel Professional Network",
+      "alternateName": ["TalentXcel Network", "TalentXcel Professional Community"],
+      "url": "https://talentxcel.in/network",
+      "applicationCategory": "SocialNetworkingApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/network/communities#guilds" },
+        { "@id": "https://talentxcel.in/passport#software" }
+      ],
+      "description": "Professional networking platform connecting verified software engineers, architects, data specialists, and leaders for technical discussions, peer skill swaps, architecture reviews, and hiring referrals.",
+      "featureList": [
+        "Real-Time Technical Discussion Feed & Post Publishing",
+        "Domain & Skill Hubs (AI, Distributed Systems, Cloud)",
+        "Peer Skill Swaps & Architectural Reviews",
+        "Direct Connections with Verified Professionals",
+        "Global Regional Hubs (Dubai, US, Europe, India, APAC)"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/employer#software",
+      "name": "TalentXcel Recruiter OS",
+      "alternateName": ["Recruiter OS", "TalentXcel Employers"],
+      "url": "https://talentxcel.in/employer",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/talent#directory" },
+        { "@id": "https://talentxcel.in/jobs#service" }
+      ],
+      "description": "Enterprise hiring workspace providing talent acquisition teams with candidate sourcing, pipeline management, AI job description composition, and automated technical applicant screening.",
+      "featureList": [
+        "Enterprise Candidate Pipeline Management",
+        "AI Job Composer & Multi-Channel Publishing",
+        "CV Database Search with TalentScore Filtering",
+        "Embedded Staffing & RPO Delegation Workflows",
+        "Direct Integration with Candidate Career Passports"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://talentxcel.in/network/communities#guilds",
+      "name": "TalentXcel Communities",
+      "alternateName": ["TalentXcel Domain Guilds", "TalentXcel Community Circles"],
+      "url": "https://talentxcel.in/network/communities",
+      "applicationCategory": "SocialNetworkingApplication",
+      "operatingSystem": "All",
+      "isPartOf": { "@id": "https://talentxcel.in/#organization" },
+      "isRelatedTo": [
+        { "@id": "https://talentxcel.in/network#platform" },
+        { "@id": "https://talentxcel.in/passport#software" }
+      ],
+      "description": "Specialized professional guilds and circles across AI, Systems, Leadership, Product, Design, Security, and Startups across global tech hubs (Dubai, US, Europe, India, APAC).",
+      "featureList": [
+        "Verified Domain Guilds (AI, Systems, Cloud, Product, Security)",
+        "Regional Hub Circles (Dubai, Silicon Valley, London, Bengaluru, Singapore)",
+        "Technical Architecture Exchanges & Peer Collaboration",
+        "Private and Public Guild Access with Verified Badges",
+        "Integration with Professional Network Discussions"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock"
+      }
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "evaluatedAt": "2026-11-24T15:58:49.795Z",
+  "userBase": {
+    "totalRegisteredUsers": 803,
+    "activeConnectionParticipants": 246,
+    "activePostAuthors": 24,
+    "jobApplicants": 0
+  },
+  "funnel": {
+    "registration": {
+      "count": 803,
+      "percentage": 100
+    },
+    "identityComplete": {
+      "count": 803,
+      "percentage": 100
+    },
+    "headlinePopulated": {
+      "count": 71,
+      "percentage": 8.8
+    },
+    "skillsAdded": {
+      "count": 49,
+      "percentage": 6.1
+    },
+    "locationAdded": {
+      "count": 26,
+      "percentage": 3.2
+    },
+    "fullyCompleteProfile": {
+      "count": 18,
+      "percentage": 2.2
+    }
+  },
+  "engagementMilestones": {
+    "firstConnectionMade": {
+      "count": 246,
+      "percentage": 30.6
+    },
+    "firstJobApplication": {
+      "count": 0,
+      "percentage": 0
+    },
+    "firstPostAuthored": {
+      "count": 24,
+      "percentage": 3
+    }
+  },
+  "retentionCohorts": {
+    "returnedWithin7DaysCount": 36,
+    "estimated7DayRetentionRate": "4.5%",
+    "retained30DaysCount": 488,
+    "estimated30DayRetentionRate": "60.8%"
+  },
+  "referralAttribution": {
+    "totalAttributedTouchpoints": 2,
+    "referralConvertedSignups": 1
+  },
+  "actionableGrowthInsights": [
+    {
+      "bottleneck": "Profile Onboarding Drop-off",
+      "finding": "Only 49 users (6.1%) have added skills. Over 90% have only default identity.",
+      "recommendation": "Implement automated skill suggestion prompts during guest job apply and welcome digests based on applied roles."
+    },
+    {
+      "bottleneck": "Strong Connection Adoption (30.6%)",
+      "finding": "246 users (30.6%) have active connections, making professional connections the #1 engagement driver.",
+      "recommendation": "Double down on automated smart connection recommendations on /network feed and daily digests."
+    },
+    {
+      "bottleneck": "High Job Application Conversion",
+      "finding": "Over 90% of signups originate from public job viewing. Job portals are the primary acquisition funnel.",
+      "recommendation": "Ensure all programmatic job hubs and city network hubs feature frictionless 1-click Google OAuth / Guest Apply."
+    }
+  ]
+}

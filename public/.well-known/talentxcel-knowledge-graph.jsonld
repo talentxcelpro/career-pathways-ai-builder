@@ -1,0 +1,143 @@
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://talentxcel.in/#organization",
+      "name": "TalentXcel Services Pvt Ltd",
+      "alternateName": ["TalentXcel", "TalentXcel Platform", "TalentXcel Services"],
+      "url": "https://talentxcel.in",
+      "logo": {
+        "@type": "ImageObject",
+        "@id": "https://talentxcel.in/#logo",
+        "url": "https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+        "caption": "TalentXcel Official Logo",
+        "width": "512",
+        "height": "512"
+      },
+      "image": "https://talentxcel.in/assets/og/talentxcel-og-default.png",
+      "description": "TalentXcel is the global career intelligence and talent network connecting professionals, specialists, and leaders across all industries worldwide with verified Career Passports, TalentScore, and Recruiter OS.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Noida",
+        "addressRegion": "Uttar Pradesh",
+        "addressCountry": "IN"
+      },
+      "sameAs": [
+        "https://www.linkedin.com/company/talentxcel-services/",
+        "https://github.com/talentxcelpro",
+        "https://twitter.com/talentxcel"
+      ],
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "support@talentxcel.in",
+        "areaServed": "Global",
+        "availableLanguage": ["en", "hi"]
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://talentxcel.in/#website",
+      "name": "TalentXcel",
+      "url": "https://talentxcel.in",
+      "publisher": {
+        "@id": "https://talentxcel.in/#organization"
+      },
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://talentxcel.in/jobs?search={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        },
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://talentxcel.in/talent?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      ]
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://talentxcel.in/resume/ats-check#software",
+      "name": "TalentXcel ATS Resume Check",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All modern web browsers",
+      "url": "https://talentxcel.in/resume/ats-check",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Free online Applicant Tracking System (ATS) resume diagnostic scanner auditing single-column format, keyword density, section headers, and recruiter readability."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://talentxcel.in/talent-score#service",
+      "name": "TalentScore",
+      "provider": {
+        "@id": "https://talentxcel.in/#organization"
+      },
+      "url": "https://talentxcel.in/talent-score",
+      "serviceType": "Candidate Competency Scoring & Skills Assessment",
+      "description": "Algorithmic candidate assessment scoring technical competencies, code contributions, and verified credential proofs on a 0 to 100 benchmark."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://talentxcel.in/passport#service",
+      "name": "Career Passport",
+      "provider": {
+        "@id": "https://talentxcel.in/#organization"
+      },
+      "url": "https://talentxcel.in/passport",
+      "serviceType": "Verifiable Digital Professional Credential",
+      "description": "Portable, digital career identity showcasing verified skills, TalentScore, employment history, and peer validations to global employers."
+    },
+    {
+      "@type": "Guide",
+      "@id": "https://talentxcel.in/career-map#guide",
+      "name": "Career Map",
+      "publisher": {
+        "@id": "https://talentxcel.in/#organization"
+      },
+      "url": "https://talentxcel.in/career-map",
+      "description": "Interactive career pathway and progression matrix providing role progression roadmaps, skill trees, transition guides, and salary milestones across 150+ technology careers."
+    },
+    {
+      "@type": "Service",
+      "@id": "https://talentxcel.in/network#service",
+      "name": "TalentXcel Professional Network",
+      "provider": {
+        "@id": "https://talentxcel.in/#organization"
+      },
+      "url": "https://talentxcel.in/network",
+      "serviceType": "Professional Networking and Knowledge Exchange",
+      "description": "Professional network connecting verified software engineers, data specialists, architects, and leaders for technical discussions, peer skill swaps, architecture reviews, and hiring referrals."
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://talentxcel.in/employers#software",
+      "name": "TalentXcel Recruiter OS",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web Application",
+      "url": "https://talentxcel.in/employers",
+      "description": "Enterprise recruitment operating system enabling hiring teams to source pre-screened talent with verified TalentScores, manage candidate pipelines, and automate outreach."
+    },
+    {
+      "@type": "Dataset",
+      "@id": "https://talentxcel.in/salary#dataset",
+      "name": "TalentXcel Salary Intelligence",
+      "publisher": {
+        "@id": "https://talentxcel.in/#organization"
+      },
+      "url": "https://talentxcel.in/salary",
+      "description": "Comprehensive compensation intelligence platform indexing percentile compensation curves (10th, 25th, 50th, 75th, 90th) across technology roles, experience levels, and metropolitan hubs in India, UAE, UK, and USA."
+    }
+  ]
+}

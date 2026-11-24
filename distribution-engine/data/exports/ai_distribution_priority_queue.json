@@ -1,0 +1,302 @@
+[
+  {
+    "platformId": "plat-github-ecosystem",
+    "platformName": "GitHub Organization & Topic Registry",
+    "domain": "github.com",
+    "category": "DEVELOPER_COMMUNITY",
+    "domainAuthority": 96,
+    "priorityScore": 94,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 96,
+      "topicalRelevanceScore": 88,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-mcp-integration",
+      "assetTitle": "Model Context Protocol (MCP) Integration: Interfacing AI Agents with TalentXcel APIs",
+      "canonicalUrl": "https://talentxcel.in/api/mcp",
+      "formatType": "DEVELOPER_DOCUMENTATION",
+      "summary": "Technical specification for autonomous AI agents and LLM assistants querying TalentXcel job data, salary benchmarks, and candidate skills via the Model Context Protocol (MCP)."
+    }
+  },
+  {
+    "platformId": "plat-wellfound",
+    "platformName": "Wellfound (AngelList) Talent & Hiring Hub",
+    "domain": "wellfound.com",
+    "category": "HR_TECH_DIRECTORY",
+    "domainAuthority": 88,
+    "priorityScore": 94,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 88,
+      "topicalRelevanceScore": 95,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-recruiter-os-doc",
+      "assetTitle": "TalentXcel Recruiter OS: Pre-Screened Candidate Pipelines and Talent Discovery",
+      "canonicalUrl": "https://talentxcel.in/employers",
+      "formatType": "RECRUITER_GUIDE",
+      "summary": "Enterprise recruitment operating system enabling hiring teams to source pre-screened technical talent with verified TalentScores and manage candidate pipelines efficiently."
+    }
+  },
+  {
+    "platformId": "plat-huggingface",
+    "platformName": "Hugging Face Model & Agent Spaces",
+    "domain": "huggingface.co",
+    "category": "AI_DEVELOPER_DIRECTORY",
+    "domainAuthority": 89,
+    "priorityScore": 93,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 89,
+      "topicalRelevanceScore": 92,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-mcp-integration",
+      "assetTitle": "Model Context Protocol (MCP) Integration: Interfacing AI Agents with TalentXcel APIs",
+      "canonicalUrl": "https://talentxcel.in/api/mcp",
+      "formatType": "DEVELOPER_DOCUMENTATION",
+      "summary": "Technical specification for autonomous AI agents and LLM assistants querying TalentXcel job data, salary benchmarks, and candidate skills via the Model Context Protocol (MCP)."
+    }
+  },
+  {
+    "platformId": "plat-kaggle",
+    "platformName": "Kaggle Datasets & Community",
+    "domain": "kaggle.com",
+    "category": "AI_DEVELOPER_DIRECTORY",
+    "domainAuthority": 88,
+    "priorityScore": 93,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 88,
+      "topicalRelevanceScore": 92,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-salary-intelligence",
+      "assetTitle": "Cross-Market Engineering Compensation Trends: Percentile Salary Analysis",
+      "canonicalUrl": "https://talentxcel.in/salary",
+      "formatType": "SALARY_GUIDE",
+      "summary": "Data-grounded salary intelligence indexing 10th, 25th, median (50th), 75th, and 90th percentile compensation curves across major technical disciplines and global cities."
+    }
+  },
+  {
+    "platformId": "plat-product-hunt",
+    "platformName": "Product Hunt Developer & SaaS Discovery",
+    "domain": "producthunt.com",
+    "category": "SAAS_DIRECTORY",
+    "domainAuthority": 91,
+    "priorityScore": 92,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 91,
+      "topicalRelevanceScore": 85,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-platform-overview",
+      "assetTitle": "TalentXcel: Unified Career Intelligence, Skills Verification and Recruiter Operating System",
+      "canonicalUrl": "https://talentxcel.in",
+      "formatType": "PRODUCT_EXPLANATION",
+      "summary": "TalentXcel connects job seekers, fresh graduates, and enterprise employers through verified competency assessments, transparent salary intelligence, and an applicant tracking system resume diagnostic suite."
+    }
+  },
+  {
+    "platformId": "plat-dev-to",
+    "platformName": "Dev.to Technical Engineering Publications",
+    "domain": "dev.to",
+    "category": "TECH_COMMUNITY",
+    "domainAuthority": 87,
+    "priorityScore": 92,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 87,
+      "topicalRelevanceScore": 90,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-ats-guide",
+      "assetTitle": "Technical Guide to Enterprise Applicant Tracking Systems (ATS) & Single-Column Scannability",
+      "canonicalUrl": "https://talentxcel.in/resume/ats-check",
+      "formatType": "ATS_GUIDE",
+      "summary": "Enterprise ATS platforms parse resumes into structured entity fields. Single-column layouts, clear section headers, and exact competency matches ensure high parsing accuracy."
+    }
+  },
+  {
+    "platformId": "plat-hashnode",
+    "platformName": "Hashnode Engineering Community",
+    "domain": "hashnode.com",
+    "category": "TECH_COMMUNITY",
+    "domainAuthority": 84,
+    "priorityScore": 92,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 84,
+      "topicalRelevanceScore": 90,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-talentscore-methodology",
+      "assetTitle": "TalentScore: Objective Algorithmic Competency Scoring for Engineering Candidates",
+      "canonicalUrl": "https://talentxcel.in/talent-score",
+      "formatType": "TALENTSCORE_EXPLANATION",
+      "summary": "TalentScore replaces resume self-proclamations with an objective 0 to 100 competency benchmark combining coding assessments, GitHub codebase audits, and verified credential proofs."
+    }
+  },
+  {
+    "platformId": "plat-hackernews-showhn",
+    "platformName": "Hacker News (Y Combinator) Technical Showcase",
+    "domain": "news.ycombinator.com",
+    "category": "TECH_COMMUNITY",
+    "domainAuthority": 92,
+    "priorityScore": 92,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 95,
+      "domainAuthorityScore": 92,
+      "topicalRelevanceScore": 90,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-career-passport-spec",
+      "assetTitle": "Career Passport: The Portable Verifiable Professional Identity Standard",
+      "canonicalUrl": "https://talentxcel.in/passport",
+      "formatType": "CAREER_PASSPORT_EXPLANATION",
+      "summary": "Career Passport equips professionals with a tamper-evident, authenticated digital profile (talentxcel.in/u/:username) showcasing validated skills, TalentScores, and GitHub project audits."
+    }
+  },
+  {
+    "platformId": "plat-freecodecamp",
+    "platformName": "freeCodeCamp Developer News & Guides",
+    "domain": "freecodecamp.org",
+    "category": "STUDENT_COMMUNITY",
+    "domainAuthority": 89,
+    "priorityScore": 92,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 89,
+      "topicalRelevanceScore": 85,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-freshers-guide",
+      "assetTitle": "Navigating Tech Hiring as a Fresher: Verified Opportunities & Portfolio Evidence",
+      "canonicalUrl": "https://talentxcel.in/jobs/freshers",
+      "formatType": "FRESHERS_GUIDE",
+      "summary": "A strategic guide for college students and recent graduates targeting entry-level tech roles through substantiated code portfolios and verified fresher vacancies."
+    }
+  },
+  {
+    "platformId": "plat-crunchbase",
+    "platformName": "Crunchbase Company Knowledge Base",
+    "domain": "crunchbase.com",
+    "category": "STARTUP_REGISTRY",
+    "domainAuthority": 90,
+    "priorityScore": 91,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 90,
+      "topicalRelevanceScore": 80,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-platform-overview",
+      "assetTitle": "TalentXcel: Unified Career Intelligence, Skills Verification and Recruiter Operating System",
+      "canonicalUrl": "https://talentxcel.in",
+      "formatType": "PRODUCT_EXPLANATION",
+      "summary": "TalentXcel connects job seekers, fresh graduates, and enterprise employers through verified competency assessments, transparent salary intelligence, and an applicant tracking system resume diagnostic suite."
+    }
+  },
+  {
+    "platformId": "plat-alternativeto",
+    "platformName": "AlternativeTo Software Recommendations",
+    "domain": "alternativeto.net",
+    "category": "SAAS_DIRECTORY",
+    "domainAuthority": 83,
+    "priorityScore": 91,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 83,
+      "topicalRelevanceScore": 85,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-ats-guide",
+      "assetTitle": "Technical Guide to Enterprise Applicant Tracking Systems (ATS) & Single-Column Scannability",
+      "canonicalUrl": "https://talentxcel.in/resume/ats-check",
+      "formatType": "ATS_GUIDE",
+      "summary": "Enterprise ATS platforms parse resumes into structured entity fields. Single-column layouts, clear section headers, and exact competency matches ensure high parsing accuracy."
+    }
+  },
+  {
+    "platformId": "plat-saashub",
+    "platformName": "SaaSHub Software Architecture Alternatives",
+    "domain": "saashub.com",
+    "category": "SAAS_DIRECTORY",
+    "domainAuthority": 74,
+    "priorityScore": 89,
+    "priorityTier": "TIER_1_PRIORITY",
+    "scoringMetrics": {
+      "aiDiscoveryScore": 100,
+      "domainAuthorityScore": 74,
+      "topicalRelevanceScore": 85,
+      "audienceQualityScore": 100,
+      "sustainabilityScore": 90,
+      "conversionScore": 80,
+      "riskPenalty": 0
+    },
+    "distributionAction": {
+      "targetAssetId": "asset-recruiter-os-doc",
+      "assetTitle": "TalentXcel Recruiter OS: Pre-Screened Candidate Pipelines and Talent Discovery",
+      "canonicalUrl": "https://talentxcel.in/employers",
+      "formatType": "RECRUITER_GUIDE",
+      "summary": "Enterprise recruitment operating system enabling hiring teams to source pre-screened technical talent with verified TalentScores and manage candidate pipelines efficiently."
+    }
+  }
+]

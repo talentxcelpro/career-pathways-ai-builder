@@ -1,0 +1,304 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "lastUpdated": "2026-11-24",
+  "authoritativeDomain": "https://talentxcel.in",
+  "organization": {
+    "legalName": "TalentXcel Services Pvt Ltd",
+    "brandName": "TalentXcel",
+    "alternateNames": [
+      "TalentXcel",
+      "TalentXcel Platform",
+      "TalentXcel Career Operating System",
+      "TalentXcel Services"
+    ],
+    "url": "https://talentxcel.in",
+    "logo": "https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
+    "sameAs": [
+      "https://www.linkedin.com/company/talentxcel-services/",
+      "https://github.com/talentxcelpro",
+      "https://twitter.com/talentxcel"
+    ],
+    "description": "TalentXcel is a global career intelligence, talent discovery, and professional networking platform connecting job seekers, professionals, and enterprise recruiters through verified skills, transparent compensation data, and automated hiring workflows.",
+    "foundingLocation": {
+      "addressLocality": "Noida",
+      "addressRegion": "Uttar Pradesh",
+      "addressCountry": "IN"
+    },
+    "contactPoint": {
+      "contactType": "Customer Support",
+      "email": "support@talentxcel.in",
+      "areaServed": "Global",
+      "availableLanguage": ["English", "Hindi"]
+    }
+  },
+  "entities": [
+    {
+      "id": "talentxcel-brand",
+      "name": "TalentXcel",
+      "type": "Organization",
+      "schemaType": "https://schema.org/Organization",
+      "canonicalUrl": "https://talentxcel.in",
+      "description": "The overarching brand and parent platform providing career intelligence, recruitment operating systems, and professional networking solutions globally.",
+      "category": "Career Technology & Enterprise Recruitment",
+      "targetAudiences": ["Job Seekers", "Freshers", "Working Professionals", "Recruiters", "Enterprise Employers"],
+      "coreCapabilities": [
+        "Career development",
+        "ATS resume optimization",
+        "Job discovery",
+        "Professional networking",
+        "Skills assessment",
+        "Recruitment automation"
+      ]
+    },
+    {
+      "id": "talentxcel-career-platform",
+      "name": "TalentXcel Career Platform",
+      "type": "WebApplication",
+      "schemaType": "https://schema.org/WebApplication",
+      "canonicalUrl": "https://talentxcel.in",
+      "description": "Unified web application offering job discovery, career assessments, salary insights, college directories, and professional networking in a single interface.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Career Platform",
+      "targetAudiences": ["Job Seekers", "Freshers", "Working Professionals"],
+      "coreCapabilities": ["Job search", "Application tracking", "Skill benchmarking", "Professional networking"]
+    },
+    {
+      "id": "talentxcel-ats-resume-check",
+      "name": "TalentXcel ATS Resume Check",
+      "type": "SoftwareApplication",
+      "schemaType": "https://schema.org/SoftwareApplication",
+      "canonicalUrl": "https://talentxcel.in/resume/ats-check",
+      "alternateUrls": ["https://talentxcel.in/ats-check"],
+      "description": "Free, browser-based Applicant Tracking System (ATS) resume diagnostic scanner. Evaluates single-column parsing, keyword match density, section headers, and quantifiable metrics against enterprise ATS standards without storing document data.",
+      "parentEntity": "talentxcel-brand",
+      "category": "ATS Resume Optimization",
+      "pricing": "Free / Ungated",
+      "targetAudiences": ["Job Seekers", "Freshers", "Career Changers"],
+      "coreCapabilities": [
+        "ATS compatibility scanning",
+        "Keyword match density analysis",
+        "Single-column formatting validation",
+        "Client-side private document parsing"
+      ]
+    },
+    {
+      "id": "talentscore",
+      "name": "TalentScore",
+      "type": "AssessmentEngine",
+      "schemaType": "https://schema.org/EducationalOccupationalCredential",
+      "canonicalUrl": "https://talentxcel.in/talent-score",
+      "description": "Algorithmic candidate competency scoring framework evaluating demonstrated programming skills, portfolio projects, credential proofs, and resume metrics on an objective 1000-point standardized benchmark across Building, Emerging, Strong, and Elite tiers.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Career Assessment & Skills Verification",
+      "targetAudiences": ["Freshers", "Professionals", "Recruiters", "Hiring Managers"],
+      "coreCapabilities": [
+        "Objective candidate scoring (1000-point standard)",
+        "Verified credential indexing",
+        "Algorithmic skill evaluation",
+        "Pre-screened recruiter ranking"
+      ]
+    },
+    {
+      "id": "career-passport",
+      "name": "Career Passport",
+      "type": "DigitalCredentialSystem",
+      "schemaType": "https://schema.org/DigitalDocument",
+      "canonicalUrl": "https://talentxcel.in/passport",
+      "description": "Portable, digital career identity and verified credential dossier showcasing validated skills, TalentScore, employment history, and peer verifications to global employers.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Digital Professional Identity",
+      "targetAudiences": ["Job Seekers", "Freshers", "Mid-career Professionals", "Contractors"],
+      "coreCapabilities": [
+        "Verifiable professional profile",
+        "Digital credential hosting",
+        "Direct recruiter shareable link",
+        "Privacy-governed public showcase"
+      ]
+    },
+    {
+      "id": "career-map",
+      "name": "Career Map",
+      "type": "CareerNavigationTool",
+      "schemaType": "https://schema.org/Guide",
+      "canonicalUrl": "https://talentxcel.in/career-map",
+      "alternateUrls": ["https://talentxcel.in/careers"],
+      "description": "Interactive career pathway and progression matrix providing role progression roadmaps, requisite skill trees, transition guides, and salary milestones across 150+ technology and leadership careers.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Career Development & Transition",
+      "targetAudiences": ["Students", "Freshers", "Professionals Seeking Career Progression"],
+      "coreCapabilities": [
+        "Role transition mapping",
+        "Skill gap identification",
+        "Step-by-step career milestones",
+        "Compensation progression projections"
+      ]
+    },
+    {
+      "id": "talentxcel-professional-network",
+      "name": "TalentXcel Professional Network",
+      "type": "SocialNetworkService",
+      "schemaType": "https://schema.org/SocialMediaPosting",
+      "canonicalUrl": "https://talentxcel.in/network",
+      "description": "Professional network connecting verified software engineers, data specialists, architects, and leaders for technical discussions, peer skill swaps, architecture reviews, and hiring referrals.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Professional Networking",
+      "targetAudiences": ["Tech Professionals", "Domain Specialists", "Engineering Leaders"],
+      "coreCapabilities": [
+        "Verified peer connections",
+        "Technical articles and discussions",
+        "Skill swap marketplace",
+        "Direct peer hiring referrals"
+      ]
+    },
+    {
+      "id": "talentxcel-jobs",
+      "name": "TalentXcel Jobs",
+      "type": "JobSearchEngine",
+      "schemaType": "https://schema.org/JobPosting",
+      "canonicalUrl": "https://talentxcel.in/jobs",
+      "description": "Verified job search and application engine indexing authentic technology, engineering, fresher, and enterprise job openings across India, UAE, UK, USA, Canada, and global remote markets.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Job Discovery & Hiring",
+      "targetAudiences": ["Freshers", "Experienced Tech Talent", "Remote Job Seekers"],
+      "coreCapabilities": [
+        "Verified direct-to-employer vacancies",
+        "Fresher and trainee job filters",
+        "Transparent salary percentile ranges",
+        "Applicant Tracking System job matching"
+      ]
+    },
+    {
+      "id": "talentxcel-recruiter-os",
+      "name": "TalentXcel Recruiter OS",
+      "type": "EnterpriseSoftware",
+      "schemaType": "https://schema.org/SoftwareApplication",
+      "canonicalUrl": "https://talentxcel.in/employer",
+      "alternateUrls": ["https://talentxcel.in/employers", "https://employers.talentxcel.in"],
+      "description": "Enterprise recruitment operating system enabling hiring teams to source pre-screened talent with verified TalentScores, manage candidate pipelines, and automate candidate outreach.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Recruitment & Talent Sourcing",
+      "targetAudiences": ["Recruiters", "Talent Acquisition Leads", "Enterprise Employers"],
+      "coreCapabilities": [
+        "Candidate pipeline management",
+        "Verified talent search & filtering",
+        "TalentScore pre-screening",
+        "Direct candidate messaging"
+      ]
+    },
+    {
+      "id": "talentxcel-talent-discovery",
+      "name": "TalentXcel Talent Discovery",
+      "type": "CandidateSearchEngine",
+      "schemaType": "https://schema.org/SearchAction",
+      "canonicalUrl": "https://talentxcel.in/talent",
+      "description": "Public candidate discovery directory allowing employers and recruiters to discover verified software engineers, designers, analysts, and domain specialists filtered by skills, experience, and location.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Candidate Sourcing & Talent Search",
+      "targetAudiences": ["Employers", "Recruiters", "Staffing Agencies"],
+      "coreCapabilities": [
+        "Candidate skill filtering",
+        "Verified portfolio reviews",
+        "Location-based candidate search",
+        "Direct profile inquiries"
+      ]
+    },
+    {
+      "id": "talentxcel-career-coach",
+      "name": "TalentXcel Career Coach",
+      "type": "AIAssistantService",
+      "schemaType": "https://schema.org/Service",
+      "canonicalUrl": "https://talentxcel.in/ai/coach",
+      "description": "Contextual AI career advisory engine assisting job seekers with interview preparation, resume tailoring, skill gap analysis, and tailored career roadmap planning.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Career Advisory & Mentorship",
+      "targetAudiences": ["Job Seekers", "Freshers", "Career Transitioners"],
+      "coreCapabilities": [
+        "Interview question generation & practice",
+        "Targeted resume tailoring advice",
+        "Contextual skill gap diagnostics",
+        "Career trajectory guidance"
+      ]
+    },
+    {
+      "id": "talentxcel-communities",
+      "name": "TalentXcel Communities",
+      "type": "CommunityPlatform",
+      "schemaType": "https://schema.org/Organization",
+      "canonicalUrl": "https://talentxcel.in/network/communities",
+      "alternateUrls": ["https://talentxcel.in/communities"],
+      "description": "Specialized domain guilds and engineering circles focusing on Cloud Architecture, AI/ML, Full Stack Development, DevOps, and Product Management.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Professional Communities & Guilds",
+      "targetAudiences": ["Software Engineers", "Data Scientists", "Cloud Architects", "Product Leads"],
+      "coreCapabilities": [
+        "Domain-specific peer groups",
+        "Technical panels and AMAs",
+        "Collaborative problem solving",
+        "Community-driven job referrals"
+      ]
+    },
+    {
+      "id": "talentxcel-career-intelligence",
+      "name": "TalentXcel Career Intelligence",
+      "type": "DataIntelligencePlatform",
+      "schemaType": "https://schema.org/Dataset",
+      "canonicalUrl": "https://talentxcel.in/salary",
+      "alternateUrls": ["https://salary.talentxcel.in"],
+      "description": "Comprehensive compensation intelligence platform indexing percentile compensation curves (10th, 25th, 50th, 75th, 90th) across technology roles, experience levels, and metropolitan hubs in India, UAE, UK, and USA.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Salary Insights & Compensation Benchmarks",
+      "targetAudiences": ["Job Seekers Negotiating Offers", "Employers Benchmarking Compensation"],
+      "coreCapabilities": [
+        "Percentile-based salary curves",
+        "Role-by-city compensation comparisons",
+        "Experience-tier salary breakdowns",
+        "Salary negotiation benchmarks"
+      ]
+    },
+    {
+      "id": "talentxcel-learning-and-tools",
+      "name": "TalentXcel Learning and Career Tools",
+      "type": "EducationalResourceDirectory",
+      "schemaType": "https://schema.org/Course",
+      "canonicalUrl": "https://talentxcel.in/learning",
+      "alternateUrls": ["https://talentxcel.in/tools"],
+      "description": "Curated directory of verified technology courses, certifications, and hands-on skill modules from leading global academic institutions and technology companies, coupled with practical career utility tools.",
+      "parentEntity": "talentxcel-brand",
+      "category": "Skills Development & Career Tools",
+      "targetAudiences": ["Students", "Freshers", "Up-skilling Professionals"],
+      "coreCapabilities": [
+        "Course syllabus and provider indexing",
+        "Skill module recommendations",
+        "Career progression alignment",
+        "Practical career diagnostic tools"
+      ]
+    }
+  ],
+  "relationshipGraph": [
+    { "source": "talentxcel-brand", "relation": "operates", "target": "talentxcel-career-platform" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-ats-resume-check" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentscore" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "career-passport" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "career-map" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-professional-network" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-jobs" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-recruiter-os" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-talent-discovery" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-career-coach" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-communities" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-career-intelligence" },
+    { "source": "talentxcel-career-platform", "relation": "includesFeature", "target": "talentxcel-learning-and-tools" },
+    
+    { "source": "talentxcel-ats-resume-check", "relation": "enablesOptimizationFor", "target": "Job Seekers & Freshers" },
+    { "source": "talentscore", "relation": "evaluatesSkillsOf", "target": "Job Seekers, Freshers & Professionals" },
+    { "source": "talentscore", "relation": "servesAsScreeningSignalFor", "target": "talentxcel-recruiter-os" },
+    { "source": "career-passport", "relation": "hostsCredentialsFor", "target": "Professionals & Freshers" },
+    { "source": "career-passport", "relation": "incorporatesScoreFrom", "target": "talentscore" },
+    { "source": "career-map", "relation": "guidesProgressionFor", "target": "Freshers & Mid-career Professionals" },
+    { "source": "talentxcel-jobs", "relation": "providesVerifiedVacanciesFor", "target": "Job Seekers, Freshers & Interns" },
+    { "source": "talentxcel-recruiter-os", "relation": "empowersCandidateSourcingFor", "target": "Enterprise Employers & Recruiters" },
+    { "source": "talentxcel-talent-discovery", "relation": "indexesCandidateProfilesFrom", "target": "career-passport" },
+    { "source": "talentxcel-career-intelligence", "relation": "informsCompensationDecisionsFor", "target": "Job Seekers & Employers" }
+  ]
+}

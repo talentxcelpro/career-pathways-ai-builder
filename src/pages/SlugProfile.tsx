@@ -181,8 +181,8 @@ const SlugProfile = () => {
   });
   const isIndexable = indexabilityDecision.isIndexable;
 
-  const isPassportRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/p');
-  const canonicalUrl = `https://talentxcel.in/profile/${profileSlug}`;
+  const isPassportRoute = typeof window !== 'undefined' && (window.location.pathname.startsWith('/p') || window.location.pathname.startsWith('/passport'));
+  const canonicalUrl = `https://talentxcel.in/u/${profileSlug}`;
 
   const profileSchema = profile ? JSON.stringify({
     "@context": "https://schema.org",

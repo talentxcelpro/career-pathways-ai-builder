@@ -17,6 +17,7 @@ import { generateAndDownloadVCard } from "@/utils/vcardGenerator";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConnectionRequests } from "@/hooks/useConnectionRequests";
+import { trackFunnelEvent } from "@/services/telemetry/funnelTracker";
 import {
   Loader2,
   MessageSquare,
@@ -62,16 +63,43 @@ async function findProfile(identifier: string) {
   const cleaned = identifier.startsWith("@") ? identifier.slice(1) : identifier;
   const uuidLike = /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(cleaned);
 
-  let query = supabase.from("profiles").select("*");
-  if (uuidLike) {
-    query = query.eq("id", cleaned);
-  } else {
-    query = query.or(
-      `username.ilike.${cleaned},custom_url_slug.ilike.${cleaned},slug.ilike.${cleaned}`,
-    );
+  // 1. Primary lookup via public_profiles view (publicly accessible by anon and authenticated callers)
+  try {
+    let pubQuery = supabase.from("public_profiles").select("*");
+    if (uuidLike) {
+      pubQuery = pubQuery.eq("id", cleaned);
+    } else {
+      const nameQuery = cleaned.replace(/-/g, ' ');
+      pubQuery = pubQuery.or(
+        `username.ilike.${cleaned},full_name.ilike.${nameQuery}`
+      );
+    }
+    const { data: pubData } = await pubQuery.maybeSingle();
+    if (pubData) return pubData;
+  } catch (err) {
+    console.debug('public_profiles lookup notice:', err);
   }
-  const { data } = await query.maybeSingle();
-  return data;
+
+  // 2. Secondary fallback via base profiles table (STRICTLY for authenticated sessions via RLS)
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      let query = supabase.from("profiles").select("*");
+      if (uuidLike) {
+        query = query.eq("id", cleaned);
+      } else {
+        query = query.or(
+          `username.ilike.${cleaned},custom_url_slug.ilike.${cleaned},slug.ilike.${cleaned}`,
+        );
+      }
+      const { data } = await query.maybeSingle();
+      if (data) return data;
+    }
+  } catch {
+    // Non-fatal RLS catch
+  }
+
+  return null;
 }
 
 const PublicPassport: React.FC = () => {
@@ -148,6 +176,13 @@ const PublicPassport: React.FC = () => {
       }),
     [data],
   );
+
+  React.useEffect(() => {
+    if (data?.profile) {
+      const u = data.profile.username || data.profile.id;
+      trackFunnelEvent('passport_public_view', { username: u });
+    }
+  }, [data?.profile?.id]);
 
   const targetUserId = data?.profile?.id;
   const isOwnProfile = Boolean(user?.id && targetUserId && user.id === targetUserId);
@@ -238,10 +273,24 @@ const PublicPassport: React.FC = () => {
   const publicUrl = typeof window !== "undefined" ? window.location.href : `https://talentxcel.in/passport/public/${username}`;
 
   const handleSharePassport = () => {
-    navigator.clipboard.writeText(publicUrl);
-    setCopied(true);
-    toast.success("Passport link copied to clipboard!");
-    setTimeout(() => setCopied(false), 3000);
+    trackFunnelEvent('passport_share', { username, url: publicUrl });
+    if (navigator.share) {
+      navigator.share({
+        title: `${fullName} — Verified Career Passport | TalentXcel`,
+        text: `View ${fullName}'s verified career passport, skills, and credentials on TalentXcel: ${publicUrl}`,
+        url: publicUrl,
+      }).catch(() => {
+        navigator.clipboard.writeText(publicUrl);
+        setCopied(true);
+        toast.success("Passport link copied to clipboard!");
+        setTimeout(() => setCopied(false), 3000);
+      });
+    } else {
+      navigator.clipboard.writeText(publicUrl);
+      setCopied(true);
+      toast.success("Passport link copied to clipboard!");
+      setTimeout(() => setCopied(false), 3000);
+    }
   };
 
   const handleDownloadVCard = () => {
@@ -357,6 +406,51 @@ const PublicPassport: React.FC = () => {
         canonicalUrl={`/passport/public/${identifier || ''}`}
         ogImage={avatarUrl || undefined}
       />
+
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ProfilePage",
+            "mainEntity": {
+              "@type": "Person",
+              "name": fullName,
+              "jobTitle": title,
+              "description": `${fullName}'s verified professional identity, credentials, and Career Passport on TalentXcel.`,
+              "image": avatarUrl || undefined,
+              "url": `https://talentxcel.in/passport/public/${encodeURIComponent(identifier || username)}`,
+              "knowsAbout": data?.skills || [],
+              "address": location ? {
+                "@type": "PostalAddress",
+                "addressLocality": location
+              } : undefined
+            },
+            "breadcrumb": {
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://talentxcel.in"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Career Passport",
+                  "item": "https://talentxcel.in/passport"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 3,
+                  "name": fullName,
+                  "item": `https://talentxcel.in/passport/public/${encodeURIComponent(identifier || username)}`
+                }
+              ]
+            }
+          })}
+        </script>
+      </Helmet>
 
       <div className="space-y-6 pb-20">
 

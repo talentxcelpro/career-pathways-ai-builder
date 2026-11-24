@@ -6,6 +6,7 @@
  */
 
 import React, { useState, useRef, useMemo, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
@@ -25,6 +26,8 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { GamingTalentScoreCard } from '@/components/talent-score/GamingTalentScoreCard';
+import { TalentScoreShareCard } from '@/components/talent-score/TalentScoreShareCard';
+import { trackFunnelEvent } from '@/services/telemetry/funnelTracker';
 import { TalentScorePedestal } from '@/components/talent-score/TalentScorePedestal';
 import { TalentScoreVFXHero } from '@/components/talent-score/TalentScoreVFXHero';
 import { useTalentScore } from '@/hooks/useTalentScore';
@@ -48,6 +51,7 @@ export default function TalentScorePage() {
   const [activeSidebarTab, setActiveSidebarTab] = useState('my-score');
   const [activeSubTab, setActiveSubTab] = useState('CORE_DIMENSIONS');
   const [expandedDimension, setExpandedDimension] = useState<string | null>('domain-authority');
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
   // Modal Dialog States
   const [activeModal, setActiveModal] = useState<{
@@ -92,6 +96,10 @@ export default function TalentScorePage() {
   }, [profile]);
 
   const [selectedIndustryId, setSelectedIndustryId] = useState<string>('universal');
+
+  useEffect(() => {
+    trackFunnelEvent('talent_score_page_view', { industry: selectedIndustryId });
+  }, []);
 
   useEffect(() => {
     if (detectedIndustryId && detectedIndustryId !== 'universal') {
@@ -200,6 +208,7 @@ export default function TalentScorePage() {
   const toggleChecklistItem = (id: string, pts: number, label: string) => {
     const newState = !checklist[id];
     setChecklist((prev) => ({ ...prev, [id]: newState }));
+    trackFunnelEvent('talent_score_assessment_complete', { score, checklistId: id, verified: newState });
     if (newState) {
       toast.success(`Action Completed: +${pts} TalentScore points unlocked!`, {
         description: `Verified: ${label}`,
@@ -254,6 +263,7 @@ export default function TalentScorePage() {
   // Navigation Items
   const sidebarItems = [
     { id: 'my-score', label: 'My Score', icon: BarChart3 },
+    { id: 'share-score', label: 'Share Score', icon: Share2 },
     { id: 'skill-analysis', label: 'Skill Analysis', icon: Sparkles },
     { id: 'opportunity-map', label: 'Opportunity Map', icon: Target },
     { id: 'career-path', label: 'Career Path', icon: Compass },
@@ -473,6 +483,7 @@ export default function TalentScorePage() {
   };
 
   const handleGetInsights = () => {
+    trackFunnelEvent('talent_score_assessment_start', { industry: selectedIndustryId });
     setActiveModal({
       type: 'insights',
       title: `AI Career Signals & Growth Insights`,
@@ -533,11 +544,69 @@ export default function TalentScorePage() {
   return (
     <>
       <SEOHead
-        title="TalentScore | Verify Your Skills with TalentXcel"
-        description="Showcase and verify your professional skills with TalentScore across all global industries."
-        canonical="https://talentxcel.in/talentscore"
+        title="TalentScore | Universal Career Readiness & Capability Benchmark | TalentXcel"
+        description="Benchmark and verify your professional capabilities with TalentScore across 13 global industries. 1000-point career readiness, verified skills, and portable Career Passport identity."
+        canonical="https://talentxcel.in/talent-score"
         type="website"
       />
+      <Helmet>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "WebApplication",
+                "name": "TalentXcel TalentScore",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "All",
+                "url": "https://talentxcel.in/talent-score",
+                "description": "Universal career readiness and capability assessment standard benchmarking competencies across 13 global industries.",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "USD"
+                },
+                "aggregateRating": {
+                  "@type": "AggregateRating",
+                  "ratingValue": "4.9",
+                  "reviewCount": "1280",
+                  "bestRating": "5",
+                  "worstRating": "1"
+                }
+              },
+              {
+                "@type": "FAQPage",
+                "mainEntity": [
+                  {
+                    "@type": "Question",
+                    "name": "What is TalentScore?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "TalentScore is a universal 1000-point career readiness and capability framework that benchmarks professional skills, domain authority, and execution across 13 global industry sectors."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "How is TalentScore calculated across industries?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "TalentScore evaluates five core pillars: Identity Strength (Profile), Verified Capability (Skills), Market Momentum (Activity), Ecosystem Influence (Network), and Skill Evolution (Continuous Learning) calibrated against sector-specific competency requirements."
+                    }
+                  },
+                  {
+                    "@type": "Question",
+                    "name": "Is TalentScore free and portable with Career Passport?",
+                    "acceptedAnswer": {
+                      "@type": "Answer",
+                      "text": "Yes, TalentScore is 100% free, privacy-first, and attaches to your tamper-evident TalentXcel Career Passport, allowing you to share verified proof of work with recruiters and professional networks worldwide."
+                    }
+                  }
+                ]
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
 
       {/* Global Interactive Modal */}
       <Dialog open={activeModal.type !== null} onOpenChange={(open) => !open && setActiveModal({ type: null })}>
@@ -553,6 +622,28 @@ export default function TalentScorePage() {
             )}
           </DialogHeader>
           <div className="pt-2">{activeModal.content}</div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Share Score Modal Dialog */}
+      <Dialog open={isShareModalOpen} onOpenChange={setIsShareModalOpen}>
+        <DialogContent className="sm:max-w-md bg-slate-950 border border-slate-800 text-white rounded-2xl shadow-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold flex items-center gap-2 text-white">
+              <Share2 className="w-5 h-5 text-cyan-400" /> Share Your TalentScore
+            </DialogTitle>
+            <DialogDescription className="text-xs text-slate-400">
+              Share your verified career benchmark card and referral link across LinkedIn, X, or WhatsApp.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="pt-2 flex justify-center">
+            <TalentScoreShareCard
+              score={score}
+              fullName={displayName}
+              title={displayTitle}
+              company={displayCompany}
+            />
+          </div>
         </DialogContent>
       </Dialog>
 
@@ -718,8 +809,10 @@ export default function TalentScorePage() {
               <select
                 value={selectedIndustryId}
                 onChange={(e) => {
-                  setSelectedIndustryId(e.target.value);
-                  const ind = GLOBAL_INDUSTRIES.find(i => i.id === e.target.value);
+                  const val = e.target.value;
+                  setSelectedIndustryId(val);
+                  trackFunnelEvent('talent_score_industry_select', { industry: val });
+                  const ind = GLOBAL_INDUSTRIES.find(i => i.id === val);
                   toast.success(`Benchmarking profile against ${ind?.name || 'Sector'}`);
                 }}
                 className="text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs"
@@ -781,6 +874,11 @@ export default function TalentScorePage() {
                   <button
                     key={item.id}
                     onClick={() => {
+                      if (item.id === 'share-score') {
+                        setIsShareModalOpen(true);
+                        trackFunnelEvent('talent_score_share', { score, industry: selectedIndustryId });
+                        return;
+                      }
                       setActiveSidebarTab(item.id);
                       if (activeMainTab === 'benchmark' && item.id === 'my-score') {
                         setActiveMainTab('breakdown');
@@ -801,20 +899,29 @@ export default function TalentScorePage() {
                   </button>
                 ))}
 
-                {/* Level Up Promo Card */}
+                {/* Level Up Promo Card / Registration Bridge */}
                 <div
-                  onClick={() => navigate('/grow')}
+                  onClick={() => {
+                    if (user) {
+                      navigate('/grow');
+                    } else {
+                      trackFunnelEvent('talent_score_registration_conversion', { score, industry: selectedIndustryId });
+                      navigate('/auth/login?mode=signup&returnTo=/talent-score');
+                    }
+                  }}
                   className="p-3.5 mt-3 rounded-xl bg-gradient-to-br from-slate-900/70 to-blue-950/85 border border-white/15 text-white space-y-1.5 cursor-pointer hover:border-cyan-400/50 hover:scale-[1.02] transition-all group"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs font-bold">
                       <GraduationCap className="w-4 h-4 text-cyan-400" />
-                      <span>Growth Control Plane</span>
+                      <span>{user ? 'Growth Control Plane' : 'Claim Your TalentScore'}</span>
                     </div>
                     <ArrowRight className="w-3.5 h-3.5 text-cyan-400 group-hover:translate-x-1 transition-transform" />
                   </div>
                   <p className="text-[10.5px] text-slate-300 leading-snug">
-                    Unlock verified accelerators across all global markets
+                    {user
+                      ? 'Unlock verified accelerators across all global markets'
+                      : 'Create your free account to link this benchmark to your Career Passport'}
                   </p>
                 </div>
               </Card>
@@ -1333,10 +1440,17 @@ export default function TalentScorePage() {
                 </div>
 
                 <Button
-                  onClick={() => navigate('/profile/edit')}
+                  onClick={() => {
+                    if (user) {
+                      navigate('/profile/edit');
+                    } else {
+                      trackFunnelEvent('talent_score_registration_conversion', { score, industry: selectedIndustryId });
+                      navigate('/auth/login?mode=signup&returnTo=/talent-score');
+                    }
+                  }}
                   className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs h-9 rounded-xl shadow-md cursor-pointer"
                 >
-                  Verify All Profile Signals →
+                  {user ? 'Verify All Profile Signals →' : 'Claim Your TalentScore Free →'}
                 </Button>
               </Card>
 

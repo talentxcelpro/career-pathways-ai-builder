@@ -1,0 +1,328 @@
+[
+  {
+    "product": "ATS-Check",
+    "path": "/resume/ats-check",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 555
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Free ATS Resume Checker &amp; Scanner (Instant 2026 Test) | TalentXcel",
+      "h1": "Free In-Browser ATS Resume Checker",
+      "canonical": "https://talentxcel.in/resume/ats-check",
+      "schemaTypes": [],
+      "wordCount": 487
+    },
+    "perplexityBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Free ATS Resume Checker &amp; Scanner (Instant 2026 Test) | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Free ATS Resume Checker &amp; Scanner (Instant 2026 Test) | TalentXcel"
+    }
+  },
+  {
+    "product": "ATS-Check Shortlink",
+    "path": "/ats-check",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 555
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Free ATS Resume Checker &amp; Scanner (Instant 2026 Test) | TalentXcel",
+      "h1": "Free In-Browser ATS Resume Checker",
+      "canonical": "https://talentxcel.in/resume/ats-check",
+      "schemaTypes": [],
+      "wordCount": 487
+    },
+    "perplexityBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Free ATS Resume Checker &amp; Scanner (Instant 2026 Test) | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Free ATS Resume Checker &amp; Scanner (Instant 2026 Test) | TalentXcel"
+    }
+  },
+  {
+    "product": "TalentScore",
+    "path": "/talent-score",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 555
+    },
+    "oaiSearchBot": {
+      "status": 404,
+      "location": null,
+      "xRobotsTag": "noindex, nofollow",
+      "renderEngine": "TalentXcel-Edge-404-Guard",
+      "title": "Page Not Found (404) | TalentXcel",
+      "h1": "Entity or Page Not Found",
+      "schemaTypes": [],
+      "wordCount": 51
+    },
+    "perplexityBot": {
+      "status": 404,
+      "xRobotsTag": "noindex, nofollow",
+      "renderEngine": "TalentXcel-Edge-404-Guard",
+      "title": "Page Not Found (404) | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 404,
+      "xRobotsTag": "noindex, nofollow",
+      "renderEngine": "TalentXcel-Edge-404-Guard",
+      "title": "Page Not Found (404) | TalentXcel"
+    }
+  },
+  {
+    "product": "Career Passport",
+    "path": "/passport",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 555
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Career Passport — Verified Digital Career Identity | TalentXcel",
+      "h1": "TalentXcel Career Passport",
+      "canonical": "https://talentxcel.in/passport",
+      "schemaTypes": [],
+      "wordCount": 132
+    },
+    "perplexityBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Career Passport — Verified Digital Career Identity | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Career Passport — Verified Digital Career Identity | TalentXcel"
+    }
+  },
+  {
+    "product": "Jobs",
+    "path": "/jobs",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "Job Listings | TalentXcel",
+      "canonical": "https://talentxcel.in/jobs",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 718
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "title": "Job Listings | TalentXcel",
+      "h1": "Job Listings",
+      "canonical": "https://talentxcel.in/jobs",
+      "schemaTypes": [
+        "WebSite",
+        "Organization",
+        "BreadcrumbList",
+        "FAQPage",
+        "WebPage",
+        "WebPage",
+        "BreadcrumbList"
+      ],
+      "wordCount": 718
+    },
+    "perplexityBot": {
+      "status": 200,
+      "title": "Job Listings | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "title": "Job Listings | TalentXcel"
+    }
+  },
+  {
+    "product": "Talent",
+    "path": "/talent",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "Talent Directory | TalentXcel",
+      "canonical": "https://talentxcel.in/talent",
+      "robotsMeta": "noindex, follow",
+      "xRobotsTag": "noindex, follow",
+      "isSpaShell": false,
+      "wordCount": 704
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "xRobotsTag": "noindex, follow",
+      "title": "Talent Directory | TalentXcel",
+      "h1": "Public Talent Directory",
+      "canonical": "https://talentxcel.in/talent",
+      "schemaTypes": [
+        "WebSite",
+        "Organization",
+        "BreadcrumbList",
+        "FAQPage",
+        "WebPage",
+        "WebPage",
+        "BreadcrumbList"
+      ],
+      "wordCount": 704
+    },
+    "perplexityBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "title": "Talent Directory | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "title": "Talent Directory | TalentXcel"
+    }
+  },
+  {
+    "product": "Network",
+    "path": "/network",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "Global Professional Talent Network &amp; Community Feed | TalentXcel",
+      "canonical": "https://talentxcel.in/network",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 3457
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "title": "Global Professional Talent Network &amp; Community Feed | TalentXcel",
+      "h1": "Global Professional Talent Network Feed",
+      "canonical": "https://talentxcel.in/network",
+      "schemaTypes": [
+        "WebSite",
+        "Organization",
+        "BreadcrumbList",
+        "FAQPage",
+        "WebPage",
+        "CollectionPage",
+        "BreadcrumbList"
+      ],
+      "wordCount": 3457
+    },
+    "perplexityBot": {
+      "status": 200,
+      "title": "Global Professional Talent Network &amp; Community Feed | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "title": "Global Professional Talent Network &amp; Community Feed | TalentXcel"
+    }
+  },
+  {
+    "product": "Recruiter OS",
+    "path": "/employers",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 555
+    },
+    "oaiSearchBot": {
+      "status": 404,
+      "location": null,
+      "xRobotsTag": "noindex, nofollow",
+      "renderEngine": "TalentXcel-Edge-404-Guard",
+      "title": "Page Not Found (404) | TalentXcel",
+      "h1": "Entity or Page Not Found",
+      "schemaTypes": [],
+      "wordCount": 51
+    },
+    "perplexityBot": {
+      "status": 404,
+      "xRobotsTag": "noindex, nofollow",
+      "renderEngine": "TalentXcel-Edge-404-Guard",
+      "title": "Page Not Found (404) | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 404,
+      "xRobotsTag": "noindex, nofollow",
+      "renderEngine": "TalentXcel-Edge-404-Guard",
+      "title": "Page Not Found (404) | TalentXcel"
+    }
+  },
+  {
+    "product": "Communities",
+    "path": "/communities",
+    "human": {
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "robotsMeta": "index, follow",
+      "isSpaShell": false,
+      "wordCount": 555
+    },
+    "oaiSearchBot": {
+      "status": 200,
+      "location": null,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Professional Communities &amp; Engineering Guilds | TalentXcel",
+      "h1": "Professional Communities &amp; Domain Guilds",
+      "canonical": "https://talentxcel.in/communities",
+      "schemaTypes": [],
+      "wordCount": 128
+    },
+    "perplexityBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Professional Communities &amp; Engineering Guilds | TalentXcel"
+    },
+    "claudeBot": {
+      "status": 200,
+      "xRobotsTag": "noindex, follow",
+      "renderEngine": "TalentXcel-Edge-SSR-Hydrator",
+      "title": "Professional Communities &amp; Engineering Guilds | TalentXcel"
+    }
+  }
+]

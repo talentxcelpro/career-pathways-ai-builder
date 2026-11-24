@@ -8,6 +8,8 @@
  * - Deduplication for one-time milestone events (sign_up, login, email_verified)
  */
 
+import { detectAiReferral, persistAiAttribution, getActiveAiAttribution } from './aiReferralAttribution';
+
 export type GrowthFunnelEventType =
   // Canonical 15-Event Acquisition & Growth Taxonomy
   | 'landing_view'
@@ -42,7 +44,16 @@ export type GrowthFunnelEventType =
   | 'application_failed'
   | 'ats_score_generated'
   | 'career_pathway_viewed'
-  | 'related_job_clicked';
+  | 'related_job_clicked'
+  // AI Platform Referral & Conversion Events
+  | 'ai_referral_visit'
+  | 'ai_talent_score_started'
+  | 'ai_talent_score_completed'
+  | 'ai_ats_check_started'
+  | 'ai_ats_check_completed'
+  | 'ai_passport_created'
+  | 'ai_job_applied'
+  | 'ai_recruiter_inquiry';
 
 export interface GrowthFunnelPayload {
   source?: string;
@@ -79,6 +90,20 @@ export function getAcquisitionContext(): Partial<GrowthFunnelPayload> {
   let source = urlParams.get('utm_source') || '';
   let medium = urlParams.get('utm_medium') || '';
   let campaign = urlParams.get('utm_campaign') || '';
+
+  // 1. Prioritize AI platform referral detection (ChatGPT, Perplexity, Gemini, Claude, Copilot, Grok, etc.)
+  const aiRef = detectAiReferral();
+  if (aiRef.isAiReferral) {
+    persistAiAttribution(aiRef);
+    source = aiRef.platform;
+    medium = aiRef.medium;
+  } else {
+    const existingAi = getActiveAiAttribution();
+    if (existingAi) {
+      source = existingAi.platform;
+      medium = existingAi.medium;
+    }
+  }
 
   if (!source && referrer) {
     const refHost = referrer.hostname.toLowerCase();

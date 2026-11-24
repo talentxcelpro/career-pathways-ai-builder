@@ -56,72 +56,174 @@ Allow: /
 
 # ------------------------------
 # Generative AI & Search Discovery Crawlers (Real-Time Search Indexing & Citations)
-# Explicitly allowed across Career Passports, Network, Salary, Resume, Talent & Explore
+# Explicitly allowed across Core Platform, TalentScore, Network, Jobs, Resume, Talent, Salary & Sitemaps
 # ------------------------------
 
 User-agent: Googlebot
 Allow: /
-Allow: /u/
-Allow: /talent
+Allow: /talent-score
 Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /reels
+Allow: /communities
+Allow: /passport
+Allow: /career-map
 Allow: /salary
 Allow: /resume
+Allow: /colleges
+Allow: /learning
 Allow: /explore
+Allow: /u/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 User-agent: OAI-SearchBot
 # ChatGPT Search live indexation crawler
 Allow: /
-Allow: /u/
-Allow: /talent
+Allow: /talent-score
 Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /reels
+Allow: /communities
+Allow: /passport
+Allow: /career-map
 Allow: /salary
 Allow: /resume
+Allow: /colleges
+Allow: /learning
 Allow: /explore
+Allow: /u/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 User-agent: PerplexityBot
 # Perplexity AI live search engine crawler
 Allow: /
-Allow: /u/
-Allow: /talent
+Allow: /talent-score
 Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /reels
+Allow: /communities
+Allow: /passport
+Allow: /career-map
 Allow: /salary
 Allow: /resume
+Allow: /colleges
+Allow: /learning
 Allow: /explore
+Allow: /u/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 User-agent: ClaudeBot
 # Anthropic search and real-time retrieval crawler
-Allow: /u/
-Allow: /talent
+Allow: /
+Allow: /talent-score
 Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /reels
+Allow: /communities
+Allow: /passport
+Allow: /career-map
 Allow: /salary
 Allow: /resume
+Allow: /colleges
+Allow: /learning
 Allow: /explore
+Allow: /u/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 User-agent: Claude-User
 Allow: /
-Allow: /u/
-Allow: /talent
+Allow: /talent-score
 Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /reels
+Allow: /communities
+Allow: /passport
+Allow: /career-map
 Allow: /salary
 Allow: /resume
+Allow: /colleges
+Allow: /learning
 Allow: /explore
+Allow: /u/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 User-agent: Bingbot
 Allow: /
-Allow: /u/
-Allow: /talent
+Allow: /talent-score
 Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /reels
+Allow: /communities
+Allow: /passport
+Allow: /career-map
 Allow: /salary
 Allow: /resume
+Allow: /colleges
+Allow: /learning
 Allow: /explore
+Allow: /u/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
+
+User-agent: Applebot
+# Apple Intelligence and Siri search crawler
+Allow: /
+Allow: /talent-score
+Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /salary
+Allow: /resume
+Allow: /llms.txt
+
+User-agent: DuckAssistBot
+# DuckDuckGo AI assistant crawler
+Allow: /
+Allow: /talent-score
+Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /salary
+Allow: /resume
+Allow: /llms.txt
+
+User-agent: YouBot
+# You.com AI search crawler
+Allow: /
+Allow: /talent-score
+Allow: /network
+Allow: /jobs
+Allow: /talent
+Allow: /salary
+Allow: /resume
+Allow: /llms.txt
 
 
 # ------------------------------
 # User-Triggered Interactive Fetchers & AI Search Engine Crawlers
-# Allows ChatGPT and search assistants to browse and cite live public jobs & location directories
+# Allows ChatGPT and search assistants to browse and cite live public jobs, scores & directories
 # ------------------------------
 
 User-agent: ChatGPT-User
+Allow: /
+Allow: /talent-score
 Allow: /jobs/
 Allow: /locations/
 Allow: /u/
@@ -130,15 +232,29 @@ Allow: /network
 Allow: /salary
 Allow: /resume
 Allow: /explore
+Allow: /llms.txt
 
 User-agent: GPTBot
+Allow: /
+Allow: /talent-score
 Allow: /jobs/
 Allow: /locations/
+Allow: /talent
+Allow: /network
+Allow: /salary
+Allow: /resume
+Allow: /explore
+Allow: /llms.txt
 Disallow: /admin/
-Disallow: /api/
+Disallow: /api/auth/
+Disallow: /api/private/
 Disallow: /dashboard/
 Disallow: /employer/dashboard/
 Disallow: /passport/edit/
+
+# ------------------------------
+# Offline Model Pre-Training Scrapers (Restricted to preserve bandwidth & user privacy)
+# ------------------------------
 
 User-agent: anthropic-ai
 Disallow: /
@@ -183,14 +299,14 @@ Disallow: /
 User-agent: *
 Allow: /
 
-# ------------------------------
-# Private app routes are crawlable so search engines can read their noindex
-# response headers. Application authentication remains the access control.
-# ------------------------------
-
+# Private app routes
+Disallow: /admin/
 Disallow: /api/auth/
 Disallow: /api/user/
 Disallow: /api/private/
+Disallow: /dashboard/
+Disallow: /employer/dashboard/
+Disallow: /passport/edit/
 Disallow: /embed/
 Disallow: /api/embed/
 
@@ -200,11 +316,11 @@ Allow: /*.js$
 Allow: /*.css$
 Allow: /*.png$
 Allow: /*.jpg$
+Allow: /*.webp$
 Allow: /*.svg$
-
-# ==========================================================
-# PARAMETER URL CONTROL (Prevent Crawl-Budget Exhaustion)
-# ==========================================================
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /.well-known/
 
 # Block internal search/filter parameter URLs to protect crawl budget
 Disallow: /*?*search=
@@ -213,14 +329,10 @@ Disallow: /*?*q=
 Disallow: /*?*filter=
 Disallow: /*?*sort=
 Disallow: /*?*page=
-Disallow: /*?*utm_
-Disallow: /*?*ref=
-Disallow: /*?*gclid=
-Disallow: /*?*fbclid=
 
 
 # ==========================================================
-# SITEMAP
+# SITEMAP & KNOWLEDGE SPECIFICATIONS
 # ==========================================================
 
 Sitemap: https://talentxcel.in/sitemap.xml

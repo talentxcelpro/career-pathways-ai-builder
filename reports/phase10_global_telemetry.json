@@ -1,0 +1,78 @@
+{
+  "generatedAt": "2026-11-24T16:30:18.686Z",
+  "systemState": "ONLINE_ACTIVE",
+  "userAcquisitionAndActivation": {
+    "totalRegisteredUsers": 750,
+    "confirmedEmailUsers": 748,
+    "activeUsersLast7Days": 46,
+    "totalProfiles": 803,
+    "profileActivationHeadline": 71,
+    "profileActivationHeadlinePct": 8.8,
+    "profileActivationLocation": 71,
+    "profileActivationLocationPct": 8.8,
+    "profileActivationSkills": 90,
+    "profileActivationSkillsPct": 11.2,
+    "fullyActivatedProfiles": 14,
+    "fullyActivatedProfilesPct": 1.7,
+    "totalJobApplications": 75
+  },
+  "networkGraphMetrics": {
+    "totalConnectionRecords": 2963,
+    "acceptedConnections": 942,
+    "acceptanceRatePct": 31.8,
+    "connectedCohortRetention30DayPct": 60.8,
+    "unconnectedCohortRetention30DayPct": 12.1,
+    "networkRetentionMultiplier": 5.02
+  },
+  "searchAndGeographyEngine": {
+    "totalCitiesEvaluated": 1196,
+    "indexableCitiesCount": 33,
+    "incubatingProtectedCitiesCount": 1163,
+    "totalInventoryClustersEvaluated": 34,
+    "highDensityClusters": 23,
+    "mediumDensityClusters": 3,
+    "ghostProtectedClusters": 7,
+    "totalPublishedSitemapUrls": 7228,
+    "networkHubsSitemapUrls": 559
+  },
+  "globalDistributionAutopilot": {
+    "totalDispatchesLogged": 12,
+    "activeChannels": [
+      "telegram",
+      "whatsapp",
+      "linkedin",
+      "email"
+    ],
+    "frequencyCapStatus": "STRICT_24H_ENFORCED",
+    "duplicateHashSuppression": "ACTIVE_SHA256",
+    "activeProductionMarkets": [
+      "India"
+    ],
+    "emergingMarkets": [
+      "United States"
+    ],
+    "incubatingProtectedMarkets": [
+      "United Kingdom",
+      "Canada",
+      "Germany",
+      "UAE",
+      "Singapore",
+      "Australia",
+      "Netherlands",
+      "Ireland",
+      "France",
+      "Saudi Arabia",
+      "Japan",
+      "South Korea"
+    ]
+  },
+  "aiSearchDiscoverability": {
+    "openAiSearchBotStatus": "EXPLICITLY_ALLOWED",
+    "perplexityBotStatus": "EXPLICITLY_ALLOWED",
+    "claudeBotStatus": "EXPLICITLY_ALLOWED",
+    "googleBotStatus": "EXPLICITLY_ALLOWED",
+    "llmsTxtStatus": "SYNCHRONIZED",
+    "llmsFullTxtStatus": "SYNCHRONIZED",
+    "ssrSchemaHydration": "COLLECTION_PAGE_AND_BREADCRUMBS_ACTIVE"
+  }
+}

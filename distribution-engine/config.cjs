@@ -20,11 +20,17 @@ module.exports = {
     CANONICAL_URL: 'https://talentxcel.in',
     PROPERTIES: {
       HOME: { name: 'TalentXcel Home', url: 'https://talentxcel.in' },
+      ATS_CHECK: { name: 'TalentXcel ATS-Check', url: 'https://talentxcel.in/resume/ats-check' },
+      TALENT_SCORE: { name: 'TalentXcel TalentScore', url: 'https://talentxcel.in/talent-score' },
+      CAREER_PASSPORT: { name: 'TalentXcel Career Passport', url: 'https://talentxcel.in/passport' },
+      JOBS: { name: 'TalentXcel Jobs', url: 'https://talentxcel.in/jobs' },
+      TALENT: { name: 'TalentXcel Talent Directory', url: 'https://talentxcel.in/talent' },
+      NETWORK: { name: 'TalentXcel Professional Network', url: 'https://talentxcel.in/network' },
+      PROFESSIONAL_NETWORK: { name: 'TalentXcel Professional Network', url: 'https://talentxcel.in/network' },
+      RECRUITER_OS: { name: 'TalentXcel Recruiter OS', url: 'https://talentxcel.in/employer' },
+      COMMUNITIES: { name: 'TalentXcel Communities', url: 'https://talentxcel.in/network/communities' },
       CAREERS: { name: 'TalentXcel Careers', url: 'https://talentxcel.in/careers' },
       RESUME_BUILDER: { name: 'TalentXcel Resume Builder', url: 'https://talentxcel.in/resume' },
-      CAREER_PASSPORT: { name: 'TalentXcel Career Passport', url: 'https://talentxcel.in/passport' },
-      PROFESSIONAL_NETWORK: { name: 'TalentXcel Professional Network', url: 'https://talentxcel.in/network' },
-      JOBS: { name: 'TalentXcel Jobs', url: 'https://talentxcel.in/jobs' },
       LEARNING: { name: 'TalentXcel Learning', url: 'https://talentxcel.in/learning' },
       RESOURCES: { name: 'TalentXcel Career Resources', url: 'https://talentxcel.in/resources' }
     }

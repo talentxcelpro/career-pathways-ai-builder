@@ -1,0 +1,215 @@
+{
+  "generatedAt": "2026-11-24T16:00:08.281Z",
+  "systemHealth": "HEALTHY",
+  "metrics": {
+    "totalProfiles": 803,
+    "consentedProfiles": 705,
+    "activeJobs": 4469,
+    "totalPosts": 2510,
+    "totalConnections": 2963,
+    "totalEvaluatedCities": 1000,
+    "indexableCities": 33,
+    "emergingCities": 12,
+    "incubatingCities": 955,
+    "highDensityHubs": 23,
+    "ghostProtectedHubs": 7
+  },
+  "highGrowthCities": [
+    {
+      "city": "Noida",
+      "country": "India",
+      "activeJobs": 5,
+      "consentedPros": 7,
+      "score": 82.5
+    },
+    {
+      "city": "Hyderabad",
+      "country": "India",
+      "activeJobs": 21,
+      "consentedPros": 2,
+      "score": 70
+    },
+    {
+      "city": "Delhi",
+      "country": "India",
+      "activeJobs": 15,
+      "consentedPros": 1,
+      "score": 70
+    },
+    {
+      "city": "Bangalore",
+      "country": "India",
+      "activeJobs": 135,
+      "consentedPros": 1,
+      "score": 65
+    },
+    {
+      "city": "Bhopal",
+      "country": "India",
+      "activeJobs": 35,
+      "consentedPros": 1,
+      "score": 65
+    },
+    {
+      "city": "Gurgaon",
+      "country": "India",
+      "activeJobs": 12,
+      "consentedPros": 1,
+      "score": 65
+    },
+    {
+      "city": "Lucknow",
+      "country": "India",
+      "activeJobs": 11,
+      "consentedPros": 0,
+      "score": 60
+    },
+    {
+      "city": "Mumbai",
+      "country": "India",
+      "activeJobs": 18,
+      "consentedPros": 0,
+      "score": 60
+    }
+  ],
+  "underservedCities": [
+    {
+      "city": "Navi Mumbai",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Thane",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Pune",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 4,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Secunderabad",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Gandhinagar",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Thiruvananthapuram",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Ludhiana",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Mohali",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Faridabad",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    },
+    {
+      "city": "Manesar",
+      "country": "India",
+      "tier": 1,
+      "activeJobs": 0,
+      "consentedPros": 0,
+      "gapType": "High-Demand Economic Center with Low Inventory"
+    }
+  ],
+  "industryGaps": [
+    {
+      "industry": "Energy & Utilities",
+      "pros": 0,
+      "jobs": 0,
+      "tier": "GHOST_PROTECTED"
+    },
+    {
+      "industry": "E-Commerce & Retail",
+      "pros": 0,
+      "jobs": 2,
+      "tier": "MEDIUM_DENSITY"
+    },
+    {
+      "industry": "Consulting & Professional Services",
+      "pros": 0,
+      "jobs": 0,
+      "tier": "GHOST_PROTECTED"
+    },
+    {
+      "industry": "Telecommunications",
+      "pros": 0,
+      "jobs": 1,
+      "tier": "GHOST_PROTECTED"
+    }
+  ],
+  "prioritizedNextActions": [
+    {
+      "priority": 1,
+      "domain": "Distribution",
+      "action": "Run scheduled Telegram and WhatsApp job dispatch batch",
+      "rationale": "Active jobs in Bangalore, Noida, and Hyderabad provide real inventory with 0 cost."
+    },
+    {
+      "priority": 2,
+      "domain": "Search Discovery",
+      "action": "Ensure Googlebot crawl priority on sitemap-network.xml covering 560 verified hubs",
+      "rationale": "Verified hubs meet the indexation gate and have zero thin page risk."
+    },
+    {
+      "priority": 3,
+      "domain": "Retention Loop",
+      "action": "Dispatch weekly career updates to next cohort of 10 users",
+      "rationale": "Keeps dormant users engaged while strictly adhering to 7-day cooldown."
+    },
+    {
+      "priority": 4,
+      "domain": "Inventory Gap Filling",
+      "action": "Target job ingestion in underserved metros (Mumbai, Chennai, Kolkata)",
+      "rationale": "Top financial & industrial metros have large candidate pools but under-indexed job supply."
+    },
+    {
+      "priority": 5,
+      "domain": "Referral Engine",
+      "action": "Promote verified public profile sharing (/u/:username)",
+      "rationale": "Consented users with vanity URLs generate organic viral peer referrals."
+    }
+  ]
+}

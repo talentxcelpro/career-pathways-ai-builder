@@ -1,0 +1,277 @@
+{
+  "evaluatedAt": "2026-11-24T16:25:43.866Z",
+  "totalMarketsEvaluated": 14,
+  "activeProductionMarkets": [
+    "India"
+  ],
+  "emergingMarkets": [
+    "United States"
+  ],
+  "incubatingMarkets": [
+    "United Kingdom",
+    "Canada",
+    "Germany",
+    "UAE",
+    "Singapore",
+    "Australia",
+    "Netherlands",
+    "Ireland",
+    "France",
+    "Saudi Arabia",
+    "Japan",
+    "South Korea"
+  ],
+  "marketDetails": [
+    {
+      "countryCode": "IN",
+      "countryName": "India",
+      "matchedActiveJobs": 966,
+      "matchedVerifiedProfiles": 13,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 100,
+      "readinessTier": "ACTIVE_PRODUCTION_INDEXABLE",
+      "recommendation": "Fully indexable market. Distribute high-priority job opportunities and city hubs.",
+      "sampleJobs": [
+        {
+          "id": "75467e00-39cc-46f6-ae5e-70d88ac59ce7",
+          "title": "Graduate Software Engineer Trainee",
+          "location": "Bengaluru"
+        },
+        {
+          "id": "736fca85-0c06-4a43-bafe-02933090c4ca",
+          "title": "Department Manager - Store Operations",
+          "location": "Kolkata"
+        },
+        {
+          "id": "81f887b4-83d0-4f13-99ed-7ac3956e5526",
+          "title": "Staff Software Engineer, Security Foundations",
+          "location": "Bengaluru"
+        }
+      ]
+    },
+    {
+      "countryCode": "US",
+      "countryName": "United States",
+      "matchedActiveJobs": 15,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 30,
+      "readinessTier": "EMERGING_SOURCING_PIPELINE",
+      "recommendation": "Targeted partner outreach, automated job scraping pipelines, and opt-in professional acquisition.",
+      "sampleJobs": [
+        {
+          "id": "852366c5-81ba-4759-a5f1-bcd45979f41f",
+          "title": "Staff Data Scientist - Ads Measurement, Signals, Privacy",
+          "location": "Remote"
+        },
+        {
+          "id": "21a108f1-94cf-4182-a0da-2f5a8bb72629",
+          "title": "Lead Forward Deployed Engineer (AI Enablement)",
+          "location": "Remote"
+        },
+        {
+          "id": "bec893ac-83c3-48bf-be48-d2c81fb1953a",
+          "title": "Solutions Architect - Digital Native Business (Geo)",
+          "location": "Remote"
+        }
+      ]
+    },
+    {
+      "countryCode": "GB",
+      "countryName": "United Kingdom",
+      "matchedActiveJobs": 2,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 4,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": [
+        {
+          "id": "d873b45d-2aaa-4695-acfd-7412c6d49932",
+          "title": "Lead Solutions Architect - Generative AI (EMEA Emerging DNB)",
+          "location": "Remote"
+        },
+        {
+          "id": "6c9691ee-72a3-4e73-9346-8b47541ea5f6",
+          "title": "Enterprise Account Executive - Public Sector",
+          "location": "Remote"
+        }
+      ]
+    },
+    {
+      "countryCode": "CA",
+      "countryName": "Canada",
+      "matchedActiveJobs": 2,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 4,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": [
+        {
+          "id": "341d55e3-105f-409c-94d4-618e8fb61ac0",
+          "title": "Product Support Specialist I (Merchant Care)",
+          "location": "Remote"
+        },
+        {
+          "id": "1a82930a-cb09-4d7e-9b99-87a9d98c9330",
+          "title": "Senior Cloud Native Infrastructure Engineer",
+          "location": "Bengaluru"
+        }
+      ]
+    },
+    {
+      "countryCode": "DE",
+      "countryName": "Germany",
+      "matchedActiveJobs": 2,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 4,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": [
+        {
+          "id": "58f60440-e5eb-4309-9fd8-0229859db9af",
+          "title": "Spacecraft Operations & Orbital Dynamics Engineer",
+          "location": "Bengaluru"
+        },
+        {
+          "id": "a2bf1438-93ee-4bf5-9f18-3a58184dab7c",
+          "title": "Enterprise Cloud Solutions Architect",
+          "location": "Munich"
+        }
+      ]
+    },
+    {
+      "countryCode": "AE",
+      "countryName": "UAE",
+      "matchedActiveJobs": 1,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 2,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": [
+        {
+          "id": "3180ca08-a2af-46e0-b0f1-f99b958d9ece",
+          "title": "Principal Digital Twin & Urban Simulation Architect",
+          "location": "Bengaluru"
+        }
+      ]
+    },
+    {
+      "countryCode": "SG",
+      "countryName": "Singapore",
+      "matchedActiveJobs": 1,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 2,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": [
+        {
+          "id": "f1d9e3e8-c361-4e52-8206-2aebff82b72a",
+          "title": "Assistant Director (Green Finance Taxonomy & ESG Analytics)",
+          "location": "Bengaluru"
+        }
+      ]
+    },
+    {
+      "countryCode": "AU",
+      "countryName": "Australia",
+      "matchedActiveJobs": 1,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 2,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": [
+        {
+          "id": "b46a8e1b-eb70-4e5c-a3d9-362b1d1ef670",
+          "title": "Principal Research Scientist - Quantum Computing & Fault Tolerance",
+          "location": "Bengaluru"
+        }
+      ]
+    },
+    {
+      "countryCode": "NL",
+      "countryName": "Netherlands",
+      "matchedActiveJobs": 0,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 0,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": []
+    },
+    {
+      "countryCode": "IE",
+      "countryName": "Ireland",
+      "matchedActiveJobs": 0,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 0,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": []
+    },
+    {
+      "countryCode": "FR",
+      "countryName": "France",
+      "matchedActiveJobs": 0,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 0,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": []
+    },
+    {
+      "countryCode": "SA",
+      "countryName": "Saudi Arabia",
+      "matchedActiveJobs": 0,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 0,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": []
+    },
+    {
+      "countryCode": "JP",
+      "countryName": "Japan",
+      "matchedActiveJobs": 0,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 0,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": []
+    },
+    {
+      "countryCode": "KR",
+      "countryName": "South Korea",
+      "matchedActiveJobs": 0,
+      "matchedVerifiedProfiles": 0,
+      "indexableCitiesCount": 0,
+      "incubatingCitiesCount": 0,
+      "readinessScore": 0,
+      "readinessTier": "INCUBATING_GATE",
+      "recommendation": "Maintain noindex thin-page protection until minimum 5 active jobs and 2 verified professionals exist.",
+      "sampleJobs": []
+    }
+  ]
+}

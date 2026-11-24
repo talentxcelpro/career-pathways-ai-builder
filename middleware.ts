@@ -7,7 +7,7 @@
 // 4. For college facet subtabs (/colleges/:slug/*), enforces canonical pointing to the primary institution dossier.
 // 5. Real human users pass through untouched at static CDN speed.
 
-const BOT_UA = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Applebot|redditbot|Pinterest|bingbot|Baiduspider/i;
+const BOT_UA = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Applebot|redditbot|Pinterest|bingbot|Baiduspider|ChatGPT|ChatGPT-User|GPTBot|OAI-SearchBot|PerplexityBot|ClaudeBot|Claude-User|anthropic-ai|cohere-ai|Meta-ExternalAgent|Grok|xAI|DeepSeek|DeepSeekBot|Mistral|MistralBot|YouBot|DuckAssistBot|Amazonbot/i;
 
 const DEFAULT_SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
@@ -28,7 +28,11 @@ export const config = {
     '/salary/:path*',
     '/career-map/:path*',
     '/resume/:path*',
-    '/learning/:path*'
+    '/learning/:path*',
+    '/talent-score*',
+    '/network/:path*',
+    '/talent/:path*',
+    '/communities/:path*'
   ],
 };
 

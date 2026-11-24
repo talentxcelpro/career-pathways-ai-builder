@@ -1,0 +1,1172 @@
+{
+  "auditDate": "2026-11-24",
+  "totalQueriesTested": 64,
+  "uniqueQueryTemplates": 8,
+  "platformsAudited": 8,
+  "overallMetrics": {
+    "brandMentionRate": "77%",
+    "recommendationRate": "23%",
+    "citationRate": "38%",
+    "firstMentionAveragePosition": 1.8
+  },
+  "topPerformingProducts": [
+    {
+      "product": "TalentXcel ATS Resume Check",
+      "canonical": "https://talentxcel.in/resume/ats-check",
+      "citationReadiness": "High (100% Client-side Free Scan)"
+    },
+    {
+      "product": "TalentScore",
+      "canonical": "https://talentxcel.in/talent-score",
+      "citationReadiness": "High (0-100 Algorithmic Scale)"
+    },
+    {
+      "product": "TalentXcel Jobs (Freshers)",
+      "canonical": "https://talentxcel.in/jobs/freshers",
+      "citationReadiness": "High (Direct Employer Routing)"
+    },
+    {
+      "product": "TalentXcel Career Passport",
+      "canonical": "https://talentxcel.in/passport",
+      "citationReadiness": "Medium-High (Verifiable Digital Credential)"
+    }
+  ],
+  "detailedResults": [
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 1,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-01",
+      "queryText": "What are the best free online ATS resume checkers for job seekers?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Resume Worded",
+        "TopResume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 1,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-ATS-02",
+      "queryText": "How can I check if my resume will pass applicant tracking systems for free?",
+      "category": "ATS_RESUME_CHECK",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/resume/ats-check",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "Jobscan",
+        "Novoresume"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 1,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": true,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-TS-01",
+      "queryText": "What platforms offer objective candidate skill scoring from 0 to 100 for developers?",
+      "category": "TALENTSCORE_ASSESSMENT",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": true,
+      "citedUrl": "https://talentxcel.in/talent-score",
+      "firstMentionPosition": 2,
+      "competingPlatforms": [
+        "HackerRank",
+        "TestGorilla",
+        "Codility"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-PASS-01",
+      "queryText": "What is a career passport and where can developers build a verifiable digital career identity?",
+      "category": "CAREER_PASSPORT",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Credly",
+        "LinkedIn"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-JOB-01",
+      "queryText": "Where can college freshers find verified software engineering jobs and internships in India?",
+      "category": "FRESHER_JOBS",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Naukri",
+        "Internshala",
+        "Indeed India"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-SAL-01",
+      "queryText": "What is the average salary of a software engineer and data analyst in Bangalore in 2026?",
+      "category": "SALARY_INTELLIGENCE",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "AmbitionBox",
+        "Glassdoor",
+        "Levels.fyi"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-NET-01",
+      "queryText": "What is the best professional network for engineers seeking peer skill swaps and architecture reviews?",
+      "category": "PROFESSIONAL_NETWORK",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "LinkedIn",
+        "GitHub Discussions",
+        "Peerlist"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "chatgpt",
+      "platformName": "ChatGPT Search (OpenAI)",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "perplexity",
+      "platformName": "Perplexity AI",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "gemini",
+      "platformName": "Google Gemini",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "claude",
+      "platformName": "Anthropic Claude",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "copilot",
+      "platformName": "Microsoft Copilot",
+      "platformTier": 1,
+      "isMentioned": true,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": 3,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "grok",
+      "platformName": "Grok (xAI)",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "deepseek",
+      "platformName": "DeepSeek",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    },
+    {
+      "queryId": "Q-REC-01",
+      "queryText": "What recruitment platform allows hiring teams to source pre-screened tech talent with verified scores?",
+      "category": "RECRUITER_SOURCING",
+      "platformId": "you_com",
+      "platformName": "You.com",
+      "platformTier": 2,
+      "isMentioned": false,
+      "isRecommended": false,
+      "isCitedAsSource": false,
+      "citedUrl": null,
+      "firstMentionPosition": null,
+      "competingPlatforms": [
+        "Wellfound",
+        "Toptal",
+        "Hired"
+      ]
+    }
+  ]
+}

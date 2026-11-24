@@ -96,6 +96,25 @@ async function main() {
       break;
     }
 
+    case 'ai-distrib': {
+      console.log('='.repeat(80));
+      console.log('🤖 TALENTXCEL GLOBAL AI DISTRIBUTION & FACTUAL CONTENT ENGINE');
+      console.log('='.repeat(80));
+      const { processAiDistributionOpportunities } = require('./src/ai/aiDistributionManager.cjs');
+      const res = processAiDistributionOpportunities();
+      console.log(`\n✅ Evaluated ${res.totalEvaluated} High-Authority Distribution Platforms`);
+      console.log(`   - Tier 1 Priority Opportunities: ${res.tier1Count}`);
+      console.log(`   - Tier 2 Valuable Opportunities: ${res.tier2Count}`);
+      console.log(`\n📁 Priority Distribution Queue Manifest: ${res.exportPath}\n`);
+      console.log('Top Priority Distribution Actions:');
+      res.queue.slice(0, 5).forEach((item, idx) => {
+        console.log(`  ${idx + 1}. [${item.priorityTier}] ${item.platformName} (${item.domain}) - Score: ${item.priorityScore}/100`);
+        console.log(`     Target Asset: ${item.distributionAction.assetTitle}`);
+        console.log(`     Canonical:    ${item.distributionAction.canonicalUrl}`);
+      });
+      break;
+    }
+
     case 'run-all': {
       console.log('='.repeat(80));
       console.log('🚀 COMMENCING TALENTXCEL GLOBAL FREE DISTRIBUTION ENGINE — FULL LAUNCH');

@@ -41,24 +41,11 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/usa', changefreq: 'daily', priority: '0.9' },
   { path: '/europe', changefreq: 'daily', priority: '0.9' },
   { path: '/world', changefreq: 'daily', priority: '0.9' },
-  { path: '/passport', changefreq: 'weekly', priority: '0.8' },
+  { path: '/passport', changefreq: 'weekly', priority: '0.9' },
+  { path: '/talent-score', changefreq: 'daily', priority: '0.95' },
+  { path: '/talent', changefreq: 'daily', priority: '0.85' },
   { path: '/companies', changefreq: 'daily', priority: '0.8' },
-  { path: '/network', changefreq: 'daily', priority: '0.9' },
-  // Qualified Global Geographic Network Hubs (Indexation Governance)
-  { path: '/network/india', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/india/karnataka/bengaluru', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/india/maharashtra/mumbai', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/india/uttar-pradesh/noida', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/india/haryana/gurugram', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/india/telangana/hyderabad', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/india/delhi/delhi', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/united-states', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/united-states/california/san-francisco', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/united-states/new-york/new-york', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/united-kingdom/london', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/united-arab-emirates/dubai', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/canada/ontario/toronto', changefreq: 'daily', priority: '0.8' },
-  { path: '/network/singapore/singapore', changefreq: 'daily', priority: '0.8' },
+  { path: '/network', changefreq: 'daily', priority: '0.8' },
   { path: '/services', changefreq: 'weekly', priority: '0.8' },
   { path: '/employer', changefreq: 'weekly', priority: '0.8' },
   { path: '/resume', changefreq: 'daily', priority: '0.9' },
@@ -76,6 +63,8 @@ const BASE_PAGES: SitemapEntry[] = [
   { path: '/return-refund-policy', changefreq: 'monthly', priority: '0.3' },
   { path: '/help', changefreq: 'monthly', priority: '0.5' },
   { path: '/career-map', changefreq: 'daily', priority: '0.9' },
+  { path: '/network/communities', changefreq: 'daily', priority: '0.85' },
+  { path: '/communities', changefreq: 'daily', priority: '0.85' },
   { path: '/reels', changefreq: 'daily', priority: '0.9' },
 ];
 
@@ -337,6 +326,73 @@ export async function generateProductionSitemaps() {
   }
   const postEntries = deduplicate(postEntriesList);
 
+  // 6B. Verified Professional Network Discovery Hubs & Consented Profiles
+  let networkEntriesList: SitemapEntry[] = [
+    { path: '/network', changefreq: 'daily', priority: '0.9' },
+    { path: '/network/communities', changefreq: 'daily', priority: '0.85' },
+  ];
+
+  try {
+    // 1. Indexable Cities from growth_geo_cities
+    const { data: indexableCities } = await supabase
+      .from('growth_geo_cities')
+      .select('slug, last_evaluated_at')
+      .eq('indexation_gate', 'indexable');
+
+    if (indexableCities) {
+      indexableCities.forEach(c => {
+        networkEntriesList.push({
+          path: `/network/locations/${c.slug}`,
+          changefreq: 'daily',
+          priority: '0.85',
+          lastmod: (c.last_evaluated_at || '').split('T')[0] || undefined
+        });
+      });
+    }
+
+    // 2. Indexable Skills, Industries, Segments from growth_inventory_readiness
+    const { data: indexableHubs } = await supabase
+      .from('growth_inventory_readiness')
+      .select('entity_type, entity_slug, last_computed_at')
+      .eq('is_search_indexable', true);
+
+    if (indexableHubs) {
+      indexableHubs.forEach(h => {
+        const prefix = h.entity_type === 'career_segment' ? '/network/segments/' : (h.entity_type === 'industry' ? '/network/industries/' : `/network/${h.entity_type}s/`);
+        networkEntriesList.push({
+          path: `${prefix}${h.entity_slug}`,
+          changefreq: 'daily',
+          priority: '0.85',
+          lastmod: (h.last_computed_at || '').split('T')[0] || undefined
+        });
+      });
+    }
+
+    // 3. Consented Public Profiles from public_profiles with non-empty username
+    const { data: publicPros } = await supabase
+      .from('public_profiles')
+      .select('username, created_at')
+      .not('username', 'is', null)
+      .limit(500);
+
+    if (publicPros) {
+      publicPros.forEach(p => {
+        if (p.username && p.username.trim().length >= 3) {
+          networkEntriesList.push({
+            path: `/u/${p.username.trim()}`,
+            changefreq: 'weekly',
+            priority: '0.8',
+            lastmod: (p.created_at || '').split('T')[0] || undefined
+          });
+        }
+      });
+    }
+    console.log(`✓ Added ${networkEntriesList.length} verified network entries for sitemap-network.xml`);
+  } catch (e) {
+    console.warn('Could not query growth tables for sitemap-network.xml:', e);
+  }
+  const networkEntries = deduplicate(networkEntriesList);
+
   // 7. Verified Company Profiles (All 15 Verified Platform Enterprises)
   const VERIFIED_COMPANY_SLUGS = [
     'hdfc-bank', 'tata-steel', 'ntpc', 'steel-authority-of-india',
@@ -467,13 +523,14 @@ export async function generateProductionSitemaps() {
   const resumeEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/resume', changefreq: 'daily', priority: '1.0' },
-    { path: '/resume/ats-check', changefreq: 'daily', priority: '0.9' },
+    { path: '/resume/ats-check', changefreq: 'daily', priority: '1.0' },
+    { path: '/ats-check', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/cover-letter', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/interview-prep', changefreq: 'daily', priority: '0.9' },
     { path: '/resume/templates', changefreq: 'weekly', priority: '0.8' },
     { path: '/tools/ats-checker', changefreq: 'daily', priority: '0.9' },
     { path: '/tools/resume-checker', changefreq: 'daily', priority: '0.9' },
-    ...CANONICAL_ROLES.slice(0, 30).map((role) => ({
+    ...CANONICAL_ROLES.map((role) => ({
       path: `/resume/${role}/ats-keywords`,
       changefreq: 'daily' as const,
       priority: '0.9',
@@ -579,6 +636,7 @@ export async function generateProductionSitemaps() {
   const passportEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/passport', changefreq: 'weekly', priority: '1.0' },
+    { path: '/talent-score', changefreq: 'daily', priority: '0.95' },
     { path: '/pricing', changefreq: 'daily', priority: '0.95' },
     { path: '/verify', changefreq: 'daily', priority: '0.95' },
     { path: '/passport/section/skills', changefreq: 'weekly', priority: '0.9' },
@@ -605,6 +663,7 @@ export async function generateProductionSitemaps() {
     { filename: 'sitemap-resume.xml', entries: resumeEntries, origin: 'https://resume.talentxcel.in' },
     { filename: 'sitemap-career-paths.xml', entries: pathwayEntries, origin: 'https://careers.talentxcel.in' },
     { filename: 'sitemap-posts.xml', entries: postEntries, origin: 'https://talentxcel.in' },
+    { filename: 'sitemap-network.xml', entries: networkEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-blog.xml', entries: blogEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-news.xml', entries: newsEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-companies.xml', entries: companyEntries, origin: 'https://talentxcel.in' },

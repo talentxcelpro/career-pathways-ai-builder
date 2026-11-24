@@ -225,6 +225,7 @@ const CompanyOSLayout                 = lazy(() => import('./pages/company-os/Co
 const CEODashboard                    = lazy(() => import('./pages/company-os/CEODashboard'));
 const CompanyPublicProfile            = lazy(() => import('./pages/companies/CompanyPublicProfile'));
 const PublicPostPage                  = lazy(() => import('./pages/posts/PublicPostPage'));
+const PublicNetworkDiscoveryHub       = lazy(() => import('./pages/network/PublicNetworkDiscoveryHub'));
 const TopicHubPage                    = lazy(() => import('./pages/topics/TopicHubPage'));
 const ServiceLandingPage              = lazy(() => import('./pages/services/ServiceLandingPage'));
 const DecisionQueue                   = lazy(() => import('./pages/company-os/DecisionQueue'));
@@ -860,6 +861,26 @@ const App = () => {
                     <CommunitiesPage />
                   </Suspense>
                 } />
+                <Route path="/network/locations/:slug" element={
+                  <Suspense fallback={<PageFallbackSkeleton />}>
+                    <PublicNetworkDiscoveryHub type="location" />
+                  </Suspense>
+                } />
+                <Route path="/network/skills/:slug" element={
+                  <Suspense fallback={<PageFallbackSkeleton />}>
+                    <PublicNetworkDiscoveryHub type="skill" />
+                  </Suspense>
+                } />
+                <Route path="/network/industries/:slug" element={
+                  <Suspense fallback={<PageFallbackSkeleton />}>
+                    <PublicNetworkDiscoveryHub type="industry" />
+                  </Suspense>
+                } />
+                <Route path="/network/segments/:slug" element={
+                  <Suspense fallback={<PageFallbackSkeleton />}>
+                    <PublicNetworkDiscoveryHub type="segment" />
+                  </Suspense>
+                } />
                 <Route path="/messages" element={
                   <Suspense fallback={
                     <div className="min-h-screen flex items-center justify-center text-muted-foreground">Loading Messages...</div>
@@ -1282,12 +1303,11 @@ const App = () => {
                                   </ProtectedRoute>
                                 } />
                                 <Route path="/talent-score" element={
-                                  <ProtectedRoute>
-                                    <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading TalentScore...</div>}>
-                                      <TalentScorePage />
-                                    </Suspense>
-                                  </ProtectedRoute>
+                                  <Suspense fallback={<div className="p-6 text-sm text-muted-foreground">Loading TalentScore...</div>}>
+                                    <TalentScorePage />
+                                  </Suspense>
                                 } />
+                                <Route path="/talentscore" element={<Navigate to="/talent-score" replace />} />
                                 <Route path="/mobile/reels" element={<Suspense fallback={<div>Loading...</div>}><MobileReelsPage /></Suspense>} />
                                  <Route path="/mobile/passport" element={<MobilePassport />} />
                                  

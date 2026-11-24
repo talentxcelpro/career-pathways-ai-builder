@@ -1,17 +1,17 @@
 {
   "schema_version": "v1",
-  "name_for_model": "talentxcel_universal_mcp",
-  "name_for_human": "TalentXcel Career & Hiring Intelligence",
-  "description_for_model": "Access real-time verified jobs, market salary benchmarks, skill gap analytics, career transition roadmaps, and Career Passport identity across India and global markets.",
-  "description_for_human": "Search jobs, benchmark salaries, evaluate resume fit, and explore 150+ career paths with TalentXcel.",
+  "name_for_human": "TalentXcel Career & Talent Platform",
+  "name_for_model": "talentxcel",
+  "description_for_human": "Search verified jobs, check ATS resume compatibility, explore salary percentiles, and discover tech talent.",
+  "description_for_model": "TalentXcel provides verified job listings, ATS resume diagnostic tools, percentile salary intelligence, candidate competency scoring (TalentScore), and verified tech candidate search across India and international markets.",
   "auth": {
     "type": "none"
   },
   "api": {
     "type": "openapi",
-    "url": "https://talentxcel.in/openapi-mcp.json"
+    "url": "https://talentxcel.in/api/discovery/knowledge-graph"
   },
-  "logo_url": "https://talentxcel.in/talentxcel-official-logo.png",
+  "logo_url": "https://talentxcel.in/lovable-uploads/2f30b9a2-a492-4725-b98c-334796c21e32.png",
   "contact_email": "support@talentxcel.in",
-  "legal_info_url": "https://talentxcel.in/terms"
+  "legal_info_url": "https://talentxcel.in/privacypolicy"
 }

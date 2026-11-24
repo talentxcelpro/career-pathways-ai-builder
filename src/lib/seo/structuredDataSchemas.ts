@@ -287,3 +287,147 @@ export function buildImageObjectSchema(options: {
   if (options.height) schema.height = options.height;
   return schema;
 }
+
+/**
+ * 9. Master Interconnected Entity Graph Schema Generator
+ *    Connects TalentXcel parent Organization to all 8 core product entities
+ *    with verifiable reciprocal links (hasPart, isPartOf, isRelatedTo).
+ */
+export function buildTalentXcelMasterEntityGraphSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Corporation',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/#organization`,
+        name: 'TalentXcel Services Pvt Ltd',
+        alternateName: ['TalentXcel', 'TalentXcel Global Career Ecosystem', 'TalentXcel Platform'],
+        url: BASE_PRODUCTION_ORIGIN,
+        logo: {
+          '@type': 'ImageObject',
+          '@id': `${BASE_PRODUCTION_ORIGIN}/#logo`,
+          url: `${BASE_PRODUCTION_ORIGIN}/talentxcel-official-logo.png`,
+          caption: 'TalentXcel Official Logo',
+        },
+        image: `${BASE_PRODUCTION_ORIGIN}/talentxcel-official-logo.png`,
+        description: 'TalentXcel is the global career intelligence and talent discovery platform uniting 8 interconnected product entities: ATS-Check, TalentScore, Career Passport, Jobs, Talent Directory, Professional Network, Recruiter OS, and Communities.',
+        hasPart: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/resume/ats-check#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/talent-score#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/jobs#service` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/talent#directory` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/network#platform` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/employer#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/network/communities#guilds` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/resume/ats-check#software`,
+        name: 'TalentXcel ATS-Check',
+        url: `${BASE_PRODUCTION_ORIGIN}/resume/ats-check`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/jobs#service` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/talent-score#software`,
+        name: 'TalentXcel TalentScore',
+        url: `${BASE_PRODUCTION_ORIGIN}/talent-score`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/jobs#service` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software`,
+        name: 'TalentXcel Career Passport',
+        url: `${BASE_PRODUCTION_ORIGIN}/passport`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/talent#directory` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/talent-score#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/resume/ats-check#software` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/jobs#service`,
+        name: 'TalentXcel Jobs',
+        url: `${BASE_PRODUCTION_ORIGIN}/jobs`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/resume/ats-check#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/employer#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/talent-score#software` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/talent#directory`,
+        name: 'TalentXcel Talent Directory',
+        url: `${BASE_PRODUCTION_ORIGIN}/talent`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/employer#software` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/network#platform`,
+        name: 'TalentXcel Professional Network',
+        url: `${BASE_PRODUCTION_ORIGIN}/network`,
+        applicationCategory: 'SocialNetworkingApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/network/communities#guilds` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/employer#software`,
+        name: 'TalentXcel Recruiter OS',
+        url: `${BASE_PRODUCTION_ORIGIN}/employer`,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/talent#directory` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/jobs#service` },
+        ],
+      },
+      {
+        '@type': 'WebApplication',
+        '@id': `${BASE_PRODUCTION_ORIGIN}/network/communities#guilds`,
+        name: 'TalentXcel Communities',
+        url: `${BASE_PRODUCTION_ORIGIN}/network/communities`,
+        applicationCategory: 'SocialNetworkingApplication',
+        operatingSystem: 'All',
+        isPartOf: { '@id': `${BASE_PRODUCTION_ORIGIN}/#organization` },
+        isRelatedTo: [
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/network#platform` },
+          { '@id': `${BASE_PRODUCTION_ORIGIN}/passport#software` },
+        ],
+      },
+    ],
+  };
+}

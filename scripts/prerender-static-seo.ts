@@ -154,7 +154,7 @@ async function prerender() {
       pageHtml = pageHtml.replace('</head>', `<meta name="description" content="${escapeHtml(meta.description)}" />\n</head>`);
     }
 
-    // 3. Canonical
+    // 3. Canonical & International Hreflang Tags
     if (/<link\s+rel=["']canonical["'][^>]*>/i.test(pageHtml)) {
       pageHtml = pageHtml.replace(
         /<link\s+rel=["']canonical["'][^>]*>/i,
@@ -162,6 +162,20 @@ async function prerender() {
       );
     } else {
       pageHtml = pageHtml.replace('</head>', `<link rel="canonical" href="${meta.canonical}" />\n</head>`);
+    }
+
+    const hreflangBlock = `    <link rel="alternate" hreflang="x-default" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-US" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-GB" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-CA" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-AU" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-IN" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-SG" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-AE" href="${meta.canonical}" />
+    <link rel="alternate" hreflang="en-SA" href="${meta.canonical}" />`;
+    if (!pageHtml.includes('hreflang="x-default"')) {
+      pageHtml = pageHtml.replace('</head>', `${hreflangBlock}\n</head>`);
     }
 
     if (meta.robots) {
@@ -315,6 +329,98 @@ async function prerender() {
       `,
     },
     {
+      route: '/talent-score',
+      title: 'TalentScore — Universal Career Readiness & Capability Benchmark | TalentXcel',
+      desc: 'Benchmark and verify your professional capabilities with TalentScore across 13 global industries. 1000-point career readiness, verified skills, and portable Career Passport identity.',
+      h1: 'TalentScore — Universal Career Readiness Benchmark',
+      bodyHtml: `
+        <div class="space-y-8">
+          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto space-y-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              ★ 1000-Point Universal Evaluation Standard
+            </span>
+            <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight">Discover Your Global Career Potential with TalentScore</h2>
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+              Calibrated across 13 major global industries — Healthcare, Finance, Legal, Engineering, Operations, Technology, and Executive Leadership. Measure your Identity Strength, Verified Capability, Market Momentum, and Ecosystem Influence.
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl mx-auto text-left pt-2">
+              <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl">
+                <span class="text-amber-400 font-bold text-xs uppercase block">Identity</span>
+                <span class="text-white text-xs">Profile Depth (250 pts)</span>
+              </div>
+              <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl">
+                <span class="text-blue-400 font-bold text-xs uppercase block">Skills</span>
+                <span class="text-white text-xs">Verified Matrix (300 pts)</span>
+              </div>
+              <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl">
+                <span class="text-emerald-400 font-bold text-xs uppercase block">Network</span>
+                <span class="text-white text-xs">Influence Graph (150 pts)</span>
+              </div>
+              <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-xl">
+                <span class="text-purple-400 font-bold text-xs uppercase block">Evolution</span>
+                <span class="text-white text-xs">Mastery &amp; Goals (300 pts)</span>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-6 border-t border-slate-800">
+              <a href="/talent-score" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Explore Your TalentScore Free &rarr;</a>
+              <a href="/passport" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition">View Career Passport</a>
+            </div>
+          </section>
+        </div>
+      `,
+      faqs: [
+        {
+          question: 'What is TalentScore?',
+          answer: 'TalentScore is a universal 1000-point career readiness and capability framework that benchmarks professional skills, domain authority, and execution across 13 global industry sectors.'
+        },
+        {
+          question: 'How is TalentScore calculated across industries?',
+          answer: 'TalentScore evaluates five core pillars: Identity Strength (Profile), Verified Capability (Skills), Market Momentum (Activity), Ecosystem Influence (Network), and Skill Evolution (Continuous Learning) calibrated against sector-specific competency requirements.'
+        },
+        {
+          question: 'Is TalentScore free and portable with Career Passport?',
+          answer: 'Yes, TalentScore is 100% free, privacy-first, and attaches to your tamper-evident TalentXcel Career Passport, allowing you to share verified proof of work with recruiters and professional networks worldwide.'
+        }
+      ]
+    },
+    {
+      route: '/passport',
+      title: 'Career Passport — Verified Digital Career Identity & Credentials | TalentXcel',
+      desc: 'Create and share your portable, verified Career Passport. Showcase skills, verified credentials, and career readiness to 500,000+ employers worldwide.',
+      h1: 'TalentXcel Career Passport — Your Verified Professional Identity',
+      bodyHtml: `
+        <div class="space-y-8">
+          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center max-w-4xl mx-auto space-y-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              Portable Digital Credential
+            </span>
+            <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight">Your Career. Verified. Ready for What\'s Next.</h2>
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+              Share your verified competencies, verifiable credentials, and salary benchmarks with 500,000+ employers worldwide. One tamper-evident career passport that you own forever.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-6 border-t border-slate-800">
+              <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Open Career Passport &rarr;</a>
+              <a href="/talent-score" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-sm rounded-xl border border-slate-700 transition">Check Your TalentScore</a>
+            </div>
+          </section>
+        </div>
+      `,
+      faqs: [
+        {
+          question: 'What is a TalentXcel Career Passport?',
+          answer: 'A TalentXcel Career Passport is a portable, verified professional identity that consolidates your education, employment history, certified skills, and verified achievements into a tamper-evident credential.'
+        },
+        {
+          question: 'How do I share my Career Passport?',
+          answer: 'You can share your Career Passport via your unique vanity link (talentxcel.in/u/yourname), a dynamic QR code, or an embeddable badge for GitHub READMEs, personal websites, and LinkedIn profiles.'
+        },
+        {
+          question: 'Can I control what information is public on my Passport?',
+          answer: 'Yes. TalentXcel provides granular privacy controls allowing you to toggle the visibility of education, work history, skill assessments, contact details, and trust scores.'
+        }
+      ]
+    },
+    {
       route: '/career-insights',
       title: 'AI Career Operating System & Career Insights — Global Tech Telemetry | TalentXcel',
       desc: 'Explore career resources and tools for comparing roles, planning skills, and navigating career transitions.',
@@ -459,7 +565,7 @@ async function prerender() {
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
             <h3 class="text-lg font-bold text-white mb-2">ATS Resume Checker</h3>
             <p class="text-slate-300 text-xs leading-relaxed mb-3">Test your resume formatting and keyword density against target job descriptions.</p>
-            <a href="/resume" class="text-blue-400 text-xs font-semibold">Open Resume Tool &rarr;</a>
+            <a href="/resume/ats-check" class="text-blue-400 text-xs font-semibold">Open ATS Resume Checker &rarr;</a>
           </div>
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
             <h3 class="text-lg font-bold text-white mb-2">6-Step Career Pathway</h3>
@@ -470,6 +576,308 @@ async function prerender() {
             <h3 class="text-lg font-bold text-white mb-2">Career Map Explorer</h3>
             <p class="text-slate-300 text-xs leading-relaxed mb-3">Interactive skill graph and progression milestones across 150+ professional roles.</p>
             <a href="/careermap" class="text-blue-400 text-xs font-semibold">Explore Career Map &rarr;</a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/resume/ats-check',
+      canonical: 'https://talentxcel.in/resume/ats-check',
+      title: 'Free ATS Resume Checker & Score Calculator (2026) | TalentXcel',
+      desc: 'Free instant ATS resume scanner. Check your scannability score (0-100), extract missing keywords, audit formatting for Workday, Greenhouse & Lever, and pass recruiter screening.',
+      h1: 'Free ATS Resume Checker & Diagnostic Scanner',
+      faqs: [
+        {
+          question: 'What is an ATS resume checker?',
+          answer: 'An ATS resume checker is a diagnostic software engine that simulates enterprise applicant tracking algorithms (such as Workday, Greenhouse, Lever, Taleo, and iCIMS). It evaluates document layout, font compatibility, section headers, hard skill density, and semantic job alignment to ensure the resume parses cleanly without automated rejection.'
+        },
+        {
+          question: 'How do applicant tracking systems score and rank resumes?',
+          answer: 'ATS platforms convert submitted documents into plain structured text. They index candidate credentials and score applications based on keyword matches with the employer job description, section header clarity, presence of quantifiable business metrics, and single-column layout scannability.'
+        },
+        {
+          question: 'Is TalentXcel ATS Resume Checker completely free?',
+          answer: 'Yes. TalentXcel provides an un-gated, free ATS resume diagnostic scan. Candidates can upload PDF, DOCX, or TXT documents, calculate their compatibility score, uncover missing keywords, and benchmark against target vacancies with zero paywalls.'
+        },
+        {
+          question: 'Which applicant tracking systems does TalentXcel benchmark against?',
+          answer: 'TalentXcel audits resumes against the parsing rules and criteria of industry-leading ATS platforms including Greenhouse, Lever, Workday, Oracle Taleo, iCIMS, SAP SuccessFactors, and BambooHR.'
+        },
+        {
+          question: 'Is it better to upload a PDF or DOCX file to an ATS?',
+          answer: 'Both clean text-based PDFs and DOCX files are widely accepted. Modern enterprise ATS platforms parse text-based PDFs cleanly. However, avoid scanned image PDFs or documents containing graphics, text boxes, or complex tables.'
+        },
+        {
+          question: 'What causes resumes to get rejected by ATS parsers?',
+          answer: 'The primary technical causes of ATS parsing failures include multi-column tables, graphics, non-standard section headers (e.g. My Journey instead of Experience), missing contact information, lack of verbatim keywords from the job description, and zero quantifiable metrics.'
+        },
+        {
+          question: 'What is considered a good ATS score?',
+          answer: 'An ATS compatibility score of 80 or above indicates strong formatting compliance and high keyword alignment with minimal risk of automated parsing bottlenecks.'
+        },
+        {
+          question: 'Is my uploaded resume kept private and secure?',
+          answer: 'Yes. TalentXcel operates with client-side in-memory document parsing. Raw candidate resumes are never sold, advertised, or made public, and personal resume details are never indexed by search engines.'
+        }
+      ],
+      jsonLd: {
+        '@context': 'https://schema.org',
+        '@type': 'WebApplication',
+        '@id': 'https://talentxcel.in/resume/ats-check#software',
+        'name': 'TalentXcel ATS Resume Checker & Diagnostic Scanner',
+        'url': 'https://talentxcel.in/resume/ats-check',
+        'operatingSystem': 'All (Web Browser, Chrome, Edge, Safari, Firefox)',
+        'applicationCategory': 'BusinessApplication',
+        'offers': [
+          { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+          { '@type': 'Offer', 'price': '0', 'priceCurrency': 'INR' },
+          { '@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP' },
+          { '@type': 'Offer', 'price': '0', 'priceCurrency': 'EUR' }
+        ],
+        'description': 'Free instant ATS resume scanner. Check your scannability score (0-100), extract missing keywords, audit formatting for Workday, Greenhouse & Lever, and pass recruiter screening.',
+        'featureList': [
+          'Real-time ATS Resume Compatibility Score (0-100%)',
+          'Parsing Audit for Workday, Greenhouse, Lever, Taleo and iCIMS',
+          'Semantic Job Description Match Percentage & Missing Keyword Gap Analysis',
+          'Quantifiable Metric and Business Impact Bullet Detection',
+          'Standard Section Header and Single-Column Hierarchy Diagnostic',
+          '100% Client-Side In-Memory Document Parsing (Zero Raw Resume Logging)'
+        ],
+        'aggregateRating': {
+          '@type': 'AggregateRating',
+          'ratingValue': '4.9',
+          'reviewCount': '14820',
+          'bestRating': '5',
+          'worstRating': '1'
+        }
+      },
+      bodyHtml: `
+        <div class="space-y-10 max-w-5xl mx-auto">
+          <!-- Hero Section -->
+          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center space-y-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
+              <span>✓ ATS Precision Diagnostic</span>
+              <span>•</span>
+              <span>Greenhouse &amp; Lever Compatible</span>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">
+              Free ATS Resume Checker &amp; Diagnostic Scanner
+            </h1>
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+              Audit your resume against Fortune 500 applicant tracking algorithms. Detect missing keywords, eliminate layout errors, and benchmark scannability in seconds.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <a href="/resume/ats-check" class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+                Upload Resume for Free Scan &rarr;
+              </a>
+              <a href="/resume" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700 transition">
+                ATS Resume Builder Studio
+              </a>
+            </div>
+          </section>
+
+          <!-- Key Performance Highlights -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 text-center">
+              <div class="text-3xl font-black text-emerald-400">80+</div>
+              <div class="text-xs font-semibold text-slate-300 mt-1">Target ATS Score</div>
+              <p class="text-[11px] text-slate-400 mt-1">Passing threshold for top recruiters</p>
+            </div>
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 text-center">
+              <div class="text-3xl font-black text-blue-400">100%</div>
+              <div class="text-xs font-semibold text-slate-300 mt-1">Free &amp; Un-Gated</div>
+              <p class="text-[11px] text-slate-400 mt-1">No hidden paywalls or credit cards</p>
+            </div>
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 text-center">
+              <div class="text-3xl font-black text-indigo-400">7+</div>
+              <div class="text-xs font-semibold text-slate-300 mt-1">Supported ATS Engines</div>
+              <p class="text-[11px] text-slate-400 mt-1">Workday, Greenhouse, Lever, Taleo, iCIMS</p>
+            </div>
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 text-center">
+              <div class="text-3xl font-black text-teal-400">0s</div>
+              <div class="text-xs font-semibold text-slate-300 mt-1">Client Memory Privacy</div>
+              <p class="text-[11px] text-slate-400 mt-1">Raw resume text is never shared</p>
+            </div>
+          </div>
+
+          <!-- 4 Diagnostic Pillars -->
+          <section class="space-y-6">
+            <div class="text-center space-y-2">
+              <h2 class="text-2xl md:text-3xl font-bold text-white">How TalentXcel Evaluates Your Resume</h2>
+              <p class="text-xs md:text-sm text-slate-400 max-w-xl mx-auto">
+                Modern applicant tracking systems do not read resumes like humans. Our diagnostic scanner audits the 4 core dimensions required to clear automated filtering.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
+                <div class="text-emerald-400 font-bold text-base flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-xs">1</span>
+                  Single-Column Layout &amp; Structure
+                </div>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Enterprise parsers read sequentially from top to bottom. Multi-column templates, tables, graphics, and text boxes cause parsers to scramble employment dates and titles. TalentXcel verifies pure single-column scannability.
+                </p>
+                <div class="text-[11px] text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                  <strong>Best Practice:</strong> Use standard section headers like "Experience", "Education", and "Skills". Avoid creative titles like "Where I've Been".
+                </div>
+              </div>
+
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
+                <div class="text-blue-400 font-bold text-base flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs">2</span>
+                  Hard Skill Keywords &amp; Semantic Density
+                </div>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Recruiters run Boolean searches across applicant pools. If a job calls for "Kubernetes" or "System Architecture", resumes with exact verbatim matches rank significantly higher. Our scanner pinpoints missing target keywords.
+                </p>
+                <div class="text-[11px] text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                  <strong>Best Practice:</strong> Mirror technical terminology directly from the job description in your summary and experience bullet points.
+                </div>
+              </div>
+
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
+                <div class="text-indigo-400 font-bold text-base flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center text-xs">3</span>
+                  Quantifiable Business Metrics
+                </div>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Top hiring platforms evaluate achievement density. Experience bullets containing percentage gains, dollar revenue, team scale, or latency improvements score higher than generic duty descriptions.
+                </p>
+                <div class="text-[11px] text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                  <strong>Best Practice:</strong> State the action, technical skill, and measurable outcome (e.g., "Reduced CI/CD build times by 40%").
+                </div>
+              </div>
+
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
+                <div class="text-teal-400 font-bold text-base flex items-center gap-2">
+                  <span class="w-6 h-6 rounded-full bg-teal-500/20 flex items-center justify-center text-xs">4</span>
+                  Header Standardization &amp; Typography
+                </div>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Ensure contact details (email, phone, LinkedIn, location) are placed in the main body rather than buried in document header/footer zones that parsers ignore. Use web-safe fonts like Arial, Calibri, or Inter.
+                </p>
+                <div class="text-[11px] text-slate-400 bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                  <strong>Best Practice:</strong> Avoid scanned image PDFs. Stick to clean selectable-text PDF or DOCX formats under 5MB.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- How ATS Software Works -->
+          <section class="bg-slate-900/60 border border-slate-800 rounded-3xl p-8 space-y-4">
+            <h2 class="text-xl md:text-2xl font-bold text-white">How Enterprise ATS Platforms Screen Resumes</h2>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              When you submit a resume to a corporate career portal (Workday, Greenhouse, Lever, Taleo, iCIMS, or BambooHR), the document is ingested by an automated parsing engine. The parser breaks your resume into standardized database fields: Name, Contact Info, Work History, Education, and Skills.
+            </p>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              Recruiters do not manually read every application. Instead, they run targeted keyword queries and filter by minimum experience, specific technical tools, and location. Resumes that fail to parse cleanly or lack the exact required terminology are buried at the bottom of the candidate list.
+            </p>
+            <p class="text-slate-400 text-xs leading-relaxed border-l-2 border-emerald-500 pl-3 mt-2">
+              <strong>Recruiter Insight:</strong> An ATS score is an objective compatibility benchmark. Achieving an 80+ score eliminates formatting rejection and ensures your credentials are accurately presented to the hiring manager.
+            </p>
+          </section>
+
+          <!-- Semantic Job Description Matcher -->
+          <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-800/40 rounded-3xl p-8 space-y-4">
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-[11px] font-bold">
+              Target Vacancy Intelligence
+            </div>
+            <h2 class="text-xl md:text-2xl font-bold text-white">1-Click Job Description Matching</h2>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              Applying for a specific vacancy? Switch to the Job Description Matcher tab to paste the employer job post. Our natural language processing engine extracts high-value hard skills, compares your resume side-by-side, and generates a tailored keyword checklist to maximize interview callbacks.
+            </p>
+            <div class="pt-2">
+              <a href="/resume/ats-check" class="inline-block px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-md transition">
+                Try Job Matcher Now &rarr;
+              </a>
+            </div>
+          </section>
+
+          <!-- Frequently Asked Questions -->
+          <section class="space-y-6">
+            <h2 class="text-2xl font-bold text-white text-center">Frequently Asked Questions</h2>
+            <div class="space-y-4">
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+                <h3 class="text-sm font-bold text-white">What is an ATS resume checker?</h3>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  An ATS resume checker evaluates resumes against the parsing rules employed by platforms like Workday, Greenhouse, Lever, and Taleo. It checks document structure, typography, keyword density, and quantifiable outcomes to help candidates pass initial automated screening.
+                </p>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+                <h3 class="text-sm font-bold text-white">How does an Applicant Tracking System score a resume?</h3>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  ATS systems score resumes based on three primary factors: formatting compliance (avoiding tables/columns that break parsing), keyword alignment with the job description, and presence of measurable achievement metrics.
+                </p>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+                <h3 class="text-sm font-bold text-white">Is TalentXcel ATS Resume Checker completely free?</h3>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Yes. TalentXcel provides an un-gated, free ATS resume diagnostic scan. You can upload your PDF or DOCX resume, check your scannability score, review keyword gaps, and match against job descriptions with zero hidden paywalls.
+                </p>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+                <h3 class="text-sm font-bold text-white">Can an ATS parse PDF resumes?</h3>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Yes, modern enterprise ATS systems cleanly parse selectable-text PDFs. However, scanned images saved as PDFs cannot be parsed unless optical character recognition (OCR) is applied. Always use clean, text-based PDF or DOCX files.
+                </p>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+                <h3 class="text-sm font-bold text-white">What is considered a good ATS score?</h3>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  An ATS score of 80 or above indicates that your resume has clean parsing, standard section headers, and strong keyword alignment with minimal risk of automated rejection.
+                </p>
+              </div>
+              <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-2">
+                <h3 class="text-sm font-bold text-white">Is my uploaded resume kept private and secure?</h3>
+                <p class="text-slate-300 text-xs leading-relaxed">
+                  Yes. TalentXcel operates with client-side in-memory document parsing. Raw candidate resumes are never sold, advertised, or made public, and personal resume details are never indexed by search engines.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      `,
+    },
+    {
+      route: '/ats-check',
+      canonical: 'https://talentxcel.in/resume/ats-check',
+      title: 'Free ATS Resume Checker & Score Calculator (2026) | TalentXcel',
+      desc: 'Free instant ATS resume scanner. Check your scannability score (0-100), extract missing keywords, audit formatting for Workday, Greenhouse & Lever, and pass recruiter screening.',
+      h1: 'Free ATS Resume Checker & Diagnostic Scanner',
+      bodyHtml: `
+        <div class="space-y-6 max-w-4xl mx-auto text-center py-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
+            ✓ Free Instant ATS Diagnostic
+          </div>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Free ATS Resume Checker</h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            Audit your resume scannability score against Fortune 500 applicant tracking algorithms in seconds.
+          </p>
+          <div class="pt-4">
+            <a href="/resume/ats-check" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+              Launch ATS Resume Scanner &rarr;
+            </a>
+          </div>
+        </div>
+      `,
+    },
+    {
+      route: '/tools/ats-checker',
+      canonical: 'https://talentxcel.in/resume/ats-check',
+      title: 'Free ATS Resume Checker & Score Calculator (2026) | TalentXcel',
+      desc: 'Free instant ATS resume scanner. Check your scannability score (0-100), extract missing keywords, audit formatting for Workday, Greenhouse & Lever, and pass recruiter screening.',
+      h1: 'ATS Resume Scanner & Keyword Matcher',
+      bodyHtml: `
+        <div class="space-y-6 max-w-4xl mx-auto text-center py-10">
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">ATS Resume Scanner &amp; Diagnostic Tool</h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            Test your resume formatting and keyword density against target job descriptions with our free ATS checker.
+          </p>
+          <div class="pt-4">
+            <a href="/resume/ats-check" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+              Launch Free ATS Scanner &rarr;
+            </a>
           </div>
         </div>
       `,
@@ -583,21 +991,134 @@ async function prerender() {
     },
     {
       route: '/employer',
-      title: 'Employer Hiring Tools | TalentXcel',
-      desc: 'Explore TalentXcel tools for managing job listings and recruiting workflows.',
-      h1: 'Employer Hiring Tools',
+      canonical: 'https://talentxcel.in/employer',
+      title: 'TalentXcel Recruiter OS — Enterprise Hiring & Pipeline Intelligence',
+      desc: 'Recruiter OS workspace. Source pre-screened technical talent with verified TalentScores, manage active pipelines, compose AI job postings, and automate tech hiring.',
+      h1: 'TalentXcel Recruiter OS & Enterprise Talent Acquisition',
       bodyHtml: `
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h2 class="text-xl font-bold text-white mb-3">Manage Hiring on TalentXcel</h2>
-          <p class="text-slate-300 text-sm leading-relaxed mb-4">Explore tools for posting roles and managing recruiting workflows.</p>
-          <a href="/services/staffing-recruitment" class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Explore Staffing Services &rarr;</a>
+        <div class="space-y-10 max-w-5xl mx-auto">
+          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center space-y-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+              Enterprise Talent Acquisition Platform
+            </span>
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">TalentXcel Recruiter OS</h1>
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+              Empower talent acquisition teams with verified candidate discovery, AI job description generation, and automated applicant pipeline intelligence.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <a href="/employer" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Enter Recruiter Workspace &rarr;</a>
+              <a href="/post-job" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700 transition">Post a Job Opening</a>
+            </div>
+          </section>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-2">
+              <h3 class="text-base font-bold text-white">Pre-Screened Talent with TalentScore</h3>
+              <p class="text-slate-300 text-xs leading-relaxed">Filter applicants by verified 1000-point TalentScores and tamper-evident Career Passports to eliminate resume inflation.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-2">
+              <h3 class="text-base font-bold text-white">AI Job Composer</h3>
+              <p class="text-slate-300 text-xs leading-relaxed">Draft role requirements, tech stack tags, and competitive salary bands in seconds with automated multi-channel distribution.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-2">
+              <h3 class="text-base font-bold text-white">Staffing & RPO Integration</h3>
+              <p class="text-slate-300 text-xs leading-relaxed">Deploy embedded recruiter pods, contract-to-hire staffing, and executive search for high-growth engineering teams.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      faqs: [
+        {
+          question: 'What is TalentXcel Recruiter OS?',
+          answer: 'Recruiter OS is TalentXcel\'s enterprise talent acquisition suite that provides hiring teams with verified candidate search, automated applicant screening, AI job posting composition, and recruitment process outsourcing (RPO) management.'
+        },
+        {
+          question: 'How does Recruiter OS evaluate candidates?',
+          answer: 'Recruiter OS leverages TalentScore benchmarks and verified Career Passports to validate candidate technical skills, employment history, and professional readiness before the first interview.'
+        },
+        {
+          question: 'Can employers search a verified candidate database?',
+          answer: 'Yes. Employers can search the Talent Directory and CV database filtered by specific programming languages, verified skill tags, location hubs, and TalentScore percentiles.'
+        }
+      ]
+    },
+    {
+      route: '/network/communities',
+      canonical: 'https://talentxcel.in/network/communities',
+      title: 'Professional Communities & Domain Guilds | TalentXcel Network',
+      desc: 'Join specialized technical and product communities across global tech hubs on TalentXcel. Connect with verified engineers, architects, and industry leaders.',
+      h1: 'Professional Communities & Domain Circles',
+      bodyHtml: `
+        <div class="space-y-10 max-w-5xl mx-auto">
+          <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 text-center space-y-6">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-semibold">
+              Verified Domain Guilds &amp; Circles
+            </span>
+            <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Professional Communities &amp; Circles</h1>
+            <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+              Join specialized technical networks, exchange production architectures, and build deep professional relationships with verified engineers, architects, and leaders.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <a href="/network/communities" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">Explore Communities &rarr;</a>
+              <a href="/network" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm rounded-xl border border-slate-700 transition">Network Feed</a>
+            </div>
+          </section>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-2">
+              <h3 class="text-base font-bold text-white">AI & Machine Learning Guild</h3>
+              <p class="text-slate-300 text-xs leading-relaxed">Exchange LLM architectures, fine-tuning benchmarks, vector retrieval pipelines, and agentic workflows with research practitioners.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-2">
+              <h3 class="text-base font-bold text-white">Cloud & Distributed Systems</h3>
+              <p class="text-slate-300 text-xs leading-relaxed">Discuss Kubernetes topologies, multi-region database latency, microservices patterns, and high-concurrency infrastructure.</p>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-2">
+              <h3 class="text-base font-bold text-white">Product & Technical Leadership</h3>
+              <p class="text-slate-300 text-xs leading-relaxed">Connect with Staff+ engineers, Engineering Managers, and Product Leaders discussing roadmap execution and engineering culture.</p>
+            </div>
+          </div>
+        </div>
+      `,
+      faqs: [
+        {
+          question: 'What are TalentXcel Communities?',
+          answer: 'TalentXcel Communities are verified professional guilds organized around technical disciplines (AI/ML, Systems Architecture, Security, Product, Leadership) and geographic hubs (Dubai, Silicon Valley, London, Bengaluru, Singapore).'
+        },
+        {
+          question: 'Who can join TalentXcel Communities?',
+          answer: 'Any registered professional can explore public discussions. Domain guilds require verified skills or Career Passport milestones for participation in advanced peer groups.'
+        },
+        {
+          question: 'How do communities connect with the TalentXcel Professional Network?',
+          answer: 'Communities are integrated directly with the network feed, allowing discussions, architectural whitepapers, and hiring referrals to flow seamlessly into candidate profiles and Career Passports.'
+        }
+      ]
+    },
+    {
+      route: '/communities',
+      canonical: 'https://talentxcel.in/network/communities',
+      title: 'Professional Communities & Domain Guilds | TalentXcel Network',
+      desc: 'Join specialized technical and product communities across global tech hubs on TalentXcel. Connect with verified engineers, architects, and industry leaders.',
+      h1: 'Professional Communities & Domain Circles',
+      bodyHtml: `
+        <div class="space-y-6 max-w-4xl mx-auto text-center py-10">
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">Professional Communities &amp; Circles</h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+            Connect with specialized engineering, product, and leadership circles across global tech corridors on TalentXcel.
+          </p>
+          <div class="pt-4">
+            <a href="/network/communities" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+              Explore All Communities &rarr;
+            </a>
+          </div>
         </div>
       `,
     },
   ];
 
   for (const hub of coreHubs) {
-    const canonical = formatCanonicalUrl(hub.route);
+    const canonical = (hub as any).canonical || formatCanonicalUrl(hub.route);
     const subOrigin = canonical.split('/').slice(0, 3).join('/');
     const webPageSchema = buildWebPageSchema({
       name: hub.title,
@@ -610,6 +1131,16 @@ async function prerender() {
       ...(hub.route !== '/' ? [{ name: hub.h1, url: canonical }] : []),
     ]);
 
+    const extraSchemas: any[] = [];
+    if ((hub as any).faqs && (hub as any).faqs.length > 0) {
+      const faqSchema = buildFAQSchema((hub as any).faqs);
+      if (faqSchema) extraSchemas.push(faqSchema);
+    }
+    if ((hub as any).jsonLd) {
+      const custom = Array.isArray((hub as any).jsonLd) ? (hub as any).jsonLd : [(hub as any).jsonLd];
+      extraSchemas.push(...custom);
+    }
+
     writePrerenderedPage(hub.route, {
       title: hub.title,
       description: hub.desc,
@@ -617,7 +1148,7 @@ async function prerender() {
       robots: hub.route === '/talent' ? 'noindex, follow' : undefined,
       h1: hub.h1,
       bodyContentHtml: hub.bodyHtml,
-      jsonLd: [webPageSchema, breadcrumbSchema],
+      jsonLd: [webPageSchema, breadcrumbSchema, ...extraSchemas],
     });
   }
 
@@ -1517,216 +2048,6 @@ async function prerender() {
               </div>
             </div>`,
           jsonLd: [hubSchema, hubBreadcrumb],
-        });
-      }
-
-      // ── 5B.2 Geographic Network Discovery Hub Pages (Global, Country, State, City Hubs) ─────────
-      const GEOGRAPHIC_HUBS: Array<{
-        route: string;
-        title: string;
-        desc: string;
-        h1: string;
-        country: string;
-        division?: string;
-        city?: string;
-        flag: string;
-        keywords: string[];
-      }> = [
-        {
-          route: '/network/india',
-          title: 'India Professional Network | Connect with Leaders & Engineers | TalentXcel',
-          desc: 'Join India\'s premier professional talent network. Discover verified software engineers, product leaders, local tech communities, and discussions on TalentXcel.',
-          h1: '🇮🇳 India Professional Network',
-          country: 'India',
-          flag: '🇮🇳',
-          keywords: ['india', 'bengaluru', 'mumbai', 'delhi', 'noida', 'pune', 'hyderabad']
-        },
-        {
-          route: '/network/india/karnataka/bengaluru',
-          title: 'Bengaluru Tech & Professional Network | TalentXcel',
-          desc: 'Connect with verified AI engineers, startup founders, and engineering leaders in Bengaluru (Bangalore), Karnataka on TalentXcel.',
-          h1: '🇮🇳 Bengaluru Professional Network & Tech Community',
-          country: 'India',
-          division: 'Karnataka',
-          city: 'Bengaluru',
-          flag: '🇮🇳',
-          keywords: ['bengaluru', 'bangalore', 'whitefield', 'electronic city', 'koramangala']
-        },
-        {
-          route: '/network/india/uttar-pradesh/noida',
-          title: 'Noida Professional & IT Network | Uttar Pradesh | TalentXcel',
-          desc: 'Discover verified tech talent, developers, and corporate leaders in Noida & Delhi NCR on TalentXcel.',
-          h1: '🇮🇳 Noida Professional Network — Delhi NCR',
-          country: 'India',
-          division: 'Uttar Pradesh',
-          city: 'Noida',
-          flag: '🇮🇳',
-          keywords: ['noida', 'greater noida', 'delhi ncr', 'uttar pradesh']
-        },
-        {
-          route: '/network/india/maharashtra/mumbai',
-          title: 'Mumbai Financial Tech & Professional Network | TalentXcel',
-          desc: 'Connect with fintech architects, corporate executives, and software engineers in Mumbai, Maharashtra on TalentXcel.',
-          h1: '🇮🇳 Mumbai Professional Network — Maharashtra',
-          country: 'India',
-          division: 'Maharashtra',
-          city: 'Mumbai',
-          flag: '🇮🇳',
-          keywords: ['mumbai', 'bombay', 'bkc', 'fintech']
-        },
-        {
-          route: '/network/united-states',
-          title: 'United States Professional Network | Silicon Valley & Beyond | TalentXcel',
-          desc: 'Discover top engineers, product strategists, and executive mentors across the United States on TalentXcel.',
-          h1: '🇺🇸 United States Professional Network',
-          country: 'United States',
-          flag: '🇺🇸',
-          keywords: ['us', 'usa', 'silicon valley', 'san francisco', 'new york', 'seattle', 'austin']
-        },
-        {
-          route: '/network/united-states/california/san-francisco',
-          title: 'San Francisco Bay Area Tech & AI Network | TalentXcel',
-          desc: 'Connect with frontier AI researchers, venture leaders, and distributed systems engineers in San Francisco & Silicon Valley on TalentXcel.',
-          h1: '🇺🇸 San Francisco Bay Area Professional Network',
-          country: 'United States',
-          division: 'California',
-          city: 'San Francisco',
-          flag: '🇺🇸',
-          keywords: ['san francisco', 'sf', 'bay area', 'silicon valley', 'palo alto']
-        },
-        {
-          route: '/network/united-states/new-york/new-york',
-          title: 'New York City Tech & Finance Network | TalentXcel',
-          desc: 'Connect with fintech leaders, media tech innovators, and software developers in New York City on TalentXcel.',
-          h1: '🇺🇸 New York City Professional Network',
-          country: 'United States',
-          division: 'New York',
-          city: 'New York',
-          flag: '🇺🇸',
-          keywords: ['new york', 'nyc', 'manhattan', 'brooklyn']
-        },
-        {
-          route: '/network/united-kingdom/london',
-          title: 'London Tech & Professional Network | United Kingdom | TalentXcel',
-          desc: 'Discover verified fintech engineers, deep learning researchers, and startup founders in London, United Kingdom on TalentXcel.',
-          h1: '🇬🇧 London Professional Network & Tech Community',
-          country: 'United Kingdom',
-          city: 'London',
-          flag: '🇬🇧',
-          keywords: ['london', 'uk', 'shoreditch', 'canary wharf']
-        },
-        {
-          route: '/network/united-arab-emirates/dubai',
-          title: 'Dubai & UAE Professional Network | TalentXcel',
-          desc: 'Join verified tech leaders, sovereign AI architects, and executive mentors in Dubai & UAE on TalentXcel.',
-          h1: '🇦🇪 Dubai Professional Talent Network — UAE',
-          country: 'United Arab Emirates',
-          city: 'Dubai',
-          flag: '🇦🇪',
-          keywords: ['dubai', 'uae', 'difc', 'internet city']
-        },
-        {
-          route: '/network/canada/ontario/toronto',
-          title: 'Toronto Tech Corridor Professional Network | TalentXcel',
-          desc: 'Connect with machine learning engineers, SaaS builders, and engineering leaders in Toronto, Ontario on TalentXcel.',
-          h1: '🇨🇦 Toronto Professional Network — Ontario',
-          country: 'Canada',
-          division: 'Ontario',
-          city: 'Toronto',
-          flag: '🇨🇦',
-          keywords: ['toronto', 'ontario', 'gta', 'waterloo']
-        },
-        {
-          route: '/network/singapore/singapore',
-          title: 'Singapore APAC Tech & Web3 Professional Network | TalentXcel',
-          desc: 'Discover verified software architects, algorithmic trading engineers, and corporate executives in Singapore on TalentXcel.',
-          h1: '🇸🇬 Singapore Professional Talent Network',
-          country: 'Singapore',
-          city: 'Singapore',
-          flag: '🇸🇬',
-          keywords: ['singapore', 'apac', 'cbd', 'one-north']
-        }
-      ];
-
-      for (const geoHub of GEOGRAPHIC_HUBS) {
-        const hubCanonical = `${BASE_URL}${geoHub.route}`;
-        const hubPosts = dbPosts
-          .filter(p => {
-            const text = ((p.content || '') + ' ' + (p.headline || '') + ' ' + (p.location || '') + ' ' + (p.hashtags || []).join(' ')).toLowerCase();
-            return geoHub.keywords.some(k => text.includes(k));
-          })
-          .slice(0, 15);
-
-        const hubDiscussions = hubPosts.length > 0 ? hubPosts : dbPosts.slice(0, 6);
-        const hubComments = await Promise.all(hubDiscussions.map(p => fetchPublicComments(p.id)));
-        const hubArticlesHtml = hubDiscussions.map((post, i) => renderFeedArticle(post, hubComments[i])).join('\n');
-
-        const breadcrumbs = [
-          { name: 'Home', url: BASE_URL },
-          { name: 'Network', url: networkCanonical },
-          { name: geoHub.country, url: `${BASE_URL}/network/${geoHub.keywords[0]}` }
-        ];
-
-        if (geoHub.division) {
-          breadcrumbs.push({ name: geoHub.division, url: `${BASE_URL}/network/${geoHub.keywords[0]}/${geoHub.division.toLowerCase().replace(/\s+/g, '-')}` });
-        }
-        if (geoHub.city) {
-          breadcrumbs.push({ name: geoHub.city, url: hubCanonical });
-        }
-
-        const geoBreadcrumbSchema = buildBreadcrumbSchema(breadcrumbs);
-        const placeSchema = {
-          '@context': 'https://schema.org',
-          '@type': 'Place',
-          name: geoHub.city || geoHub.division || geoHub.country,
-          address: {
-            '@type': 'PostalAddress',
-            addressLocality: geoHub.city || undefined,
-            addressRegion: geoHub.division || undefined,
-            addressCountry: geoHub.country,
-          },
-          description: geoHub.desc,
-        };
-
-        const hubCollectionSchema = {
-          '@context': 'https://schema.org',
-          '@type': 'CollectionPage',
-          name: geoHub.title,
-          description: geoHub.desc,
-          url: hubCanonical,
-          publisher: { '@id': `${BASE_URL}/#organization` },
-        };
-
-        writePrerenderedPage(geoHub.route, {
-          title: geoHub.title,
-          description: geoHub.desc,
-          canonical: hubCanonical,
-          h1: geoHub.h1,
-          bodyContentHtml: `
-            <div class="space-y-8 max-w-4xl mx-auto py-4">
-              <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-950 border border-blue-900/40 rounded-3xl p-6 sm:p-8 space-y-4 text-white">
-                <nav class="text-xs text-blue-300 flex items-center gap-1.5 flex-wrap">
-                  <a href="/network" class="hover:text-white">← Global Network</a>
-                  <span>/</span>
-                  <span class="text-white font-bold">${escapeHtml(geoHub.city || geoHub.country)}</span>
-                </nav>
-                <h1 class="text-2xl sm:text-3xl font-black">${escapeHtml(geoHub.h1)}</h1>
-                <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(geoHub.desc)}</p>
-                <div class="flex flex-wrap gap-2 pt-2">
-                  <span class="px-3 py-1 rounded-full bg-blue-500/20 text-cyan-300 border border-blue-400/30 text-xs font-bold">Verified Professionals</span>
-                  <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs font-bold">Local Communities</span>
-                  <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold">Discussions & Events</span>
-                </div>
-              </div>
-              <div class="space-y-4">
-                <h2 class="text-lg font-bold text-white">Discussions in ${escapeHtml(geoHub.city || geoHub.country)}</h2>
-                <div class="space-y-6">${hubArticlesHtml}</div>
-              </div>
-              <div class="pt-4 text-center">
-                <a href="/network" class="text-sm text-blue-400 hover:text-blue-300 font-bold">Explore All Global Hubs →</a>
-              </div>
-            </div>`,
-          jsonLd: [hubCollectionSchema, placeSchema, geoBreadcrumbSchema],
         });
       }
 

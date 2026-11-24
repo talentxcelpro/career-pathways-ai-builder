@@ -12,7 +12,7 @@ export type DistributionEngineChannel =
 
 export interface ViralObjectMetadata {
   objectId: string;
-  objectType: 'CAREER_PASSPORT' | 'ATS_SCORECARD' | 'SALARY_CALCULATION' | 'CAREER_ROADMAP' | 'JOB_REFERRAL';
+  objectType: 'CAREER_PASSPORT' | 'ATS_SCORECARD' | 'TALENT_SCORE' | 'SALARY_CALCULATION' | 'CAREER_ROADMAP' | 'JOB_REFERRAL';
   title: string;
   description: string;
   canonicalUrl: string;

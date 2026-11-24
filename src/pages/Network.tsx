@@ -48,8 +48,6 @@ import { useRealtimeSocialUpdates } from "@/hooks/useRealtimeSocialUpdates";
 import { LinkedInStyleBanner } from "@/components/profile/LinkedInStyleBanner";
 import { EnhancedCreatePost } from "@/components/posts/EnhancedCreatePost";
 import { NetworkSidebarNav } from "@/components/network/NetworkSidebarNav";
-import { GlobalDiscoveryAtlas } from "@/components/network/GlobalDiscoveryAtlas";
-import { UnifiedNetworkSearchDialog } from "@/components/network/UnifiedNetworkSearchDialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Layers, LayoutGrid, Compass, ArrowRight } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -69,7 +67,6 @@ const Network: React.FC = () => {
   const { connectionCount, articleCount, pendingRequestsCount, profile: liveProfile } = useNetworkNavigationMetrics();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [exploreDrawerOpen, setExploreDrawerOpen] = useState(false);
-  const [searchDialogOpen, setSearchDialogOpen] = useState(false);
   
   const handleTabChange = (value: string) => {
     setSearchParams(prev => {
@@ -138,25 +135,51 @@ const Network: React.FC = () => {
         {middleContent}
       </div>
 
-      {/* RIGHT COLUMN: DISCOVERY ATLAS + SPONSORED (hidden on mobile, shown on lg+ only when not wide) */}
+      {/* RIGHT COLUMN: YOUR PROFESSIONAL DAY BRIEFING + SPONSORED PRO (hidden on mobile, shown on lg+ only when not wide) */}
       {!isWide && (
         <div className="hidden lg:block lg:col-span-3 space-y-3">
-          {/* Global Discovery Engine - Positioned on the right side before Sponsored */}
-          <GlobalDiscoveryAtlas 
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            onOpenSearchDialog={() => setSearchDialogOpen(true)}
-            activeFilter={activeTab === 'discover' ? 'discover' : 'discussions'}
-            userLocation={liveProfile?.location || (user?.user_metadata?.location as string | undefined) || null}
-            onFilterChange={(filter) => {
-              if (filter === 'discussions') {
-                handleTabChange('feed');
-                setPostFilter('all');
-              } else if (filter === 'discover') {
-                handleTabChange('discover');
-              }
-            }}
-          />
+          {/* Quick Explore Ecosystem Button on Desktop */}
+          <button
+            type="button"
+            onClick={() => setExploreDrawerOpen(true)}
+            className="w-full py-2.5 px-3 bg-white dark:bg-card hover:bg-slate-50 dark:hover:bg-muted/80 border border-slate-200/80 dark:border-border/60 rounded-2xl transition-all shadow-2xs flex items-center justify-between group cursor-pointer"
+          >
+            <div className="flex items-center gap-2.5">
+              <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-800/60 shadow-2xs">
+                <Compass className="h-4 w-4" />
+              </div>
+              <div className="text-left">
+                <p className="text-xs font-extrabold text-foreground tracking-tight group-hover:text-blue-600 transition-colors">Explore Ecosystem</p>
+                <p className="text-[10px] text-muted-foreground leading-none mt-0.5">Jobs, Career Passport &amp; Tools</p>
+              </div>
+            </div>
+            <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/60 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-all" />
+          </button>
+
+          {/* YOUR PROFESSIONAL DAY ADD-ON CARD */}
+          <div className="rounded-2xl bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 p-4 text-white shadow-md border border-blue-800/40 relative overflow-hidden group">
+            <div className="flex items-center justify-between mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-cyan-300 border border-blue-400/30">
+                <Sparkles className="w-3 h-3 text-cyan-300" />
+                Daily Briefing
+              </span>
+            </div>
+
+            <h3 className="font-extrabold text-sm text-white tracking-tight mt-1">
+              Your Professional Day
+            </h3>
+            <p className="text-xs text-blue-200/90 leading-relaxed mt-1.5 mb-3.5">
+              Intelligence, community recommendations and career momentum
+            </p>
+
+            <button
+              onClick={() => handleTabChange('creator-studio')}
+              className="w-full py-2 px-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 group-hover:shadow-md cursor-pointer"
+            >
+              <span>Creator Studio</span>
+              <span>&rarr;</span>
+            </button>
+          </div>
 
           <AdvertisingSidebar />
         </div>
@@ -267,34 +290,23 @@ const Network: React.FC = () => {
           {/* ============================================================================ */}
           {/* 1. TAB CONTENT: MAIN FEED                                                    */}
           {/* ============================================================================ */}
-          <TabsContent value="feed" className="mt-0 space-y-3">
+          <TabsContent value="feed" className="mt-0">
             {renderUniformLayout(
               <>
-                {/* Mobile / Tablet View: Show Discovery Atlas at top of feed (hidden on lg+ where it is in the right sidebar before Sponsored) */}
-                <div className="lg:hidden">
-                  <GlobalDiscoveryAtlas 
-                    searchTerm={searchTerm}
-                    onSearchChange={setSearchTerm}
-                    onOpenSearchDialog={() => setSearchDialogOpen(true)}
-                    activeFilter={activeTab === 'discover' ? 'discover' : 'discussions'}
-                    userLocation={liveProfile?.location || (user?.user_metadata?.location as string | undefined) || null}
-                    onFilterChange={(filter) => {
-                      if (filter === 'discussions') {
-                        handleTabChange('feed');
-                        setPostFilter('all');
-                      } else if (filter === 'discover') {
-                        handleTabChange('discover');
-                      }
-                    }}
+                {/* Global Search Bar (Pill shape rounded-full matching Image 3) */}
+                <div className="relative bg-white dark:bg-card border border-slate-200/90 dark:border-border/60 rounded-full px-3 py-1.5 shadow-2xs flex items-center gap-2">
+                  <Search className="h-4 w-4 text-muted-foreground ml-0.5 shrink-0" />
+                  <Input
+                    id="mobile-network-search-input"
+                    placeholder="Search posts, people, companies, jobs, hashtags..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="border-0 bg-transparent text-xs font-medium placeholder:text-muted-foreground focus-visible:ring-0 h-6 p-0"
                   />
+                  <Button variant="ghost" size="sm" className="rounded-full h-6 w-6 p-0 text-muted-foreground hover:text-foreground shrink-0">
+                    <SlidersHorizontal className="h-3 w-3" />
+                  </Button>
                 </div>
-
-                {/* Unified Discovery Search Dialog */}
-                <UnifiedNetworkSearchDialog 
-                  open={searchDialogOpen} 
-                  onOpenChange={setSearchDialogOpen} 
-                  initialQuery={searchTerm} 
-                />
 
                 {/* Enhanced Create Post Card */}
                 <EnhancedCreatePost />

@@ -10,23 +10,44 @@ User-agent: Bingbot
 Allow: /
 
 User-agent: OAI-SearchBot
+# ChatGPT Search real-time discovery crawler
 Allow: /
+Allow: /resume/ats-check
+Allow: /ats-check
+Allow: /tools/ats-checker
 
 User-agent: PerplexityBot
+# Perplexity AI live search engine crawler
 Allow: /
+Allow: /resume/ats-check
+Allow: /ats-check
+Allow: /tools/ats-checker
 
 User-agent: Claude-User
 Allow: /
 
-# Training / Scraping Bots Restricted
-User-agent: GPTBot
-Disallow: /
-
 User-agent: ChatGPT-User
-Disallow: /
+# User-initiated ChatGPT search retrieval
+Allow: /
+Allow: /resume/ats-check
+Allow: /ats-check
+Allow: /tools/ats-checker
 
 User-agent: ClaudeBot
-Disallow: /
+# Anthropic search and real-time retrieval crawler
+Allow: /
+Allow: /resume/ats-check
+Allow: /ats-check
+Allow: /tools/ats-checker
+
+# Bulk AI Training / Data Scraping Bots Restricted (Protecting proprietary infrastructure)
+User-agent: GPTBot
+Allow: /resume/ats-check
+Allow: /ats-check
+Disallow: /admin/
+Disallow: /api/
+Disallow: /resume/user/
+Disallow: /resume/private/
 
 User-agent: Google-Extended
 Disallow: /

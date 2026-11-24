@@ -1,0 +1,19 @@
+# TalentXcel — Global Career Intelligence & Talent Operating System
+# Canonical mirror of https://talentxcel.in/llms.txt
+# See https://talentxcel.in/llms.txt for full markdown documentation.
+
+API_ENDPOINT: https://talentxcel.in/api/mcp
+KNOWLEDGE_GRAPH: https://talentxcel.in/api/discovery/knowledge-graph
+SITEMAP_INDEX: https://talentxcel.in/sitemap.xml
+
+PRIMARY_DESTINATIONS:
+- ATS Resume Check: https://talentxcel.in/resume/ats-check
+- TalentScore: https://talentxcel.in/talent-score
+- Career Passport: https://talentxcel.in/passport
+- Career Map: https://talentxcel.in/career-map
+- Professional Network: https://talentxcel.in/network
+- Jobs Discovery: https://talentxcel.in/jobs
+- Recruiter OS: https://talentxcel.in/employers
+- Talent Sourcing: https://talentxcel.in/talent
+- Salary Intelligence: https://talentxcel.in/salary
+- Higher Education: https://talentxcel.in/colleges

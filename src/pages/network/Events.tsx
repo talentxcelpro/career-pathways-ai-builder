@@ -14,7 +14,6 @@ import { AIEventAssistant } from "@/components/network/AIEventAssistant";
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedHub, setSelectedHub] = useState<'all' | 'virtual' | 'india' | 'us' | 'dubai' | 'europe' | 'apac'>('all');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [newEvent, setNewEvent] = useState({
@@ -284,9 +283,9 @@ const Events = () => {
           </Dialog>
         </div>
 
-        {/* Search & Location Hub Filter */}
+        {/* Search */}
         <Card className="mb-8">
-          <CardContent className="p-6 space-y-4">
+          <CardContent className="p-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
@@ -295,32 +294,6 @@ const Events = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
               />
-            </div>
-
-            {/* Geographic & Virtual Filters */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pt-1 whitespace-nowrap">
-              <span className="text-xs font-bold text-gray-500 mr-1 shrink-0">Filter By Location:</span>
-              {[
-                { id: 'all', label: 'All Events' },
-                { id: 'virtual', label: '🌐 Virtual Only' },
-                { id: 'india', label: '🇮🇳 India' },
-                { id: 'us', label: '🇺🇸 United States' },
-                { id: 'dubai', label: '🇦🇪 Dubai & UAE' },
-                { id: 'europe', label: '🇬🇧 London & Europe' },
-                { id: 'apac', label: '🇸🇬 Singapore & APAC' },
-              ].map((hub) => (
-                <button
-                  key={hub.id}
-                  onClick={() => setSelectedHub(hub.id as any)}
-                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all shadow-xs shrink-0 cursor-pointer ${
-                    selectedHub === hub.id 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-white dark:bg-card text-slate-700 dark:text-slate-300 border border-slate-200/80 dark:border-border/60 hover:bg-slate-50'
-                  }`}
-                >
-                  {hub.label}
-                </button>
-              ))}
             </div>
           </CardContent>
         </Card>
@@ -343,20 +316,7 @@ const Events = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {events?.filter((e) => {
-              if (selectedHub === 'all') return true;
-              if (selectedHub === 'virtual') return e.is_virtual;
-              const loc = (e.location || '').toLowerCase();
-              const keywords: Record<string, string[]> = {
-                india: ['india', 'bengaluru', 'bangalore', 'mumbai', 'noida', 'delhi', 'hyderabad', 'pune', 'chennai', 'gurgaon'],
-                us: ['us', 'usa', 'san francisco', 'california', 'new york', 'seattle', 'austin', 'boston', 'chicago'],
-                dubai: ['dubai', 'uae', 'abu dhabi', 'difc'],
-                europe: ['london', 'uk', 'berlin', 'germany', 'paris', 'amsterdam', 'europe'],
-                apac: ['singapore', 'apac', 'tokyo', 'sydney', 'melbourne']
-              };
-              const kws = keywords[selectedHub] || [];
-              return kws.some(k => loc.includes(k)) || e.is_virtual;
-            }).map((event) => (
+            {events?.map((event) => (
               <Card key={event.id} className="hover:shadow-lg transition-shadow">
                 <CardContent className="p-6">
                   <div className="space-y-4">

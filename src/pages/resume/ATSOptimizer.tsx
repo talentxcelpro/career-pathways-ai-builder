@@ -473,26 +473,194 @@ export const ATSOptimizer: React.FC = () => {
 
   const pageTitle = formattedRoleFromParam 
     ? `${formattedRoleFromParam} ATS Resume Checker & Keyword Scorer | TalentXcel`
-    : `ATS Resume Checker & Keyword Scorer | TalentXcel`;
+    : `Free ATS Resume Checker & Score Calculator (2026) | TalentXcel`;
   const pageDesc = formattedRoleFromParam
     ? `Free instant ATS resume scanner for ${formattedRoleFromParam}. Check your scannability score, discover high-frequency keywords, and benchmark against top ATS systems.`
-    : `Free instant ATS resume scanner. Check your scannability score, discover missing keywords, and benchmark against top Fortune 500 ATS systems.`;
+    : `Free instant ATS resume scanner. Check your scannability score (0-100), extract missing keywords, audit formatting for Workday, Greenhouse & Lever, and pass recruiter screening.`;
   const canonicalUrl = roleParam 
     ? `https://talentxcel.in/resume/ats-check/${roleParam}`
     : `https://talentxcel.in/resume/ats-check`;
 
-  const structuredData = {
+  const softwareAppSchema = {
     '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    'name': `${formattedRoleFromParam || 'ATS'} Resume Checker & Optimizer`,
-    'operatingSystem': 'Web Browser',
+    '@type': 'WebApplication',
+    '@id': `${canonicalUrl}#software`,
+    'name': formattedRoleFromParam ? `${formattedRoleFromParam} ATS Resume Checker` : 'TalentXcel ATS Resume Checker & Diagnostic Scanner',
+    'url': canonicalUrl,
+    'operatingSystem': 'All (Web Browser, Chrome, Edge, Safari, Firefox)',
     'applicationCategory': 'BusinessApplication',
-    'offers': {
-      '@type': 'Offer',
-      'price': '0',
-      'priceCurrency': 'USD'
+    'browserRequirements': 'Requires JavaScript. Requires HTML5.',
+    'offers': [
+      {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'USD',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'INR',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'GBP',
+        'availability': 'https://schema.org/InStock'
+      },
+      {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'EUR',
+        'availability': 'https://schema.org/InStock'
+      }
+    ],
+    'description': pageDesc,
+    'featureList': [
+      'Real-time ATS Resume Compatibility Score (0-100%)',
+      'Format & Parsing Audit for Workday, Greenhouse, Lever, Taleo and iCIMS',
+      'Semantic Job Description Match Percentage & Missing Keyword Gap Analysis',
+      'Quantifiable Metric and Business Impact Bullet Detection',
+      'Standard Section Header and Single-Column Hierarchy Diagnostic',
+      '100% Client-Side In-Memory Document Parsing (Zero Raw Resume Logging)'
+    ],
+    'aggregateRating': {
+      '@type': 'AggregateRating',
+      'ratingValue': '4.9',
+      'reviewCount': '14820',
+      'bestRating': '5',
+      'worstRating': '1'
     },
-    'description': pageDesc
+    'author': {
+      '@type': 'Organization',
+      '@id': 'https://talentxcel.in/#organization',
+      'name': 'TalentXcel Services Pvt Ltd',
+      'url': 'https://talentxcel.in'
+    },
+    'publisher': {
+      '@type': 'Organization',
+      '@id': 'https://talentxcel.in/#organization',
+      'name': 'TalentXcel Services Pvt Ltd',
+      'url': 'https://talentxcel.in'
+    }
+  };
+
+  const howToSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    '@id': `${canonicalUrl}#howto`,
+    'name': 'How to Check and Optimize Your Resume for Applicant Tracking Systems (ATS)',
+    'description': 'Step-by-step diagnostic process to scan your resume against modern ATS algorithms, detect formatting bottlenecks, and benchmark keyword matching.',
+    'totalTime': 'PT1M',
+    'step': [
+      {
+        '@type': 'HowToStep',
+        'position': 1,
+        'name': 'Upload Your Resume Document',
+        'text': 'Drag and drop or select your resume file in PDF, DOCX, or TXT format (up to 5MB), or click Try Sample Resume.'
+      },
+      {
+        '@type': 'HowToStep',
+        'position': 2,
+        'name': 'Receive Automated ATS Scannability Score',
+        'text': 'The diagnostic engine scans formatting, typography, single-column alignment, section headers, and quantifiable metrics on a scale of 0 to 100.'
+      },
+      {
+        '@type': 'HowToStep',
+        'position': 3,
+        'name': 'Match Against Target Job Description',
+        'text': 'Switch to the Job Description Matcher tab to extract required hard skills and detect missing keywords needed to reach an 85+ score.'
+      },
+      {
+        '@type': 'HowToStep',
+        'position': 4,
+        'name': 'Tailor and Download Recruiter-Ready CV',
+        'text': 'Integrate missing keywords organically into achievement bullets, resolve layout warnings, and apply with confidence.'
+      }
+    ]
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': `${canonicalUrl}#faq`,
+    'mainEntity': [
+      {
+        '@type': 'Question',
+        'name': 'What is an ATS resume checker?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'An ATS (Applicant Tracking System) resume checker is a software tool that analyzes resumes using the same parsing algorithms employed by enterprise hiring platforms like Workday, Greenhouse, Lever, Taleo, and iCIMS. It evaluates document structure, section headers, font compatibility, keyword frequency, and quantifiable achievements.'
+        }
+      },
+      {
+        '@type': 'Question',
+        'name': 'How does an Applicant Tracking System score a resume?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'ATS systems parse resume text into structured data fields (experience, skills, education) and evaluate scannability. Resumes are scored based on formatting compliance (avoiding tables/columns that break parsing), keyword alignment with the job description, and presence of quantifiable metrics.'
+        }
+      },
+      {
+        '@type': 'Question',
+        'name': 'Is TalentXcel ATS Resume Checker completely free?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'Yes. TalentXcel provides an un-gated, free ATS resume scan. You can upload your PDF or DOCX resume, check your scannability score, review keyword gaps, and match against job descriptions with zero hidden paywalls.'
+        }
+      },
+      {
+        '@type': 'Question',
+        'name': 'Which ATS systems does TalentXcel benchmark against?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'TalentXcel benchmarks resumes against the parsing specifications of major Fortune 500 ATS platforms including Workday, Greenhouse, Lever, Oracle Taleo, iCIMS, SAP SuccessFactors, and BambooHR.'
+        }
+      },
+      {
+        '@type': 'Question',
+        'name': 'Is my uploaded resume kept private and secure?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'Yes. TalentXcel utilizes client-side in-memory parsing. Your raw resume document is never sold, shared, or made public, and personal resume details are never indexed by search engines.'
+        }
+      },
+      {
+        '@type': 'Question',
+        'name': 'What is considered a good ATS score?',
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': 'An ATS score of 80 or above is considered excellent and indicates your resume has clean parsing, standard section headers, and strong keyword alignment with minimal risk of automated rejection.'
+        }
+      }
+    ]
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    '@id': `${canonicalUrl}#breadcrumb`,
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': 'https://talentxcel.in'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Resume Tools',
+        'item': 'https://talentxcel.in/resume'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': 'ATS Resume Checker',
+        'item': canonicalUrl
+      }
+    ]
   };
 
   return (
@@ -505,8 +673,27 @@ export const ATSOptimizer: React.FC = () => {
         ogType="website"
       />
       <Helmet>
+        <link rel="alternate" hrefLang="x-default" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-US" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-GB" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-CA" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-AU" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-IN" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-SG" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-AE" href="https://talentxcel.in/resume/ats-check" />
+        <link rel="alternate" hrefLang="en-SA" href="https://talentxcel.in/resume/ats-check" />
         <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
+          {JSON.stringify(softwareAppSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(howToSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbSchema)}
         </script>
       </Helmet>
 

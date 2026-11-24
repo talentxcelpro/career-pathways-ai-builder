@@ -8,6 +8,36 @@
   ],
   "headers": [
     {
+      "source": "/.well-known/(.*)\\.jsonld",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/ld+json; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, OPTIONS"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)llms(.*)\\.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
       "source": "/.well-known/(.*)",
       "headers": [
         {
@@ -1491,6 +1521,50 @@
       "permanent": true
     },
     {
+      "source": "/employers",
+      "has": [
+        {
+          "type": "host",
+          "value": "talentxcel.in"
+        }
+      ],
+      "destination": "https://employers.talentxcel.in/",
+      "permanent": true
+    },
+    {
+      "source": "/employer",
+      "has": [
+        {
+          "type": "host",
+          "value": "talentxcel.in"
+        }
+      ],
+      "destination": "https://employers.talentxcel.in/",
+      "permanent": true
+    },
+    {
+      "source": "/employers",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.talentxcel.in"
+        }
+      ],
+      "destination": "https://employers.talentxcel.in/",
+      "permanent": true
+    },
+    {
+      "source": "/employer",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.talentxcel.in"
+        }
+      ],
+      "destination": "https://employers.talentxcel.in/",
+      "permanent": true
+    },
+    {
       "source": "/government-jobs",
       "has": [
         {
@@ -2013,12 +2087,12 @@
       "destination": "/api/oauth/token"
     },
     {
-      "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap|sitemaps).*)",
+      "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap|sitemaps|\\.well-known|llms|talentxcel-entity-graph).*)",
       "has": [
         {
           "type": "header",
           "key": "User-Agent",
-          "value": ".*(Googlebot|bingbot|Baiduspider|YandexBot|DuckDuckBot|Slurp|facebookexternalhit|LinkedInBot|Twitterbot|Applebot|WhatsApp|TelegramBot|ChatGPT|ChatGPT-User|OAI-SearchBot|PerplexityBot|ClaudeBot|Claude-User).*"
+          "value": ".*(Googlebot|bingbot|Baiduspider|YandexBot|DuckDuckBot|DuckAssistBot|Slurp|facebookexternalhit|LinkedInBot|Twitterbot|Applebot|WhatsApp|TelegramBot|ChatGPT|ChatGPT-User|GPTBot|OAI-SearchBot|PerplexityBot|ClaudeBot|Claude-User|anthropic-ai|cohere-ai|Meta-ExternalAgent|Grok|DeepSeekBot|MistralBot|YouBot).*"
         }
       ],
       "destination": "/api/seo-render?path=$1"

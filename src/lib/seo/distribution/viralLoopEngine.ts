@@ -87,6 +87,38 @@ export function generateAtsScorecardViralObject(scan: {
   };
 }
 
+export function generateTalentScoreViralObject(data: {
+  fullName: string;
+  score: number;
+  tier: string;
+  industry: string;
+  referralCode?: string;
+}): ViralObjectMetadata {
+  const ref = data.referralCode || 'SCORE';
+  const canonicalUrl = 'https://talentxcel.in/talent-score';
+  const shareUrl = `${canonicalUrl}?ref=${encodeURIComponent(ref)}&utm_source=social_share&utm_medium=talent_score`;
+  const title = `My TalentScore: ${data.score}/1000 (${data.tier} Tier) in ${data.industry} | TalentXcel`;
+  const description = `I benchmarked my career readiness with TalentScore across ${data.industry} on TalentXcel and achieved ${data.score}/1000 (${data.tier} Tier). Check your score free!`;
+
+  return {
+    objectId: `obj_score_${ref.toLowerCase()}`,
+    objectType: 'TALENT_SCORE',
+    title,
+    description,
+    canonicalUrl,
+    shareUrl,
+    ogImageUrl: `https://talentxcel.in/assets/og/talentxcel-og-passport.png`,
+    shareTriggers: {
+      linkedinText: `I just benchmarked my professional capabilities on TalentXcel and achieved a TalentScore of ${data.score}/1000 (${data.tier} Tier in ${data.industry}). Check your career readiness and claim your Career Passport: ${shareUrl}`,
+      whatsAppText: `Hey! Check your career readiness score on TalentXcel. I scored ${data.score}/1000 (${data.tier} Tier in ${data.industry}): ${shareUrl}`,
+      twitterText: `Achieved ${data.score}/1000 on my TalentScore (${data.tier} Tier in ${data.industry}) via @TalentXcel! Benchmark your capabilities free: ${shareUrl}`,
+      emailSubject: `My Career Readiness TalentScore: ${data.score}/1000`,
+      emailBody: `Hi,\n\nI just evaluated my career capabilities with TalentScore on TalentXcel. I reached ${data.score}/1000 (${data.tier} Tier in ${data.industry}). You can benchmark your skills and claim your Career Passport here:\n${shareUrl}`
+    },
+    viralKFactorAssumption: 0.45
+  };
+}
+
 export const SAMPLE_VIRAL_COHORTS = [
   {
     cohortId: 'cohort_search_to_ats',

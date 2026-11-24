@@ -21,8 +21,15 @@ export const ReferralShortlinkRedirect: React.FC = () => {
 
   const cleanCode = code ? code.trim().toUpperCase() : '';
   
-  // Route to specific target if provided, otherwise route to the high-converting jobs portal
-  let destination = cleanTarget || '/jobs';
+  // Intelligent target routing: shortlinks prefixed with SCORE route to /talent-score, PASS to /passport
+  let defaultDest = '/jobs';
+  if (cleanCode.startsWith('SCORE')) {
+    defaultDest = '/talent-score';
+  } else if (cleanCode.startsWith('PASS')) {
+    defaultDest = '/passport';
+  }
+
+  let destination = cleanTarget || defaultDest;
   if (cleanCode) {
     destination += (destination.includes('?') ? '&' : '?') + `ref=${encodeURIComponent(cleanCode)}`;
   }

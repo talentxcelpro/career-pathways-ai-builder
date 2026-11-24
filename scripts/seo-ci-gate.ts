@@ -37,6 +37,7 @@ import {
   projectCompoundingGrowth,
   generatePassportViralObject,
   generateAtsScorecardViralObject,
+  generateTalentScoreViralObject,
   computeCalculatedSalaryIntelligence,
   generateZapierEntityIntersection,
   generateAiDiscoveryCitation,
@@ -1313,6 +1314,24 @@ async function runSeoCiGate() {
       'Shareable ATS Scorecard Metadata & Deep Links',
       atsScorecard.objectType === 'ATS_SCORECARD' && atsScorecard.title.includes('78/100'),
       `Generated ATS scorecard: ${atsScorecard.title} (Score: 78/100)`
+    );
+
+    // 11.4b Shareable TalentScore Viral Object & Referral Deep Links
+    const talentScoreViral = generateTalentScoreViralObject({
+      fullName: 'Sanobar Jahan',
+      score: 840,
+      tier: 'Interview Ready',
+      industry: 'Technology',
+      referralCode: 'TXC-GROWTH-2026'
+    });
+    record(
+      'Distribution_Viral',
+      'Shareable TalentScore Viral Object & Referral Deep Links',
+      talentScoreViral.objectType === 'TALENT_SCORE' &&
+        talentScoreViral.title.includes('840/1000') &&
+        talentScoreViral.shareUrl.includes('ref=TXC-GROWTH-2026') &&
+        talentScoreViral.shareTriggers.linkedinText.includes('840/1000'),
+      `Generated TalentScore viral object: ${talentScoreViral.title}`
     );
 
     // 11.5 Wise Programmatic Salary Intelligence Engine

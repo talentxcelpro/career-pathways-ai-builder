@@ -33,7 +33,7 @@ export interface SocialShareProps {
   title?: string;
   description?: string;
   hashtags?: string[];
-  contentType?: 'job' | 'passport' | 'profile' | 'article' | 'tool' | 'general';
+  contentType?: 'job' | 'passport' | 'profile' | 'article' | 'tool' | 'talent_score' | 'general';
   contentId?: string;
   mode?: 'popover' | 'inline' | 'button-only';
   variant?: 'default' | 'outline' | 'ghost' | 'secondary';

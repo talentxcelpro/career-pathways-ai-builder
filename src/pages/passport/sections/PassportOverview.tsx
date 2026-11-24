@@ -12,6 +12,7 @@ import { Progress } from "@/components/ui/progress";
 import { QRCodeSVG } from "qrcode.react";
 import { generateAndDownloadVCard } from "@/utils/vcardGenerator";
 import { toast } from "sonner";
+import { trackFunnelEvent } from "@/services/telemetry/funnelTracker";
 
 import {
   ShieldCheck,
@@ -86,13 +87,14 @@ const PassportOverview: React.FC = () => {
   const location = profile?.location || "India";
   const username = profile?.username || profile?.slug || user?.id || "user";
   const avatarUrl = profile?.profile_picture_url || user?.user_metadata?.avatar_url || user?.user_metadata?.profile_picture_url;
-  const passportUrl = `https://talentxcel.in/${username}`;
+  const passportUrl = typeof window !== "undefined" ? `${window.location.origin}/u/${username}` : `https://talentxcel.in/u/${username}`;
   
   // Stable Passport Short ID
   const passportShortId = (profile?.id || user?.id || "5FC21D").substring(0, 6).toUpperCase();
 
   // Action Handlers
   const handleSharePassport = () => {
+    trackFunnelEvent("passport_shared", { username });
     navigator.clipboard.writeText(passportUrl);
     setCopied(true);
     toast.success("Passport link copied to clipboard!");

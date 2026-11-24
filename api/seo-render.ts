@@ -531,12 +531,12 @@ const CORE_STATIC_ROUTES = new Set([
   'directory/jobs-by-city', 'rankings', 'blog', 'news', 'about', 'contact', 'faq', 'help',
   'terms', 'privacypolicy', 'privacy', 'return-refund-policy', 'hire', 'recruiters', 'staffing', 'recruitment', 'rpo',
   'careers', 'career-paths', 'career-map', 'government-jobs', 'services',
-  'companies', 'uae', 'uk', 'usa', 'europe', 'world', 'talent',
+  'companies', 'uae', 'uk', 'usa', 'europe', 'world', 'talent', 'talent-score', 'employer', 'employers',
   'resume/build', 'resume-builder', 'resume/ats-check', 'ats-check', 'resume/cover-letter', 'resume/interview-prep', 'resume/templates',
   'tools/resume-checker', 'tools/ats-checker', 'tools/salary-analyzer',
   'salary/scenarios', 'salary/negotiation', 'salary/goals', 'salary/skills-gap', 'salary/jobs',
   'colleges/global-programs', 'colleges/scholarships', 'colleges/career-pathway',
-  'network/verified', 'network/connections', 'network/skill-swap', 'network/articles', 'network/requests',
+  'network/verified', 'network/connections', 'network/skill-swap', 'network/articles', 'network/requests', 'network/communities',
   'saved-jobs', 'profile/analytics'
 ]);
 
@@ -912,6 +912,40 @@ export default async function handler(req: Request) {
   const isDebug = req?.headers?.get('x-seo-debug') === 'internal';
 
   if (isPrivateRoute(cleanPath)) return privateRouteResponse();
+
+  // Redirect /employers and /employer on apex root to canonical destination https://employers.talentxcel.in
+  const host = (req.headers?.get('host') || '').toLowerCase().replace(/:\d+$/, '');
+  if ((cleanPath === 'employers' || cleanPath === 'employer') && !host.startsWith('employers.')) {
+    return new Response(null, {
+      status: 308,
+      headers: {
+        'Location': 'https://employers.talentxcel.in/',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      },
+    });
+  }
+
+  // Normalize /talentscore to /talent-score
+  if (cleanPath === 'talentscore') {
+    return new Response(null, {
+      status: 308,
+      headers: {
+        'Location': 'https://talentxcel.in/talent-score',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      },
+    });
+  }
+
+  // Normalize /ats-check to canonical /resume/ats-check
+  if (cleanPath === 'ats-check') {
+    return new Response(null, {
+      status: 308,
+      headers: {
+        'Location': 'https://talentxcel.in/resume/ats-check',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      },
+    });
+  }
 
   // 301 Redirect for legacy multi-slash ranking URLs from GSC
   if (cleanPath.startsWith('jobs/')) {
@@ -2918,7 +2952,10 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
 
       const wordCount = countRenderedWords(bodyContent);
-      const isIndexReady = evaluateIndexabilityThreshold(hasRecordThreshold ? 3 : 0, wordCount);
+      const hasPassportSkills = Array.isArray(profile.skills) && profile.skills.length >= 3;
+      const hasPassportBio = Boolean((profile.headline && profile.headline.trim().length >= 20) || (profile.about && profile.about.trim().length >= 40));
+      const hasPassportRecords = hasPassportSkills && (hasPassportBio || Boolean(profile.location));
+      const isIndexReady = evaluateIndexabilityThreshold(hasPassportRecords ? 3 : 0, wordCount);
       robotsDirective = isIndexReady ? 'index, follow' : 'noindex, follow';
 
       jsonLdSchema = {
@@ -2991,12 +3028,10 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       const avatar = profile.profile_photo_url || profile.profile_picture_url || 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
 
       const canonicalUsername = profile.username || identifier;
-      if (cleanPath.startsWith('u/') || cleanPath === 'u') {
-        canonical = `https://talentxcel.in/u/${encodeURIComponent(canonicalUsername)}`;
-      } else if (cleanPath.startsWith('verify/') || cleanPath === 'verify') {
+      if (cleanPath.startsWith('verify/') || cleanPath === 'verify') {
         canonical = `https://talentxcel.in/verify/${encodeURIComponent(canonicalUsername)}`;
       } else {
-        canonical = `https://talentxcel.in/profile/${encodeURIComponent(canonicalUsername)}`;
+        canonical = `https://talentxcel.in/u/${encodeURIComponent(canonicalUsername)}`;
       }
 
       title = `${fullName} — Professional Profile | TalentXcel`;
@@ -3314,11 +3349,25 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
   // 1G. Network Specialized Hubs & Sub-Pages
   else if (cleanPath === 'network' || cleanPath.startsWith('network/')) {
     const subRoute = cleanPath.replace(/^network\/?/, '');
+    const INDEXABLE_GEO_CITIES = new Set([
+      'noida', 'hyderabad', 'bangalore', 'bhopal', 'jammu', 'guwahati', 'mumbai',
+      'kochi', 'nagpur', 'visakhapatnam', 'mysore', 'surat', 'lucknow', 'trivandrum',
+      'mangalore', 'ludhiana', 'agra', 'nashik', 'varanasi', 'chandigarh', 'coimbatore',
+      'indore', 'vadodara', 'patna', 'jaipur', 'dehradun', 'bhubaneswar', 'delhi',
+      'pune', 'chennai', 'kolkata', 'gurgaon', 'ahmedabad'
+    ]);
+
     if (subRoute === 'verified') {
       title = 'Verified Professionals Network | TalentXcel';
       description = 'Connect with verified engineering, tech, product, and leadership professionals on TalentXcel.';
       canonical = 'https://talentxcel.in/network/verified';
       h1 = 'Verified Professionals Network';
+    } else if (subRoute === 'communities') {
+      title = 'Professional Communities & Engineering Domain Guilds | TalentXcel Network';
+      description = 'Join specialized engineering guilds and circles focusing on Cloud Architecture, AI/ML, Full Stack Development, DevOps, and Technical Leadership on TalentXcel.';
+      canonical = 'https://talentxcel.in/network/communities';
+      h1 = 'Professional Communities & Domain Guilds';
+      robotsDirective = 'index, follow';
     } else if (subRoute === 'skill-swap') {
       title = 'Skill Swap & Peer Mentorship Marketplace | TalentXcel';
       description = 'Exchange high-demand skills, architecture reviews, and career mentorship with global peers.';
@@ -3339,27 +3388,418 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       description = 'Review incoming connection requests and expand your professional network on TalentXcel.';
       canonical = 'https://talentxcel.in/network/requests';
       h1 = 'Connection Requests';
+    } else if (subRoute.startsWith('locations/')) {
+      const slug = subRoute.replace(/^locations\//, '');
+      const cityName = slug.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+      title = `${cityName} Professional Network & Jobs | Connect with Verified Talent | TalentXcel`;
+      description = `Discover verified professionals, active job openings, and career discussions in ${cityName}. Connect with local peers and advance your career on TalentXcel.`;
+      canonical = `https://talentxcel.in/network/locations/${slug}`;
+      h1 = `${cityName} Professional Network`;
+      robotsDirective = INDEXABLE_GEO_CITIES.has(slug.toLowerCase()) ? 'index, follow' : 'noindex, follow';
+    } else if (subRoute.startsWith('skills/')) {
+      const slug = subRoute.replace(/^skills\//, '');
+      const skillName = slug.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+      title = `${skillName} Engineers & Specialists Network | Verified Talent & Jobs | TalentXcel`;
+      description = `Connect with verified ${skillName} developers, engineers, and specialists. Explore active ${skillName} job opportunities, peer code reviews, and technical discussions.`;
+      canonical = `https://talentxcel.in/network/skills/${slug}`;
+      h1 = `${skillName} Professional Network`;
+      robotsDirective = 'index, follow';
+    } else if (subRoute.startsWith('industries/')) {
+      const slug = subRoute.replace(/^industries\//, '');
+      const indName = slug.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+      title = `${indName} Professional Network | Verified Talent, Jobs & Insights | TalentXcel`;
+      description = `Join the ${indName} professional community on TalentXcel. Connect with industry leaders, browse verified jobs, and participate in domain discussions.`;
+      canonical = `https://talentxcel.in/network/industries/${slug}`;
+      h1 = `${indName} Professional Network`;
+      robotsDirective = 'index, follow';
+    } else if (subRoute.startsWith('segments/')) {
+      const slug = subRoute.replace(/^segments\//, '');
+      const segName = slug.split('-').map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' ');
+      title = `${segName} Career Network | Opportunities, Mentorship & Jobs | TalentXcel`;
+      description = `Career resources, active job openings, peer mentorship, and networking for ${segName} on TalentXcel.`;
+      canonical = `https://talentxcel.in/network/segments/${slug}`;
+      h1 = `${segName} Career Network`;
+      robotsDirective = 'index, follow';
     } else {
       title = 'Professional Network | Connect, Share & Advance | TalentXcel';
-      description = 'Discover industry updates, career opportunities, and verified discussions on TalentXcel Network.';
+      description = 'Connect with verified software engineers, data specialists, architects, and leaders for technical discussions, peer skill swaps, architecture reviews, and hiring referrals on TalentXcel Network.';
       canonical = 'https://talentxcel.in/network';
       h1 = 'TalentXcel Professional Network';
     }
     ogType = 'website';
     ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
-    robotsDirective = 'index, follow';
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+    if (!robotsDirective) {
+      robotsDirective = 'index, follow';
+    }
+    if (subRoute.startsWith('locations/') || subRoute.startsWith('skills/') || subRoute.startsWith('industries/') || subRoute.startsWith('segments/')) {
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "@id": `${canonical}#collection`,
+        "name": title,
+        "url": canonical,
+        "description": description,
+        "provider": {
+          "@type": "Organization",
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
+        },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://talentxcel.in" },
+            { "@type": "ListItem", "position": 2, "name": "Network", "item": "https://talentxcel.in/network" },
+            { "@type": "ListItem", "position": 3, "name": h1, "item": canonical }
+          ]
+        }
+      };
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            TalentXcel Verified Professional Discovery Hub
+          </span>
+          <h1 class="text-3xl md:text-5xl font-black text-white tracking-tight">${escapeHtml(h1)}</h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+            ${escapeHtml(description)}
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Explore Network Feed &rarr;</a>
+            <a href="/jobs" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Browse Active Jobs</a>
+            <a href="/talent" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Discover Verified Talent</a>
+          </div>
+        </section>
+        <section class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Verified Professional Talent
+            </h3>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              Connect with verified practitioners in ${escapeHtml(h1)}. All profiles showcase authenticated credentials and verified skills.
+            </p>
+            <a href="/talent" class="text-xs text-blue-400 font-semibold hover:underline block pt-2">View Verified Talent Directory &rarr;</a>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Live Job Openings
+            </h3>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              Explore active job opportunities curated for ${escapeHtml(h1)}. Direct applications with zero recruiter gatekeeping.
+            </p>
+            <a href="/jobs" class="text-xs text-emerald-400 font-semibold hover:underline block pt-2">Search Jobs Directory &rarr;</a>
+          </div>
+        </section>
+      `;
+    } else {
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "@id": "https://talentxcel.in/network#service",
+        "name": "TalentXcel Professional Network",
+        "url": "https://talentxcel.in/network",
+        "provider": {
+          "@type": "Organization",
+          "name": "TalentXcel",
+          "url": "https://talentxcel.in"
+        },
+        "description": "Professional network connecting verified engineering, tech, product, and leadership professionals for technical discussions, skill swaps, and direct hiring referrals.",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Network Services",
+          "itemListElement": [
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Verified Peer Directory" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Technical Architecture Articles" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Peer Skill Swap Marketplace" } },
+            { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Direct Hiring Referrals" } }
+          ]
+        }
+      };
+      bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
-          TalentXcel Professional Network
+          TalentXcel Verified Professional Network
         </span>
         <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">${escapeHtml(h1)}</h2>
-        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
-          ${escapeHtml(description)}
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+          The global professional network connecting verified software engineers, system architects, data specialists, and engineering leaders. Share authentic technical insights, exchange domain knowledge through peer skill swaps, and access verified internal hiring referrals.
         </p>
         <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Enter Professional Network &rarr;</a>
+          <a href="/network" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Enter Live Network &rarr;</a>
           <a href="/passport" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">View Career Passport</a>
+          <a href="/talent" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Talent Discovery</a>
+        </div>
+      </section>
+
+      <section class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Verified Professional Identity
+          </h3>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Every professional profile on the TalentXcel Network connects directly to an authenticated Career Passport. Credentials, skill verifications, and project contributions are vetted algorithmically via TalentScore, eliminating fabricated resumes and credential inflation across engineering roles.
+          </p>
+          <a href="/passport" class="text-xs text-blue-400 font-semibold hover:underline block pt-2">Explore Career Passports &rarr;</a>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Peer Skill Swap &amp; Mentorship
+          </h3>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Exchange domain knowledge directly with practitioners. Engineers swap architecture reviews, distributed systems debugging, and interview preparation sessions without transactional commercial intermediaries. Learn directly from peers deploying code to production.
+          </p>
+          <a href="/network/skill-swap" class="text-xs text-emerald-400 font-semibold hover:underline block pt-2">Browse Skill Swap Hub &rarr;</a>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Technical Architecture &amp; Insights
+          </h3>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Read and publish in-depth engineering analyses, cloud infrastructure blueprints, microservices architectures, and AI model optimization workflows. Articles are curated for substantive technical value rather than algorithmic social vanity metrics.
+          </p>
+          <a href="/network/articles" class="text-xs text-purple-400 font-semibold hover:underline block pt-2">Read Technical Articles &rarr;</a>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Direct Employer &amp; Peer Referrals
+          </h3>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            Verified members can refer trusted colleagues directly to verified vacancies indexed across TalentXcel Jobs. Bypass automated application black holes with direct candidate introductions to engineering managers and enterprise talent acquisition leads.
+          </p>
+          <a href="/jobs" class="text-xs text-amber-400 font-semibold hover:underline block pt-2">Search Verified Jobs &rarr;</a>
+        </div>
+      </section>
+
+      <section class="mt-12 bg-slate-900/40 border border-slate-800 rounded-2xl p-8 max-w-4xl mx-auto space-y-4">
+        <h3 class="text-xl font-bold text-white">Frequently Asked Questions — TalentXcel Network</h3>
+        <div class="space-y-4 text-xs md:text-sm text-slate-300">
+          <div>
+            <h4 class="font-semibold text-slate-100">How does TalentXcel verify professional identities?</h4>
+            <p class="mt-1 text-slate-400">Profiles are authenticated through verifiable credential proofs, GitHub code contributions, corporate email verifications, and demonstrated TalentScore assessments. This ensures community interactions remain grounded in actual technical expertise.</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-slate-100">Can recruiters search members on the TalentXcel Network?</h4>
+            <p class="mt-1 text-slate-400">Yes. Enterprise recruiters utilizing TalentXcel Recruiter OS can discover pre-screened talent through Talent Discovery, filtering candidates by verified technical skills, location, and objective TalentScore benchmarks.</p>
+          </div>
+          <div>
+            <h4 class="font-semibold text-slate-100">Is the TalentXcel Professional Network free to join?</h4>
+            <p class="mt-1 text-slate-400">Joining the TalentXcel Professional Network, creating a Career Passport, taking the ATS Resume Check, and participating in peer discussions is completely free for individual professionals and job seekers worldwide.</p>
+          </div>
+        </div>
+      </section>
+    `;
+    }
+  }
+  // 1G-2. TalentScore Competency Assessment Hub
+  else if (cleanPath === 'talent-score' || cleanPath.startsWith('talent-score')) {
+    title = 'TalentScore — Algorithmic Candidate Skills Assessment & Benchmark (0-100) | TalentXcel';
+    description = 'Objective candidate skill scoring evaluating coding competencies, GitHub projects, and verified credentials on a 0 to 100 scale. Benchmark your profile for enterprise recruiters.';
+    canonical = 'https://talentxcel.in/talent-score';
+    h1 = 'TalentScore — Objective Candidate Competency & Assessment Framework';
+    ogType = 'website';
+    ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
+    robotsDirective = 'index, follow';
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "@id": "https://talentxcel.in/talent-score#software",
+      "name": "TalentScore",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "All modern web browsers",
+      "url": "https://talentxcel.in/talent-score",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "TalentXcel",
+        "url": "https://talentxcel.in"
+      },
+      "description": "Algorithmic candidate competency assessment framework evaluating demonstrated programming skills, portfolio projects, credential proofs, and resume metrics on an objective 0 to 100 scale."
+    };
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+          Algorithmic Candidate Competency Benchmark
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">${escapeHtml(h1)}</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+          TalentScore evaluates software engineers, data specialists, and leadership candidates on an objective 0 to 100 benchmark. By combining hands-on technical assessments, GitHub code audits, verified employment credentials, and ATS resume compatibility, TalentScore gives job seekers a trusted signal and provides recruiters with pre-screened hiring confidence.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/talent-score" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Check Your TalentScore &rarr;</a>
+          <a href="/resume/ats-check" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Check</a>
+          <a href="/passport" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Add to Career Passport</a>
+        </div>
+      </section>
+
+      <section class="mt-12 max-w-4xl mx-auto space-y-8">
+        <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 class="text-2xl font-bold text-white">The Four Core Pillars of TalentScore</h3>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Unlike self-reported resumes that suffer from keyword stuffing, TalentScore synthesizes four verified data streams to compute a tamper-evident competency score:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+            <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-sm">1. Hands-On Technical Assessment</span>
+                <span class="text-xs font-mono text-blue-400 font-bold">40% Weight</span>
+              </div>
+              <p class="text-xs text-slate-400">Algorithmic evaluation of live coding, system design, data structures, and framework-specific problem solving across Python, TypeScript, Java, Go, and SQL.</p>
+            </div>
+            <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-sm">2. Project &amp; Codebase Auditing</span>
+                <span class="text-xs font-mono text-emerald-400 font-bold">30% Weight</span>
+              </div>
+              <p class="text-xs text-slate-400">Static analysis of public GitHub and GitLab repositories inspecting commit history, architectural modularity, test coverage, and documentation quality.</p>
+            </div>
+            <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-sm">3. Verified Credential Proofs</span>
+                <span class="text-xs font-mono text-purple-400 font-bold">20% Weight</span>
+              </div>
+              <p class="text-xs text-slate-400">Authentication of higher education degrees, university placement records, professional cloud certifications (AWS, GCP, Azure), and verified past employment history.</p>
+            </div>
+            <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-sm">4. ATS Resume Compatibility</span>
+                <span class="text-xs font-mono text-amber-400 font-bold">10% Weight</span>
+              </div>
+              <p class="text-xs text-slate-400">Single-column parser compliance, quantifiable achievement metric density, and alignment with target role competency definitions.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 class="text-xl font-bold text-white">TalentScore for Job Seekers, Freshers &amp; Employers</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs md:text-sm text-slate-300">
+            <div class="space-y-2">
+              <h4 class="font-bold text-blue-400 text-sm">For Freshers &amp; Job Seekers</h4>
+              <p class="text-slate-400 leading-relaxed">
+                Break through the "experience required" barrier. Fresh graduates and self-taught developers can showcase high TalentScores based on verified code quality and algorithmic assessments, proving production readiness to hiring managers without years of prior corporate tenure.
+              </p>
+            </div>
+            <div class="space-y-2">
+              <h4 class="font-bold text-emerald-400 text-sm">For Recruiters &amp; Enterprise Hiring</h4>
+              <p class="text-slate-400 leading-relaxed">
+                Filter through thousands of job applicants instantly. TalentScore provides an objective, unbiased pre-screening filter that cuts recruitment screening cycles by up to 70% while guaranteeing candidates possess verified technical capabilities.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-slate-800 bg-slate-900/40 rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 class="text-xl font-bold text-white">Frequently Asked Questions about TalentScore</h3>
+          <div class="space-y-4 text-xs md:text-sm text-slate-300">
+            <div>
+              <h4 class="font-semibold text-slate-100">What is a good TalentScore?</h4>
+              <p class="mt-1 text-slate-400">A TalentScore of 70+ indicates proficient industry capability; scores of 85+ represent top-tier percentile competence across technical problem solving and software craftsmanship.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-100">Can I retake TalentScore assessments?</h4>
+              <p class="mt-1 text-slate-400">Yes. Candidates can improve their TalentScore by completing additional skill modules, updating portfolio code repositories, or resolving identified skill gaps in their profile.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-100">Where is my TalentScore displayed?</h4>
+              <p class="mt-1 text-slate-400">Your TalentScore is published on your verified Career Passport (/u/:username) and can be included on your resume or shared directly with hiring teams.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+  // 1G-3. Talent Discovery Candidate Sourcing Hub
+  else if (cleanPath === 'talent' || cleanPath.startsWith('talent/')) {
+    title = 'Talent Discovery — Sourcing Pre-Screened Tech & Leadership Candidates | TalentXcel';
+    description = 'Discover verified software engineers, data architects, AI specialists, and product leads with verified TalentScores and authenticated credentials on TalentXcel.';
+    canonical = 'https://talentxcel.in/talent';
+    h1 = 'TalentXcel Talent Discovery — Verified Candidate Sourcing Engine';
+    ogType = 'website';
+    ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
+    robotsDirective = 'index, follow';
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "SearchAction",
+      "@id": "https://talentxcel.in/talent#search",
+      "name": "TalentXcel Talent Discovery",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://talentxcel.in/talent?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string",
+      "description": "Public candidate discovery directory allowing employers and recruiters to discover verified software engineers, designers, analysts, and domain specialists filtered by skills, experience, and location."
+    };
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+          Enterprise Candidate Discovery
+        </span>
+        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">${escapeHtml(h1)}</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+          Source pre-screened technical and leadership candidates with verified competencies, authenticated credentials, and objective TalentScores. Explore software engineers, AI/ML practitioners, DevOps architects, and product managers across India, UAE, UK, USA, and remote markets.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+          <a href="/talent" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Launch Talent Search &rarr;</a>
+          <a href="https://employers.talentxcel.in/" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Recruiter OS Overview</a>
+          <a href="/talent-score" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">About TalentScore</a>
+        </div>
+      </section>
+
+      <section class="mt-12 max-w-4xl mx-auto space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white">Verified Skills &amp; Git Code</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Every candidate profile features verified code commits, algorithmic problem-solving ratings, and cryptographic credential validations rather than unverified self-assertions.
+            </p>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white">TalentScore Pre-Screening</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Filter candidates instantly by objective TalentScores (0-100). Surface top performers who have demonstrated mastery in system design, distributed databases, or cloud architecture.
+            </p>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white">Direct Candidate Outreach</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Contact verified talent directly without agency markups. Schedule interviews, review public Career Passports, and accelerate hiring pipeline throughput.
+            </p>
+          </div>
+        </div>
+
+        <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 class="text-xl font-bold text-white">Popular Talent Corridors &amp; Roles</h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            <a href="/talent?q=react" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">React / Next.js Engineers</a>
+            <a href="/talent?q=python" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">Python &amp; AI Engineers</a>
+            <a href="/talent?q=aws" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">AWS Cloud Architects</a>
+            <a href="/talent?q=devops" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">DevOps &amp; SRE Leads</a>
+            <a href="/talent?q=data" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">Data Analysts &amp; Engineers</a>
+            <a href="/talent?q=golang" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">Go Backend Developers</a>
+            <a href="/talent?q=security" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">Cybersecurity Specialists</a>
+            <a href="/talent?q=product" class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl hover:border-blue-500 text-slate-300 hover:text-white transition">Technical Product Managers</a>
+          </div>
+        </div>
+
+        <div class="border border-slate-800 bg-slate-900/40 rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 class="text-xl font-bold text-white">Talent Sourcing Intelligence &amp; Candidate Transparency</h3>
+          <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+            TalentXcel simplifies tech recruitment by connecting enterprise talent acquisition teams with verified software engineering and data science professionals. Traditional recruiting channels flood hiring managers with hundreds of unvetted resumes, creating extensive interview bottlenecks. Talent Discovery eliminates noise by pre-qualifying candidates through algorithmic code assessments, GitHub repository analysis, and verified credential checks. Recruiters can view objective TalentScore percentiles, assess architectural maturity, and engage candidates directly with transparent compensation expectations.
+          </p>
+          <div class="space-y-3 pt-2 text-xs md:text-sm text-slate-400">
+            <div>
+              <span class="font-semibold text-slate-200">How are candidates ranked in Talent Discovery?</span>
+              <p class="mt-0.5">Ranking is driven algorithmically by objective TalentScores, verified code artifacts, active community engagement, and demonstrated match scores against specific job competencies.</p>
+            </div>
+            <div>
+              <span class="font-semibold text-slate-200">Can recruiters contact candidates directly?</span>
+              <p class="mt-0.5">Yes. Enterprise recruiters utilizing TalentXcel Recruiter OS can route inquiries directly to candidates who have enabled recruiter messaging on their Career Passport.</p>
+            </div>
+          </div>
         </div>
       </section>
     `;
@@ -3405,24 +3845,83 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
   // 1J. Career Passport Root Hub
   else if (cleanPath === 'passport' || cleanPath === 'career-passport') {
     title = 'Career Passport — Verified Digital Career Identity | TalentXcel';
-    description = 'Create and share your portable, verified Career Passport. Showcase skills, verified credentials, and career readiness to global employers.';
+    description = 'Create and share your portable, verified Career Passport. Showcase skills, verified credentials, and career readiness to global employers on TalentXcel.';
     canonical = 'https://talentxcel.in/passport';
-    h1 = 'TalentXcel Career Passport';
+    h1 = 'TalentXcel Career Passport — Portable Digital Professional Identity';
     ogType = 'profile';
     ogImage = 'https://talentxcel.in/assets/og/talentxcel-og-passport.png';
     robotsDirective = 'index, follow';
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "@id": "https://talentxcel.in/passport#service",
+      "name": "TalentXcel Career Passport",
+      "url": "https://talentxcel.in/passport",
+      "provider": {
+        "@type": "Organization",
+        "name": "TalentXcel",
+        "url": "https://talentxcel.in"
+      },
+      "description": "Portable, digital career identity showcasing validated skills, TalentScore, employment history, and peer validations to global employers."
+    };
     bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-3xl mx-auto">
+      <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto shadow-2xl">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
           Portable Digital Credential
         </span>
-        <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">Your Career. Verified. Ready for What\'s Next.</h2>
-        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
-          Share your verified competencies, verifiable credentials, and salary benchmarks with 500,000+ employers worldwide.
+        <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight">Your Career. Verified. Ready for What\'s Next.</h2>
+        <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+          Create and share your portable, tamper-evident digital career identity. Showcase verified technical skills, objective TalentScore ratings, authenticated degree credentials, and GitHub project audits directly to enterprise hiring teams worldwide.
         </p>
         <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
-          <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Open Career Passport &rarr;</a>
-          <a href="/signup" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Create Your Passport Free</a>
+          <a href="/passport" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Create Your Passport &rarr;</a>
+          <a href="/talent-score" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Check Your TalentScore</a>
+          <a href="/network" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Professional Network</a>
+        </div>
+      </section>
+
+      <section class="mt-12 max-w-4xl mx-auto space-y-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white">Objective Skills Proof</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Replace self-proclaimed resume bullets with cryptographic skill badges and algorithmic TalentScore benchmarks, demonstrating real proficiency in software development, cloud systems, and data science.
+            </p>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white">Shareable Public URL</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Every member receives an authenticated vanity URL (talentxcel.in/u/:username) ready for inclusion in resumes, LinkedIn profiles, email signatures, and direct job applications.
+            </p>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 class="text-lg font-bold text-white">Direct Recruiter Routing</h3>
+            <p class="text-slate-400 text-xs leading-relaxed">
+              Enterprise recruiters accessing TalentXcel Recruiter OS can source candidates directly from Career Passports, reviewing pre-screened credentials and scheduling technical interviews with zero intermediary delays.
+            </p>
+          </div>
+        </div>
+
+        <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+          <h3 class="text-xl font-bold text-white">Frequently Asked Questions about Career Passport</h3>
+          <div class="space-y-4 text-xs md:text-sm text-slate-300">
+            <div>
+              <h4 class="font-semibold text-slate-100">Who controls what information is publicly visible?</h4>
+              <p class="mt-1 text-slate-400">You maintain 100% granular control over privacy settings. You choose which verified credentials, contact details, and project portfolios appear publicly or exclusively to authenticated recruiters.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-100">How is Career Passport different from a traditional resume?</h4>
+              <p class="mt-1 text-slate-400">Traditional resumes rely on unverified text claims. Career Passport substantiates every claim with live GitHub commit proofs, algorithmic assessment results, and verified credential validations.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-100">Is Career Passport completely free?</h4>
+              <p class="mt-1 text-slate-400">Yes, creating and maintaining your Career Passport, generating your public vanity link, and showcasing your TalentScore is free for all professionals and job seekers worldwide.</p>
+            </div>
+            <div>
+              <h4 class="font-semibold text-slate-100">How do employers verify credentials on my Career Passport?</h4>
+              <p class="mt-1 text-slate-400">Employers and recruiters can review cryptographic validation hashes, verified university placement certificates, and Git code contribution histories directly on your public profile without requiring manual reference checks.</p>
+            </div>
+          </div>
         </div>
       </section>
     `;
@@ -5147,18 +5646,207 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       canonical = 'https://talentxcel.in/return-refund-policy';
       h1 = 'Return, Refund and Cancellation Policy';
       bodyContent = `<section class="bg-slate-900 border border-slate-800 rounded-2xl p-6"><h2 class="text-xl font-bold text-white">Return, Refund, and Cancellation Policy</h2><p class="text-slate-300 text-sm mt-2">Read our terms regarding service subscriptions, recruiter postings, and verified professional advisory bookings.</p></section>`;
+    } else if (cleanPath === 'employer' || cleanPath === 'employers') {
+      title = 'TalentXcel Recruiter OS — Intelligent Talent Acquisition & Hiring OS';
+      description = 'Enterprise recruitment intelligence, AI talent sourcing, verified skills candidate database, and automated hiring pipeline management on TalentXcel Recruiter OS.';
+      canonical = 'https://talentxcel.in/employer';
+      h1 = 'TalentXcel Recruiter OS — Enterprise Hiring & Candidate Discovery Engine';
+      robotsDirective = 'index, follow';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "@id": "https://talentxcel.in/employer#software",
+        "name": "TalentXcel Recruiter OS",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "All modern web browsers",
+        "url": "https://talentxcel.in/employer",
+        "provider": {
+          "@type": "Organization",
+          "name": "TalentXcel Services Pvt Ltd",
+          "url": "https://talentxcel.in"
+        },
+        "description": "Recruiter intelligence platform offering verified candidate discovery, applicant tracking integration, skill assessments, and job vacancy publishing."
+      };
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto shadow-2xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            Enterprise Recruitment Intelligence
+          </span>
+          <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">${escapeHtml(h1)}</h2>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+            Streamline technical hiring, discover verified candidates, assess demonstrated competencies with TalentScore, and manage end-to-end recruitment pipelines with TalentXcel Recruiter OS.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/employer" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Explore Recruiter OS &rarr;</a>
+            <a href="/talent" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Search Candidate Database</a>
+            <a href="/jobs" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">View Active Jobs</a>
+          </div>
+        </section>
+
+        <section class="mt-12 max-w-4xl mx-auto space-y-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Verified Candidate Discovery
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Directly source from thousands of pre-assessed candidates with verified GitHub repositories, algorithmic coding scores, and authenticated employment histories. Eliminate unqualified applicant volume.
+              </p>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> ATS Resume &amp; Pipeline Management
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Centralize candidate workflows with automated applicant ranking, resume parsing diagnostics, stage tracking, and seamless integration with existing enterprise HR software.
+              </p>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Targeted Job Distribution
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Broadcast vacancies to verified candidate networks across 100+ global tech hubs. Reach active candidates with relevant skills and pre-screened TalentScore benchmarks.
+              </p>
+            </div>
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Objective Competency Benchmarking
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Filter applicants by verified 1000-point TalentScore percentiles to ensure candidates meet role-specific technical requirements before the initial screening call.
+              </p>
+            </div>
+          </div>
+
+          <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+            <h3 class="text-xl font-bold text-white">The Four-Step High-Velocity Hiring Workflow</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs text-slate-300">
+              <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-1">
+                <span class="text-blue-400 font-bold font-mono">STEP 01</span>
+                <h4 class="font-bold text-white text-sm">Source Verified Talent</h4>
+                <p class="text-slate-400">Discover pre-screened software engineers and specialists with verified skills portfolios.</p>
+              </div>
+              <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-1">
+                <span class="text-emerald-400 font-bold font-mono">STEP 02</span>
+                <h4 class="font-bold text-white text-sm">Evaluate TalentScore</h4>
+                <p class="text-slate-400">Review objective 1000-point readiness ratings combining code commits and hands-on skill audits.</p>
+              </div>
+              <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-1">
+                <span class="text-purple-400 font-bold font-mono">STEP 03</span>
+                <h4 class="font-bold text-white text-sm">Automate Screening</h4>
+                <p class="text-slate-400">Leverage ATS-Check parsing diagnostics to match candidate profiles directly against role requirements.</p>
+              </div>
+              <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-1">
+                <span class="text-amber-400 font-bold font-mono">STEP 04</span>
+                <h4 class="font-bold text-white text-sm">Extend Direct Offers</h4>
+                <p class="text-slate-400">Accelerate hiring turnaround by up to 70% with direct candidate communication and zero intermediary delays.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+            <h3 class="text-xl font-bold text-white">Why Modern Hiring Teams Choose TalentXcel Recruiter OS</h3>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              Traditional job boards flood recruiting pipelines with unverified applicants, inflating screening hours and slowing time-to-hire. TalentXcel Recruiter OS re-engineers recruitment around verifiable evidence: candidates are indexed by objective assessment metrics, demonstrated code contributions, and authenticated credentials.
+            </p>
+            <div class="space-y-3 pt-2 text-xs md:text-sm text-slate-400">
+              <div>
+                <span class="font-semibold text-slate-200">How does candidate discovery differ from standard search?</span>
+                <p class="mt-0.5">Recruiters search candidates by demonstrated capabilities and verified TalentScores rather than unverified resume keywords.</p>
+              </div>
+              <div>
+                <span class="font-semibold text-slate-200">Can employers post unlimited jobs?</span>
+                <p class="mt-0.5">Recruiter OS offers flexible tiering for high-growth startups, recruitment agencies, and enterprise employers looking to scale technical hiring.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
     } else if (cleanPath === 'communities') {
       title = 'Professional Communities & Engineering Guilds | TalentXcel';
-      description = 'Connect with specialized professional engineering, leadership, and product communities across global tech hubs on TalentXcel.';
+      description = 'Join specialized professional engineering, AI/ML, cloud, and product communities across global tech hubs on TalentXcel.';
       canonical = 'https://talentxcel.in/communities';
       h1 = 'Professional Communities & Domain Guilds';
+      robotsDirective = 'index, follow';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": "https://talentxcel.in/communities#org",
+        "name": "TalentXcel Communities",
+        "url": "https://talentxcel.in/communities",
+        "description": "Specialized engineering guilds and circles focusing on Cloud Architecture, AI/ML, Full Stack Development, DevOps, and Technical Leadership."
+      };
       bodyContent = `
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-2xl font-bold text-white">Professional Communities &amp; Domain Guilds</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Join specialized tech and leadership communities for mock panels, architecture discussions, and verified hiring referrals.</p>
-          <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/communities" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse All Guilds &rarr;</a>
-            <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Professional Directory &rarr;</a>
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-8 md:p-12 space-y-6 text-center max-w-4xl mx-auto shadow-2xl">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-300 text-xs font-semibold">
+            Specialized Tech Guilds &amp; Peer Circles
+          </span>
+          <h2 class="text-3xl md:text-4xl font-black text-white tracking-tight">${escapeHtml(h1)}</h2>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-2xl mx-auto">
+            Connect with dedicated practitioners across specialized domain guilds. Participate in architecture design debates, mock technical panels, production debugging retrospectives, and direct hiring referrals with engineering peers worldwide.
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+            <a href="/communities" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">Browse All Communities &rarr;</a>
+            <a href="/network" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Professional Network</a>
+            <a href="/talent" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Talent Discovery</a>
+          </div>
+        </section>
+
+        <section class="mt-12 max-w-4xl mx-auto space-y-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> AI &amp; Machine Learning Guild
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Dedicated to LLM fine-tuning, RAG architecture optimization, vector database evaluation, and production inference latency reduction. Discuss papers, open-source benchmarks, and real-world deployment challenges.
+              </p>
+            </div>
+
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Cloud Architecture &amp; DevOps Circle
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Focuses on Kubernetes cluster management, infrastructure-as-code with Terraform, multi-cloud redundancy across AWS and GCP, and high-concurrency event-driven streaming with Kafka.
+              </p>
+            </div>
+
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Full Stack &amp; Web Systems Forum
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Frontend and backend practitioners discussing React Server Components, Next.js edge caching, GraphQL vs gRPC architectures, and database sharding with PostgreSQL.
+              </p>
+            </div>
+
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-3">
+              <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Technical Leadership &amp; Product Guild
+              </h3>
+              <p class="text-slate-400 text-xs md:text-sm leading-relaxed">
+                Engineering managers, VP of Engineering leaders, and technical product leads sharing strategies on team topology, hiring rubrics, OKR alignment, and engineering compensation trends.
+              </p>
+            </div>
+          </div>
+
+          <div class="border border-slate-800 bg-slate-900/60 rounded-2xl p-6 md:p-8 space-y-4">
+            <h3 class="text-xl font-bold text-white">How TalentXcel Communities Drive Career Growth</h3>
+            <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+              Active guild participation substantiates community influence and technical leadership, feeding directly into a member's verified TalentScore and Career Passport. Whether answering architectural questions, delivering technical presentations, or mentoring junior developers, community contributions are recognized by enterprise employers looking for collaborative senior talent. Members also leverage community channels to organize mock interview prep sessions, exchange code reviews, and discover unlisted hiring openings through trusted peer recommendations.
+            </p>
+            <div class="space-y-3 pt-2 text-xs md:text-sm text-slate-400">
+              <div>
+                <span class="font-semibold text-slate-200">Who can join TalentXcel Communities?</span>
+                <p class="mt-0.5">Communities are open to all verified software engineers, product managers, data specialists, and students. Membership is free and connects directly to your Career Passport profile.</p>
+              </div>
+              <div>
+                <span class="font-semibold text-slate-200">How do peer skill swaps work within guilds?</span>
+                <p class="mt-0.5">Members can post mentorship or skill swap requests to pair with peers for architecture feedback, resume reviews, or technical interview practice.</p>
+              </div>
+            </div>
           </div>
         </section>
       `;
@@ -5246,14 +5934,15 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
 
   // Stage F Hardened Guard: Fail-closed thin page elimination
   // Any programmatic or dynamic page below 400 rendered words MUST output noindex, follow
-  // Active JobPosting schema entities are authentic structured vacancies (min 100 words threshold)
+  // Active JobPosting schema entities and verified core static hubs have a 100 words threshold
   const renderedContentWords = countRenderedWords(bodyContent);
   if (robotsDirective === 'index, follow' && cleanPath !== '') {
     const isJobPosting = jsonLdSchema && (
       jsonLdSchema['@type'] === 'JobPosting' ||
       (Array.isArray(jsonLdSchema) && jsonLdSchema.some((s: any) => s && s['@type'] === 'JobPosting'))
     );
-    const minWords = isJobPosting ? 100 : 400;
+    const isCoreStaticHub = CORE_STATIC_ROUTES.has(cleanPath);
+    const minWords = (isJobPosting || isCoreStaticHub) ? 100 : 400;
     if (renderedContentWords < minWords) {
       robotsDirective = 'noindex, follow';
     }

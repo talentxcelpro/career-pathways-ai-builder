@@ -1,10 +1,11 @@
 import React, { useRef } from 'react';
-import { toPng } from 'html-to-image';
-import { Download, Share2, Sparkles } from 'lucide-react';
+import { Download, Share2, Sparkles, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getTier, TalentScoreTier } from '@/components/talent-score/TalentScoreRing';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
+import { trackFunnelEvent } from '@/services/telemetry/funnelTracker';
 
 interface TalentScoreShareCardProps {
   score: number;
@@ -30,12 +31,41 @@ export const TalentScoreShareCard: React.FC<TalentScoreShareCardProps> = ({
   const cardRef = useRef<HTMLDivElement>(null);
   const tier = getTier(score);
   const theme = TIER_THEMES[tier];
+  const { user } = useAuth();
+
+  const refCode = user?.id ? 'TXC' + user.id.replace(/-/g, '').slice(0, 8).toUpperCase() : 'SCORE';
+  const shareUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/talent-score?ref=${refCode}&utm_source=social_share&utm_medium=talent_score`
+    : 'https://talentxcel.in/talent-score';
+  const shareTitle = `My TalentScore: ${score}/1000 (${theme.label} Tier) | TalentXcel`;
+  const shareText = `I benchmarked my career readiness with TalentScore on TalentXcel and achieved ${score}/1000 (${theme.label} Tier). Check your score and claim your Career Passport: ${shareUrl}`;
+
+  const generateCardDataUrl = async (): Promise<string | null> => {
+    if (!cardRef.current) return null;
+    try {
+      const { default: html2canvas } = await import('html2canvas');
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: null,
+        logging: false,
+      });
+      return canvas.toDataURL('image/png');
+    } catch (err) {
+      console.warn('html2canvas render error, falling back to text copy:', err);
+      return null;
+    }
+  };
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
+    trackFunnelEvent('talent_score_share', { score, action: 'download_image' });
     try {
       toast.info('Generating image...');
-      const dataUrl = await toPng(cardRef.current, { cacheBust: true, pixelRatio: 2 });
+      const dataUrl = await generateCardDataUrl();
+      if (!dataUrl) {
+        toast.error('Image export not supported on this device');
+        return;
+      }
       const link = document.createElement('a');
       link.download = `talent-score-${fullName.toLowerCase().replace(/\s+/g, '-')}.png`;
       link.href = dataUrl;
@@ -48,89 +78,137 @@ export const TalentScoreShareCard: React.FC<TalentScoreShareCardProps> = ({
   };
 
   const handleShare = async () => {
+    trackFunnelEvent('talent_score_share', { score, tier: theme.label });
     if (!cardRef.current) return;
     try {
       toast.info('Preparing share...');
-      const dataUrl = await toPng(cardRef.current, { cacheBust: true, pixelRatio: 2 });
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], 'talent-score.png', { type: blob.type });
+      const dataUrl = await generateCardDataUrl();
+      if (dataUrl) {
+        try {
+          const blob = await (await fetch(dataUrl)).blob();
+          const file = new File([blob], 'talent-score.png', { type: blob.type });
 
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: 'My TalentScore',
-          text: `I just reached the ${theme.label} Tier on TalentXcel TalentXcel Core!`,
-          files: [file],
-        });
-      } else {
-        toast.error('Native sharing not supported on this device. Please download instead.');
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: shareTitle,
+              text: shareText,
+              files: [file],
+            });
+            toast.success('Shared successfully!');
+            return;
+          }
+        } catch {
+          // File sharing fallback
+        }
       }
-    } catch (err) {
-      console.error('Failed to share', err);
-      toast.error('Failed to share image');
+
+      if (navigator.share) {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        toast.success('Shared successfully!');
+      } else {
+        await navigator.clipboard.writeText(shareText);
+        toast.success('Share text and link copied to clipboard! Paste directly into LinkedIn, X, or WhatsApp.');
+      }
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error('Failed to share', err);
+        try {
+          await navigator.clipboard.writeText(shareText);
+          toast.success('Share link copied to clipboard!');
+        } catch {
+          toast.error('Failed to share card');
+        }
+      }
+    }
+  };
+
+  const handleCopyLink = async () => {
+    trackFunnelEvent('talent_score_share', { score, action: 'copy_link' });
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success('TalentScore link copied to clipboard!');
+    } catch {
+      toast.error('Failed to copy link');
     }
   };
 
   return (
     <div className="flex flex-col items-center gap-4">
-      {/* The actual card that gets captured */}
+      {/* Visual Share Card */}
       <div
         ref={cardRef}
         className={cn(
-          'w-[400px] h-[500px] rounded-[2.5rem] p-8 flex flex-col items-center justify-between relative overflow-hidden bg-gradient-to-br',
-          theme.bg
+          'w-80 rounded-2xl p-6 text-white bg-gradient-to-br shadow-2xl relative overflow-hidden border border-white/10',
+          theme.bg,
+          theme.glow
         )}
       >
-        {/* Background effects */}
-        <div className="absolute inset-0 opacity-20"
-          style={{ background: 'radial-gradient(circle at 50% 50%, white, transparent 70%)' }} />
-        
+        {/* Background glow decoration */}
+        <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/5 blur-2xl pointer-events-none" />
+        <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full bg-blue-500/10 blur-2xl pointer-events-none" />
+
         {/* Header */}
-        <div className="w-full flex items-center justify-between relative z-10">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Sparkles className={cn("h-5 w-5", theme.text)} />
-            <span className={cn("font-bold tracking-widest uppercase text-xs", theme.text)}>TalentXcel</span>
+            <span className="text-xl">{theme.icon}</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-white/70">TalentScore</span>
           </div>
-          <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 flex items-center gap-1.5">
-            <span>{theme.icon}</span>
-            <span className="text-white text-xs font-bold uppercase tracking-wider">{theme.label} Tier</span>
-          </div>
+          <span className={cn('text-xs font-bold px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10', theme.text)}>
+            {theme.label}
+          </span>
         </div>
 
-        {/* Center content */}
-        <div className="relative z-10 flex flex-col items-center text-center mt-4">
-          <p className="text-white/60 text-sm font-bold uppercase tracking-widest mb-4">CareerIntelligence Score</p>
-          <div className={cn("text-[100px] leading-none font-black text-white drop-shadow-2xl mb-2", theme.glow)}>
-            {score}
-          </div>
-          <h2 className="text-2xl font-black text-white mt-6">{fullName}</h2>
-          {title && (
-            <p className="text-white/80 text-base mt-2">
-              {title} {company ? `at ${company}` : ''}
-            </p>
-          )}
+        {/* Score Display */}
+        <div className="text-center my-4">
+          <div className="text-6xl font-black tracking-tight text-white">{score}</div>
+          <div className="text-xs text-white/50 mt-1">out of 1000</div>
         </div>
 
-        {/* Footer */}
-        <div className="w-full flex items-center justify-center pt-8 border-t border-white/10 relative z-10">
-          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">
-            Build your TalentXcel Core at TalentXcel.in
-          </p>
+        {/* User Info */}
+        <div className="border-t border-white/10 pt-4 mt-6 text-center">
+          <p className="font-semibold text-sm text-white truncate">{fullName}</p>
+          {title && <p className="text-xs text-white/60 truncate mt-0.5">{title}</p>}
+          {company && <p className="text-xs text-white/40 truncate">{company}</p>}
+        </div>
+
+        {/* Footer branding */}
+        <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-white/40">
+          <span>talentxcel.in/talent-score</span>
+          <span className="flex items-center gap-1 font-semibold text-white/60">
+            <Sparkles className="w-3 h-3 text-cyan-400" /> TalentXcel
+          </span>
         </div>
       </div>
 
-      {/* Action Buttons (Not captured in image) */}
-      <div className="flex items-center gap-3 w-[400px]">
-        <Button onClick={handleDownload} className="flex-1 rounded-2xl h-12 bg-slate-900 text-white hover:bg-slate-800 font-bold">
-          <Download className="h-4 w-4 mr-2" />
-          Download Image
+      {/* Action Buttons */}
+      <div className="flex gap-2 w-full max-w-xs">
+        <Button
+          onClick={handleShare}
+          className="flex-1 gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs"
+        >
+          <Share2 className="w-4 h-4" /> Share Score
         </Button>
-        <Button onClick={handleShare} variant="outline" className="flex-1 rounded-2xl h-12 font-bold border-slate-200">
-          <Share2 className="h-4 w-4 mr-2" />
-          Share to Socials
+        <Button
+          onClick={handleDownload}
+          variant="outline"
+          className="gap-2 border-slate-700 hover:bg-slate-800 text-slate-200 text-xs"
+        >
+          <Download className="w-4 h-4" /> Save
+        </Button>
+        <Button
+          onClick={handleCopyLink}
+          variant="outline"
+          className="gap-2 border-slate-700 hover:bg-slate-800 text-slate-200 text-xs"
+        >
+          <Copy className="w-4 h-4" /> Link
         </Button>
       </div>
     </div>
   );
 };
 
-
+export default TalentScoreShareCard;

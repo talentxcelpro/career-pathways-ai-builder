@@ -1,0 +1,243 @@
+{
+  "evaluatedAt": "2026-11-24T16:28:21.978Z",
+  "networkMetrics": {
+    "totalConnectionRecords": 1000,
+    "acceptedConnections": 942,
+    "pendingConnections": 58,
+    "connectionAcceptanceRatePct": 94.2,
+    "uniqueConnectedUsers": 235,
+    "avgConnectionsPerConnectedUser": 8.02,
+    "retentionRateConnectedCohortPct": 60.8,
+    "retentionRateUnconnectedCohortPct": 12.1,
+    "networkRetentionMultiplier": 5.02
+  },
+  "topNetworkClusters": {
+    "cities": [
+      {
+        "city": "Noida",
+        "professionals": 7
+      },
+      {
+        "city": "Vadodara",
+        "professionals": 3
+      },
+      {
+        "city": "Hyderabad",
+        "professionals": 2
+      },
+      {
+        "city": "Palakkad",
+        "professionals": 2
+      },
+      {
+        "city": "Warangal",
+        "professionals": 2
+      },
+      {
+        "city": "Aligarh",
+        "professionals": 2
+      },
+      {
+        "city": "Bilaspur",
+        "professionals": 2
+      },
+      {
+        "city": "Bhubaneswar",
+        "professionals": 2
+      },
+      {
+        "city": "Ranchi",
+        "professionals": 2
+      },
+      {
+        "city": "Gurugram",
+        "professionals": 1
+      }
+    ],
+    "skills": [
+      {
+        "skill": "Professional Collaboration",
+        "professionals": 38
+      },
+      {
+        "skill": "Problem Solving",
+        "professionals": 38
+      },
+      {
+        "skill": "React",
+        "professionals": 31
+      },
+      {
+        "skill": "TypeScript",
+        "professionals": 31
+      },
+      {
+        "skill": "Node.js",
+        "professionals": 31
+      },
+      {
+        "skill": "PostgreSQL",
+        "professionals": 29
+      },
+      {
+        "skill": "RESTful APIs",
+        "professionals": 29
+      },
+      {
+        "skill": "Git",
+        "professionals": 29
+      },
+      {
+        "skill": "CI/CD Pipelines",
+        "professionals": 29
+      },
+      {
+        "skill": "Tailwind CSS",
+        "professionals": 29
+      },
+      {
+        "skill": "Redux",
+        "professionals": 29
+      },
+      {
+        "skill": "Jest",
+        "professionals": 29
+      },
+      {
+        "skill": "English (Fluent)",
+        "professionals": 3
+      },
+      {
+        "skill": "Python",
+        "professionals": 3
+      },
+      {
+        "skill": "Recruiter",
+        "professionals": 2
+      }
+    ]
+  },
+  "sampleAffinityRecommendations": [
+    {
+      "userId": "98bc07d9-1815-47fb-a59b-663303640310",
+      "userName": "Anuparthi Prasanthi",
+      "userHeadline": "fresher",
+      "userLocation": "Hyderabad",
+      "recommendedPeers": [
+        {
+          "peerId": "77fc4f0c-a5ec-478c-a6f5-2aa7c67c1129",
+          "peerName": "Chaitanya Rao Mulle",
+          "peerHeadline": "Data Analyst, Business Analyst, Data Scientist, Machine Learning Engineer",
+          "peerLocation": "Hyderabad, India",
+          "sharedAffinityScore": 50
+        },
+        {
+          "peerId": "5fbc2efb-269c-4bde-91bc-38cbf71ec390",
+          "peerName": "Thahliya M",
+          "peerHeadline": null,
+          "peerLocation": "Palakkad",
+          "sharedAffinityScore": 30
+        },
+        {
+          "peerId": "e5a788e4-ff28-40b8-b7e9-36103cf68acb",
+          "peerName": "Bharath .V",
+          "peerHeadline": "",
+          "peerLocation": "Bangalore, karnataka ",
+          "sharedAffinityScore": 30
+        }
+      ]
+    },
+    {
+      "userId": "01b449ea-4643-45d9-845d-e85f616ecaff",
+      "userName": "Deepak Mishra",
+      "userHeadline": "Data Scientist",
+      "userLocation": "Gurugram",
+      "recommendedPeers": []
+    },
+    {
+      "userId": "6dd21f31-fdcf-4f1f-8e94-3709e49aa405",
+      "userName": "Sai ranga Pothula",
+      "userHeadline": "fresher",
+      "userLocation": "guntur ,andhra pradesh",
+      "recommendedPeers": []
+    },
+    {
+      "userId": "61b6d8bb-bbea-41c5-8ca4-152c4bc5d599",
+      "userName": "TalentXcel SERVICES",
+      "userHeadline": "Strategic Talent Solutions for the Future of Work",
+      "userLocation": "Noida India ",
+      "recommendedPeers": [
+        {
+          "peerId": "77fc4f0c-a5ec-478c-a6f5-2aa7c67c1129",
+          "peerName": "Chaitanya Rao Mulle",
+          "peerHeadline": "Data Analyst, Business Analyst, Data Scientist, Machine Learning Engineer",
+          "peerLocation": "Hyderabad, India",
+          "sharedAffinityScore": 55
+        },
+        {
+          "peerId": "7346cdcb-ba82-4060-9cbc-264ef30791ed",
+          "peerName": "Shambhabi Sen",
+          "peerHeadline": "Fresher",
+          "peerLocation": "Durgapur, West Bengal, IND",
+          "sharedAffinityScore": 55
+        },
+        {
+          "peerId": "63a266db-2702-44a9-9841-49158fdace3e",
+          "peerName": "Prasen Patel",
+          "peerHeadline": "TalentXcel Member",
+          "peerLocation": null,
+          "sharedAffinityScore": 55
+        },
+        {
+          "peerId": "a14965b3-e461-4166-b96e-f87bbbdf5456",
+          "peerName": "Kishan Yadav",
+          "peerHeadline": "biotech engineer",
+          "peerLocation": "varanasi india",
+          "sharedAffinityScore": 55
+        }
+      ]
+    },
+    {
+      "userId": "77fc4f0c-a5ec-478c-a6f5-2aa7c67c1129",
+      "userName": "Chaitanya Rao Mulle",
+      "userHeadline": "Data Analyst, Business Analyst, Data Scientist, Machine Learning Engineer",
+      "userLocation": "Hyderabad, India",
+      "recommendedPeers": [
+        {
+          "peerId": "61b6d8bb-bbea-41c5-8ca4-152c4bc5d599",
+          "peerName": "TalentXcel SERVICES",
+          "peerHeadline": "Strategic Talent Solutions for the Future of Work",
+          "peerLocation": "Noida India ",
+          "sharedAffinityScore": 55
+        },
+        {
+          "peerId": "7346cdcb-ba82-4060-9cbc-264ef30791ed",
+          "peerName": "Shambhabi Sen",
+          "peerHeadline": "Fresher",
+          "peerLocation": "Durgapur, West Bengal, IND",
+          "sharedAffinityScore": 55
+        },
+        {
+          "peerId": "e19b30cf-2fe5-4cbf-85f0-9e76c4182eb0",
+          "peerName": "Vishwajeet Nayak",
+          "peerHeadline": "HR Executive at Savantis Solution | Skilled in Communication, Negotiation & Lead Screening | Passionate about Talent Acquisition & People Management",
+          "peerLocation": "Noida",
+          "sharedAffinityScore": 55
+        },
+        {
+          "peerId": "63a266db-2702-44a9-9841-49158fdace3e",
+          "peerName": "Prasen Patel",
+          "peerHeadline": "TalentXcel Member",
+          "peerLocation": null,
+          "sharedAffinityScore": 55
+        }
+      ]
+    }
+  ],
+  "networkEffectActionPlan": [
+    "Deploy smart affinity peer recommendations in network feed",
+    "Prompt newly activated candidates to connect with 3 local peers in their city",
+    "Notify users when peers in their skill cluster publish discussions or achievements",
+    "Preserve authentic peer connection requests without synthetic automated invitations"
+  ]
+}

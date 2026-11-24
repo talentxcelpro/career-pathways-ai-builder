@@ -1,0 +1,607 @@
+{
+  "tables": {
+    "profiles": {
+      "count": 803
+    },
+    "jobs": {
+      "count": 4469
+    },
+    "posts": {
+      "count": 2510
+    },
+    "connections": {
+      "count": 2963
+    },
+    "user_presence": {
+      "count": 56
+    },
+    "groups": {
+      "count": 1
+    },
+    "skills": {
+      "count": 7
+    },
+    "user_referrals": {
+      "count": 16
+    },
+    "subscribers": {
+      "count": 17
+    },
+    "profile_visits": {
+      "count": null
+    },
+    "job_applications": {
+      "count": 75
+    },
+    "comments": {
+      "count": null
+    },
+    "likes": {
+      "count": 9
+    }
+  },
+  "profilesAudit": {
+    "totalSampled": 803,
+    "withLocation": 26,
+    "withSkills": 48,
+    "withHeadline": 71,
+    "withIndustry": 6,
+    "publicProfiles": 786,
+    "verifiedProfiles": 0,
+    "withUsername": 803,
+    "withSlug": 104,
+    "careerStages": {
+      "early_career": 799,
+      "senior": 2,
+      "mid-level": 2
+    },
+    "topLocations": [
+      [
+        "Noida",
+        7
+      ],
+      [
+        "Delhi",
+        1
+      ],
+      [
+        "Chennai",
+        1
+      ],
+      [
+        "VPO Chattara Teh and Distt UNA (H.P)-174306",
+        1
+      ],
+      [
+        "Birmingham, UK",
+        1
+      ],
+      [
+        "India",
+        1
+      ],
+      [
+        "Hyderabad, Telangana, India",
+        1
+      ],
+      [
+        "Mumbai, India",
+        1
+      ],
+      [
+        "Noida,Uttar Pradesh",
+        1
+      ],
+      [
+        "Hyderabad",
+        1
+      ],
+      [
+        "Gurugram",
+        1
+      ],
+      [
+        "guntur ,andhra pradesh",
+        1
+      ],
+      [
+        "Palakkad",
+        1
+      ],
+      [
+        "Noida India",
+        1
+      ],
+      [
+        "Hyderabad, India",
+        1
+      ],
+      [
+        "Bhopal",
+        1
+      ],
+      [
+        "Durgapur, West Bengal, IND",
+        1
+      ],
+      [
+        "Bangalore, karnataka",
+        1
+      ],
+      [
+        "Ranchi , India",
+        1
+      ],
+      [
+        "varanasi india",
+        1
+      ]
+    ],
+    "topIndustries": [
+      [
+        "Technology",
+        4
+      ],
+      [
+        "Other",
+        2
+      ]
+    ],
+    "topSkills": [
+      [
+        "PostgreSQL",
+        32
+      ],
+      [
+        "React",
+        32
+      ],
+      [
+        "TypeScript",
+        32
+      ],
+      [
+        "Node.js",
+        32
+      ],
+      [
+        "Git",
+        31
+      ],
+      [
+        "RESTful APIs",
+        30
+      ],
+      [
+        "CI/CD Pipelines",
+        30
+      ],
+      [
+        "Tailwind CSS",
+        30
+      ],
+      [
+        "Redux",
+        30
+      ],
+      [
+        "Jest",
+        30
+      ],
+      [
+        "Python",
+        6
+      ],
+      [
+        "English (Fluent)",
+        4
+      ],
+      [
+        "SQL",
+        3
+      ],
+      [
+        "Power BI",
+        3
+      ],
+      [
+        "Machine Learning",
+        3
+      ],
+      [
+        "Master Data Management",
+        2
+      ],
+      [
+        "Scrum",
+        2
+      ],
+      [
+        "Confluence",
+        2
+      ],
+      [
+        "Docker",
+        2
+      ],
+      [
+        "GCP",
+        2
+      ]
+    ]
+  },
+  "jobsAudit": {
+    "totalJobs": 1000,
+    "activeJobs": 1000,
+    "internships": 5,
+    "freshers": 373,
+    "topJobLocations": [
+      [
+        "Bengaluru",
+        135
+      ],
+      [
+        "Jammu",
+        55
+      ],
+      [
+        "Remote",
+        54
+      ],
+      [
+        "Indore",
+        44
+      ],
+      [
+        "Chandigarh",
+        43
+      ],
+      [
+        "Coimbatore",
+        40
+      ],
+      [
+        "Kochi",
+        35
+      ],
+      [
+        "Bhopal",
+        35
+      ],
+      [
+        "Jaipur",
+        33
+      ],
+      [
+        "Bhubaneswar",
+        31
+      ],
+      [
+        "Surat",
+        31
+      ],
+      [
+        "Visakhapatnam",
+        30
+      ],
+      [
+        "Nagpur",
+        28
+      ],
+      [
+        "Mysuru",
+        28
+      ],
+      [
+        "Patna",
+        27
+      ],
+      [
+        "Kolhapur",
+        27
+      ],
+      [
+        "Vadodara",
+        26
+      ],
+      [
+        "Dehradun",
+        26
+      ],
+      [
+        "Guwahati",
+        26
+      ],
+      [
+        "Nashik",
+        25
+      ],
+      [
+        "Kanpur",
+        22
+      ],
+      [
+        "Chhatrapati Sambhajinagar",
+        22
+      ],
+      [
+        "Hyderabad",
+        21
+      ],
+      [
+        "Agra",
+        21
+      ],
+      [
+        "Solapur",
+        21
+      ]
+    ]
+  },
+  "postsAudit": {
+    "totalPosts": 1000,
+    "publicPosts": 1000,
+    "publishedPosts": 1000,
+    "uniqueAuthors": 24,
+    "withLikes": 85,
+    "withComments": 15,
+    "postTypes": {
+      "text": 985,
+      "image": 9,
+      "video": 6
+    }
+  },
+  "connectionsAudit": {
+    "totalConnections": 1000,
+    "statusCounts": {
+      "accepted": 942,
+      "pending": 58
+    },
+    "uniqueUsersConnected": 246
+  },
+  "referralsAudit": {
+    "records": [
+      {
+        "id": "96037161-9c0d-4a05-8cc1-e7d900a9f6f6",
+        "referrer_id": "5fc21d0d-dd1d-4fd8-802c-9e4ae8d6a062",
+        "referral_code": "TXC5FC21D0D",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-05T08:46:36.633548+00:00",
+        "updated_at": "2026-11-05T08:46:36.633548+00:00",
+        "user_id": null
+      },
+      {
+        "id": "e02a7d61-4a02-4e93-99a5-236ced7fa5b6",
+        "referrer_id": "c90ebb18-23cf-4f09-85c1-150091888b73",
+        "referral_code": "TXCC90EBB18",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-05T18:14:50.992733+00:00",
+        "updated_at": "2026-11-05T18:14:50.992733+00:00",
+        "user_id": null
+      },
+      {
+        "id": "2ba661d4-7aef-4f32-adf6-a3dd4955c02d",
+        "referrer_id": "0951f595-abd6-4463-9d8b-58a6d0548fc7",
+        "referral_code": "TXC0951F595",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-06T05:34:51.714705+00:00",
+        "updated_at": "2026-11-06T05:34:51.714705+00:00",
+        "user_id": null
+      },
+      {
+        "id": "b18cd955-f9b3-440d-9311-0596fe84a422",
+        "referrer_id": "61b6d8bb-bbea-41c5-8ca4-152c4bc5d599",
+        "referral_code": "TXC61B6D8BB",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-06T05:35:23.771955+00:00",
+        "updated_at": "2026-11-06T05:35:23.771955+00:00",
+        "user_id": null
+      },
+      {
+        "id": "b794b172-e6ba-4a93-a227-1871d26bc830",
+        "referrer_id": "e19b30cf-2fe5-4cbf-85f0-9e76c4182eb0",
+        "referral_code": "TXCE19B30CF",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-06T07:10:49.208859+00:00",
+        "updated_at": "2026-11-06T07:10:49.208859+00:00",
+        "user_id": null
+      },
+      {
+        "id": "dfa9c212-77ef-4a81-befe-0a01b76b43b0",
+        "referrer_id": "7309b75e-bb6c-4675-892b-96ace36cb0a9",
+        "referral_code": "TXC7309B75E",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-07T15:06:13.601314+00:00",
+        "updated_at": "2026-11-07T15:06:13.601314+00:00",
+        "user_id": null
+      },
+      {
+        "id": "9db9ec77-4949-4a66-b111-91d72ec6a6bb",
+        "referrer_id": "4f40a012-ad85-4c4d-9b86-4cd3ec4383e5",
+        "referral_code": "TXC4F40A012",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-12T08:15:48.283374+00:00",
+        "updated_at": "2026-11-12T08:15:48.283374+00:00",
+        "user_id": null
+      },
+      {
+        "id": "22f5ff3e-1c34-4b78-8bc1-56b5c16c9842",
+        "referrer_id": "85088acb-0955-4516-aee8-8ef5c324df1b",
+        "referral_code": "TXC85088ACB",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-12T23:55:39.807742+00:00",
+        "updated_at": "2026-11-12T23:55:39.807742+00:00",
+        "user_id": null
+      },
+      {
+        "id": "da98e6a1-875e-4722-b594-22d4adb50aa5",
+        "referrer_id": "2818b6a6-2673-488c-b1c7-c3a8b2de08e0",
+        "referral_code": "TXC2818B6A6",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-13T07:19:40.782654+00:00",
+        "updated_at": "2026-11-13T07:19:40.782654+00:00",
+        "user_id": null
+      },
+      {
+        "id": "9ae88a2b-8416-44bc-9ea4-ce9c2711040d",
+        "referrer_id": "aa43965e-9298-44d7-a6b9-d47c9429f804",
+        "referral_code": "TXCAA43965E",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-14T05:19:02.938587+00:00",
+        "updated_at": "2026-11-14T05:19:02.938587+00:00",
+        "user_id": null
+      },
+      {
+        "id": "1acb769f-ba41-43a1-bb28-6c8e77cd4f3e",
+        "referrer_id": "58fb46d8-5f87-4329-9cbb-c315a757784f",
+        "referral_code": "TXC58FB46D8",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-14T10:14:01.496442+00:00",
+        "updated_at": "2026-11-14T10:14:01.496442+00:00",
+        "user_id": null
+      },
+      {
+        "id": "cb515db1-41ae-4bbd-8db3-cb1ec4cbb5d2",
+        "referrer_id": "63a266db-2702-44a9-9841-49158fdace3e",
+        "referral_code": "TXC63A266DB",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-16T07:52:20.738933+00:00",
+        "updated_at": "2026-11-16T07:52:20.738933+00:00",
+        "user_id": null
+      },
+      {
+        "id": "d1aa08e1-66ca-46d6-9834-6fb44c68abd7",
+        "referrer_id": "204b435b-a078-46be-abc7-fbbb05dd5a0e",
+        "referral_code": "TXC204B435B",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-16T10:12:55.652103+00:00",
+        "updated_at": "2026-11-16T10:12:55.652103+00:00",
+        "user_id": null
+      },
+      {
+        "id": "f76d3e97-d9ab-4d0b-a9d2-10045896904b",
+        "referrer_id": "206b5c79-ad79-4b5d-9ac5-0057d44f9b67",
+        "referral_code": "TXC206B5C79",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-16T13:44:39.89543+00:00",
+        "updated_at": "2026-11-16T13:44:39.89543+00:00",
+        "user_id": null
+      },
+      {
+        "id": "d433a345-ab45-46d7-856f-e58043afc333",
+        "referrer_id": "03fe1fad-c1fe-4300-8edc-f8e956fa26b5",
+        "referral_code": "TXC03FE1FAD",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-17T07:51:30.244032+00:00",
+        "updated_at": "2026-11-17T07:51:30.244032+00:00",
+        "user_id": null
+      },
+      {
+        "id": "5442ebb2-6fc6-4d2e-9016-db3d5a1df49b",
+        "referrer_id": "5ff9310f-316c-464c-aeb3-9a606a07bb4d",
+        "referral_code": "TXC5FF9310F",
+        "referral_slug": null,
+        "total_referrals": 0,
+        "successful_referrals": 0,
+        "current_tier": 0,
+        "rewards_earned": [],
+        "total_rewards_value": 0,
+        "is_active": true,
+        "created_at": "2026-11-17T12:28:16.482085+00:00",
+        "updated_at": "2026-11-17T12:28:16.482085+00:00",
+        "user_id": null
+      }
+    ],
+    "error": null
+  }
+}

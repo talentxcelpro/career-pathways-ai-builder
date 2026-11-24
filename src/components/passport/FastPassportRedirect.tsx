@@ -14,6 +14,19 @@ const FastPassportRedirect = () => {
       if (!userId) return;
 
       try {
+        // 1. Check public_profiles view (accessible by anon and authenticated callers)
+        const { data: pubProfile } = await supabase
+          .from('public_profiles')
+          .select('username')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (pubProfile?.username) {
+          window.location.replace(`/u/${pubProfile.username}`);
+          return;
+        }
+
+        // 2. Fallback to profiles table for authenticated owners
         const { data: profile } = await supabase
           .from('profiles')
           .select('username')
@@ -21,8 +34,7 @@ const FastPassportRedirect = () => {
           .maybeSingle();
 
         if (profile?.username) {
-          // Use window.location.replace for instant redirect without history entry
-          window.location.replace(`/user/${profile.username}`);
+          window.location.replace(`/u/${profile.username}`);
         } else {
           window.location.replace('/404');
         }

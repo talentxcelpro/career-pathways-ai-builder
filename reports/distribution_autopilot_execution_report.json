@@ -1,0 +1,55 @@
+{
+  "executedAt": "2026-11-24T16:29:39.321Z",
+  "isDryRun": false,
+  "dispatchesCount": 6,
+  "dispatches": [
+    {
+      "channel": "telegram",
+      "category": "community_hub",
+      "title": "Noida, India",
+      "destinationUrl": "https://talentxcel.in/network/locations/noida?utm_source=telegram&utm_medium=autopilot&utm_campaign=autopilot_2026-11-24&utm_content=city_hub",
+      "opportunityScore": 100,
+      "contentHash": "189c9e054d5e593451c22fe1024b8421761492070c370694816493a95bb3a0fc"
+    },
+    {
+      "channel": "telegram",
+      "category": "job_alert",
+      "title": "Management Trainee - Hotel Operations at The Indian Hotels Company Limited (IHCL)",
+      "destinationUrl": "https://talentxcel.in/jobs/8fa066d6-ca56-4576-92b6-64c35c1a5908?utm_source=telegram&utm_medium=autopilot&utm_campaign=autopilot_2026-11-24&utm_content=job_opportunity",
+      "opportunityScore": 100,
+      "contentHash": "78becfb810c0507cebcecfe26c5f5ca849e694e8ef84446ee25009242c550e72"
+    },
+    {
+      "channel": "linkedin",
+      "category": "community_hub",
+      "title": "Career Changers & Upskilling",
+      "destinationUrl": "https://talentxcel.in/network/segments/career-changers?utm_source=linkedin&utm_medium=autopilot&utm_campaign=autopilot_2026-11-24&utm_content=career_segment_hub",
+      "opportunityScore": 96,
+      "contentHash": "a15a06da73c11a9af79e9f9c2dcafaaa83f2fd3c35ed0b2dc0fe1ff9a61a4b1b"
+    },
+    {
+      "channel": "linkedin",
+      "category": "community_hub",
+      "title": "Financial Services",
+      "destinationUrl": "https://talentxcel.in/network/industries/financial-services?utm_source=linkedin&utm_medium=autopilot&utm_campaign=autopilot_2026-11-24&utm_content=industry_hub",
+      "opportunityScore": 96,
+      "contentHash": "1bc8941248b62c5810076e2e32dce045834ef47de913153caf5c323f5b01061b"
+    },
+    {
+      "channel": "telegram",
+      "category": "skill_resource",
+      "title": "Node.js",
+      "destinationUrl": "https://talentxcel.in/network/skills/node-js?utm_source=telegram&utm_medium=autopilot&utm_campaign=autopilot_2026-11-24&utm_content=skill_hub",
+      "opportunityScore": 96,
+      "contentHash": "48fcc5cedcde44ed9ceb5ba7729d5c84004803672c82e5293711482312468248"
+    },
+    {
+      "channel": "telegram",
+      "category": "skill_resource",
+      "title": "PostgreSQL",
+      "destinationUrl": "https://talentxcel.in/network/skills/postgresql?utm_source=telegram&utm_medium=autopilot&utm_campaign=autopilot_2026-11-24&utm_content=skill_hub",
+      "opportunityScore": 96,
+      "contentHash": "e250de6601eb06832ec3b2d382b988025bf50fe7a29d8c9edf21c98967fdbf91"
+    }
+  ]
+}

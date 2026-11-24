@@ -115,6 +115,11 @@ const C5_COUNT = 60_000;
 function getUrlAtIndex(index: number, host: string = DEFAULT_HOST): string {
   const origin = `https://${host}`;
 
+  // Priority Flagship URLs at index 0-2
+  if (index === 0) return `${origin}/talent-score`;
+  if (index === 1) return `${origin}/passport`;
+  if (index === 2) return `${origin}/talent`;
+
   if (index < C1_COUNT) {
     const r = index % 500;
     const c = Math.floor(index / 500) % 400;
@@ -189,7 +194,7 @@ function getUrlAtIndex(index: number, host: string = DEFAULT_HOST): string {
     const v = Math.floor(rel / 500);
     const role = getRole(r);
     const badge = role.endsWith('-specialist') ? '' : '-specialist';
-    return `${origin}/profile/${role}${badge}-${1000 + v}`;
+    return `${origin}/u/${role}${badge}-${1000 + v}`;
   }
 }
 
