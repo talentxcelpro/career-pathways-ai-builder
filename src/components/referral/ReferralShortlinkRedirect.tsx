@@ -1,8 +1,12 @@
 import React, { useEffect } from 'react';
-import { useParams, Navigate } from 'react-router-dom';
+import { useParams, useSearchParams, Navigate } from 'react-router-dom';
 
 export const ReferralShortlinkRedirect: React.FC = () => {
   const { code } = useParams<{ code: string }>();
+  const [searchParams] = useSearchParams();
+
+  const rawTarget = searchParams.get('to') || searchParams.get('target') || searchParams.get('redirect');
+  const cleanTarget = rawTarget && rawTarget.startsWith('/') && !rawTarget.startsWith('//') ? rawTarget : null;
 
   useEffect(() => {
     if (code) {
@@ -16,7 +20,12 @@ export const ReferralShortlinkRedirect: React.FC = () => {
   }, [code]);
 
   const cleanCode = code ? code.trim().toUpperCase() : '';
-  const destination = cleanCode ? `/auth?mode=signup&ref=${encodeURIComponent(cleanCode)}` : '/auth?mode=signup';
+  
+  // Route to specific target if provided, otherwise route to the high-converting jobs portal
+  let destination = cleanTarget || '/jobs';
+  if (cleanCode) {
+    destination += (destination.includes('?') ? '&' : '?') + `ref=${encodeURIComponent(cleanCode)}`;
+  }
 
   return <Navigate to={destination} replace />;
 };

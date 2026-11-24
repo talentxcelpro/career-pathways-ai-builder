@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowRight, Zap } from 'lucide-react';
@@ -22,6 +22,16 @@ export const PublicJobApplyButton: React.FC<PublicJobApplyButtonProps> = ({
 }) => {
   const { user: currentUser } = useAuth();
   const [showGuestModal, setShowGuestModal] = useState<boolean>(false);
+
+  // Auto-open modal upon return from Google OAuth
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem('txc_auto_open_apply') === jobId) {
+        sessionStorage.removeItem('txc_auto_open_apply');
+        setShowGuestModal(true);
+      }
+    } catch {}
+  }, [jobId]);
 
   const handleApplyClick = () => {
     GrowthFunnelTracker.track('apply_cta_clicked', {

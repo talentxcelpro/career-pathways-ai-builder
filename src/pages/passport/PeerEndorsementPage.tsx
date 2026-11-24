@@ -76,23 +76,51 @@ export const PeerEndorsementPage: React.FC = () => {
     e.preventDefault();
 
     const finalSkill = (customSkill.trim() || selectedSkill || 'Technical Excellence').trim();
+    const cleanEmail = endorserEmail.trim().toLowerCase();
+
     if (!endorserName.trim()) {
       toast.error('Please enter your full name');
       return;
     }
-    if (!endorserEmail.trim() || !endorserEmail.includes('@')) {
+    if (!cleanEmail || !cleanEmail.includes('@')) {
       toast.error('Please provide a valid email address');
+      return;
+    }
+
+    // Security Gate 1: Block self-endorsement
+    if (user?.id && profile?.id && user.id === profile.id) {
+      toast.error('You cannot endorse your own skills.');
+      return;
+    }
+    if (profile?.email && cleanEmail === profile.email.toLowerCase()) {
+      toast.error('You cannot endorse your own skills.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // 1. Insert endorsement
+      // Security Gate 2: Enforce deduplication (1 endorsement per endorser email per recipient)
+      const { data: existingEndorsement } = await supabase
+        .from('peer_endorsements')
+        .select('id, created_at')
+        .or(`recipient_username.eq.${cleanUsername},recipient_user_id.eq.${profile?.id || '00000000-0000-0000-0000-000000000000'}`)
+        .eq('endorser_email', cleanEmail)
+        .limit(1)
+        .maybeSingle();
+
+      if (existingEndorsement) {
+        toast.info(`You have already submitted an endorsement for ${profile?.full_name || cleanUsername}. Thank you for your support!`);
+        setIsSubmitted(true);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 1. Insert endorsement record
       const { error: endErr } = await supabase.from('peer_endorsements').insert({
         recipient_user_id: profile?.id || null,
         recipient_username: cleanUsername,
         endorser_name: endorserName.trim(),
-        endorser_email: endorserEmail.trim(),
+        endorser_email: cleanEmail,
         endorser_user_id: user?.id || null,
         skill_name: finalSkill,
         rating: rating,
@@ -101,17 +129,8 @@ export const PeerEndorsementPage: React.FC = () => {
 
       if (endErr) throw endErr;
 
-      // 2. Award referral credits to recipient
-      if (profile?.id) {
-        await supabase.from('referral_credits').insert({
-          referrer_id: profile.id,
-          credits: 50,
-          credit_type: 'peer_endorsement',
-          credit_amount: 50,
-          reason: `peer_endorsement:${finalSkill}`,
-          status: 'credited'
-        }).then(() => {}).catch(() => {});
-      }
+      // Note: Direct client writes to referral_credits removed for security.
+      // Credits are governed strictly server-side by backend authorization triggers.
 
       trackFunnelEvent('endorsement_sent', {
         recipient: cleanUsername,

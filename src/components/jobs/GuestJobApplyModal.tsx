@@ -144,10 +144,18 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
       job_id: job.id,
     });
     try {
+      // Store auto-open flag so modal re-opens upon returning from Google OAuth
+      try {
+        sessionStorage.setItem('txc_auto_open_apply', job.id);
+      } catch {}
+
+      const returnPath = window.location.pathname + window.location.search;
+      const callbackUrl = `${window.location.origin}/auth/callback?returnTo=${encodeURIComponent(returnPath)}`;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.href,
+          redirectTo: callbackUrl,
         },
       });
       if (error) throw error;

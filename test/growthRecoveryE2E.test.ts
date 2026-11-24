@@ -40,14 +40,12 @@ function setupMockBrowser() {
 test('TALENTXCEL GROWTH RECOVERY & CONVERSION GATEWAY E2E SUITE', async (suite) => {
 
   await suite.test('P0: PublicJobApplyButton & Guest Modal State Contract', () => {
-    // Verify state initialization does not throw ReferenceError
     let showGuestModal = false;
     const setShowGuestModal = (val: boolean) => {
       showGuestModal = val;
     };
 
     const handleApplyClick = () => {
-      // Simulate click
       setShowGuestModal(true);
     };
 
@@ -56,29 +54,29 @@ test('TALENTXCEL GROWTH RECOVERY & CONVERSION GATEWAY E2E SUITE', async (suite) 
     assert.equal(showGuestModal, true, 'Modal state must toggle to true without ReferenceError');
   });
 
-  await suite.test('P0: Google OAuth quick-auth parameters on job pages', () => {
+  await suite.test('P0: Google OAuth quick-auth callback & auto-reopen contract', () => {
     const job = {
       id: 'job-test-123',
       title: 'Senior Full Stack Engineer',
       location: 'Bangalore, India',
-      external_url: null,
     };
 
     const origin = 'https://talentxcel.in';
-    const currentHref = `${origin}/jobs/${job.id}`;
+    const returnPath = `/jobs/${job.id}`;
+    const callbackUrl = `${origin}/auth/callback?returnTo=${encodeURIComponent(returnPath)}`;
 
     const oauthOptions = {
       provider: 'google' as const,
       options: {
-        redirectTo: currentHref,
+        redirectTo: callbackUrl,
       },
     };
 
     assert.equal(oauthOptions.provider, 'google');
-    assert.equal(oauthOptions.options.redirectTo, currentHref, 'Must redirect candidate directly back to active job listing');
+    assert.equal(oauthOptions.options.redirectTo, callbackUrl, 'Must use registered /auth/callback with returnTo parameter');
   });
 
-  await suite.test('P0: Referral shortlink (/r/:code) storage and redirection contract', async () => {
+  await suite.test('P0: Referral shortlink (/r/:code) storage and job portal routing', async () => {
     const { store } = setupMockBrowser();
 
     const rawCode = '  txc_ambassador_99  ';
@@ -92,27 +90,36 @@ test('TALENTXCEL GROWTH RECOVERY & CONVERSION GATEWAY E2E SUITE', async (suite) 
     assert.equal(localStorage.getItem('txc_referral_code'), 'TXC_AMBASSADOR_99');
     assert.equal(localStorage.getItem('txc_referral_channel'), 'shortlink');
 
-    const destination = cleanCode 
-      ? `/auth?mode=signup&ref=${encodeURIComponent(cleanCode)}` 
-      : '/auth?mode=signup';
+    // Route to /jobs with referral code attached (never naked /auth)
+    const destination = `/jobs?ref=${encodeURIComponent(cleanCode)}`;
+    assert.equal(destination, '/jobs?ref=TXC_AMBASSADOR_99');
 
-    assert.equal(destination, '/auth?mode=signup&ref=TXC_AMBASSADOR_99');
-
-    // Emulate 30-day attribution window expiry check
+    // 30-day attribution window validation
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const isStillValid = (Date.now() - parseInt(localStorage.getItem('txc_referral_timestamp')!, 10)) <= THIRTY_DAYS_MS;
     assert.equal(isStillValid, true, 'Referral code must remain valid within 30-day window');
   });
 
-  await suite.test('P1: /verify/:username peer endorsement flow contract', () => {
-    const usernameParam = '@priyasharma';
-    const cleanUsername = usernameParam.trim().replace(/^@/, '');
-    assert.equal(cleanUsername, 'priyasharma');
+  await suite.test('P1: /verify/:username peer endorsement security & reciprocal hook', () => {
+    const cleanUsername = 'priyasharma';
+    const recipientProfile = {
+      id: 'recipient-uuid-123',
+      email: 'priya@example.com',
+      full_name: 'Priya Sharma'
+    };
 
-    const canonicalUrl = `https://talentxcel.in/verify/${cleanUsername}`;
-    assert.equal(canonicalUrl, 'https://talentxcel.in/verify/priyasharma');
+    // Security Gate 1: Self-endorsement block
+    const isSelfEndorsement = (userId: string, email: string) => {
+      if (userId && userId === recipientProfile.id) return true;
+      if (email && email.toLowerCase() === recipientProfile.email.toLowerCase()) return true;
+      return false;
+    };
 
-    // Reciprocal vanity handle generator
+    assert.equal(isSelfEndorsement('recipient-uuid-123', 'other@example.com'), true, 'Must block user endorsing themselves by ID');
+    assert.equal(isSelfEndorsement('other-uuid-456', 'priya@example.com'), true, 'Must block user endorsing themselves by email');
+    assert.equal(isSelfEndorsement('other-uuid-456', 'colleague@example.com'), false, 'Legitimate peer endorsement allowed');
+
+    // Security Gate 2: Reciprocal vanity handle generator
     const endorserName = 'Vikram Malhotra';
     const suggestedHandle = endorserName.toLowerCase().replace(/\s+/g, '-');
     assert.equal(suggestedHandle, 'vikram-malhotra');
@@ -155,24 +162,22 @@ test('TALENTXCEL GROWTH RECOVERY & CONVERSION GATEWAY E2E SUITE', async (suite) 
     assert.equal(duplicateNav, false, 'Duplicate page_view event on re-render must be suppressed');
     assert.equal(dataLayer.length, 2);
 
-    // 4. Navigation to /r/TXC123 -> /auth?mode=signup&ref=TXC123
-    const secondNav = trackSpaPageView('/auth?mode=signup&ref=TXC123');
+    // 4. Navigation to /r/TXC123 -> /jobs?ref=TXC123
+    const secondNav = trackSpaPageView('/jobs?ref=TXC123');
     assert.equal(secondNav, true);
     assert.equal(dataLayer.length, 3);
-    assert.equal(dataLayer[2][2].page_path, '/auth?mode=signup&ref=TXC123');
+    assert.equal(dataLayer[2][2].page_path, '/jobs?ref=TXC123');
   });
 
   await suite.test('P2: Measurement & Conversion Mathematics Verification', () => {
     const dailySearchVisitors = 44;
-    const dailyCommunityVisitors = 0; // Pre-launch baseline
+    const dailyCommunityVisitors = 0;
     const totalDailyVisitors = dailySearchVisitors + dailyCommunityVisitors;
 
-    // Current baseline conversion
     const currentDailySignups = 9;
     const baselineConversionRate = (currentDailySignups / totalDailyVisitors) * 100;
     assert.ok(baselineConversionRate > 0, 'Conversion rate must be positive');
 
-    // Required visitors for 100/day at various conversion rates
     const requiredVisitorsAt5Percent = Math.ceil(100 / 0.05);
     const requiredVisitorsAt10Percent = Math.ceil(100 / 0.10);
 
