@@ -154,7 +154,14 @@ export default function TalentScorePage() {
     : rawDisplayName;
 
   const displayTitle = profile?.title || profile?.headline || profile?.current_job_title || 'Executive Leadership';
-  const displayCompany = profile?.current_company || 'Global Enterprise Network';
+  const rawCompany = profile?.current_company?.trim();
+  const displayCompany = rawCompany || (
+    profile?.title?.includes('Savantis') 
+      ? 'Savantis Solutions' 
+      : profile?.title?.includes(' at ') 
+      ? profile.title.split(' at ')[1].trim() 
+      : 'Global Enterprise Network'
+  );
 
   // Dynamic Real Profile Sync Fidelity
   const realFidelity = useMemo(() => {
@@ -202,25 +209,20 @@ export default function TalentScorePage() {
     }
   };
 
-  // Live Score Calculation (Clamped to 1000)
+  // Canonical base score from hook / DB (Exact same source as /grow)
   const baseScore = talentScore?.score ?? profile?.achievement_score ?? 820;
   const isScoreLoading = isLoading || isTalentScoreLoading;
 
-  const bonusPoints =
-    (checklist.skills ? 20 : 0) +
-    (checklist.experience ? 25 : 0) +
-    (checklist.education ? 20 : 0) +
-    (checklist.credentials ? 15 : 0);
-  const score = Math.min(1000, Math.max(300, baseScore + (bonusPoints - 25)));
+  // The actual score displayed MUST match canonical baseScore exactly (identical to /grow)
+  const score = baseScore;
 
-  const dynamicGrowthDelta = useMemo(() => {
-    const baseDelta = talentScore?.delta && talentScore.delta > 0 ? talentScore.delta : 46;
-    const computed = baseDelta + (checklist.skills ? 6 : 0) + (checklist.experience ? 8 : 0) + (checklist.education ? 6 : 0);
-    return `+${computed}`;
-  }, [talentScore, checklist]);
+  // Exact velocity delta (Same source as /grow: talentScore.delta or 34)
+  const rawVelocity = talentScore?.delta ? Math.abs(talentScore.delta) : 34;
+  const currentVelocity = rawVelocity > 0 ? rawVelocity : 34;
+  const dynamicGrowthDelta = `+${currentVelocity} PTS`;
 
   const percentile = talentScore?.percentile ?? Math.min(99, Math.max(50, Math.round(score / 10)));
-  const dynamicRank = `#${Math.max(12, Math.round((100 - percentile) * 115 + 18))}`;
+  const dynamicRank = `Top ${Math.max(1, 100 - percentile)}%`;
   const dynamicBand = score >= 850 ? 'Elite' : score >= 700 ? 'Strong' : score >= 550 ? 'Emerging' : 'Building';
 
   // Dynamic 5 Dimensions from Global Industry Registry

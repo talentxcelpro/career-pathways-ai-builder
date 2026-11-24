@@ -168,7 +168,20 @@ export const Footer = () => {
             { heading: 'For Candidates', links: CANDIDATE_SERVICES.map((s) => ({ to: `/${s.slug}`, label: s.title })) },
             { heading: 'For Employers', links: [{ to: '/employers', label: 'Hiring Solutions' }, ...EMPLOYER_SERVICES.map((s) => ({ to: `/${s.slug}`, label: s.title }))] },
             { heading: 'Industries', links: [...INDUSTRY_HUBS.slice(0, 6).map((i) => ({ to: `/industries/${i.slug}`, label: i.name })), { to: '/industries', label: 'All industries' }] },
-            { heading: 'Locations', links: [...LOCATION_HUBS.slice(1, 7).map((l) => ({ to: `/locations/${l.slug}`, label: l.name })), { to: '/locations', label: 'All locations' }] },
+            { 
+              heading: 'Locations', 
+              links: [
+                { to: '/locations/bangalore', label: 'Bangalore' },
+                { to: '/locations/noida', label: 'Noida / NCR' },
+                { to: '/locations/varanasi', label: 'Varanasi' },
+                { to: '/locations/lucknow', label: 'Lucknow' },
+                { to: '/locations/mumbai', label: 'Mumbai' },
+                { to: '/locations/hyderabad', label: 'Hyderabad' },
+                { to: '/locations/pune', label: 'Pune' },
+                { to: '/locations/jaipur', label: 'Jaipur' },
+                { to: '/locations', label: 'All locations' },
+              ] 
+            },
             { heading: 'Resources', links: [...RESOURCE_HUBS.map((r) => ({ to: `/resources/${r.slug}`, label: r.name })), { to: '/company-info', label: 'Company' }] },
           ].map((col) => (
             <div key={col.heading}>

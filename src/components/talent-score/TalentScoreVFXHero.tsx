@@ -426,7 +426,7 @@ export const TalentScoreVFXHero: React.FC<TalentScoreVFXHeroProps> = ({
                 </div>
                 <div className="text-[8px] sm:text-[9px] text-amber-400/90 font-mono flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping inline-block" />
-                  <span>{growthDeltaOverride} Pts</span>
+                  <span>{growthDeltaOverride.includes('PTS') || growthDeltaOverride.includes('Pts') ? growthDeltaOverride : `${growthDeltaOverride} PTS`}</span>
                 </div>
               </div>
             </div>
@@ -579,7 +579,7 @@ export const TalentScoreVFXHero: React.FC<TalentScoreVFXHeroProps> = ({
             </div>
             <div className="min-w-0">
               <div className="text-xs font-black text-white tracking-wider">GROWTH</div>
-              <div className="text-[10px] text-amber-400 font-mono">{growthDeltaOverride} Pts</div>
+              <div className="text-[10px] text-amber-400 font-mono">{growthDeltaOverride.includes('PTS') || growthDeltaOverride.includes('Pts') ? growthDeltaOverride : `${growthDeltaOverride} PTS`}</div>
             </div>
           </button>
 

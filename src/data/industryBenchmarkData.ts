@@ -210,6 +210,31 @@ export function detectIndustryFromProfile(profile: any): string {
     }
   }
 
+  // Priority 1: Check title and headline directly (strongest role intent)
+  const titleAndHeadline = [profile?.title, profile?.headline, profile?.current_job_title].filter(Boolean).join(' ').toLowerCase();
+
+  if (/sales|commercial|account executive|business development|growth specialist|revenue|cmo/.test(titleAndHeadline)) {
+    return 'marketing';
+  }
+  if (/doctor|physician|surgeon|nurse|hospital|clinical|pharma|medical|healthcare/.test(titleAndHeadline)) {
+    return 'healthcare';
+  }
+  if (/cfo|finance|bank|invest|accountant|audit|wealth|portfolio|tax/.test(titleAndHeadline)) {
+    return 'finance';
+  }
+  if (/law|legal|attorney|counsel|general counsel|compliance/.test(titleAndHeadline)) {
+    return 'legal';
+  }
+  if (/civil|mechanical|electrical|structural|construct|architect|plant engineer/.test(titleAndHeadline)) {
+    return 'engineering';
+  }
+  if (/supply chain|logistics|procure|warehouse|freight/.test(titleAndHeadline)) {
+    return 'operations';
+  }
+  if (/software|developer|frontend|backend|cloud|devops|fullstack|cto|architect|engineer/.test(titleAndHeadline)) {
+    return 'technology';
+  }
+
   const textToScan = [
     profile?.title,
     profile?.headline,
