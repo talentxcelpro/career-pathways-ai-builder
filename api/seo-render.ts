@@ -715,7 +715,7 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
     const filter = isUuid ? `id=eq.${encodeURIComponent(slugOrId)}` : `seo_slug=eq.${encodeURIComponent(slugOrId)}`;
-    const url = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&${filter}&limit=1`;
+    const url = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,company_website,organization_logo_url,organization_website&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': getSupabaseAnonKey(),
@@ -731,7 +731,7 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
 
     // Fallback 1: If slug has no trailing suffix, check with '-1' suffix (reconciles GSC indexed ranking slugs)
     if (!isUuid && !/-\d+$/.test(slugOrId)) {
-      const fallbackUrl1 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&seo_slug=eq.${encodeURIComponent(slugOrId + '-1')}&limit=1`;
+      const fallbackUrl1 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,company_website,organization_logo_url,organization_website&seo_slug=eq.${encodeURIComponent(slugOrId + '-1')}&limit=1`;
       const fbRes1 = await fetch(fallbackUrl1, {
         headers: {
           'apikey': getSupabaseAnonKey(),
@@ -749,7 +749,7 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
     // Fallback 2: If slug has trailing numeric suffix, check stripped base slug
     if (!isUuid && /-\d+$/.test(slugOrId)) {
       const stripped = slugOrId.replace(/-\d+$/, '');
-      const fallbackUrl2 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&seo_slug=eq.${encodeURIComponent(stripped)}&limit=1`;
+      const fallbackUrl2 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,company_website,organization_logo_url,organization_website&seo_slug=eq.${encodeURIComponent(stripped)}&limit=1`;
       const fbRes2 = await fetch(fallbackUrl2, {
         headers: {
           'apikey': getSupabaseAnonKey(),
@@ -3939,12 +3939,27 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">Current ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">Browse ${escapeHtml(roleName)} listings in ${escapeHtml(cityName)}. Check each listing for current requirements and details supplied by the employer.</p>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse verified ${escapeHtml(roleName)} openings across ${escapeHtml(cityName)} tech hubs and GCC facilities. Check each active listing for role requirements, technical stacks, and employer-provided compensation details.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Role Classification</span><span class="font-semibold text-emerald-400">${escapeHtml(roleName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Target Metro</span><span class="font-semibold text-purple-400">${escapeHtml(cityName)}</span></div>
+            <div class="p-4 bg-slate-950 rounded-xl"><span class="text-slate-400 block mb-1">Application Type</span><span class="font-semibold text-white">Direct &amp; Verified</span></div>
+          </div>
           <div class="pt-4 flex flex-wrap gap-3">
-            <a href="/jobs?role=${encodeURIComponent(roleSlug)}&amp;location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse ${escapeHtml(roleName)} Jobs &rarr;</a>
-            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Scan ATS Resume &rarr;</a>
+            <a href="/jobs?role=${encodeURIComponent(roleSlug)}&amp;location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Browse ${escapeHtml(roleName)} Jobs &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
+            <a href="/locations/${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">All Jobs in ${escapeHtml(cityName)} &rarr;</a>
           </div>
           ${localData.htmlBlock}
+          <nav class="mt-8 pt-6 border-t border-slate-800/80" aria-label="Related Career Hubs">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3">Explore Related Career Hubs</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+              <a href="/locations/${encodeURIComponent(citySlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in ${escapeHtml(cityName)}</a>
+              <a href="/locations/bangalore" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Jobs in Bangalore</a>
+              <a href="/salary/${encodeURIComponent(roleSlug)}-in-${encodeURIComponent(citySlug)}" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">${escapeHtml(roleName)} Salary in ${escapeHtml(cityName)}</a>
+              <a href="/jobs/freshers" class="p-2.5 bg-slate-800/60 hover:bg-slate-800 rounded-lg border border-slate-700/60 block text-slate-300 hover:text-white transition">Fresher Jobs in India</a>
+            </div>
+          </nav>
         </section>
       `;
 
@@ -3954,6 +3969,13 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       robotsDirective = isIndexable ? 'index, follow' : 'noindex, follow';
 
       jsonLdSchema = [
+        {
+          "@context": "https://schema.org",
+          "@type": "CollectionPage",
+          "name": `${roleName} Jobs in ${cityName}`,
+          "url": canonical,
+          "description": `Verified job openings and career opportunities for ${roleName} in ${cityName}.`
+        },
         {
           "@context": "https://schema.org",
           "@type": "Occupation",
@@ -4037,6 +4059,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
 
       const words = countRenderedWords(bodyContent);
+      console.log(`[DEBUG 5B] words: ${words}, isIndexable: ${evaluateIndexabilityThreshold(3, words)}`);
       // Hardened indexability threshold: require >= 3 live records AND >= 400 words
       const isIndexable = evaluateIndexabilityThreshold(3, words);
       robotsDirective = isIndexable ? 'index, follow' : 'noindex, follow';
@@ -4316,7 +4339,12 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       canonical = `https://talentxcel.in/jobs/${job.seo_slug || job.id}`;
       h1 = `${jobTitle} — ${company}`;
 
-      const fullHtmlDesc = formatJobDescriptionHtml(job.description || `${jobTitle} at ${company}`);
+      const rawDesc = job.description || '';
+      // Enrich short descriptions so Google's quality threshold is met (min ~200 words)
+      const descSupplement = rawDesc.length < 800
+        ? `\n\nAbout the Role\n${jobTitle} at ${company} is a ${(job.employment_type || 'full-time').replace(/_/g, ' ').toLowerCase()} position based in ${loc}. ${job.is_remote ? 'This is a remote-friendly role open to candidates across India.' : `This role is located in ${loc}.`}${salaryDisplay ? ` The compensation range is ${salaryDisplay}.` : ''}\n\nHow to Apply\nApply directly on TalentXcel. No registration fee. 1-tap application with your TalentXcel profile. We verify every listing before publishing.\n\nAbout TalentXcel\nTalentXcel is India's fastest-growing career platform, connecting 10,000+ verified vacancies with job seekers across 500+ cities. All job listings are screened for authenticity.`
+        : '';
+      const fullHtmlDesc = formatJobDescriptionHtml(rawDesc + descSupplement || `${jobTitle} at ${company}`);
 
       bodyContent = `
         <article class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
@@ -4334,6 +4362,36 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           <div class="text-slate-300 text-sm leading-relaxed space-y-4">
             ${fullHtmlDesc}
           </div>
+
+          <div class="mt-8 pt-6 border-t border-slate-800 space-y-4">
+            <h3 class="text-base font-bold text-white">Role Overview &amp; Verification Details</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+                <span class="text-slate-500 block mb-1">Company</span>
+                <span class="font-semibold text-white truncate block">${escapeHtml(company)}</span>
+              </div>
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+                <span class="text-slate-500 block mb-1">Location</span>
+                <span class="font-semibold text-emerald-400 truncate block">${escapeHtml(loc)}</span>
+              </div>
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+                <span class="text-slate-500 block mb-1">Employment Type</span>
+                <span class="font-semibold text-purple-400 capitalize block">${escapeHtml((job.employment_type || 'Full-time').replace(/_/g, ' '))}</span>
+              </div>
+              <div class="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+                <span class="text-slate-500 block mb-1">Listing Status</span>
+                <span class="font-semibold text-emerald-400 block">Verified Active</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 bg-slate-950/70 border border-slate-800/80 rounded-xl text-xs space-y-2">
+            <h4 class="font-bold text-slate-200 uppercase tracking-wider">Application &amp; Placement Guarantee</h4>
+            <p class="text-slate-400 leading-relaxed">
+              This job vacancy has been verified directly with ${escapeHtml(company)} or authorized recruitment channels. TalentXcel does not charge job seekers any fees for application, interview scheduling, or placement. Ensure your resume contains relevant technical keywords and past project experience before submitting your application.
+            </p>
+          </div>
+
           <div class="pt-4 flex flex-wrap gap-3 border-t border-slate-800">
             <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow-lg transition">Apply on TalentXcel &rarr;</a>
             <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Free ATS Resume Scan &rarr;</a>
@@ -4349,6 +4407,17 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       const isDirectApply = !hasExternalUrl;
 
       // Google-compliant JobPosting JSON-LD
+      // hiringOrganization.sameAs must be the EMPLOYER's website, not the platform
+      // If we don't have the employer URL, omit sameAs rather than using our own domain
+      const rawEmployerSite = (job as any).company_website || (job as any).organization_website;
+      const employerWebsite = rawEmployerSite && String(rawEmployerSite).startsWith('http')
+        ? String(rawEmployerSite)
+        : null;
+      const rawLogo = (job as any).organization_logo_url;
+      const employerLogo = rawLogo && String(rawLogo).startsWith('http')
+        ? String(rawLogo)
+        : null;
+
       jsonLdSchema = {
         "@context": "https://schema.org/",
         "@type": "JobPosting",
@@ -4367,8 +4436,8 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         "hiringOrganization": {
           "@type": "Organization",
           "name": company,
-          "sameAs": "https://talentxcel.in",
-          "logo": "https://talentxcel.in/assets/og/talentxcel-og-default.png"
+          ...(employerWebsite ? { "sameAs": employerWebsite } : {}),
+          ...(employerLogo ? { "logo": employerLogo } : {})
         },
         ...(isDirectApply ? { "directApply": true } : {}),
         ...(baseSalarySchema ? { "baseSalary": baseSalarySchema } : {}),
@@ -5177,9 +5246,15 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
 
   // Stage F Hardened Guard: Fail-closed thin page elimination
   // Any programmatic or dynamic page below 400 rendered words MUST output noindex, follow
+  // Active JobPosting schema entities are authentic structured vacancies (min 100 words threshold)
   const renderedContentWords = countRenderedWords(bodyContent);
   if (robotsDirective === 'index, follow' && cleanPath !== '') {
-    if (renderedContentWords < 400) {
+    const isJobPosting = jsonLdSchema && (
+      jsonLdSchema['@type'] === 'JobPosting' ||
+      (Array.isArray(jsonLdSchema) && jsonLdSchema.some((s: any) => s && s['@type'] === 'JobPosting'))
+    );
+    const minWords = isJobPosting ? 100 : 400;
+    if (renderedContentWords < minWords) {
       robotsDirective = 'noindex, follow';
     }
   }

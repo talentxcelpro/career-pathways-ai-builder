@@ -579,7 +579,7 @@ export async function generateProductionSitemaps() {
   // Master segmented configuration array (All 10 Dedicated Production Domains + Supplemental Hubs)
   const sitemapConfig: { filename: string; entries: SitemapEntry[]; origin?: string }[] = [
     { filename: 'sitemap-base.xml', entries: baseEntries, origin: 'https://talentxcel.in' },
-    { filename: 'sitemap-jobs.xml', entries: activeJobEntries, origin: 'https://jobs.talentxcel.in' },
+    { filename: 'sitemap-jobs.xml', entries: activeJobEntries, origin: 'https://talentxcel.in' },
     { filename: 'sitemap-learning.xml', entries: learningEntries, origin: 'https://learning.talentxcel.in' },
     { filename: 'sitemap-passport.xml', entries: passportEntries, origin: 'https://passport.talentxcel.in' },
     { filename: 'sitemap-government.xml', entries: governmentEntries, origin: 'https://government.talentxcel.in' },

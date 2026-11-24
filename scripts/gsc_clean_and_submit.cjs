@@ -105,6 +105,7 @@ async function run() {
     'https://talentxcel.in/sitemap-news.xml',
     'https://talentxcel.in/sitemap-companies.xml',
     'https://talentxcel.in/sitemap-services.xml',
+    'https://talentxcel.in/sitemap-combos.xml',
     'https://talentxcel.in/sitemap-rankings.xml',
     'https://talentxcel.in/sitemap-learning.xml'
   ]);
