@@ -802,6 +802,7 @@ const App = () => {
                 <Route path="/join" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
                 <Route path="/register" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
                 <Route path="/auth/signup" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage mode="signup" /></Suspense>} />
+                <Route path="/auth" element={<Suspense fallback={<PageFallbackSkeleton />}><AuthPage /></Suspense>} />
                 <Route path="/network" element={<Suspense fallback={<PageFallbackSkeleton />}><NetworkMainPage /></Suspense>} />
                 <Route path="/affiliate" element={<Suspense fallback={<PageFallbackSkeleton />}><AffiliatePage /></Suspense>} />
                 <Route path="/affiliates" element={<Navigate to="/affiliate" replace />} />
