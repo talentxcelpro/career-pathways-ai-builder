@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { PostApplyNetworkPromptCard } from '@/components/network/PostApplyNetworkPromptCard';
+import { loadRazorpayScript } from '@/services/payment/razorpayProvider';
 
 interface GuestJobApplyModalProps {
   open?: boolean;
@@ -68,6 +69,8 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
   const [existingResumeUrl, setExistingResumeUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedResult, setSubmittedResult] = useState<any>(null);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [isFastTracked, setIsFastTracked] = useState(false);
 
   const companyName = job?.companies?.name || job?.company_name || 'Hiring Organization';
 
@@ -400,6 +403,71 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
     }
   };
 
+  const handleFastTrackPayment = async () => {
+    setIsProcessingPayment(true);
+    try {
+      await loadRazorpayScript();
+
+      const { data: orderData, error: orderError } = await supabase.functions.invoke('razorpay-create-order', {
+        body: {
+          currency: 'INR',
+          purchaseType: 'ai_credits',
+          creditPackId: 'ai-pack-100', // ₹199 canonical price
+          jobId: job.id,
+          applicationId: submittedResult?.applicationId,
+        }
+      });
+
+      if (orderError || !orderData?.orderId) {
+        throw orderError || new Error('Could not initialize payment order');
+      }
+
+      if (typeof window === 'undefined' || !(window as any).Razorpay) {
+        toast.error('Payment gateway unavailable. Please try again.');
+        return;
+      }
+
+      const rzp = new (window as any).Razorpay({
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'TalentXcel',
+        description: `Fast-Track Recruiter Spotlight for ${job.title}`,
+        order_id: orderData.orderId.startsWith('demo_') ? undefined : orderData.orderId,
+        prefill: {
+          name: fullName || 'Candidate',
+          email: email || '',
+          contact: phone || '',
+        },
+        theme: { color: '#2563eb' },
+        handler: async (response: any) => {
+          toast.loading('Verifying payment signature...', { id: 'rzp-verify' });
+          const { data: verifyData, error: verifyError } = await supabase.functions.invoke('razorpay-verify-payment', {
+            body: {
+              packageType: 'FastTrack',
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              jobId: job.id,
+            }
+          });
+          if (verifyError || !verifyData?.success) {
+            toast.error('Payment verification failed. Please contact support.', { id: 'rzp-verify' });
+          } else {
+            toast.success('Payment verified! Your application is now pinned to the top of recruiter reviews. 🎉', { id: 'rzp-verify' });
+            setIsFastTracked(true);
+          }
+        }
+      });
+      rzp.open();
+    } catch (err: any) {
+      console.error('Fast-track payment error:', err);
+      toast.error(err.message || 'Payment initialization notice');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[92vh] overflow-y-auto bg-slate-950 border border-slate-800 text-white p-6 md:p-8">
@@ -658,6 +726,49 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
                 )}
               </div>
             )}
+
+            {/* Fast-Track Recruiter Spotlight (Instant Razorpay Revenue Hook) */}
+            <div className="bg-gradient-to-br from-blue-950/80 via-slate-900 to-indigo-950/80 border border-blue-500/40 rounded-xl p-4 text-left space-y-3 shadow-xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400 fill-amber-400" />
+                  <span className="text-xs font-bold text-white uppercase tracking-wider">
+                    Fast-Track Recruiter Spotlight
+                  </span>
+                </div>
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/20 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                  {isFastTracked ? 'Active ✓' : '₹199 Only'}
+                </span>
+              </div>
+              
+              <p className="text-xs text-slate-300 leading-relaxed">
+                {isFastTracked 
+                  ? 'Your profile is highlighted with a verified Spotlight badge and prioritized at the top of the recruiter review queue.'
+                  : `Pin your application directly to the top shelf of ${companyName}'s recruiter dashboard with an instant verified Spotlight badge.`
+                }
+              </p>
+
+              {!isFastTracked && (
+                <Button
+                  type="button"
+                  onClick={handleFastTrackPayment}
+                  disabled={isProcessingPayment}
+                  className="w-full h-10 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-bold text-xs shadow-lg shadow-amber-500/20 rounded-lg"
+                >
+                  {isProcessingPayment ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-3.5 h-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
+                      Initializing Payment Gateway...
+                    </span>
+                  ) : (
+                    <span className="flex items-center justify-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                      Pin to Top of Recruiter Queue — ₹199 (1-Click UPI/Card)
+                    </span>
+                  )}
+                </Button>
+              )}
+            </div>
 
             {/* Post-Apply Career Perspective Network Seeding Card */}
             <PostApplyNetworkPromptCard

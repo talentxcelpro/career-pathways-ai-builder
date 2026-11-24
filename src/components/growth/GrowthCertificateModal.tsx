@@ -231,7 +231,7 @@ Certified by Sanobar Jahan, Founder of TalentXcel Services, recognizing top-tier
 
 📊 Verified Standing:
 • Candidate: ${actualName}
-• TalentScore: ${displayScore} / 1000 (Elite Tier Standing)
+• TalentScore: ${displayScore} / 1000 (${displayScore >= 850 ? 'Elite Tier' : displayScore >= 700 ? 'Strong Tier' : displayScore >= 550 ? 'Emerging Tier' : 'Building Tier'} Standing)
 • Global Standing: ${displayRank} (Top 5% Worldwide)
 • 30-Day Velocity: +${displayVelocity} PTS (${displayAcceleration})
 • Telemetry Fidelity: ${displayFidelity} (Multi-source verified)
@@ -509,7 +509,7 @@ ${passportUrl}
                     {displayScore} <span className="text-xs text-slate-400">/ 1000</span>
                   </div>
                   <div className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
-                    Elite Tier Standing
+                    {displayScore >= 850 ? 'Elite Tier Standing' : displayScore >= 700 ? 'Strong Tier Standing' : displayScore >= 550 ? 'Emerging Tier Standing' : 'Building Tier Standing'}
                   </div>
                 </div>
 
@@ -537,7 +537,7 @@ ${passportUrl}
                     {displayRank}
                   </div>
                   <div className="text-[10px] text-purple-400 font-medium">
-                    Top 5% Worldwide
+                    {displayScore >= 850 ? 'Top 5% Worldwide' : displayScore >= 700 ? 'Top 15% Worldwide' : displayScore >= 550 ? 'Top 35% Worldwide' : 'Verified Global Trajectory'}
                   </div>
                 </div>
 

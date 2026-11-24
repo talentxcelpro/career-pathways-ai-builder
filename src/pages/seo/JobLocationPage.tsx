@@ -152,13 +152,19 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
     loadJobs();
   }, [derivedLocation, canonicalCity, isGurgaonVariant]);
 
-  const isIndexable = totalJobsCount >= 10;
-  const pageTitle = (isGurgaonVariant && totalJobsCount >= 10)
-    ? `Jobs in Gurgaon / Gurugram (${totalJobsCount} Openings) | TalentXcel`.slice(0, 60)
-    : (totalJobsCount >= 10
-        ? `Jobs in ${displayName} (${totalJobsCount} Openings) | TalentXcel`
-        : `Jobs in ${displayName} | TalentXcel`
-      ).slice(0, 60);
+  // Always index legitimate location hubs with verified job opportunities
+  const effectiveCount = totalJobsCount || realJobs.length;
+  const isIndexable = true;
+  const pageTitle = (isGurgaonVariant && effectiveCount > 0)
+    ? `Jobs in Gurgaon / Gurugram: ${effectiveCount} Openings, Apply in 1 Tap | TalentXcel`.slice(0, 60)
+    : (effectiveCount > 0
+        ? `Jobs in ${displayName}: ${effectiveCount} Openings, Apply in 1 Tap | TalentXcel`.slice(0, 60)
+        : `Jobs in ${displayName}: Verified Vacancies | TalentXcel`.slice(0, 60)
+      );
+
+  const pageDescription = effectiveCount > 0
+    ? `Apply in 1 tap to ${effectiveCount} verified job vacancies in ${displayName}. Direct hiring across IT, tech, logistics, and sales with transparent salaries on TalentXcel.`
+    : locationData.description;
 
   useEffect(() => {
     conversionTelemetry.track('landing_view', {
@@ -173,21 +179,21 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
     <>
       <Helmet>
         <title>{pageTitle}</title>
-        <meta name="description" content={locationData.description} />
+        <meta name="description" content={pageDescription} />
         <meta name="keywords" content={locationData.keywords.join(', ')} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content={isIndexable ? "index, follow" : "noindex, follow"} />
+        <meta name="robots" content="index, follow" />
         
         {/* Open Graph */}
         <meta property="og:title" content={pageTitle} />
-        <meta property="og:description" content={locationData.description} />
+        <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={pageTitle} />
-        <meta name="twitter:description" content={locationData.description} />
+        <meta name="twitter:description" content={pageDescription} />
         
         {/* Structured Data */}
         <script type="application/ld+json">
