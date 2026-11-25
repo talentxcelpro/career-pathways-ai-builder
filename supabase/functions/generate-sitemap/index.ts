@@ -71,6 +71,12 @@ Deno.serve(async (req) => {
       case 'events':
         urls = await generateEventsSitemap(supabase, page, limit);
         break;
+      case 'cities':
+        urls = await generateCitiesSitemap(supabase, page, limit);
+        break;
+      case 'clusters':
+        urls = await generateClustersSitemap(supabase, page, limit);
+        break;
       default:
         throw new Error(`Unknown module: ${module}`);
     }
@@ -282,6 +288,56 @@ function generateEmployerStaticUrls(): SitemapUrl[] {
   return [
     { loc: 'https://talentxcel.in/employer', lastmod: today, changefreq: 'weekly', priority: '0.6' },
   ];
+}
+
+async function generateCitiesSitemap(supabase: any, page: number, limit: number): Promise<SitemapUrl[]> {
+  const offset = (page - 1) * limit;
+  const { data: cities, error } = await supabase
+    .from('city_registry')
+    .select('slug, tier, gsc_avg_position, last_material_update, updated_at')
+    .eq('index_ready', true)
+    .eq('active', true)
+    .order('gsc_impressions', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error('Error fetching index-ready cities:', error);
+    return [];
+  }
+
+  const priorityMap: Record<number, string> = { 1: '0.9', 2: '0.8', 3: '0.7', 4: '0.6' };
+
+  return (cities || []).map((city: any) => ({
+    loc: `https://talentxcel.in/locations/${city.slug}`,
+    lastmod: new Date(city.last_material_update || city.updated_at).toISOString().split('T')[0],
+    changefreq: city.gsc_avg_position > 0 && city.gsc_avg_position <= 20 ? 'daily' : 'weekly',
+    priority: priorityMap[city.tier] || '0.7',
+  }));
+}
+
+async function generateClustersSitemap(supabase: any, page: number, limit: number): Promise<SitemapUrl[]> {
+  const offset = (page - 1) * limit;
+  const { data: clusters, error } = await supabase
+    .from('discovery_clusters')
+    .select('canonical_url, gsc_avg_position, updated_at')
+    .eq('index_ready', true)
+    .eq('active', true)
+    .order('gsc_impressions', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error) {
+    console.error('Error fetching discovery clusters:', error);
+    return [];
+  }
+
+  return (clusters || []).map((cluster: any) => ({
+    loc: cluster.canonical_url.startsWith('http')
+      ? cluster.canonical_url
+      : `https://talentxcel.in${cluster.canonical_url}`,
+    lastmod: new Date(cluster.updated_at).toISOString().split('T')[0],
+    changefreq: cluster.gsc_avg_position > 0 && cluster.gsc_avg_position <= 20 ? 'daily' : 'weekly',
+    priority: '0.8',
+  }));
 }
 
 function generateSitemapXML(urls: SitemapUrl[]): string {

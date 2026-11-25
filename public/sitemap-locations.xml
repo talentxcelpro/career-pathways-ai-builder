@@ -1,52 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://talentxcel.in/locations/bhopal</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/bhubaneswar</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/chandigarh</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/chennai</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/coimbatore</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/gurugram</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/hyderabad</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/indore</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/jaipur</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/locations/kochi</loc>
+    <loc>https://talentxcel.in/locations/varanasi</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -56,22 +11,42 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://talentxcel.in/locations/coimbatore</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://talentxcel.in/locations/mumbai</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/locations/nagpur</loc>
+    <loc>https://talentxcel.in/locations/hyderabad</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/locations/patna</loc>
+    <loc>https://talentxcel.in/locations/kochi</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/locations/surat</loc>
+    <loc>https://talentxcel.in/locations/chandigarh</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/locations/bhubaneswar</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/locations/jaipur</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/locations/delhi</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
@@ -81,12 +56,27 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://talentxcel.in/locations/varanasi</loc>
+    <loc>https://talentxcel.in/locations/chennai</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://talentxcel.in/locations/visakhapatnam</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/locations/indore</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/locations/surat</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/locations/gurugram</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>

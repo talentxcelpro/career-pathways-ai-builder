@@ -1,11 +1,53 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { DISCOVERY_INDUSTRIES, DISCOVERY_SEGMENTS } from "@/lib/geo/globalDiscoveryEngine";
 
 export interface SitemapUrl {
   loc: string;
   lastmod?: string;
   changefreq?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
   priority?: number;
+}
+
+/**
+ * Generates city location sitemap entries from the city_registry table.
+ *
+ * RULES:
+ * - Only cities with index_ready = true are included.
+ * - Only cities with in_sitemap = true are included.
+ * - lastmod reflects the actual last_inventory_update timestamp — never artificially set.
+ * - Bounded query: .limit(1000) prevents unbounded DB load.
+ * - Falls back to empty array on error (never fails the full sitemap generation).
+ *
+ * This replaces the old seo_locations query that had a hardcoded .limit(100) cap
+ * and no index-readiness gate.
+ */
+async function generateGatedCityEntries(baseUrl: string): Promise<SitemapUrl[]> {
+  try {
+    const { data: cities, error } = await supabase
+      .from('city_registry')
+      .select('slug, last_material_update, quality_score')
+      .eq('index_ready', true)
+      .eq('in_sitemap', true)
+      .order('quality_score', { ascending: false })
+      .limit(1000); // Bounded: never unbounded query
+
+    if (error || !cities) {
+      console.warn('[sitemapGenerator] city_registry query failed, skipping city entries:', error?.message);
+      return [];
+    }
+
+    return cities.map(city => ({
+      loc: `${baseUrl}/locations/${city.slug}`,
+      // lastmod from genuine material update — never artificially set
+      lastmod: city.last_material_update || undefined,
+      changefreq: 'daily' as const,
+      priority: 0.8,
+    }));
+  } catch (err) {
+    console.warn('[sitemapGenerator] Error generating city sitemap entries:', err);
+    return [];
+  }
 }
 
 export const generateSitemap = async (): Promise<string> => {
@@ -104,20 +146,33 @@ export const generateSitemap = async (): Promise<string> => {
       });
     });
 
-    // SEO Location-based job pages
-    const { data: locations } = await supabase
+    // ── City location pages (index-readiness gated) ──────────────────────────────
+    // Replaces: seo_locations query with hardcoded .limit(100) and no quality gate.
+    // New behaviour: only cities that passed the Index Readiness Gate are included.
+    // Source table: city_registry (see supabase/migrations/20261125_city_registry_seo.sql)
+    const cityEntries = await generateGatedCityEntries(baseUrl);
+    cityEntries.forEach(entry => urls.push(entry));
+
+    // Legacy seo_locations query preserved as a fallback for any locations NOT yet
+    // migrated to city_registry. These entries use the old /jobs/location/ URL pattern
+    // and will be superseded once all Wave-1 cities are live in city_registry.
+    const { data: legacyLocations } = await supabase
       .from('seo_locations')
       .select('slug, updated_at')
       .eq('is_active', true)
-      .limit(100);
+      .limit(100); // Legacy: retain existing cap until full migration to city_registry
 
-    locations?.forEach(location => {
-      urls.push({
-        loc: `${baseUrl}/jobs/location/${location.slug}`,
-        lastmod: location.updated_at,
-        changefreq: 'daily',
-        priority: 0.9
-      });
+    (legacyLocations || []).forEach(location => {
+      // Skip if already emitted via city_registry (avoid duplicate canonicals)
+      const alreadyEmitted = cityEntries.some(e => e.loc.endsWith(`/locations/${location.slug}`));
+      if (!alreadyEmitted) {
+        urls.push({
+          loc: `${baseUrl}/jobs/location/${location.slug}`,
+          lastmod: location.updated_at,
+          changefreq: 'daily',
+          priority: 0.7, // Lower priority than gated city pages
+        });
+      }
     });
 
     // SEO Role-based job pages
@@ -152,17 +207,20 @@ export const generateSitemap = async (): Promise<string> => {
       });
     });
 
-    // Industry pages (using hardcoded list for now)
-    const industries = [
-      'information-technology', 'financial-services', 'healthcare', 'e-commerce',
-      'manufacturing', 'education', 'consulting', 'media-entertainment',
-      'telecommunications', 'automotive', 'real-estate', 'retail'
-    ];
-
-    industries.forEach(industry => {
+    // Industry pages (20 verified live industries from globalDiscoveryEngine; route: /industries/:slug)
+    DISCOVERY_INDUSTRIES.forEach(industry => {
       urls.push({
-        loc: `${baseUrl}/industry/${industry}`,
+        loc: `${baseUrl}/industries/${industry.slug}`,
         changefreq: 'weekly',
+        priority: 0.8
+      });
+    });
+
+    // High-demand experience & work-mode discovery hubs (freshers, internships, remote, national)
+    DISCOVERY_SEGMENTS.forEach(segment => {
+      urls.push({
+        loc: `${baseUrl}${segment.url}`,
+        changefreq: 'daily',
         priority: 0.8
       });
     });
@@ -179,7 +237,7 @@ export const generateSitemap = async (): Promise<string> => {
 
     // High-priority role + location combinations (top 25 roles x top 25 locations = 625 pages)
     const topRoles = roles?.slice(0, 25) || [];
-    const topLocations = locations?.slice(0, 25) || [];
+    const topLocations = legacyLocations?.slice(0, 25) || [];
 
     topRoles.forEach(role => {
       topLocations.forEach(location => {
@@ -211,7 +269,7 @@ export const generateSitemap = async (): Promise<string> => {
     });
 
     // Companies by location
-    locations?.slice(0, 50)?.forEach(location => {
+    legacyLocations?.slice(0, 50)?.forEach(location => {
       urls.push({
         loc: `${baseUrl}/companies/location/${location.slug}`,
         lastmod: location.updated_at,

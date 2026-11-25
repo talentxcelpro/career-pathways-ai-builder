@@ -304,11 +304,24 @@ class ConversionTelemetryManager {
   private deduplicationCache = new Map<string, number>();
   private syncRetryTimer: any = null;
   private syncRetryAttempts: number = 0;
+  private completedSignupUserIds = new Set<string>();
 
   constructor() {
     this.loadFromStorage();
     this.recordFirstTouchAttribution();
     this.recordLastTouchAttribution();
+
+    if (typeof window !== 'undefined') {
+      const flushOnLeave = () => {
+        this.flushImmediate().catch(() => {});
+      };
+      window.addEventListener('pagehide', flushOnLeave);
+      window.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') {
+          flushOnLeave();
+        }
+      });
+    }
   }
 
   private loadFromStorage(): void {
@@ -482,6 +495,18 @@ class ConversionTelemetryManager {
 
     this.saveToStorage();
 
+    // Forward zero-PII Career Passport milestones to GA4 when gtag is active
+    if (
+      (event === 'career_passport_created' || event === 'career_passport_completed') &&
+      typeof window !== 'undefined' &&
+      typeof (window as any).gtag === 'function'
+    ) {
+      (window as any).gtag('event', event, {
+        funnel_type: logEntry.funnelType,
+        hostname,
+      });
+    }
+
     // Debounced asynchronous sync to Supabase user_behavior_events
     if (this.syncDebounceTimer) clearTimeout(this.syncDebounceTimer);
     this.syncDebounceTimer = setTimeout(() => {
@@ -548,6 +573,88 @@ class ConversionTelemetryManager {
         this.syncPendingToSupabase();
       }, delay);
     }
+  }
+
+  /**
+   * Immediately flushes any pending telemetry events to Supabase without waiting
+   * for the 500ms debounce timer. Essential before OAuth or cross-subdomain redirects.
+   */
+  async flushImmediate(): Promise<void> {
+    if (this.syncDebounceTimer) {
+      clearTimeout(this.syncDebounceTimer);
+      this.syncDebounceTimer = null;
+    }
+    await this.syncPendingToSupabase();
+  }
+
+  /**
+   * Records `signup_started` and flushes immediately before auth/OAuth redirect.
+   */
+  async trackSignupStarted(
+    method: 'email' | 'oauth' | 'mobile',
+    meta?: Record<string, any>
+  ): Promise<void> {
+    this.track('signup_started', { auth_method: method, ...meta });
+    await this.flushImmediate();
+  }
+
+  /**
+   * Records `signup_completed` strictly once per user ID after confirmed account creation
+   * (or within 120s of user.created_at for OAuth callbacks), then flushes immediately.
+   * Existing users signing back in are ignored so logins never inflate signup counts.
+   */
+  async trackSignupCompletedOnce(
+    user: { id?: string | null; created_at?: string | null; last_sign_in_at?: string | null } | null | undefined,
+    method: 'email' | 'oauth' | 'mobile',
+    meta?: Record<string, any>,
+    nowMs: number = Date.now()
+  ): Promise<boolean> {
+    if (!user?.id) return false;
+
+    const storageKey = `txc_signup_tracked_${user.id}`;
+    if (this.completedSignupUserIds.has(user.id)) {
+      return false;
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        if (localStorage.getItem(storageKey)) {
+          this.completedSignupUserIds.add(user.id);
+          return false;
+        }
+      } catch {}
+    }
+
+    // Authoritative OAuth new-user check:
+    // 1. If created_at & last_sign_in_at exist, require they are within 30s (first sign-in ever).
+    // 2. Also require created_at is within 300s of nowMs (prevents stale/restored session replay).
+    if (method === 'oauth' && user.created_at) {
+      const createdMs = Date.parse(user.created_at);
+      if (!Number.isNaN(createdMs)) {
+        if (user.last_sign_in_at) {
+          const lastSignInMs = Date.parse(user.last_sign_in_at);
+          if (!Number.isNaN(lastSignInMs) && Math.abs(lastSignInMs - createdMs) > 30_000) {
+            return false;
+          }
+        }
+        if (nowMs - createdMs > 300_000) {
+          return false;
+        }
+      }
+    }
+
+    this.completedSignupUserIds.add(user.id);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(storageKey, new Date(nowMs).toISOString());
+      } catch {}
+    }
+
+    this.track('signup_completed', {
+      auth_method: method,
+      ...meta,
+    });
+    await this.flushImmediate();
+    return true;
   }
 
   setAcquisitionContext(source: string, returnUrl?: string): void {

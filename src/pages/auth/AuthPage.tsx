@@ -136,6 +136,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       console.log('Auth attempt:', { authMode, userType, redirectUrl });
 
       if (authMode === 'signup') {
+        await conversionTelemetry.trackSignupStarted('email', { source: currentFlow });
         const storedRef = getStoredReferral();
         const referralCode = searchParams.get('ref') || searchParams.get('referral') || storedRef.code;
 
@@ -171,7 +172,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
             }).then(() => {});
           } catch {}
         }
-        conversionTelemetry.track('signup_completed', { source: currentFlow });
+        await conversionTelemetry.trackSignupCompletedOnce(data.user, 'email', { source: currentFlow });
         GrowthFunnelTracker.trackOnce('sign_up', data.user?.id || formData.email, {
           role: userType,
           source: currentFlow,
@@ -277,7 +278,9 @@ export const AuthPage: React.FC<AuthPageProps> = ({ mode = 'signin', flow }) => 
       const callbackUrl = effectiveReturn
         ? `${baseUrl}/auth/callback?returnTo=${encodeURIComponent(effectiveReturn)}`
         : `${baseUrl}/auth/callback`;
-      
+
+      await conversionTelemetry.trackSignupStarted('oauth', { provider, source: currentFlow });
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {

@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
 import { attributeStoredReferral } from '@/utils/referralTracker';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 import { syncSessionFromCrossSubdomainCookie } from '@/lib/auth/crossSubdomainStorage';
 import { useActivityHeartbeat } from '@/hooks/useActivityHeartbeat';
@@ -200,6 +201,9 @@ export const OptimizedAuthProvider = ({ children }: { children: ReactNode }) => 
           touchUserActivity(session.user.id);
           if (event === 'SIGNED_IN') {
             attributeStoredReferral().catch(() => {});
+            conversionTelemetry
+              .trackSignupCompletedOnce(session.user, 'oauth', { source: 'auth_state_signed_in' })
+              .catch(() => {});
             const currentPath = window.location.pathname;
             if (currentPath.startsWith('/auth')) {
               const redirectPath = resolvePostAuthDestination({

@@ -333,7 +333,17 @@ export async function generateProductionSitemaps() {
   ];
 
   try {
-    // 1. Indexable Cities from growth_geo_cities
+    // Keep sitemap-network.xml strictly aligned with api/seo-render.ts INDEXABLE_GEO_CITIES
+    // so zero noindex URLs are published in sitemap-network.xml.
+    const INDEXABLE_NETWORK_GEO_CITIES = new Set([
+      'noida', 'hyderabad', 'bangalore', 'bhopal', 'jammu', 'guwahati', 'mumbai',
+      'kochi', 'nagpur', 'visakhapatnam', 'mysore', 'surat', 'lucknow', 'trivandrum',
+      'mangalore', 'ludhiana', 'agra', 'nashik', 'varanasi', 'chandigarh', 'coimbatore',
+      'indore', 'vadodara', 'patna', 'jaipur', 'dehradun', 'bhubaneswar', 'delhi',
+      'pune', 'chennai', 'kolkata', 'gurgaon', 'ahmedabad',
+    ]);
+
+    // 1. Indexable Cities from growth_geo_cities (filtered to SSR-indexable cities)
     const { data: indexableCities } = await supabase
       .from('growth_geo_cities')
       .select('slug, last_evaluated_at')
@@ -341,12 +351,14 @@ export async function generateProductionSitemaps() {
 
     if (indexableCities) {
       indexableCities.forEach(c => {
-        networkEntriesList.push({
-          path: `/network/locations/${c.slug}`,
-          changefreq: 'daily',
-          priority: '0.85',
-          lastmod: (c.last_evaluated_at || '').split('T')[0] || undefined
-        });
+        if (c.slug && INDEXABLE_NETWORK_GEO_CITIES.has(String(c.slug).toLowerCase())) {
+          networkEntriesList.push({
+            path: `/network/locations/${c.slug}`,
+            changefreq: 'daily',
+            priority: '0.85',
+            lastmod: (c.last_evaluated_at || '').split('T')[0] || undefined
+          });
+        }
       });
     }
 
@@ -368,26 +380,9 @@ export async function generateProductionSitemaps() {
       });
     }
 
-    // 3. Consented Public Profiles from public_profiles with non-empty username
-    const { data: publicPros } = await supabase
-      .from('public_profiles')
-      .select('username, created_at')
-      .not('username', 'is', null)
-      .limit(500);
-
-    if (publicPros) {
-      publicPros.forEach(p => {
-        if (p.username && p.username.trim().length >= 3) {
-          networkEntriesList.push({
-            path: `/u/${p.username.trim()}`,
-            changefreq: 'weekly',
-            priority: '0.8',
-            lastmod: (p.created_at || '').split('T')[0] || undefined
-          });
-        }
-      });
-    }
-    console.log(`✓ Added ${networkEntriesList.length} verified network entries for sitemap-network.xml`);
+    // 3. Public Profiles (/u/:username) are excluded from sitemap-network.xml unless
+    // they pass the >=400-word SSR indexation gate (prevents noindex URLs in sitemaps).
+    console.log(`✓ Added ${networkEntriesList.length} verified indexable network entries for sitemap-network.xml`);
   } catch (e) {
     console.warn('Could not query growth tables for sitemap-network.xml:', e);
   }
@@ -408,13 +403,32 @@ export async function generateProductionSitemaps() {
     }))
   );
 
-  // 7B. Verified Location Hubs: Only Indian Cities with >= 10 unexpired jobs that are confirmed indexable
-  // Excludes secondary tier-2 location pages that declare 'noindex, follow' in prerendered HTML
-  const INDEXABLE_METRO_SLUGS = [
-    'ahmedabad', 'bangalore', 'bhopal', 'bhubaneswar', 'chandigarh', 'chennai',
-    'coimbatore', 'gurugram', 'hyderabad', 'indore', 'jaipur', 'kochi', 'kolkata', 'lucknow',
-    'mumbai', 'nagpur', 'noida', 'patna', 'pune', 'surat', 'vadodara', 'varanasi', 'visakhapatnam'
+  // 7B. Verified Location Hubs: Query authoritative city_registry (index_ready = true AND active = true)
+  // Excludes bhopal, nagpur, patna, and any city failing the live SEO gate.
+  const FALLBACK_INDEXABLE_CITIES = [
+    'ahmedabad', 'bangalore', 'bhubaneswar', 'chandigarh', 'chennai',
+    'coimbatore', 'delhi', 'gurugram', 'hyderabad', 'indore', 'jaipur', 'kochi',
+    'kolkata', 'lucknow', 'mumbai', 'noida', 'pune', 'surat', 'vadodara',
+    'varanasi', 'visakhapatnam'
   ];
+
+  let gatedCitySlugs: string[] = [];
+  try {
+    const { data: readyCities } = await supabase
+      .from('city_registry')
+      .select('slug')
+      .eq('index_ready', true)
+      .eq('active', true)
+      .order('gsc_impressions', { ascending: false })
+      .limit(1000);
+    if (readyCities && readyCities.length > 0) {
+      gatedCitySlugs = readyCities.map((c: any) => c.slug);
+    }
+  } catch {
+    console.warn('Could not query city_registry, using verified fallback city list');
+  }
+
+  const INDEXABLE_METRO_SLUGS = gatedCitySlugs.length > 0 ? gatedCitySlugs : FALLBACK_INDEXABLE_CITIES;
 
   // Verify against dist/locations/*.html if dist exists to ensure 100% parity with prerendered robots directives
   const indexableCitySlugs = INDEXABLE_METRO_SLUGS.filter((slug) => {
@@ -436,27 +450,29 @@ export async function generateProductionSitemaps() {
     }))
   );
 
-  // 7C. Verified Combinatorial pSEO Hubs (Role × City Multiplier Matrix + mv_eligible_seo_hubs)
+  // 7C. Verified Combinatorial pSEO Hubs (mv_eligible_seo_hubs + discovery_clusters only — no blind matrix multiplication)
   let comboEntriesList: SitemapEntry[] = [];
 
-  const CANONICAL_HUB_ROLES = [
-    'software-engineer', 'associate-data-analyst', 'junior-software-engineer',
-    'junior-qa-automation-engineer', 'junior-backend-developer', 'devops-cloud-engineer',
-    'banking-associate', 'digital-marketing-specialist', 'product-growth-analyst',
-    'graduate-engineer-trainee', 'management-trainee', 'senior-staff-engineer',
-    'data-analyst', 'product-manager'
-  ];
-
-  // Programmatic multiplier: Canonical Roles × Verified Metro Cities
-  INDEXABLE_METRO_SLUGS.forEach((city) => {
-    CANONICAL_HUB_ROLES.forEach((role) => {
-      comboEntriesList.push({
-        path: `/jobs/${role}/${city}`,
-        changefreq: 'daily',
-        priority: '0.85',
+  try {
+    const { data: qualifiedClusters } = await supabase
+      .from('discovery_clusters')
+      .select('canonical_url, updated_at')
+      .eq('index_ready', true)
+      .eq('active', true)
+      .limit(2000);
+    if (qualifiedClusters && qualifiedClusters.length > 0) {
+      qualifiedClusters.forEach((c: any) => {
+        comboEntriesList.push({
+          path: c.canonical_url.startsWith('http') ? new URL(c.canonical_url).pathname : c.canonical_url,
+          changefreq: 'daily',
+          priority: '0.85',
+          lastmod: (c.updated_at || '').split('T')[0] || undefined,
+        });
       });
-    });
-  });
+    }
+  } catch {
+    console.warn('Could not query discovery_clusters, skipping cluster combos');
+  }
 
   try {
     const { data: dbCombos } = await supabase

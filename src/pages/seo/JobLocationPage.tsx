@@ -16,8 +16,25 @@ import { RelatedSubdomainLinks } from '@/components/navigation/RelatedSubdomainL
 import { SubdomainMeshFooter } from '@/components/navigation/SubdomainMeshFooter';
 import { RelatedHubsMesh } from '@/components/seo/RelatedHubsMesh';
 import { getTier2LocationConfig } from '@/data/tier2LocationsData';
+import { isNoindexPath } from '@/config/seo';
 import { JobAlertCaptureCard } from '@/components/jobs/JobAlertCaptureCard';
 import { WhatsAppChannelCard } from '@/components/jobs/WhatsAppChannelCard';
+import { CITY_REGISTRY_ALL, resolveCity } from '@/lib/geo/cityRegistry';
+import { findNearbyQualifiedCities } from '@/lib/geo/cityInternalLinking';
+import { resolveCanonicalLocation } from '@/lib/geo/canonicalGeoResolver';
+
+/**
+ * Non-city slugs that have been incorrectly indexed under /locations/.
+ * Each entry maps slug → redirect target.
+ * SOURCE: GSC Pages.csv analysis — these slugs appear in /locations/ namespace
+ * but resolve to topic/brand pages, not geographic job pages.
+ */
+const NON_CITY_REDIRECT_MAP: Record<string, string> = {
+  'deep-learning': '/jobs?skill=deep-learning',
+  'freshers': '/jobs?experience=fresher',
+  'spotify': '/companies?q=spotify',
+  'talentxcel': '/about',
+};
 
 interface JobLocationPageProps {}
 
@@ -84,6 +101,20 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
   const [realJobs, setRealJobs] = useState<any[]>([]);
   const [totalJobsCount, setTotalJobsCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
+  const [indexReadyCities, setIndexReadyCities] = useState<Set<string>>(new Set());
+
+  // ── Non-city slug guard ──────────────────────────────────────────────────────
+  // These slugs were incorrectly indexed under /locations/ namespace.
+  // Redirect them to their correct destination before any data fetch.
+  useEffect(() => {
+    if (!routeLocation) return;
+    const slug = routeLocation.toLowerCase().trim();
+    const redirectTarget = NON_CITY_REDIRECT_MAP[slug];
+    if (redirectTarget) {
+      // 301-equivalent client-side redirect; server must also implement this
+      navigate(redirectTarget, { replace: true });
+    }
+  }, [routeLocation, navigate]);
 
   // Robust location resolution: supports route params and direct URL segments (/locations/varanasi, /jobs/varanasi)
   const derivedLocation = useMemo(() => {
@@ -112,26 +143,68 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
     return new Set(realJobs.map((j) => j.company_name).filter(Boolean)).size;
   }, [realJobs]);
 
+  // Fetch index-ready city slugs once for geographically justified nearby linking
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from('city_registry')
+      .select('slug')
+      .eq('index_ready', true)
+      .eq('active', true)
+      .limit(200)
+      .then(({ data }) => {
+        if (!cancelled && data) {
+          setIndexReadyCities(new Set(data.map((r: { slug: string }) => r.slug)));
+        }
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const nearbyQualifiedCities = useMemo(() => {
+    const currentRecord = resolveCity(canonicalCity);
+    if (!currentRecord || indexReadyCities.size === 0) return [];
+    return findNearbyQualifiedCities(currentRecord, CITY_REGISTRY_ALL, indexReadyCities, 150, 6);
+  }, [canonicalCity, indexReadyCities]);
+
   useEffect(() => {
     async function loadJobs() {
       setLoading(true);
       try {
         const locClean = canonicalCity.replace(/-/g, ' ').trim();
-        const filterOr = isGurgaonVariant
-          ? 'location.ilike.%gurugram%,location_city.ilike.%gurugram%,location.ilike.%gurgaon%,location_city.ilike.%gurgaon%'
-          : `location.ilike.%${locClean}%,location_city.ilike.%${locClean}%`;
+        const cityRecord = resolveCity(canonicalCity);
+        const searchTerms = Array.from(
+          new Set([
+            locClean,
+            ...(cityRecord?.aliases || []).slice(0, 4),
+            ...(canonicalCity === 'bangalore' ? ['bengaluru'] : []),
+            ...(canonicalCity === 'gurugram' ? ['gurgaon'] : []),
+            ...(canonicalCity === 'aurangabad' ? ['chhatrapati sambhajinagar'] : []),
+            ...(canonicalCity === 'hubballi' ? ['hubballi-dharwad', 'hubli'] : []),
+          ])
+        ).filter(Boolean);
 
-        const { data, count, error } = await supabase
+        const filterOr = searchTerms
+          .map((t) => `location.ilike.%${t}%,location_city.ilike.%${t}%`)
+          .join(',');
+
+        const { data, error } = await supabase
           .from('jobs')
-          .select('*', { count: 'exact' })
+          .select('*')
           .or(filterOr)
           .eq('is_active', true)
           .order('posted_at', { ascending: false })
-          .limit(50);
+          .limit(200);
 
-        if (!error && data && data.length > 0) {
-          setRealJobs(data);
-          setTotalJobsCount(count || data.length);
+        // Word-boundary + canonical alias filter prevents substring leaks (e.g. Visakhapatnam -> Patna)
+        // while preserving 100% of genuine active jobs regardless of expiry_date.
+        const genuinelyMapped = (data || []).filter((job: any) => {
+          const resolved = resolveCanonicalLocation(job.location, job.location_city);
+          return resolved.allCities.some((c) => c.canonicalSlug === canonicalCity);
+        });
+
+        if (!error && genuinelyMapped.length > 0) {
+          setRealJobs(genuinelyMapped.slice(0, 50));
+          setTotalJobsCount(genuinelyMapped.length);
         } else {
           // If no local jobs exist for this city, show zero local count and optional remote jobs
           const { data: fallbackData } = await supabase
@@ -152,9 +225,18 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
     loadJobs();
   }, [derivedLocation, canonicalCity, isGurgaonVariant]);
 
-  // Always index legitimate location hubs with verified job opportunities
+  // ── Index Readiness Gate ─────────────────────────────────────────────────────
+  // CRITICAL: isIndexable must NEVER be hardcoded to true.
+  // Index readiness is determined by live job inventory once loading completes.
+  // Rules (from cityIndexReadinessGate.ts thresholds):
+  //   - Minimum 5 active jobs (MIN_ACTIVE_JOBS)
+  //   - Loading: use isNoindexPath() as the conservative default
+  //   - Non-city slugs: handled by NON_CITY_REDIRECT_MAP above (never reach here)
   const effectiveCount = totalJobsCount || realJobs.length;
-  const isIndexable = true;
+  const isIndexable: boolean = loading
+    ? !isNoindexPath(`/locations/${canonicalCity}`)  // Conservative: use config gate during SSR/load
+    : effectiveCount >= 5;                             // Live gate: require ≥5 active jobs
+  const locationRobotsDirective = isIndexable ? 'index, follow' : 'noindex, follow';
   const pageTitle = (isGurgaonVariant && effectiveCount > 0)
     ? `Jobs in Gurgaon / Gurugram: ${effectiveCount} Openings, Apply in 1 Tap | TalentXcel`.slice(0, 60)
     : (effectiveCount > 0
@@ -182,7 +264,7 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
         <meta name="description" content={pageDescription} />
         <meta name="keywords" content={locationData.keywords.join(', ')} />
         <link rel="canonical" href={canonicalUrl} />
-        <meta name="robots" content="index, follow" />
+        <meta name="robots" content={locationRobotsDirective} />
         
         {/* Open Graph */}
         <meta property="og:title" content={pageTitle} />
@@ -488,6 +570,29 @@ const JobLocationPage: React.FC<JobLocationPageProps> = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Nearby Qualified Employment Hubs (<= 150km, Index-Ready Only) */}
+                {nearbyQualifiedCities.length > 0 && (
+                  <div className="bg-white border-2 border-slate-200/80 p-6 rounded-2xl shadow-sm">
+                    <h3 className="text-base font-bold mb-4 text-slate-900">
+                      Nearby Employment Hubs
+                    </h3>
+                    <div className="space-y-1.5 text-sm">
+                      {nearbyQualifiedCities.map(({ city, distanceKm }) => (
+                        <a
+                          key={city.slug}
+                          href={`/locations/${city.slug}`}
+                          className="flex items-center justify-between text-slate-600 hover:text-blue-600 font-medium transition-colors py-2 border-b border-slate-100 last:border-0"
+                        >
+                          <span>Jobs in {city.canonicalName}</span>
+                          <span className="text-xs text-slate-400 font-mono">
+                            {Math.round(distanceKm)} km
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Job Alerts CTA */}
                 <div className="bg-gradient-to-br from-blue-50/80 via-white to-indigo-50/80 p-6 rounded-2xl border-2 border-blue-200/90 shadow-sm space-y-3">

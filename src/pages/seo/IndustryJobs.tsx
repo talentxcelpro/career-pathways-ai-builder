@@ -10,6 +10,7 @@ import { Briefcase, TrendingUp, Building, Users, MapPin, DollarSign } from 'luci
 import { Link } from 'react-router-dom';
 import { SocialNetworkConversionCTA } from '@/components/network/SocialNetworkConversionCTA';
 import { createSafeHtml } from '@/utils/sanitize';
+import { DISCOVERY_INDUSTRIES, resolveIndustry } from '@/lib/geo/globalDiscoveryEngine';
 
 const IndustryJobs = () => {
   const { industry } = useParams();
@@ -17,19 +18,31 @@ const IndustryJobs = () => {
   const { data: industryData, isLoading } = useQuery({
     queryKey: ['seo-industry', industry],
     queryFn: async () => {
-      // Create a mock industry data for now since types aren't updated
+      const resolved = resolveIndustry(industry) || DISCOVERY_INDUSTRIES[0];
+      const dbValues = resolved.dbValues;
+      const filterOr = dbValues
+        .flatMap((val) => [`industry_domain.ilike.${val}`, `industry.ilike.${val}`, `category.ilike.${val}`])
+        .join(',');
+
+      // Bounded live query — preserves all active jobs regardless of expiry_date
+      const { data: liveJobs } = await supabase
+        .from('jobs')
+        .select('id, company_name, expiry_date')
+        .eq('is_active', true)
+        .or(filterOr)
+        .limit(500);
+
+      const totalActive = liveJobs?.length ?? 0;
+      const uniqueEmployers = new Set(
+        (liveJobs || []).map((j: any) => (j.company_name || '').trim().toLowerCase()).filter(Boolean)
+      ).size;
+
       const industryInfo = {
-        name: industry === 'information-technology' ? 'Information Technology' :
-              industry === 'financial-services' ? 'Financial Services' :
-              industry === 'healthcare' ? 'Healthcare' :
-              industry === 'e-commerce' ? 'E-commerce' :
-              'Technology',
-        slug: industry,
-        description: `Explore career opportunities in ${industry?.replace('-', ' ')} sector`,
-        job_count: 15000,
-        company_count: 2500,
-        growth_rate: 12.5,
-        avg_salary: 900000
+        name: resolved.name,
+        slug: resolved.slug,
+        description: `Explore verified career opportunities in the ${resolved.name} sector across India and remote roles.`,
+        job_count: totalActive,
+        company_count: uniqueEmployers,
       };
 
       // Fetch AI-generated SEO content

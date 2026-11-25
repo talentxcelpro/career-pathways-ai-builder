@@ -1,11 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Briefcase, Building2, ChevronRight } from 'lucide-react';
+import { resolveIndustry } from '@/lib/geo/globalDiscoveryEngine';
 
 interface RelatedHubsMeshProps {
   currentCitySlug?: string;
   currentRoleSlug?: string;
   currentCompanySlug?: string;
+  currentIndustrySlug?: string;
+  isRemote?: boolean;
+  isFresher?: boolean;
   className?: string;
 }
 
@@ -75,27 +79,45 @@ export const RelatedHubsMesh: React.FC<RelatedHubsMeshProps> = ({
   currentCitySlug,
   currentRoleSlug,
   currentCompanySlug,
+  currentIndustrySlug,
+  isRemote = false,
+  isFresher = false,
   className = '',
 }) => {
   // Deterministic 8-slot mesh selection
   const targetCity = VERIFIED_CITIES.find((c) => c.slug === currentCitySlug) || VERIFIED_CITIES[0];
   const targetCompany = VERIFIED_COMPANIES.find((c) => c.slug === currentCompanySlug) || VERIFIED_COMPANIES[0];
+  const targetIndustry = resolveIndustry(currentIndustrySlug);
 
-  // 1. Slot 1: Parent City Hub
-  const cityHubSlot = {
-    title: `Jobs in ${targetCity.name}`,
-    url: `/locations/${targetCity.slug}`,
-    count: targetCity.count,
-    type: 'city' as const,
-  };
+  // 1. Slot 1: Parent City Hub (or Remote Hub when job is remote)
+  const cityHubSlot = isRemote
+    ? {
+        title: 'Remote Jobs',
+        url: '/jobs?work_mode=remote',
+        count: 1156,
+        type: 'city' as const,
+      }
+    : {
+        title: `Jobs in ${targetCity.name}`,
+        url: `/locations/${targetCity.slug}`,
+        count: targetCity.count,
+        type: 'city' as const,
+      };
 
-  // 2. Slot 2: Parent Company Hub
-  const companyHubSlot = {
-    title: `${targetCompany.name} Careers`,
-    url: `/company/${targetCompany.slug}`,
-    count: targetCompany.count,
-    type: 'company' as const,
-  };
+  // 2. Slot 2: Industry Hub (if resolved, App.tsx route: /industries/:industry) or Parent Company Hub
+  const companyHubSlot = targetIndustry
+    ? {
+        title: `${targetIndustry.name} Jobs`,
+        url: `/industries/${targetIndustry.slug}`,
+        count: 20,
+        type: 'company' as const,
+      }
+    : {
+        title: `${targetCompany.name} Careers`,
+        url: `/company/${targetCompany.slug}`,
+        count: targetCompany.count,
+        type: 'company' as const,
+      };
 
   // 3. Slots 3-5: 3 Nearest/Sibling Verified Cities
   const siblingCities = VERIFIED_CITIES.filter((c) => c.slug !== currentCitySlug).slice(0, 3).map((c) => ({
@@ -105,13 +127,28 @@ export const RelatedHubsMesh: React.FC<RelatedHubsMeshProps> = ({
     type: 'city' as const,
   }));
 
-  // 4. Slots 6-8: 3 Top Roles
-  const siblingRoles = VERIFIED_ROLES.filter((r) => r.slug !== currentRoleSlug).slice(0, 3).map((r) => ({
-    title: `${r.name} Jobs`,
-    url: `/jobs?role=${r.slug}`,
-    count: r.count,
-    type: 'role' as const,
-  }));
+  // 4. Slots 6-8: Fresher Hub (when eligible) + Top Roles
+  const fresherSlot = isFresher
+    ? [
+        {
+          title: 'Fresher & Entry-Level Jobs',
+          url: '/jobs?experience=fresher',
+          count: 1033,
+          type: 'role' as const,
+        },
+      ]
+    : [];
+  const siblingRoles = [
+    ...fresherSlot,
+    ...VERIFIED_ROLES.filter((r) => r.slug !== currentRoleSlug)
+      .slice(0, 3 - fresherSlot.length)
+      .map((r) => ({
+        title: `${r.name} Jobs`,
+        url: `/jobs?role=${r.slug}`,
+        count: r.count,
+        type: 'role' as const,
+      })),
+  ];
 
   const allSlots = [cityHubSlot, companyHubSlot, ...siblingCities, ...siblingRoles];
 

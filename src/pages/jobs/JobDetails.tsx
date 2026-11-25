@@ -1038,7 +1038,14 @@ export default function JobDetails() {
           )}
 
           {/* Sibling Career Hubs Mesh */}
-          <RelatedHubsMesh currentCitySlug={citySlug} currentCompanySlug={companySlug} className="mt-8" />
+          <RelatedHubsMesh
+            currentCitySlug={citySlug}
+            currentCompanySlug={companySlug}
+            currentIndustrySlug={job?.industry_domain || job?.industry || job?.category || undefined}
+            isRemote={Boolean(job?.is_remote)}
+            isFresher={Boolean(job?.is_fresher_eligible)}
+            className="mt-8"
+          />
         </div>
       </div>
     </>

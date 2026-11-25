@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Eye, EyeOff, Mail, Lock, User, Briefcase } from 'lucide-react';
 import { toast } from 'sonner';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
+import { conversionTelemetry } from '@/utils/conversionTelemetry';
 
 export const MobileAuth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -39,7 +40,8 @@ export const MobileAuth = () => {
         if (error) throw error;
         // Login successful - no toast message
       } else {
-        const { error } = await supabase.auth.signUp({
+        await conversionTelemetry.trackSignupStarted('mobile', { source: 'mobile_auth' });
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -50,6 +52,7 @@ export const MobileAuth = () => {
           }
         });
         if (error) throw error;
+        await conversionTelemetry.trackSignupCompletedOnce(data.user, 'mobile', { source: 'mobile_auth' });
         toast.success('Account created! Check your email to verify.');
       }
     } catch (error: any) {

@@ -13,7 +13,8 @@ interface CityStats {
   avg_salary: number;
   top_companies: string[];
   top_roles: string[];
-  growth_rate: number;
+  // growth_rate removed: was populated with Math.random() — synthetic metric.
+  // Re-add only when backed by real job count delta (e.g. current month vs previous month).
 }
 
 const INDIAN_CITIES = [
@@ -44,6 +45,8 @@ export const CityJobsLanding: React.FC = () => {
   const [jobs, setJobs] = useState([]);
   const [stats, setStats] = useState<CityStats | null>(null);
   const [loading, setLoading] = useState(true);
+  // isIndexable: true only when ≥5 active jobs exist for this city (matches INDEX_GATE_CONFIG.MIN_ACTIVE_JOBS)
+  const [isIndexable, setIsIndexable] = useState(false);
 
   const cityName = city?.charAt(0).toUpperCase() + city?.slice(1).replace(/-/g, ' ') || '';
   const cityInfo = INDIAN_CITIES.find(c => c.name.toLowerCase() === cityName.toLowerCase());
@@ -74,23 +77,30 @@ export const CityJobsLanding: React.FC = () => {
 
         setJobs(jobsData || []);
 
-        // Calculate city statistics
+        // Calculate city statistics from real job data only
         if (jobsData && jobsData.length > 0) {
-          const avgSalary = jobsData
-            .filter(job => job.salary_min && job.salary_max)
-            .reduce((sum, job) => sum + ((job.salary_min + job.salary_max) / 2), 0) / 
-            jobsData.filter(job => job.salary_min && job.salary_max).length;
+          const jobsWithSalary = jobsData.filter(job => job.salary_min && job.salary_max);
+          const avgSalary = jobsWithSalary.length > 0
+            ? jobsWithSalary.reduce((sum, job) => sum + ((job.salary_min + job.salary_max) / 2), 0) /
+              jobsWithSalary.length
+            : 0;
 
           const companies = [...new Set(jobsData.map(job => job.company_name || (job.companies as any)?.name).filter(Boolean))];
           const roles = [...new Set(jobsData.map(job => job.title))];
 
+          // Index readiness gate: require ≥5 active jobs (INDEX_GATE_CONFIG.MIN_ACTIVE_JOBS)
+          setIsIndexable(jobsData.length >= 5);
+
           setStats({
             total_jobs: jobsData.length,
-            avg_salary: Math.round(avgSalary / 100000) || 0, // Convert to lakhs
+            avg_salary: Math.round(avgSalary / 100000) || 0, // Convert to lakhs — real data only
             top_companies: companies.slice(0, 5),
             top_roles: roles.slice(0, 5),
-            growth_rate: Math.floor(Math.random() * 20) + 10 // Mock growth rate
+            // growth_rate intentionally omitted — no real delta data available
           });
+        } else {
+          // No local jobs → noindex this page
+          setIsIndexable(false);
         }
       } catch (error) {
         console.error('Error fetching city data:', error);
@@ -148,6 +158,8 @@ export const CityJobsLanding: React.FC = () => {
           content={`jobs in ${cityName}, ${cityName} jobs, careers ${cityName}, ${cityName} employment, hiring ${cityName}, ${cityInfo?.state} jobs`}
         />
         <link rel="canonical" href={`https://talentxcel.in/jobs/in/${city}`} />
+        {/* Index gate: only index pages with verified live job inventory */}
+        <meta name="robots" content={isIndexable ? 'index, follow' : 'noindex, follow'} />
       </Helmet>
 
       <EnhancedSchemaMarkup
@@ -215,16 +227,8 @@ export const CityJobsLanding: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Growth</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">+{stats.growth_rate}%</div>
-                <p className="text-xs text-muted-foreground">Job market growth</p>
-              </CardContent>
-            </Card>
+            {/* Growth card removed: was showing Math.random() — synthetic metric.
+                Re-add when backed by real job count delta (current month vs previous month). */}
           </div>
         )}
 
