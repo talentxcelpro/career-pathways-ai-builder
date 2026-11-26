@@ -61,14 +61,29 @@ export default function JobDetails() {
     }
   });
 
-  const toggleSave = () => {
+  const toggleSave = async () => {
     try {
       const saved = JSON.parse(localStorage.getItem('txc_saved_jobs') || '[]');
-      const targetId = slugOrId;
-      const next = saved.includes(targetId) ? saved.filter((id: string) => id !== targetId) : [...saved, targetId];
+      const targetId = job?.id || slugOrId;
+      const nextSaved = !isSaved;
+      const next = nextSaved
+        ? Array.from(new Set([...saved, targetId]))
+        : saved.filter((id: string) => id !== targetId && id !== slugOrId);
       localStorage.setItem('txc_saved_jobs', JSON.stringify(next));
-      setIsSaved(!isSaved);
-      toast.success(!isSaved ? 'Job saved to your bookmarks' : 'Job removed from bookmarks');
+      setIsSaved(nextSaved);
+
+      if (user?.id && job?.id) {
+        if (nextSaved) {
+          await supabase.from('saved_jobs').upsert(
+            { user_id: user.id, job_id: job.id },
+            { onConflict: 'user_id,job_id' }
+          );
+        } else {
+          await supabase.from('saved_jobs').delete().eq('user_id', user.id).eq('job_id', job.id);
+        }
+      }
+
+      toast.success(nextSaved ? 'Job saved to your bookmarks' : 'Job removed from bookmarks');
     } catch {
       toast.success('Bookmark updated');
     }
@@ -239,7 +254,7 @@ export default function JobDetails() {
 
   // Fetch candidate-facing related verified opportunities (Part 5: Final Structure)
   const { data: relatedJobs = [] } = useQuery({
-    queryKey: ['job-details-related-jobs', job?.id, job?.category, job?.location],
+    queryKey: ['job-details-related-jobs', job?.id, job?.industry_domain, job?.industry, job?.category, job?.location],
     queryFn: async () => {
       if (!job?.id) return [];
       let query = supabase
@@ -249,7 +264,11 @@ export default function JobDetails() {
         .neq('id', job.id)
         .limit(4);
 
-      if (job.category) {
+      if (job.industry_domain) {
+        query = query.eq('industry_domain', job.industry_domain);
+      } else if (job.industry) {
+        query = query.eq('industry', job.industry);
+      } else if (job.category) {
         query = query.eq('category', job.category);
       }
       const { data } = await query;
@@ -838,11 +857,13 @@ export default function JobDetails() {
                   <Button
                     variant="outline"
                     onClick={toggleSave}
-                    className={`h-10 px-4 rounded-xl text-xs font-semibold border-slate-700 hover:bg-slate-800 ${
-                      isSaved ? 'text-amber-400 border-amber-400/40 bg-amber-400/10' : 'text-slate-300'
+                    className={`h-10 px-4 rounded-xl text-xs font-semibold transition-colors ${
+                      isSaved
+                        ? 'text-amber-700 border-amber-400 bg-amber-50 hover:bg-amber-100'
+                        : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
                     }`}
                   >
-                    <Bookmark className={`w-4 h-4 mr-1.5 ${isSaved ? 'fill-amber-400' : ''}`} />
+                    <Bookmark className={`w-4 h-4 mr-1.5 ${isSaved ? 'fill-amber-500 text-amber-500' : 'text-slate-600'}`} />
                     {isSaved ? 'Job Saved' : 'Save Job'}
                   </Button>
                   <Button

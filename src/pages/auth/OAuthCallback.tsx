@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { resolvePostAuthDestination } from '@/utils/intentRouting';
 import { trackAuthSession, AuthMethod } from '@/lib/analytics/conversionTracker';
+import { attributeStoredReferral } from '@/utils/referralTracker';
 
 const OAuthCallback = () => {
   const navigate = useNavigate();
@@ -73,6 +74,7 @@ const OAuthCallback = () => {
               const provider = (oAuthUser.app_metadata?.provider || '').toLowerCase();
               const method: AuthMethod = provider.includes('linkedin') ? 'linkedin' : provider.includes('google') ? 'google' : 'email';
               trackAuthSession(oAuthUser, method);
+              await attributeStoredReferral().catch(() => {});
             }
             if (oAuthUser?.email) {
               const isRecentRegistration = oAuthUser.created_at && (Date.now() - new Date(oAuthUser.created_at).getTime()) < 15 * 60 * 1000;
@@ -145,6 +147,7 @@ const OAuthCallback = () => {
           const provider = (fallbackUser.app_metadata?.provider || '').toLowerCase();
           const method: AuthMethod = provider.includes('linkedin') ? 'linkedin' : provider.includes('google') ? 'google' : 'email';
           trackAuthSession(fallbackUser, method);
+          await attributeStoredReferral().catch(() => {});
           const dest = resolvePostAuthDestination({
             searchParams: requestUrl.searchParams,
             userMetadata: data.session.user.user_metadata,

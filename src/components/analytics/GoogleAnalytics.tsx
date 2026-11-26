@@ -5,6 +5,12 @@ interface GoogleAnalyticsProps {
   measurementId?: string;
 }
 
+const isProductionAnalyticsHost = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  const host = window.location.hostname.toLowerCase();
+  return host === 'talentxcel.in' || host.endsWith('.talentxcel.in');
+};
+
 export const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({ 
   measurementId = 'G-CMYNTTNT56'
 }) => {
@@ -12,7 +18,7 @@ export const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({
   const lastTrackedPathRef = useRef<string>('');
 
   useEffect(() => {
-    if (!measurementId || measurementId === 'G-XXXXXXXXXX') {
+    if (!measurementId || measurementId === 'G-XXXXXXXXXX' || !isProductionAnalyticsHost()) {
       return;
     }
 
@@ -43,7 +49,7 @@ export const GoogleAnalytics: React.FC<GoogleAnalyticsProps> = ({
 
   // Track page views on route changes with strict deduplication to prevent event storms / loops
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.gtag || !measurementId || measurementId === 'G-XXXXXXXXXX') {
+    if (typeof window === 'undefined' || !window.gtag || !measurementId || measurementId === 'G-XXXXXXXXXX' || !isProductionAnalyticsHost()) {
       return;
     }
 

@@ -246,11 +246,14 @@ export class GrowthFunnelTracker {
       ...payload,
     };
 
-    // 1. Google Analytics 4 integration (PII sanitized)
+    // 1. Google Analytics 4 integration (PII sanitized, production domain only)
     if (typeof window !== 'undefined' && (window as any).gtag) {
       try {
-        const cleanPayload = sanitizeForAnalytics(eventPayload);
-        (window as any).gtag('event', eventName, cleanPayload);
+        const host = window.location.hostname.toLowerCase();
+        if (host === 'talentxcel.in' || host.endsWith('.talentxcel.in')) {
+          const cleanPayload = sanitizeForAnalytics(eventPayload);
+          (window as any).gtag('event', eventName, cleanPayload);
+        }
       } catch (_) {}
     }
 

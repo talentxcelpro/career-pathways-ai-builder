@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { Bell, CheckCircle2, MessageSquare, Mail, Sparkles, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 interface JobAlertCaptureCardProps {
   locationName?: string;
@@ -68,16 +69,22 @@ export const JobAlertCaptureCard: React.FC<JobAlertCaptureCardProps> = ({
       });
       localStorage.setItem('txc_job_alert_subscriptions', JSON.stringify(existingAlerts));
 
-      // 2. If authenticated user exists, register into user job alerts
+      // 2. Track alert subscription cleanly without PII and sync to authenticated profile preferences
+      GrowthFunnelTracker.track('tool_completed', {
+        tool_name: 'job_alert_capture',
+        location: locationName,
+        role: roleName || 'All Roles',
+        medium: channel,
+      });
+
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from('job_alerts').insert({
-          user_id: user.id,
-          title: targetTitle,
-          location: locationName,
-          keywords: [roleName, companyName, locationName].filter(Boolean),
-          frequency: 'daily',
-          is_active: true,
+        await supabase.auth.updateUser({
+          data: {
+            job_alert_channel: channel,
+            job_alert_location: locationName,
+            job_alert_role: roleName || 'All Roles',
+          },
         }).catch(() => {});
       }
 

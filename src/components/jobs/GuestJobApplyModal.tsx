@@ -31,6 +31,7 @@ import {
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { PostApplyNetworkPromptCard } from '@/components/network/PostApplyNetworkPromptCard';
 import { loadRazorpayScript } from '@/services/payment/razorpayProvider';
+import { getStoredReferral, attributeStoredReferral } from '@/utils/referralTracker';
 
 interface GuestJobApplyModalProps {
   open?: boolean;
@@ -182,11 +183,6 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
       return;
     }
 
-    if (!resumeFile && !existingResumeUrl) {
-      toast.error('Please upload your resume/CV (PDF or Word document)');
-      return;
-    }
-
     // Prevent duplicate applications for authenticated candidates
     if (user?.id) {
       try {
@@ -219,6 +215,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
       }
 
       let data: any = null;
+      const storedReferral = getStoredReferral();
       try {
         const response = await fetch('/api/jobs/apply', {
           method: 'POST',
@@ -235,6 +232,7 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
             experience,
             currentLocation,
             userId: user?.id,
+            referralCode: storedReferral.code || undefined,
           }),
         });
 
@@ -403,6 +401,15 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
             },
           };
         }
+      }
+
+      if (data.isNewUser && data.candidateId) {
+        GrowthFunnelTracker.trackOnce('sign_up', data.candidateId, {
+          method: 'guest_apply',
+          job_id: job.id,
+          candidate_id: data.candidateId,
+        });
+        attributeStoredReferral().catch(() => {});
       }
 
       GrowthFunnelTracker.track('application_submitted', {
@@ -639,8 +646,9 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
 
               {/* Resume Upload Dropzone */}
               <div className="space-y-1">
-                <Label className="text-xs text-slate-300">
-                  Resume / CV (PDF or Word) *
+                <Label className="text-xs text-slate-300 flex items-center justify-between">
+                  <span>Resume / CV (PDF or Word)</span>
+                  <span className="text-[10px] text-emerald-400 font-normal">Recommended (Optional on Mobile)</span>
                 </Label>
                 <div className="relative border-2 border-dashed border-slate-700 hover:border-blue-500 transition-colors rounded-xl p-3.5 text-center bg-slate-900/50">
                   <input

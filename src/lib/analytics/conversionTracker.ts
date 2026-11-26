@@ -61,6 +61,8 @@ export function getPageType(): string {
  */
 export function sendGA4Event(eventName: string, params: EventBaseParams = {}): void {
   if (typeof window === 'undefined') return;
+  const host = window.location.hostname.toLowerCase();
+  if (host !== 'talentxcel.in' && !host.endsWith('.talentxcel.in')) return;
 
   const enrichedParams: Record<string, any> = {
     page_type: params.page_type || getPageType(),

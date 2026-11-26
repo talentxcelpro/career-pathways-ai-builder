@@ -6,6 +6,7 @@ import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 import { isAllowedAuthHostname } from '@/config/domainArchitecture';
 import { GOOGLE_CLIENT_ID, loadGoogleIdentityServices } from '@/config/googleAuth';
 import { trackAuthSession, trackOneTapShown, trackOneTapDismissed } from '@/lib/analytics/conversionTracker';
+import { attributeStoredReferral } from '@/utils/referralTracker';
 
 declare global {
   interface Window {
@@ -121,6 +122,7 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
         // Ensure user profile slug is properly set to first-middle-last or first-last
         if (data.user) {
           trackAuthSession(data.user, 'google');
+          attributeStoredReferral().catch(() => {});
           try {
             const { ensureUserProfileSlug } = await import('@/utils/userProfileSlug');
             const metaName = data.user.user_metadata?.full_name || data.user.user_metadata?.name;
@@ -224,9 +226,15 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
 
     if (disabled) return;
 
-    initializeGoogleOneTap();
+    const path = typeof window !== 'undefined' ? window.location.pathname : '';
+    const isAuthRoute = path.startsWith('/auth') || path.startsWith('/login') || path.startsWith('/signup');
+    const delayMs = isAuthRoute ? 0 : 1500;
+    const timer = window.setTimeout(() => {
+      initializeGoogleOneTap();
+    }, delayMs);
 
     return () => {
+      window.clearTimeout(timer);
       // Cleanup on unmount
       if (window.google?.accounts?.id?.cancel) {
         window.google.accounts.id.cancel();

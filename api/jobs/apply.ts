@@ -55,6 +55,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       expectedSalary = '',
       noticePeriod = '',
       userId: passedUserId,
+      referralCode,
     } = req.body || {};
 
     if (!jobId) {
@@ -75,10 +76,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ─────────────────────────────────────────────────────────────
     // 1. VALIDATE JOB AGAINST DATABASE (Authoritative, Server-Side)
     // ─────────────────────────────────────────────────────────────
+    const isJobUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(jobId));
     const { data: jobRecord, error: jobErr } = await supabase
       .from('jobs')
-      .select('id, title, company_name, category, location, description, is_active')
-      .or(`id.eq.${jobId},seo_slug.eq.${jobId}`)
+      .select('id, title, company_name, category, industry_domain, industry, location, description, is_active')
+      .eq(isJobUuid ? 'id' : 'seo_slug', jobId)
       .maybeSingle();
 
     if (jobErr || !jobRecord) {
@@ -88,12 +90,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const authoritativeJobId = jobRecord.id;
     const authoritativeJobTitle = jobRecord.title;
     const authoritativeCompanyName = jobRecord.company_name || 'Hiring Organization';
-    const authoritativeCategory = jobRecord.category || 'General';
+    const authoritativeCategory = jobRecord.industry_domain || jobRecord.industry || jobRecord.category || 'General';
 
     // ─────────────────────────────────────────────────────────────
     // 2. RESOLVE OR AUTO-PROVISION CANDIDATE ACCOUNT
     // ─────────────────────────────────────────────────────────────
     let candidateId = passedUserId;
+    let isNewUser = false;
 
     if (!candidateId) {
       // SEC-006: Reliable candidate identity resolution without 50-user page 1 ceiling
@@ -118,11 +121,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             phone: cleanPhone,
             slug: cleanSlug,
             created_via: 'guest_job_apply_gateway',
+            referral_code: referralCode ? String(referralCode).trim().toUpperCase() : undefined,
           },
         });
 
         if (newUser?.user?.id) {
           candidateId = newUser.user.id;
+          isNewUser = true;
+          if (referralCode && typeof referralCode === 'string') {
+            try {
+              await supabase.rpc('attribute_growth_referral', {
+                p_referral_code: referralCode.trim().toUpperCase(),
+                p_visitor_id: candidateId,
+                p_landing_path: `/jobs/${jobId}`,
+                p_channel: 'guest_apply',
+                p_campaign: null,
+                p_user_id: candidateId,
+              });
+            } catch (_) {}
+          }
         } else if (createErr) {
           // If creation fails due to existing auth account, search via paginated loop
           let page = 1;
@@ -360,6 +377,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).json({
       success: true,
       alreadyApplied: false,
+      isNewUser,
       applicationId: newApplication?.id || `app_${Date.now()}`,
       candidateId,
       email: cleanEmail,

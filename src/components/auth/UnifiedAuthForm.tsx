@@ -13,6 +13,7 @@ import talentxcelLogo from '@/assets/talentxcel-logo.png';
 import { conversionTelemetry } from '@/utils/conversionTelemetry';
 import { usePlatformMetrics } from '@/config/platformMetrics';
 import { trackAuthSession } from '@/lib/analytics/conversionTracker';
+import { getStoredReferral, attributeStoredReferral } from '@/utils/referralTracker';
 
 interface UnifiedAuthFormProps {
   onSuccess?: () => void;
@@ -119,6 +120,7 @@ export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps
               role: userRole,
               user_type: userRole,
               company_name: accountType === 'employer' ? formData.companyName.trim() : undefined,
+              referral_code: getStoredReferral().code || undefined,
             },
             emailRedirectTo: `${window.location.origin}/`
           }
@@ -131,6 +133,7 @@ export const UnifiedAuthForm = ({ onSuccess, initialMode }: UnifiedAuthFormProps
 
         if (data.user) {
           trackAuthSession(data.user, 'email', true);
+          await attributeStoredReferral().catch(() => {});
           if (accountType === 'employer') {
             localStorage.setItem('txc_active_workspace', 'employer');
           } else {
