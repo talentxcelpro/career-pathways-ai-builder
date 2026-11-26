@@ -1191,6 +1191,17 @@ export default async function handler(req: Request) {
       return notFoundResponse(cleanPath, isDebug, isCandidateRoute);
     }
 
+    if (result.status === 301 && result.redirectLocation) {
+      return new Response(null, {
+        status: 301,
+        headers: {
+          'Location': result.redirectLocation,
+          'Cache-Control': result.cacheControl || 'public, max-age=86400, s-maxage=604800',
+          'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
+        },
+      });
+    }
+
     const responseHeaders: Record<string, string> = {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': result.cacheControl || 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
@@ -1249,8 +1260,9 @@ function escapeHtml(str: string): string {
 
 interface SeoRenderResult {
   html: string;
-  status: 200 | 404 | 410;
+  status: 200 | 301 | 404 | 410;
   robotsDirective: string;
+  redirectLocation?: string;
   cacheControl?: string;
   cacheTag?: string;
 }
@@ -5076,6 +5088,18 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         return null; // Genuine 404 for non-existent job posting (Soft-404 eliminated!)
       }
 
+      // Consolidate suffixed/legacy job slugs (-1, -2, etc.) that resolved via fallback to canonical seo_slug via 301
+      const isSecondaryUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(secondary);
+      if (!isSecondaryUuid && job.seo_slug && job.seo_slug.toLowerCase() !== secondary.toLowerCase()) {
+        return {
+          status: 301,
+          redirectLocation: `https://talentxcel.in/jobs/${encodeURIComponent(job.seo_slug)}`,
+          html: '',
+          robotsDirective: 'noindex, follow',
+          cacheControl: 'public, max-age=86400, s-maxage=604800',
+        };
+      }
+
       const jobTitle = (job.title || formatTitle(secondary)).trim();
       let company = (job.company_name || 'TalentXcel Services').trim();
       if ((company === 'TalentXcel Services' || company === 'TalentXcel') && jobTitle.includes('Chatr')) {
@@ -5498,6 +5522,16 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
     } else {
       const slug = cleanPath.replace('colleges/', '');
+      const dupMatch = slug.match(/^(.+)-\d+$/);
+      if (dupMatch && COLLEGE_SLUGS_SET.has(dupMatch[1])) {
+        return {
+          status: 301,
+          redirectLocation: `https://talentxcel.in/colleges/${encodeURIComponent(dupMatch[1])}`,
+          html: '',
+          robotsDirective: 'noindex, follow',
+          cacheControl: 'public, max-age=86400, s-maxage=604800',
+        };
+      }
       if (!COLLEGE_SLUGS_SET.has(slug)) {
         return null; // Genuine 404 for non-existent college (Soft 404 eliminated!)
       }
@@ -5639,6 +5673,12 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         const minLpa = (mins[0] / 100000).toFixed(1);
         const medLpa = (p50Val / 100000).toFixed(1);
         const maxLpa = (maxs[maxs.length - 1] / 100000).toFixed(1);
+
+        if (hasVerifiedSalaryDataset) {
+          const liveSalaryTitle = `${roleName} Salary in ${cityName}: ₹${minLpa}L–₹${maxLpa}L (2026) | TalentXcel`;
+          title = liveSalaryTitle.length <= 68 ? liveSalaryTitle : `${roleName} Salary: ₹${minLpa}L–₹${maxLpa}L | TalentXcel`;
+          description = `Median ₹${medLpa}L PA across ${observedSalaryJobs.length} live Indian job postings (₹${minLpa}L–₹${maxLpa}L). Compare pay bands & apply directly on TalentXcel.`.slice(0, 155);
+        }
 
         const sampleRowsHtml = observedSalaryJobs.slice(0, 6).map((j) => {
           const slug = encodeURIComponent(j.seo_slug || j.id);
