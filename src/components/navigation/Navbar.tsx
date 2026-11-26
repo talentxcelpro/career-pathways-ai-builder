@@ -241,7 +241,7 @@ export const Navbar = () => {
           {user ? (
             <>
               {/* Social-First Navigation Bar */}
-              <div className="hidden md:flex items-center gap-1 overflow-x-auto no-scrollbar">
+              <div className="hidden md:flex items-center gap-0.5 min-w-0 shrink overflow-hidden">
                 {socialNavItems.map((item) => {
                   const isActive = isCurrentPath(item.to);
                   const Icon = item.icon;
@@ -249,13 +249,13 @@ export const Navbar = () => {
                     <Link
                       key={item.label}
                       to={item.to}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap
+                      className={`flex items-center gap-1 px-2 xl:px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap shrink-0
                         ${isActive 
                           ? 'bg-blue-600 text-white shadow-sm font-bold' 
                           : 'text-slate-300 hover:text-white hover:bg-white/10'
                         }`}
                     >
-                      <Icon className={`h-3.5 w-3.5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                      <Icon className={`h-3.5 w-3.5 shrink-0 ${isActive ? 'text-white' : 'text-slate-400'}`} />
                       <span>{item.label}</span>
                     </Link>
                   );
@@ -264,9 +264,9 @@ export const Navbar = () => {
                 {/* Three-Intent Explore Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap">
+                    <button className="flex items-center gap-1 px-2 xl:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-white/10 transition-all whitespace-nowrap shrink-0">
                       <span>Explore</span>
-                      <ChevronDown className="h-3 w-3" />
+                      <ChevronDown className="h-3 w-3 shrink-0" />
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-[600px] bg-slate-900 border-slate-800 text-white p-3 shadow-2xl" align="start">
@@ -302,45 +302,45 @@ export const Navbar = () => {
               </div>
 
               {/* Top Right: Universal Search + Workspace Mode + Notifications + User Avatar */}
-              <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="flex items-center space-x-2 shrink-0">
                 <div className="hidden xl:block">
                   <UniversalSearch />
                 </div>
                 
                 {/* Dynamic Role / Workspace Switcher Pill */}
                 {activeWorkspace === 'employer' ? (
-                  <div className="hidden lg:flex items-center gap-1.5 bg-slate-900 border border-blue-500/40 rounded-xl p-0.5 pl-2 shadow-xs">
+                  <div className="hidden lg:flex items-center gap-1.5 bg-slate-900 border border-blue-500/40 rounded-xl p-0.5 pl-2 shadow-xs whitespace-nowrap shrink-0">
                     <Link
                       to="/dashboard?view=role"
-                      className="flex items-center gap-1.5 text-xs font-bold text-blue-400 hover:text-blue-300"
+                      className="flex items-center gap-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 whitespace-nowrap"
                     >
-                      <Building2 className="h-3.5 w-3.5 text-blue-400 animate-pulse" />
+                      <Building2 className="h-3.5 w-3.5 text-blue-400 animate-pulse shrink-0" />
                       <span>Recruiter OS</span>
                       <span className="text-[9px] uppercase font-black bg-blue-600 text-white px-1.5 py-0.2 rounded">PRO</span>
                     </Link>
                     <button
                       onClick={() => switchWorkspace('candidate')}
-                      className="text-[11px] text-slate-400 hover:text-white px-1.5 py-0.5 rounded-lg hover:bg-slate-800 transition-colors"
+                      className="text-[11px] text-slate-400 hover:text-white px-1.5 py-0.5 rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap"
                       title="Switch to Candidate mode"
                     >
                       Switch to Career
                     </button>
                   </div>
                 ) : (
-                  <div className="hidden lg:flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl p-0.5 pl-2 shadow-xs">
+                  <div className="hidden lg:flex items-center gap-1.5 bg-slate-900 border border-slate-800 rounded-xl p-0.5 pl-2 shadow-xs whitespace-nowrap shrink-0">
                     <Link
                       to="/passport"
-                      className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300"
+                      className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 whitespace-nowrap"
                     >
-                      <User className="h-3.5 w-3.5 text-emerald-400" />
+                      <User className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
                       <span>My Career</span>
                     </Link>
                     <button
                       onClick={() => switchWorkspace('employer')}
-                      className="flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-200 px-1.5 py-0.5 rounded-lg bg-blue-950/60 border border-blue-800/50 hover:bg-blue-900/60 transition-colors"
+                      className="flex items-center gap-1 text-[11px] font-bold text-blue-400 hover:text-blue-200 px-1.5 py-0.5 rounded-lg bg-blue-950/60 border border-blue-800/50 hover:bg-blue-900/60 transition-colors whitespace-nowrap"
                       title="Open Recruiter OS"
                     >
-                      <Building2 className="h-3 w-3" />
+                      <Building2 className="h-3 w-3 shrink-0" />
                       <span>Recruiter OS</span>
                     </button>
                   </div>

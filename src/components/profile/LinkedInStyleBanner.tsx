@@ -119,10 +119,10 @@ export const LinkedInStyleBanner: React.FC<LinkedInStyleBannerProps> = ({
       {/* 1. PROFILE CARD MATCHING MOCKUP 1:1 (Compact 50% space reduction) */}
       <Card className="overflow-hidden border border-slate-200/80 dark:border-border/60 shadow-xs bg-white dark:bg-card rounded-2xl">
         
-        {/* Cover Banner Header - Clean compact height */}
-        <div className="relative w-full h-16 sm:h-18 bg-gradient-to-r from-[#0d1b2a] via-[#1b263b] to-[#0d1b2a] overflow-hidden flex items-center justify-end px-3">
+        {/* Cover Banner Header - Clean compact height, capped so it never bleeds outside the card */}
+        <div className="relative w-full h-16 sm:h-18 max-h-20 bg-gradient-to-r from-[#0d1b2a] via-[#1b263b] to-[#0d1b2a] overflow-hidden flex items-center justify-end px-3">
           {coverUrl ? (
-            <img src={coverUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover opacity-80" />
+            <img src={coverUrl} alt="Cover" className="absolute inset-0 w-full h-full object-cover opacity-80 max-h-20" />
           ) : (
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-cyan-600/30 via-teal-700/20 to-slate-950" />
           )}

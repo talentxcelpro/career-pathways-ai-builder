@@ -168,8 +168,17 @@ Added `Phase12RegressionAlert` ([types.ts](file:///c:/Users/Arshid.Wani/talentxc
 
 ## 12. Production vs. Local Verification Boundary
 
-- **Verified Live Against Production APIs:** GSC Sitemaps API (`DELETE sitemap-rankings.xml` -> `204`, `PUT sitemap-network.xml` -> `204`, `19` sitemaps with `0` errors), GA4 Admin & Data API (`properties/499367883` 28d Organic Search counts and `keyEvents` state), and live Supabase REST queries for `/locations/*` and `/salary/*`.
-- **Verified Locally Against Handler & Build Artifacts (Pending Vercel Deploy):** `api/seo-render.ts`, `SEOHead.tsx`, `src/config/seo.ts`, `JobLocationPage.tsx`, `vercel.json`, `scripts/generate-sitemap.ts`, and `dist/` outputs were verified via direct TypeScript handler invocation, `vite build`, and CI gates in the local workspace; live `https://talentxcel.in` HTTP edge responses will reflect these changes once deployed to Vercel.
+- **Verified Live Against Production APIs & Production Edge (`2026-11-26`):**
+  - **GSC Sitemaps API:** `DELETE sitemap-rankings.xml` -> `204`, `PUT sitemap-network.xml` -> `204`, `19` sitemaps with `0` errors.
+  - **GA4 Admin & Data API (`properties/499367883`):** 28d Organic Search counts, plus `sign_up` (`keyEvents/16418181505`) and `application_submitted` (`keyEvents/16417952474`) Key Events created (`HTTP 200`).
+  - **Live Production Edge (`Googlebot` probes on `https://talentxcel.in` & `https://salary.talentxcel.in`):**
+    - `/sitemap-rankings.xml` -> `HTTP 410`
+    - `/resume/interview-prep/golang-developer-interview-questions-and-answers-part-85` -> `HTTP 301` to `/resume/interview-prep/golang-developer`
+    - `/resume/interview-prep/golang-developer` -> `HTTP 200`, `index, follow`
+    - `/locations/varanasi` -> `HTTP 200`, `index, follow` (`Jobs in Varanasi | 17 Verified Openings | TalentXcel`)
+    - `/salary/data-scientist` & `/salary/ui-ux-designer` -> `HTTP 200`, `index, follow`
+    - `/sitemap-network.xml` -> `HTTP 200`, `55` `<loc>` entries
+- **Verified Locally:** `vite build`, `npx tsc --noEmit`, `verify_phase12.ts`, `test-search-demand-intelligence.ts` (`14/14`), `test-seo-render-entities.ts` (`12/12`), `securityAndCostAudit.ts`, and `seo-ci-gate.ts`.
 
 ---
 
@@ -183,7 +192,7 @@ All Phase 12 changes are isolated to tracked application files and can be revert
 
 1. **GA4 Key Event Activation `[RESOLVED]`:** Granted **Editor** role to `antigravity-search@talentxcel-login.iam.gserviceaccount.com` and registered `sign_up` (`keyEvents/16418181505`, `ONCE_PER_SESSION`) and `application_submitted` (`keyEvents/16417952474`, `ONCE_PER_EVENT`) on GA4 property `499367883` via the Analytics Admin API.
 2. **`sitemap-network.xml` Thin-URL Filtering [RESOLVED]:** [scripts/generate-sitemap.ts](file:///c:/Users/Arshid.Wani/talentxcel-local/scripts/generate-sitemap.ts) was updated to filter `/network/locations/*` entries strictly to `INDEXABLE_GEO_CITIES` and exclude thin `/u/*` profiles. The generated `sitemap-network.xml` now contains `55` verified URLs with `0` issues in automated sample audit (`100% index, follow`).
-3. **Vercel Production Deploy:** Deploy the built workspace to Vercel and run live `curl -I` / `curl` checks on `/sitemap-rankings.xml` (`410`), `/locations/varanasi` (`200 index, follow`), `/salary/data-scientist` (`200 index, follow`), `/salary/ui-ux-designer` (`200 index, follow`), and `/resume/interview-prep/golang-developer-interview-questions-and-answers-part-85` (`301`).
+3. **Vercel Production Deploy & Live Edge Probes `[RESOLVED]`:** Verified live against production `https://talentxcel.in` and `https://salary.talentxcel.in` (`410` on `/sitemap-rankings.xml`, `301` on legacy Golang interview-prep URL, `200 index, follow` on `/locations/varanasi`, `/salary/data-scientist`, `/salary/ui-ux-designer`, and `55` `<loc>` entries on `/sitemap-network.xml`).
 
 ---
 

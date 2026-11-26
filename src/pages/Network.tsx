@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -79,6 +79,15 @@ const Network: React.FC = () => {
 
   const [universalSearchOpen, setUniversalSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Open the Universal Search dialog whenever the network search input has content.
+  // Using a useEffect (instead of an inline guard) avoids stale-closure issues where
+  // the dialog fails to reopen after a previous session left searchTerm non-empty.
+  useEffect(() => {
+    if (searchTerm.trim().length > 0) {
+      setUniversalSearchOpen(true);
+    }
+  }, [searchTerm]);
   const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending' | 'following'>('all');
   const queryClient = useQueryClient();
   
@@ -302,12 +311,13 @@ const Network: React.FC = () => {
                     id="mobile-network-search-input"
                     placeholder="Search posts, people, companies, jobs, hashtags..."
                     value={searchTerm}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setSearchTerm(val);
-                      if (val.trim().length > 0 && !universalSearchOpen) {
+                    onClick={() => {
+                      if (!universalSearchOpen) {
                         setUniversalSearchOpen(true);
                       }
+                    }}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
                     }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -329,8 +339,14 @@ const Network: React.FC = () => {
                 </div>
                 <UniversalSearch
                   open={universalSearchOpen}
-                  onOpenChange={setUniversalSearchOpen}
+                  onOpenChange={(open) => {
+                    setUniversalSearchOpen(open);
+                    // Clear the network search input when the dialog is dismissed,
+                    // so a fresh type always reopens it without stale-state edge-cases.
+                    if (!open) setSearchTerm('');
+                  }}
                   externalQuery={searchTerm}
+                  hideTrigger
                 />
 
                 {/* Enhanced Create Post Card */}
