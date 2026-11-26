@@ -25,8 +25,16 @@ export const config = {
   },
 };
 
-const TX_SUPABASE_URL = process.env.TX_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
-const SERVICE_KEY = process.env.TALENTXCEL_SERVICE_ROLE_KEY || '';
+const TX_SUPABASE_URL =
+  process.env.TX_SUPABASE_URL ||
+  process.env.SUPABASE_URL ||
+  process.env.VITE_SUPABASE_URL ||
+  'https://dthlgsnakhoftinssokm.supabase.co';
+const SERVICE_KEY =
+  process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -68,6 +76,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = fullName.trim();
     const cleanPhone = (phone || '').trim();
+
+    if (!SERVICE_KEY) {
+      return res.status(503).json({ error: 'Application gateway configuration unavailable' });
+    }
 
     const supabase = createClient(TX_SUPABASE_URL, SERVICE_KEY, {
       auth: { persistSession: false },

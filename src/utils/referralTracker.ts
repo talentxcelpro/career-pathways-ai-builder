@@ -73,20 +73,26 @@ export async function initReferralCapture(): Promise<void> {
     if (campaign) localStorage.setItem(STORAGE_KEY_CAMPAIGN, campaign);
     localStorage.setItem(STORAGE_KEY_TIMESTAMP, Date.now().toString());
 
-    // Record link_open telemetry
+    // Record link_open telemetry cleanly on same-origin Vercel API (avoids 404 Edge Function CORS errors)
     const visitorId = getOrCreateVisitorId();
-    try {
-      await supabase.functions.invoke('track-referral-event', {
-        body: {
-          referral_code: cleanCode,
-          event_type: 'link_open',
-          channel: source,
-          campaign_id: campaign || null,
-          visitor_id: visitorId,
-        },
-      });
-    } catch {
-      // Non-blocking telemetry
+    const sessionSentKey = `txc_ref_ping_${cleanCode}`;
+    if (!sessionStorage.getItem(sessionSentKey)) {
+      sessionStorage.setItem(sessionSentKey, '1');
+      try {
+        await fetch('/api/growth/referral-attribution', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            referral_code: cleanCode,
+            visitor_id: visitorId,
+            landing_path: window.location.pathname || '/',
+            channel: source,
+            campaign: campaign || null,
+          }),
+        });
+      } catch {
+        // Non-blocking telemetry
+      }
     }
   }
 }
@@ -95,17 +101,19 @@ export async function initReferralCapture(): Promise<void> {
  * Records a share click event when a user clicks any sharing button.
  */
 export async function trackShareClick(code: string, channel: ReferralChannel, campaignId?: string | null): Promise<void> {
-  if (!code) return;
+  if (!code || typeof window === 'undefined') return;
   const visitorId = getOrCreateVisitorId();
   try {
-    await supabase.functions.invoke('track-referral-event', {
-      body: {
+    await fetch('/api/growth/referral-attribution', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         referral_code: code.trim().toUpperCase(),
-        event_type: 'share_click',
-        channel,
-        campaign_id: campaignId || null,
         visitor_id: visitorId,
-      },
+        landing_path: window.location.pathname || '/',
+        channel,
+        campaign: campaignId || null,
+      }),
     });
   } catch {
     // Non-blocking
@@ -117,23 +125,31 @@ export async function trackShareClick(code: string, channel: ReferralChannel, ca
  */
 export async function attributeStoredReferral(): Promise<boolean> {
   const { code, channel, campaignId } = getStoredReferral();
-  if (!code) return false;
+  if (!code || typeof window === 'undefined') return false;
 
   const visitorId = getOrCreateVisitorId();
 
   try {
-    const { data, error } = await supabase.functions.invoke('attribute-referral', {
-      body: {
+    const { data: { user } } = await supabase.auth.getUser();
+    const res = await fetch('/api/growth/referral-attribution', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         referral_code: code,
-        channel,
-        campaign_id: campaignId,
         visitor_id: visitorId,
-      },
+        landing_path: window.location.pathname || '/',
+        channel,
+        campaign: campaignId || null,
+        user_id: user?.id || null,
+      }),
     });
 
-    if (!error && data?.success) {
-      clearStoredReferral();
-      return true;
+    if (res.ok) {
+      const data = await res.json().catch(() => null);
+      if (data?.success && data?.result?.success !== false) {
+        clearStoredReferral();
+        return true;
+      }
     }
   } catch {
     // Non-blocking
