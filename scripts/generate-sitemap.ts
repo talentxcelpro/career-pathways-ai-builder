@@ -582,17 +582,8 @@ export async function generateProductionSitemaps() {
 
   const salaryEntries = deduplicate([
     { path: '/', changefreq: 'daily', priority: '1.0' },
-    { path: '/salary', changefreq: 'daily', priority: '1.0' },
     { path: '/tools/salary-analyzer', changefreq: 'daily', priority: '0.9' },
-    { path: '/tools/salary-benchmark-tool', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/calculator', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/tax-planning', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/benchmark', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/compensation', changefreq: 'daily', priority: '0.9' },
     { path: '/salary/negotiation', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/wealth', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/payslip', changefreq: 'daily', priority: '0.9' },
-    { path: '/salary/employer', changefreq: 'daily', priority: '0.9' },
     ...salaryRoleEntries,
     ...salaryCityEntries,
   ]);

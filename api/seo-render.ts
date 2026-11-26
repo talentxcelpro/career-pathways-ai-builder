@@ -189,8 +189,9 @@ export function buildCleanCanonicalUrl(rawPath: string, host?: string): string {
   }
 
   // Salary Canary (Topical Authority Development Canary)
+  // Note: https://salary.talentxcel.in/salary 308-redirects to https://salary.talentxcel.in/, so canonicalize /salary to /
   if (pathOnly.startsWith('/salary') && DEPLOYMENT_UNITS.SALARY_CANARY_CANONICAL) {
-    return `https://salary.talentxcel.in${pathOnly === '/' ? '/' : pathOnly}`;
+    return pathOnly === '/salary' ? 'https://salary.talentxcel.in/' : `https://salary.talentxcel.in${pathOnly}`;
   }
 
   // Apex Authority Consolidation
@@ -3196,10 +3197,10 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           ` : ''}
 
           <div class="pt-4 border-t border-slate-800 flex flex-wrap gap-3 items-center justify-between">
-            <a href="/passport/public/${encodeURIComponent(identifier)}" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
+            <a href="https://talentxcel.in/passport/public/${encodeURIComponent(identifier)}" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg transition">
               View Full Interactive Career Passport &rarr;
             </a>
-            <a href="/network" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">
+            <a href="https://talentxcel.in/network" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">
               Connect on TalentXcel
             </a>
           </div>
@@ -3443,9 +3444,9 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
 
           <!-- Action & Routing CTAs -->
           <div class="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
-            <a href="/passport/public/${encodeURIComponent(identifier)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">View Full Career Passport &rarr;</a>
-            <a href="/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Explore Network Feed</a>
-            <a href="/jobs" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Find Matching Jobs</a>
+            <a href="https://talentxcel.in/passport/public/${encodeURIComponent(identifier)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">View Full Career Passport &rarr;</a>
+            <a href="https://talentxcel.in/network" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Explore Network Feed</a>
+            <a href="https://talentxcel.in/jobs" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700 transition">Find Matching Jobs</a>
           </div>
         </article>
       `;

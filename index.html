@@ -16,38 +16,53 @@
       }
     </script>
 
-    <!-- Google Analytics - Deferred -->
+    <!-- Google Analytics - Deferred (Production hosts only) -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      // Google Consent Mode v2 (DPDP Act & GDPR compliant default state)
-      gtag('consent', 'default', {
-        'analytics_storage': 'granted',
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'wait_for_update': 500
-      });
-      gtag('config', 'G-CMYNTTNT56');
-      
-      // Load GA script asynchronously after page load
-      window.addEventListener('load', () => {
-        const script = document.createElement('script');
-        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56';
-        script.async = true;
-        document.head.appendChild(script);
-      });
+      (function() {
+        var h = (window.location.hostname || '').toLowerCase();
+        var isProd = h === 'talentxcel.in' || h.endsWith('.talentxcel.in');
+        if (!isProd) return;
+        gtag('js', new Date());
+        // Google Consent Mode v2 (DPDP Act & GDPR compliant default state)
+        gtag('consent', 'default', {
+          'analytics_storage': 'granted',
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
+          'wait_for_update': 500
+        });
+        gtag('config', 'G-CMYNTTNT56');
+
+        // Load GA script asynchronously after page load
+        window.addEventListener('load', function() {
+          var script = document.createElement('script');
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-CMYNTTNT56';
+          script.async = true;
+          document.head.appendChild(script);
+        });
+      })();
     </script>
 
-    <!-- Dynamic Canonical Initialization (Prevents duplicate apex canonical conflicts on subpages) -->
+    <!-- Dynamic Canonical Initialization (Preserves existing SSR/prerendered tags and subdomain roots) -->
     <script>
       (function() {
+        if (document.querySelector('link[rel="canonical"]')) return;
+        var h = (window.location.hostname || '').toLowerCase().replace(/:\d+$/, '');
         var p = window.location.pathname.toLowerCase().replace(/\/+$/, '') || '/';
-        var canonicalUrl = 'https://talentxcel.in' + (p === '/' ? '/' : p);
+        var origin = 'https://talentxcel.in';
+        if (p === '/' && h.endsWith('.talentxcel.in') && h !== 'talentxcel.in' && h !== 'www.talentxcel.in') {
+          origin = 'https://' + (h === 'employer.talentxcel.in' ? 'employers.talentxcel.in' : h);
+        } else if (p === '/salary') {
+          origin = 'https://salary.talentxcel.in';
+          p = '/';
+        } else if (p.indexOf('/salary/') === 0) {
+          origin = 'https://salary.talentxcel.in';
+        }
         var link = document.createElement('link');
         link.rel = 'canonical';
-        link.href = canonicalUrl;
+        link.href = origin + (p === '/' ? '/' : p);
         document.head.appendChild(link);
       })();
     </script>
