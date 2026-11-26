@@ -27,6 +27,7 @@ interface EnhancedPostMenuProps {
   postContent: string;
   postHeadline?: string;
   isOwnPost: boolean;
+  isAdmin?: boolean;
 }
 
 export const EnhancedPostMenu: React.FC<EnhancedPostMenuProps> = ({
@@ -35,7 +36,8 @@ export const EnhancedPostMenu: React.FC<EnhancedPostMenuProps> = ({
   currentUserId,
   postContent,
   postHeadline,
-  isOwnPost
+  isOwnPost,
+  isAdmin = false
 }) => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editContent, setEditContent] = useState(postContent);
@@ -53,12 +55,14 @@ export const EnhancedPostMenu: React.FC<EnhancedPostMenuProps> = ({
       const { error } = await supabase
         .from('posts')
         .update(updateData)
-        .eq('id', postId);
+        .eq('id', postId)
+        .eq('author_id', currentUserId || authorId);
       
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['network-feed'] });
       setIsEditDialogOpen(false);
       toast.success('Post updated successfully');
     },
@@ -68,18 +72,38 @@ export const EnhancedPostMenu: React.FC<EnhancedPostMenuProps> = ({
     }
   });
 
-  // Delete post mutation
+  // Delete post mutation:
+  // - Regular users can delete only their own posts (.eq('author_id', ownerId))
+  // - Admins can delete any post (.eq('id', postId))
   const deletePostMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase
-        .from('posts')
-        .delete()
-        .eq('id', postId);
-      
-      if (error) throw error;
+      if (!isOwnPost && !isAdmin) {
+        throw new Error('Unauthorized to delete this post');
+      }
+
+      const ownerId = currentUserId || authorId;
+      let deleteQuery = supabase.from('posts').delete().eq('id', postId);
+      if (!isAdmin || isOwnPost) {
+        deleteQuery = deleteQuery.eq('author_id', ownerId);
+      }
+
+      const { error } = await deleteQuery;
+
+      if (error) {
+        let softQuery = supabase
+          .from('posts')
+          .update({ is_deleted: true })
+          .eq('id', postId);
+        if (!isAdmin || isOwnPost) {
+          softQuery = softQuery.eq('author_id', ownerId);
+        }
+        const { error: softErr } = await softQuery;
+        if (softErr) throw softErr;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      queryClient.invalidateQueries({ queryKey: ['network-feed'] });
       toast.success('Post deleted successfully');
     },
     onError: (error) => {
@@ -160,21 +184,23 @@ export const EnhancedPostMenu: React.FC<EnhancedPostMenuProps> = ({
             Copy Text
           </DropdownMenuItem>
 
-          {/* Own post actions */}
+          {/* Own post: Edit */}
           {isOwnPost && (
-            <>
-              <DropdownMenuItem onClick={handleEdit}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Post
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={handleDelete}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete Post
-              </DropdownMenuItem>
-            </>
+            <DropdownMenuItem onClick={handleEdit}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Post
+            </DropdownMenuItem>
+          )}
+
+          {/* Own post or Admin: Delete */}
+          {(isOwnPost || isAdmin) && (
+            <DropdownMenuItem 
+              onClick={handleDelete}
+              className="text-destructive focus:text-destructive"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {isAdmin && !isOwnPost ? 'Delete Post (Admin)' : 'Delete Post'}
+            </DropdownMenuItem>
           )}
 
           {/* Report post (not own post) */}

@@ -15,6 +15,10 @@ export interface NetworkPost {
   likes_count?: number;
   comments_count?: number;
   shares_count?: number;
+  reshare_count?: number | null;
+  original_post_id?: string | null;
+  reshared_from_id?: string | null;
+  reshared_post?: NetworkPost | null;
   is_public: boolean;
   visibility?: string;
   status?: string;
@@ -82,7 +86,7 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       // Build posts query with bounded column projection
       let query = supabase
         .from('posts')
-        .select('id, content, created_at, updated_at, author_id, user_id, media_urls, tags, hashtags, likes_count, comments_count, shares_count, is_public, visibility, status, post_type, headline, tagline, is_deleted');
+        .select('id, content, created_at, updated_at, author_id, user_id, media_urls, tags, hashtags, likes_count, comments_count, shares_count, reshare_count, original_post_id, reshared_from_id, is_public, visibility, status, post_type, headline, tagline, is_deleted');
 
       // Visibility filter
       if (filters.type === 'connections' && connectedAuthorIds) {
@@ -124,6 +128,26 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
 
       const postIds = postList.map((p: any) => p.id);
 
+      // Batch fetch original posts for any reshares in this page
+      const resharedIds = Array.from(new Set(
+        postList
+          .map((p: any) => p.reshared_from_id || p.original_post_id)
+          .filter(Boolean)
+      )) as string[];
+
+      let resharedPostsMap = new Map<string, any>();
+      if (resharedIds.length > 0) {
+        const { data: origPosts } = await supabase
+          .from('posts')
+          .select('id, content, created_at, updated_at, author_id, user_id, media_urls, tags, hashtags, post_type, headline, tagline, is_deleted')
+          .in('id', resharedIds.slice(0, 30))
+          .or('is_deleted.is.null,is_deleted.eq.false');
+
+        if (origPosts) {
+          resharedPostsMap = new Map(origPosts.map((op: any) => [op.id, op]));
+        }
+      }
+
       // Batch fetch engagement in parallel to eliminate N+1 queries in child cards (bounded)
       // INCIDENT-FIX: added query limit [date: 2026-11-21]
       const [likesResult, commentsResult, sharesResult, userLikesResult, userSavesResult] = await Promise.all([
@@ -153,11 +177,13 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
       const userLikesSet = new Set((userLikesResult.data || []).map((l: any) => l.post_id));
       const userSavesSet = new Set((userSavesResult.data || []).map((s: any) => s.post_id));
 
-      // Fetch profiles for all posts using both author_id and user_id
+      // Fetch profiles for all posts (including original reshared post authors)
       let profilesMap = new Map<string, any>();
       const allUserIds = Array.from(new Set([
         ...postList.map((p: any) => p.author_id).filter(Boolean),
-        ...postList.map((p: any) => p.user_id).filter(Boolean)
+        ...postList.map((p: any) => p.user_id).filter(Boolean),
+        ...Array.from(resharedPostsMap.values()).map((op: any) => op.author_id).filter(Boolean),
+        ...Array.from(resharedPostsMap.values()).map((op: any) => op.user_id).filter(Boolean),
       ]));
 
       if (allUserIds.length > 0) {
@@ -206,9 +232,20 @@ export function useInfiniteNetworkFeed(filters: FeedFilters = {}) {
         const liveComments = commentsCountMap.get(post.id) ?? (post.comments_count || 0);
         const liveShares = sharesCountMap.get(post.id) ?? (post.shares_count || 0);
 
+        const origId = post.reshared_from_id || post.original_post_id;
+        const rawOrig = origId ? resharedPostsMap.get(origId) : null;
+        const origProfile = rawOrig
+          ? (profilesMap.get(rawOrig.author_id) || profilesMap.get(rawOrig.user_id) || {
+              id: rawOrig.author_id || rawOrig.user_id,
+              full_name: 'Professional Member',
+              title: 'Member'
+            })
+          : null;
+
         return {
           ...post,
           profiles: profile,
+          reshared_post: rawOrig ? { ...rawOrig, profiles: origProfile } : null,
           likes_count: liveLikes,
           comments_count: liveComments,
           shares_count: liveShares,
