@@ -160,10 +160,12 @@ export const DEPLOYMENT_UNITS = {
 export function buildCleanCanonicalUrl(rawPath: string, host?: string): string {
   const normHost = (host || '').toLowerCase().trim();
   let pathOnly = rawPath || '';
+  let explicitHost = '';
   if (/^https?:\/\//i.test(pathOnly)) {
     try {
       const parsed = new URL(pathOnly);
       pathOnly = parsed.pathname;
+      explicitHost = parsed.hostname.toLowerCase().trim();
     } catch {
       pathOnly = '/';
     }
@@ -181,10 +183,11 @@ export function buildCleanCanonicalUrl(rawPath: string, host?: string): string {
   }
   pathOnly = pathOnly.toLowerCase();
 
-  // Root on recognized subdomains preserves subdomain root canonical
-  if (pathOnly === '/' && normHost && normHost !== 'talentxcel.in' && normHost !== 'www.talentxcel.in') {
-    if (normHost.includes('talentxcel.in')) {
-      return `https://${normHost}/`;
+  // Root on recognized subdomains preserves subdomain root canonical (including on idempotent re-normalization)
+  const effectiveRootHost = explicitHost || normHost;
+  if (pathOnly === '/' && effectiveRootHost && effectiveRootHost !== 'talentxcel.in' && effectiveRootHost !== 'www.talentxcel.in') {
+    if (effectiveRootHost.includes('talentxcel.in')) {
+      return `https://${effectiveRootHost}/`;
     }
   }
 
