@@ -302,11 +302,19 @@ export async function generateProductionSitemaps() {
     })),
   ]);
 
-  // 6. Posts & Articles (Verified editorial & community data)
+  // 6. Posts & Articles (Verified public, non-deleted community posts — paginated past 1,000 row cap)
   let postEntriesList: SitemapEntry[] = [];
   try {
-    const { data: posts } = await supabase.from('posts').select('id, created_at').limit(1000);
-    if (posts) {
+    const BATCH = 1000;
+    for (let offset = 0; offset < 45000; offset += BATCH) {
+      const { data: posts, error } = await supabase
+        .from('posts')
+        .select('id, created_at')
+        .eq('visibility', 'public')
+        .neq('is_deleted', true)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + BATCH - 1);
+      if (error || !posts || posts.length === 0) break;
       posts.forEach(p => {
         postEntriesList.push({
           path: `/posts/${p.id}`,
@@ -315,6 +323,7 @@ export async function generateProductionSitemaps() {
           lastmod: (p.created_at || '').split('T')[0] || undefined
         });
       });
+      if (posts.length < BATCH) break;
     }
   } catch (e) {}
   if (postEntriesList.length === 0) {

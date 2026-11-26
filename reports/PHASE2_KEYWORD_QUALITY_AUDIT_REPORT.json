@@ -1,0 +1,51 @@
+{
+  "auditedAt": "2026-11-25T07:42:55.493Z",
+  "durationMs": 394489,
+  "totalKeywordsAudited": 1008169,
+  "matcherDictionaryCoverage": {
+    "citiesIndexed": 199814,
+    "regionsIndexed": 4321,
+    "countriesIndexed": 736,
+    "jobTitlesIndexed": 48020,
+    "skillsIndexed": 40341
+  },
+  "improvementsObservedVsPhase1": {
+    "explicitGeoKeywords": 985994,
+    "unlocatedCorrectedFromFakeIndiaToGLB": 22175,
+    "matchedJobTitleKeywords": 639841,
+    "distinctJobTitlesHit": 163,
+    "matchedSkillKeywords": 602752,
+    "distinctSkillsHit": 77,
+    "distinctCountriesExplicitlyMatched": 82,
+    "distinctCitiesMatched": 293,
+    "distinctIndustriesMatched": 31,
+    "classifiedKeywordsTotal": 1006999,
+    "inventoryMatchedKeywords": 117682
+  },
+  "deduplicationAndConsolidation": {
+    "distinctSemanticPageGroups": 76855,
+    "syntacticPermutationsDetected": 1974,
+    "duplicateIntentVariantsConsolidatedOntoSharedPages": 931314
+  },
+  "lifecycle11StateDistribution": {
+    "INVENTORY_MATCHED": 70642,
+    "VALIDATED": 606274,
+    "NORMALIZED": 299037,
+    "GSC_OBSERVED": 4233,
+    "OPPORTUNITY": 229,
+    "NEEDS_REVIEW": 20903,
+    "QUALIFIED": 1407,
+    "REJECTED": 5365,
+    "DEDUPLICATED": 79
+  },
+  "qualityIssuesDetected": {
+    "MISSING_DEMAND_DATA": 1000267,
+    "DUPLICATE_INTENT": 931314,
+    "MISSING_INVENTORY": 603275,
+    "UNLOCATED_DEFAULT_GEO": 22175,
+    "WEAK_INTENT": 21034,
+    "REDUNDANT_TOKEN_NOISE": 5359,
+    "SYNTACTIC_PERMUTATION": 1974,
+    "UNSUPPORTED_CLAIM": 6
+  }
+}

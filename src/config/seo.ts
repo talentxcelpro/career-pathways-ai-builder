@@ -100,9 +100,24 @@ export const NOINDEX_PREFIXES = [
   '/directory/salaries-by-role',
 ];
 
+export const QUALIFIED_LOCATION_SLUGS = new Set([
+  'bangalore', 'bengaluru', 'hyderabad', 'pune', 'mumbai', 'delhi', 'gurugram', 'gurgaon',
+  'noida', 'chennai', 'kolkata', 'ahmedabad', 'varanasi', 'lucknow', 'indore', 'bhopal',
+  'patna', 'chandigarh', 'jaipur', 'coimbatore', 'visakhapatnam', 'nagpur', 'surat', 'kochi', 'bhubaneswar',
+]);
+
+export const QUALIFIED_SALARY_ROLES = new Set([
+  'data-scientist',
+  'ui-ux-designer',
+  'data-analyst',
+  'software-engineer',
+  'product-manager',
+]);
+
 const NOINDEX_PATH_PATTERNS = [
   /^\/(?:blog|news)\/[^/]+\/?$/,
   /^\/salary\/(?!scenarios\/?$|negotiation\/?$|goals\/?$|skills-gap\/?$|jobs\/?$)[^/]+(?:\/[^/]+)?\/?$/,
+  /^\/career-insights\/salary\/.+$/i,
   /^\/locations\/[^/]+\/?$/,
   /^\/compare\/[^/]+\/?$/,
   /^\/roles\/[^/]+\/?$/,
@@ -190,7 +205,17 @@ export const INDEXABLE_ROUTES: IndexableRoute[] = [
 
 /** True when a path should carry noindex. */
 export const isNoindexPath = (pathname: string): boolean => {
-  const normalized = (pathname || '').toLowerCase();
+  const normalized = (pathname || '').toLowerCase().replace(/\/+$/, '') || '/';
+  const locMatch = normalized.match(/^\/locations\/([^/]+)$/i);
+  if (locMatch) {
+    return !QUALIFIED_LOCATION_SLUGS.has(locMatch[1].toLowerCase());
+  }
+  const salMatch = normalized.match(/^\/salary\/([^/]+)$/i);
+  if (salMatch) {
+    const slug = salMatch[1].toLowerCase();
+    if (['scenarios', 'negotiation', 'goals', 'skills-gap', 'jobs'].includes(slug)) return false;
+    return !QUALIFIED_SALARY_ROLES.has(slug);
+  }
   return NOINDEX_PATH_PATTERNS.some((pattern) => pattern.test(normalized)) || NOINDEX_PREFIXES.some((prefix) => {
     if (normalized === prefix) return true;
     const prefixBoundary = prefix.endsWith('/') || prefix.endsWith('-') ? prefix : `${prefix}/`;

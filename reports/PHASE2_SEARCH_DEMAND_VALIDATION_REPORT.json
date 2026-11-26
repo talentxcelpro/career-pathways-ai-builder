@@ -1,0 +1,145 @@
+{
+  "validatedAt": "2026-11-25T08:13:00.052Z",
+  "durationMs": 10047,
+  "evidenceStatusBreakdown": {
+    "GSC_VERIFIED": 7920,
+    "GA4_VERIFIED": 409,
+    "PUBLIC_SUGGEST_VERIFIED": 162,
+    "FIRST_PARTY_INVENTORY_BACKED": 72278,
+    "UNKNOWN": 6100249
+  },
+  "gscMetrics": {
+    "distinctQueries": 7920,
+    "totalImpressions": 61552,
+    "totalClicks": 1276
+  },
+  "ga4LandingPagesWithTraffic": 409,
+  "publicAutocompleteSampleSuggestions": [
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker",
+      "hash": "f6367137e10e8374a0800f119d4d3c88"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker free",
+      "hash": "31cd3deba17482521614bcbb4b5123be"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker with job description",
+      "hash": "5774be280973f1c78116bb5cde7b56b6"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker full form",
+      "hash": "08439862ce06b7e6ad835090905638f5"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker with job description free",
+      "hash": "6689bb664514505c09a73c9409f3d275"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker naukri",
+      "hash": "73bc9da98729639bab65e0399e41fad9"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker online",
+      "hash": "655eddfafbbd7a14ee224e1e49896971"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker for freshers",
+      "hash": "3ab9e000b3cbfc154c8448a0ebe57e26"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker according to job description",
+      "hash": "6099d7312af38180eaf6a355fe819c2e"
+    },
+    {
+      "probe": "ats resume checker",
+      "suggestion": "ats resume checker with jd",
+      "hash": "049e8f25059d24e40710e1d72a4bc5d0"
+    },
+    {
+      "probe": "talent score test",
+      "suggestion": "score talent test",
+      "hash": "04ebb0df1038e807e736da6bf07ca199"
+    },
+    {
+      "probe": "talent score test",
+      "suggestion": "talent test result 2025",
+      "hash": "a27ade95dcecfe8094771aa93ecdff9e"
+    },
+    {
+      "probe": "talent score test",
+      "suggestion": "talent test result",
+      "hash": "065d1b0259115f079c4be4c43e6cf590"
+    },
+    {
+      "probe": "talent score test",
+      "suggestion": "talent test result 2026",
+      "hash": "9f7ad9dce3ed098502b3bb687c8d00b6"
+    },
+    {
+      "probe": "talent score test",
+      "suggestion": "skill test score",
+      "hash": "2a820df4405ec0a250468c9af311abad"
+    },
+    {
+      "probe": "talent score test",
+      "suggestion": "score talent exam",
+      "hash": "ba2f6f28028b6106712716c0249a53f1"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore",
+      "hash": "c2d591cb22983d3acc522f3b42cddc32"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore freshers",
+      "hash": "fc5b0bd9693c09c18ffe178fc1dcdf0d"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore linkedin",
+      "hash": "dd8362036527c4b9a7207d6153cf604d"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore since yesterday",
+      "hash": "3aadbe69cccb3544777eb81502d64a72"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore salary",
+      "hash": "c870f0076cc37850dd8ba63101f3b7b0"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore full time",
+      "hash": "013d66c1cfb6096779c44ba9a5c77a25"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore remote",
+      "hash": "8fc63607805eb9d88cc6d7b51dd11e10"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineer jobs in bangalore salary per month",
+      "hash": "91187e321dec0844fbc15980007c9b6d"
+    },
+    {
+      "probe": "software engineer jobs in bangalore",
+      "suggestion": "software engineering jobs in bangalore for freshers salary",
+      "hash": "5380e654054570097b8a05bed7b948d8"
+    }
+  ],
+  "antiFabricationGuarantee": "0 search volumes, 0 CPCs, and 0 difficulty scores fabricated; all unverified candidates retain UNKNOWN status."
+}

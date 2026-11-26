@@ -1,0 +1,110 @@
+{
+  "generatedAt": "2026-11-25T10:40:56.763Z",
+  "csvPath": "C:\\Users\\ARSHID~1.WAN\\AppData\\Local\\Temp\\tx-si-test-kPWMDF\\mini.csv",
+  "warehouseDbPath": "C:\\Users\\ARSHID~1.WAN\\AppData\\Local\\Temp\\tx-si-test-kPWMDF\\mini.db",
+  "totalRowsProcessed": 4,
+  "uniqueKeywords": 2,
+  "duplicateKeywords": 1,
+  "nearDuplicateSemanticVariants": 0,
+  "invalidKeywords": 1,
+  "classifiedKeywords": 2,
+  "unclassifiedKeywords": 0,
+  "clusterCount": 2,
+  "countryCoverageCount": 2,
+  "cityCoverageCount": 1,
+  "industryCoverageCount": 1,
+  "roleCoverageCount": 1,
+  "skillCoverageCount": 1,
+  "processingDurationMs": 50,
+  "volumeTruthDeclaration": "All 1M CSV rows are generated discovery candidates (demand_status = UNKNOWN; 0 fabricated volumes).",
+  "topCountries": [
+    {
+      "key": "IN",
+      "count": 1
+    },
+    {
+      "key": "GLB",
+      "count": 1
+    }
+  ],
+  "topCities": [
+    {
+      "key": "bangalore",
+      "count": 1
+    }
+  ],
+  "topIndustries": [
+    {
+      "key": "information-technology",
+      "count": 1
+    }
+  ],
+  "topRoles": [
+    {
+      "key": "software-engineer",
+      "count": 1
+    }
+  ],
+  "topSkills": [
+    {
+      "key": "ats-optimization",
+      "count": 1
+    }
+  ],
+  "intentDistribution": [
+    {
+      "key": "job_search",
+      "count": 1
+    },
+    {
+      "key": "resume_ats",
+      "count": 1
+    }
+  ],
+  "opportunityTypeDistribution": [
+    {
+      "key": "role-city-job",
+      "count": 1
+    },
+    {
+      "key": "ats-check",
+      "count": 1
+    }
+  ],
+  "topDestinations": [
+    {
+      "key": "/jobs/software-engineer/bangalore",
+      "count": 1
+    },
+    {
+      "key": "/resume/ats-check",
+      "count": 1
+    }
+  ],
+  "topClusters": [
+    {
+      "clusterKey": "job_search|role:software-engineer|in",
+      "primaryKeyword": "software engineer jobs in bangalore",
+      "memberCount": 1,
+      "clusterQuality": 82,
+      "recommendedHubUrl": "/jobs/software-engineer/bangalore"
+    },
+    {
+      "clusterKey": "resume_ats|skill:ats-optimization|glb",
+      "primaryKeyword": "free ats resume check",
+      "memberCount": 1,
+      "clusterQuality": 54,
+      "recommendedHubUrl": "/resume/ats-check"
+    }
+  ],
+  "failedRecordsSample": [
+    {
+      "row": 5,
+      "raw": "http://bad-spam-url.com",
+      "reason": "INVALID_NORMALIZATION"
+    }
+  ],
+  "supabaseSyncSummary": {
+    "skipped": true
+  }
+}

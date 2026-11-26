@@ -1,0 +1,17 @@
+{
+  "executedAt": "2026-11-25T08:08:24.617Z",
+  "durationMs": 280395,
+  "targetCandidates": 5100000,
+  "retainedCandidatesInSqlite": 5100000,
+  "rejectedImplausibleCombinations": 32865,
+  "matrixBreakdown": {
+    "occupation_city": 3447000,
+    "occupation_country": 390000,
+    "occupation_region": 214500,
+    "occupation_skill": 191310,
+    "occupation_modifier_geo": 835440,
+    "skill_geo": 21750,
+    "industry_geo": 0
+  },
+  "publicationSafetyNotice": "Zero auto-published pages. Every row marked quality_lifecycle_state=GENERATED, evidence_status=UNKNOWN."
+}

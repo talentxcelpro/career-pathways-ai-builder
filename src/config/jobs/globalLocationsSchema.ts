@@ -27,3 +27,25 @@ export interface GlobalLocationEntity {
   canonical_slug: string;          // e.g. 'mumbai-maharashtra-india'
   active: boolean;
 }
+
+export interface CountryMetadata {
+  code: string;
+  codeAlpha3: string;
+  name: string;
+  nativeName?: string;
+  flagEmoji: string;
+  continent: string;
+  tier: number;
+  currency: string;
+  currencySymbol: string;
+  languages: string[];
+  defaultTimezone: string;
+  callingCode: string;
+  totalLocations: number;
+  activeJobs: number;
+  googleEligibleJobs: number;
+  blockedJobs: number;
+  indexableDiscoveryPages: number;
+  noindexDiscoveryPages: number;
+  sitemapShardsCount: number;
+}

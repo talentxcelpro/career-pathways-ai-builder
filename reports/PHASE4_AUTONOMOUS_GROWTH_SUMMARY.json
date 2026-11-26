@@ -1,0 +1,196 @@
+{
+  "executedAt": "2026-11-25T09:20:05.484Z",
+  "mode": "full",
+  "durationMs": 22054,
+  "baselineCounts": {
+    "gscWindowTelemetryRows": 75415,
+    "gscSearchAppearanceRows": 12456,
+    "queryPageGraphEdges": 21321,
+    "ctrRecommendations": 29,
+    "positionAttackTargets": 150,
+    "competitorBenchmarks": 56,
+    "internalLinks": 77,
+    "pagePerformanceFeedback": 8230,
+    "actionGovernanceLog": 79,
+    "sitemapStats": {
+      "publicRootSitemaps": 17,
+      "distRootSitemaps": 17,
+      "samplePublishedUrls": 4475
+    }
+  },
+  "ga4Funnel": {
+    "totalOrganicSessions": 1119,
+    "totalEngagedSessions": 904,
+    "avgBounceRate": 0.1921,
+    "landingPagesCount": 500,
+    "eventTotals": {
+      "sign_up": 78,
+      "ats_score_generated": 431,
+      "talentscore_completed": 0,
+      "career_passport_created": 0,
+      "application_submitted": 170,
+      "guest_apply_opened": 513,
+      "apply_cta_clicked": 360
+    },
+    "poorEngagementPagesCount": 1,
+    "highTrafficZeroSignupPagesCount": 2,
+    "telemetryGaps": [
+      "GA4 event 'talentscore_completed' reported 0 Organic Search occurrences in last 28d; verify emission or event naming.",
+      "GA4 event 'career_passport_created' reported 0 Organic Search occurrences in last 28d; verify emission or event naming."
+    ],
+    "topPoorEngagementPages": [
+      {
+        "path": "(not set)",
+        "sessions": 27,
+        "bounceRate": 0.9259259259259259
+      }
+    ],
+    "topZeroSignupPages": [
+      {
+        "path": "(not set)",
+        "sessions": 27,
+        "signUps": 0
+      },
+      {
+        "path": "/network",
+        "sessions": 19,
+        "signUps": 0
+      }
+    ]
+  },
+  "dualUaProbesCount": 15,
+  "dualUaProbesSample": [
+    {
+      "url": "https://talentxcel.in/locations/varanasi",
+      "stdStatus": 200,
+      "stdTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "stdDesc": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+      "stdCanonical": null,
+      "botStatus": 200,
+      "botTitle": "Jobs in Varanasi (16 Openings, Nov 2026) | TalentXcel",
+      "botDesc": "Browse 16+ verified job openings in Varanasi. Review requirements, salary ranges, and direct employer application on TalentXcel.",
+      "botCanonical": "https://talentxcel.in/locations/varanasi"
+    },
+    {
+      "url": "https://salary.talentxcel.in/salary/data-scientist",
+      "stdStatus": 200,
+      "stdTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "stdDesc": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+      "stdCanonical": null,
+      "botStatus": 200,
+      "botTitle": "Data Scientist Salary Guide in India (2026 Benchmark) | TalentXcel",
+      "botDesc": "Explore verified compensation benchmarks, salary curves, and market ranges for Data Scientist in India on TalentXcel Salary Intelligence.",
+      "botCanonical": "https://salary.talentxcel.in/salary/data-scientist"
+    },
+    {
+      "url": "https://jobs.talentxcel.in/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+      "stdStatus": 308,
+      "stdTitle": null,
+      "stdDesc": null,
+      "stdCanonical": null,
+      "botStatus": 308,
+      "botTitle": null,
+      "botDesc": null,
+      "botCanonical": null
+    },
+    {
+      "url": "https://salary.talentxcel.in/salary/ui-ux-designer",
+      "stdStatus": 200,
+      "stdTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "stdDesc": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+      "stdCanonical": null,
+      "botStatus": 200,
+      "botTitle": "Ui Ux Designer Salary Guide in India (2026 Benchmark) | TalentXcel",
+      "botDesc": "Explore verified compensation benchmarks, salary curves, and market ranges for Ui Ux Designer in India on TalentXcel Salary Intelligence.",
+      "botCanonical": "https://salary.talentxcel.in/salary/ui-ux-designer"
+    },
+    {
+      "url": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad",
+      "stdStatus": 200,
+      "stdTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "stdDesc": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+      "stdCanonical": null,
+      "botStatus": 200,
+      "botTitle": "Data Scientist Salary Guide in Hyderabad (2026 Benchmark) | TalentXcel",
+      "botDesc": "Explore verified compensation benchmarks, salary curves, and market ranges for Data Scientist in Hyderabad on TalentXcel Salary Intelligence.",
+      "botCanonical": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad"
+    },
+    {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "stdStatus": 200,
+      "stdTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+      "stdDesc": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+      "stdCanonical": null,
+      "botStatus": 404,
+      "botTitle": null,
+      "botDesc": null,
+      "botCanonical": null
+    }
+  ],
+  "cannibalizationClustersAudited": 800,
+  "cannibalizationClassificationCounts": {
+    "TRUE_CANNIBALIZATION": 400,
+    "NEEDS_REVIEW": 86,
+    "NO_ACTION": 264,
+    "PAGE_DIFFERENTIATION_REQUIRED": 8,
+    "INTENT_OVERLAP": 37,
+    "LEGITIMATE_MULTIPLE_RANKING": 4,
+    "CONSOLIDATION_CANDIDATE": 1
+  },
+  "technicalFindingsCount": 12,
+  "contentBriefsGenerated": 15,
+  "executionQueueSummary": {
+    "totalQueueItems": 370,
+    "suppressedDuplicates": 67,
+    "executedTierA": 2,
+    "verifiedActions": 2,
+    "awaitingApprovalTierB": 367,
+    "restrictedTierC": 1,
+    "revertedActions": 0
+  },
+  "backlogCounts": {
+    "ctrBacklog": 29,
+    "strikeZoneBacklog": 150,
+    "cannibalizationBacklog": 800,
+    "internalLinkBacklog": 77,
+    "technicalFindingsBacklog": 12
+  },
+  "scorecardSegmentsCount": 25,
+  "overallScorecard28d": {
+    "snapshot_key": "2026-11-25|OVERALL|ALL_PROPERTIES",
+    "snapshot_date": "2026-11-25",
+    "segment_type": "OVERALL",
+    "segment_value": "ALL_PROPERTIES",
+    "organic_impressions": 61328,
+    "organic_clicks": 1272,
+    "ctr": 0.020741,
+    "avg_position": 25.23,
+    "indexed_qualified_urls": 4475,
+    "organic_landing_pages": 500,
+    "organic_registrations": 78,
+    "organic_activation_rate": 0.8079,
+    "conversion_rate": 0.0697,
+    "backlog_counts": {
+      "ctrBacklog": 29,
+      "strikeZoneBacklog": 150,
+      "cannibalizationBacklog": 800,
+      "internalLinkBacklog": 77,
+      "technicalFindingsBacklog": 12
+    },
+    "execution_counts": {
+      "totalQueueItems": 370,
+      "suppressedDuplicates": 67,
+      "executedTierA": 2,
+      "verifiedActions": 2,
+      "awaitingApprovalTierB": 367,
+      "restrictedTierC": 1,
+      "revertedActions": 0
+    }
+  },
+  "supabaseSyncStats": {
+    "seo_growth_execution_queue": 250,
+    "seo_cannibalization_audits": 250,
+    "seo_growth_scorecard_snapshots": 25,
+    "seo_technical_audit_findings": 12
+  }
+}

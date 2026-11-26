@@ -1,0 +1,78 @@
+{
+  "executedAt": "2026-11-25T08:48:57.157Z",
+  "durationMs": 40975,
+  "graphEdgesCount": 21321,
+  "uniqueObservedPages": 8230,
+  "cannibalizedQueriesCount": 800,
+  "intentMismatchCount": 1063,
+  "empiricalCohorts": {
+    "POS_1_3": {
+      "bandLabel": "POS_1_3",
+      "cohortMedianCtr": 0.12,
+      "cohortSampleSize": 2597
+    },
+    "POS_4_6": {
+      "bandLabel": "POS_4_6",
+      "cohortMedianCtr": 0.045,
+      "cohortSampleSize": 2492
+    },
+    "POS_7_10": {
+      "bandLabel": "POS_7_10",
+      "cohortMedianCtr": 0.022911,
+      "cohortSampleSize": 2044
+    },
+    "POS_11_20": {
+      "bandLabel": "POS_11_20",
+      "cohortMedianCtr": 0.009,
+      "cohortSampleSize": 2361
+    },
+    "POS_21_PLUS": {
+      "bandLabel": "POS_21_PLUS",
+      "cohortMedianCtr": 0.003,
+      "cohortSampleSize": 11239
+    }
+  },
+  "ctrRecommendationsCount": 29,
+  "positionAttackCounts": {
+    "POS_4_10": 143,
+    "POS_11_20": 3,
+    "POS_21_50": 4
+  },
+  "competitorBenchmarksCount": 56,
+  "competitorVerificationBreakdown": {
+    "LIVE_PAGE_INSPECTED": 6,
+    "PUBLIC_SERP_OBSERVED": 50
+  },
+  "internalLinksGenerated": 17,
+  "feedbackClassificationCounts": {
+    "INVENTORY_STALE": 1665,
+    "INSUFFICIENT_DATA": 6016,
+    "DECLINING": 96,
+    "RANKING_IMPROVEMENT": 61,
+    "STAGNANT": 264,
+    "GAINING_VISIBILITY": 65,
+    "GAINING_CLICKS": 37,
+    "CTR_IMPROVEMENT": 13,
+    "CONTENT_REVIEW_REQUIRED": 10,
+    "INDEXATION_ISSUE": 3
+  },
+  "governanceActionsLogged": 79,
+  "opportunityQueueCounts": {
+    "HIGH_CONFIDENCE": 30,
+    "EMERGING": 30,
+    "INVENTORY_RICH": 30,
+    "GEOGRAPHIC_EXPANSION": 30,
+    "INDUSTRY": 30,
+    "SKILL": 30,
+    "CAREER": 30,
+    "NEEDS_DATA": 30
+  },
+  "supabaseSyncStats": {
+    "seo_ctr_recommendations": 29,
+    "seo_position_attack_targets": 150,
+    "seo_competitor_benchmarks": 56,
+    "seo_page_performance_feedback": 300,
+    "seo_action_governance_log": 79,
+    "seo_internal_link_recommendations": 17
+  }
+}

@@ -5,6 +5,7 @@ import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, DEFAULT_OG_IMAGE, absoluteUrl, cano
 import { GrowthFunnelTracker } from '@/lib/analytics/growthFunnelTracker';
 
 const FALLBACK_DEFAULT_OG_IMAGE = 'https://talentxcel.in/assets/og/talentxcel-og-default.png';
+const trackedSeoPathsInMemory = new Set<string>();
 const SAFE_OG_IMAGE = typeof DEFAULT_OG_IMAGE !== 'undefined' && DEFAULT_OG_IMAGE ? DEFAULT_OG_IMAGE : FALLBACK_DEFAULT_OG_IMAGE;
 const SAFE_TITLE = typeof DEFAULT_TITLE !== 'undefined' && DEFAULT_TITLE ? DEFAULT_TITLE : 'TalentXcel | Global Professional Talent Network, Jobs & Career Passport';
 const SAFE_DESCRIPTION = typeof DEFAULT_DESCRIPTION !== 'undefined' && DEFAULT_DESCRIPTION ? DEFAULT_DESCRIPTION : 'TalentXcel brings together professional profiles, job listings, career resources, resume tools, and hiring services.';
@@ -133,17 +134,25 @@ export const SEOHead: React.FC<SEOHeadProps> = ({
   ]);
 
 
-  // Track SEO landing view deduplicated per path
+  // Track SEO landing view deduplicated per path (in-memory + sessionStorage prevents iframe/re-render inflation)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const currentPath = window.location.pathname;
+    if (trackedSeoPathsInMemory.has(currentPath)) return;
     const sessionKey = 'tx_seo_view_' + currentPath;
-    if (!sessionStorage.getItem(sessionKey)) {
+    let alreadyTracked = false;
+    try {
+      alreadyTracked = Boolean(sessionStorage.getItem(sessionKey));
+    } catch (_) {}
+    if (!alreadyTracked) {
+      trackedSeoPathsInMemory.add(currentPath);
       try { sessionStorage.setItem(sessionKey, '1'); } catch (_) {}
       GrowthFunnelTracker.track('seo_landing_view', {
         landing_page: currentPath,
         page_title: title,
       });
+    } else {
+      trackedSeoPathsInMemory.add(currentPath);
     }
   }, [title]);
 

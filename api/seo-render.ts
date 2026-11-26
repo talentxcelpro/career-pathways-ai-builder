@@ -226,6 +226,89 @@ export function evaluateIndexabilityThreshold(matchingRecordsCount: number, rend
   return matchingRecordsCount >= 3 && renderedWordCount >= 400;
 }
 
+const PLACEHOLDER_BIO_REGEX = /^(test|fresher|n\/a|na|none|null|undefined|student|seeking opportunities|looking for job)$/i;
+
+/**
+ * Profile-specific indexability gate (Phase 5.4).
+ * Evaluates structured professional signals from the sanitized `public_profiles` view
+ * without requiring 400 words of long-form essay prose.
+ */
+export function evaluateProfileIndexability(
+  profile: {
+    username?: string | null;
+    full_name?: string | null;
+    headline?: string | null;
+    about?: string | null;
+    title?: string | null;
+    location?: string | null;
+    experience_years?: number | null;
+    current_company?: string | null;
+    is_profile_public?: boolean | null;
+    profile_visibility?: string | null;
+    is_deleted?: boolean | null;
+    is_suspended?: boolean | null;
+  },
+  skills: string[],
+  renderedWordCount: number
+): boolean {
+  if (!profile || typeof profile.username !== 'string') return false;
+  const cleanUsername = profile.username.trim();
+  if (cleanUsername.length < 2 || /\s/.test(cleanUsername)) return false;
+
+  // Fail-closed: require explicit public profile opt-in (missing/undefined must not pass)
+  if (profile.is_profile_public !== true) return false;
+  if (profile.profile_visibility && profile.profile_visibility !== 'public') return false;
+  if (profile.is_deleted === true || profile.is_suspended === true) return false;
+
+  const fullName = (profile.full_name || '').trim();
+  if (fullName.length < 2 || PLACEHOLDER_BIO_REGEX.test(fullName)) return false;
+
+  const bioText = (profile.about || profile.headline || profile.title || '').trim();
+  const hasMeaningfulTitleOrBio = !PLACEHOLDER_BIO_REGEX.test(bioText) && bioText.length >= 15;
+  const hasSkills = Array.isArray(skills) && skills.filter((s) => s && s.trim().length > 0).length >= 2;
+  const hasWorkOrExp =
+    (profile.experience_years !== null && profile.experience_years !== undefined && Number(profile.experience_years) > 0) ||
+    Boolean(profile.current_company && profile.current_company.trim().length >= 2);
+  const hasLocation = Boolean(profile.location && profile.location.trim().length >= 2);
+
+  const signalCount = [hasMeaningfulTitleOrBio, hasSkills, hasWorkOrExp, hasLocation].filter(Boolean).length;
+  return signalCount >= 2 && renderedWordCount >= 40;
+}
+
+/**
+ * Post-specific indexability gate (Phase 5.4 / 5.5.1).
+ * Evaluates text, image, and video SocialMediaPosting entities independently
+ * while enforcing explicit public visibility and deletion exclusions.
+ */
+export function evaluatePostIndexability(
+  post: {
+    content?: string | null;
+    headline?: string | null;
+    visibility?: string | null;
+    is_public?: boolean | null;
+    is_deleted?: boolean | null;
+    media_urls?: unknown;
+    featured_image_url?: string | null;
+  },
+  imageUrls: string[],
+  videoUrls: string[],
+  renderedWordCount: number
+): boolean {
+  if (!post || post.is_deleted === true) return false;
+
+  // Fail-closed: require explicit public authorization (missing/undefined must not pass)
+  if (post.visibility !== 'public' && post.is_public !== true) return false;
+  if (post.visibility && post.visibility !== 'public') return false;
+  if (post.is_public === false) return false;
+
+  const text = (post.content || post.headline || '').replace(/\s+/g, ' ').trim();
+  const hasMedia = imageUrls.length > 0 || videoUrls.length > 0 || Boolean(post.featured_image_url);
+  // Media posts need contextual text (>= 15 chars); text-only posts need >= 40 chars
+  const hasSubstantiveContent = hasMedia ? text.length >= 15 : text.length >= 40;
+
+  return hasSubstantiveContent && renderedWordCount >= 12;
+}
+
 const getSupabaseRestUrl = () => {
   const isPreview = (typeof process !== 'undefined' && (process.env?.VERCEL_ENV === 'preview' || process.env?.VITE_VERCEL_ENV === 'preview'));
   const url = (typeof process !== 'undefined' && process.env?.SUPABASE_REST_URL)
@@ -510,6 +593,60 @@ const CANONICAL_COMPANIES_MAP: Record<string, { name: string; title: string; cou
     location: 'Noida, Uttar Pradesh, India',
     description: 'Enterprise SAP, cloud consulting, and software development careers at Savantis Solutions.',
     h1: 'Savantis Solutions Careers (2026)'
+  },
+  'south-indian-bank': {
+    name: 'South Indian Bank',
+    title: 'South Indian Bank Careers & Jobs (6 Live) | TalentXcel',
+    count: 6,
+    industry: 'Banking & Financial Services',
+    location: 'Thrissur, Kerala, India',
+    description: 'Explore 6 verified openings at South Indian Bank HQ in Thrissur across GET, data analytics, DevOps, digital marketing, and platform engineering.',
+    h1: 'South Indian Bank Careers & Openings (2026)'
+  },
+  'hal': {
+    name: 'Hindustan Aeronautics (HAL)',
+    title: 'HAL Careers & Engineering Jobs (12+ Live) | TalentXcel',
+    count: 12,
+    industry: 'Aerospace, Defense & Manufacturing (PSU)',
+    location: 'Kanpur & Nashik, India',
+    description: 'Browse verified engineering, software, backend, and analytics vacancies at HAL Kanpur and HAL Ozar on TalentXcel.',
+    h1: 'HAL Careers & Engineering Openings (2026)'
+  },
+  'secl': {
+    name: 'South Eastern Coalfields Limited (SECL)',
+    title: 'SECL Bilaspur Careers & Jobs (7 Live) | TalentXcel',
+    count: 7,
+    industry: 'Mining & Energy (Coal India Subsidiary)',
+    location: 'Bilaspur, Chhattisgarh, India',
+    description: 'Apply for 7 verified openings at SECL Bilaspur across Graduate Engineer Trainee, DevOps, QA automation, backend, and tech lead roles.',
+    h1: 'SECL Careers & Bilaspur Openings (2026)'
+  },
+  'bhel': {
+    name: 'BHEL',
+    title: 'BHEL Careers & Engineering Jobs (26 Live) | TalentXcel',
+    count: 26,
+    industry: 'Heavy Engineering & Power Equipment (PSU)',
+    location: 'Bhopal, Haridwar & Trichy, India',
+    description: 'Explore 26 verified openings at BHEL across Bhopal, Haridwar, and Tiruchirappalli in GET, DevOps, QA, and digital engineering.',
+    h1: 'BHEL Careers & PSU Openings (2026)'
+  },
+  'tata-power': {
+    name: 'Tata Power',
+    title: 'Tata Power Careers & Jobs (7 Live) | TalentXcel',
+    count: 7,
+    industry: 'Renewable Energy & Power Utilities',
+    location: 'Ujjain, Madhya Pradesh, India',
+    description: 'Discover 7 verified openings at Tata Power Solar across software engineering, data analytics, management trainee, and product analysis.',
+    h1: 'Tata Power Careers & Openings (2026)'
+  },
+  'karnataka-bank': {
+    name: 'Karnataka Bank',
+    title: 'Karnataka Bank Careers & Jobs (6 Live) | TalentXcel',
+    count: 6,
+    industry: 'Banking & Financial Services',
+    location: 'Mangalore, Karnataka, India',
+    description: 'Apply for 6 verified openings at Karnataka Bank HQ in Mangalore across retail banking, DevOps, data analytics, and React engineering.',
+    h1: 'Karnataka Bank Careers & Openings (2026)'
   }
 };
 
@@ -530,7 +667,7 @@ const CORE_STATIC_ROUTES = new Set([
   'salary', 'salaries', 'directory', 'directory/colleges-a-z', 'directory/salaries-by-role',
   'directory/jobs-by-city', 'rankings', 'blog', 'news', 'about', 'contact', 'faq', 'help',
   'terms', 'privacypolicy', 'privacy', 'return-refund-policy', 'hire', 'recruiters', 'staffing', 'recruitment', 'rpo',
-  'careers', 'career-paths', 'career-map', 'government-jobs', 'services',
+  'careers', 'career-paths', 'career-map', 'career-insights', 'government-jobs', 'services',
   'companies', 'uae', 'uk', 'usa', 'europe', 'world', 'talent', 'talent-score', 'employer', 'employers',
   'resume/build', 'resume-builder', 'resume/ats-check', 'ats-check', 'resume/cover-letter', 'resume/interview-prep', 'resume/templates',
   'tools/resume-checker', 'tools/ats-checker', 'tools/salary-analyzer',
@@ -781,7 +918,7 @@ async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
     } else {
       filter = `username=ilike.${encodeURIComponent(cleaned)}`;
     }
-    const selectCols = 'id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about,experience_years,current_company,industry,linkedin_url,github_url,portfolio_url,website,verification_status,created_at';
+    const selectCols = 'id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about,experience_years,current_company,industry,linkedin_url,github_url,portfolio_url,website,verification_status,is_profile_public,created_at';
     const url = `${getSupabaseRestUrl()}/public_profiles?select=${selectCols}&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
@@ -880,7 +1017,7 @@ async function lookupPostInSupabase(postId: string): Promise<{ post: any; author
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(postId);
     if (!isUuid) return null;
-    const url = `${getSupabaseRestUrl()}/posts?select=id,content,headline,media_urls,featured_image_url,created_at,author_id,user_id&id=eq.${encodeURIComponent(postId)}&limit=1`;
+    const url = `${getSupabaseRestUrl()}/posts?select=id,content,headline,media_urls,featured_image_url,created_at,author_id,user_id,visibility,is_public,is_deleted&id=eq.${encodeURIComponent(postId)}&is_deleted=neq.true&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': getSupabaseAnonKey(),
@@ -942,6 +1079,40 @@ export default async function handler(req: Request) {
       status: 308,
       headers: {
         'Location': 'https://talentxcel.in/resume/ats-check',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      },
+    });
+  }
+
+  // Explicitly retire obsolete sitemap-rankings.xml with HTTP 410 Gone (prevents SPA index.html fallthrough)
+  if (cleanPath === 'sitemap-rankings.xml') {
+    return new Response('410 Gone: sitemap-rankings.xml has been retired. Use https://talentxcel.in/sitemap.xml.', {
+      status: 410,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'X-Robots-Tag': 'noindex, nofollow',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      },
+    });
+  }
+
+  // Strictly scoped 301 redirect for legacy Golang/Gin interview-prep variants to canonical enriched guide
+  if (/^resume\/interview-prep\/(?:executive-|senior-|junior-|lead-)?golang-developer-interview-questions-and-answers(?:-part-\d+)?$/i.test(cleanPath)) {
+    return new Response(null, {
+      status: 301,
+      headers: {
+        'Location': 'https://talentxcel.in/resume/interview-prep/golang-developer',
+        'Cache-Control': 'public, max-age=86400, s-maxage=604800',
+      },
+    });
+  }
+
+  // Redirect legacy /skills/c-plus-plus to unified Career Insights hub (matches SPA route)
+  if (cleanPath === 'skills/c-plus-plus') {
+    return new Response(null, {
+      status: 301,
+      headers: {
+        'Location': 'https://talentxcel.in/career-insights',
         'Cache-Control': 'public, max-age=86400, s-maxage=604800',
       },
     });
@@ -2285,6 +2456,17 @@ function generateCompanyProfileDataBlock(compData: any, cityName?: string) {
           Comprehensive employee benefits packages include family floater health insurance coverage, maternity and paternity allowances, retirement provident fund matching, and subsidized wellness initiatives across all regional development centers.
         </p>
       </div>
+
+      <!-- 4. Application Checklist & Candidate Preparation Guidance -->
+      <div class="p-6 bg-slate-950/80 border border-slate-800 rounded-xl space-y-3">
+        <h4 class="text-sm font-bold text-white">Application Checklist &amp; Candidate Preparation Guide for ${escapeHtml(compData.name)}</h4>
+        <p class="text-slate-300 text-xs leading-relaxed">
+          Before submitting an application to ${escapeHtml(compData.name)} (${escapeHtml(compData.industry)} in ${escapeHtml(compData.location)}), verify your resume against role-specific keywords using TalentXcel's <a href="/resume/ats-check" class="text-blue-400 underline">free ATS resume checker</a>, review compensation expectations for your experience level, and organize project examples highlighting measurable engineering or operational outcomes.
+        </p>
+        <p class="text-slate-300 text-xs leading-relaxed">
+          Candidates applying to ${escapeHtml(compData.name)} vacancies via TalentXcel should apply strictly through official employer listings and never pay recruitment or registration fees. You can also create a shareable <a href="/passport" class="text-blue-400 underline">TalentXcel Career Passport</a> to showcase verified skills, track application readiness, and compare open trainee, analyst, and experienced hiring tracks across ${escapeHtml(compData.name)} locations.
+        </p>
+      </div>
     </div>
   `;
 }
@@ -2527,10 +2709,22 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
   const prefix = parts[0] || '';
   const secondary = parts[1] || '';
 
-  const formatTitle = (s: string) => s.split(/[-_]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const ACRONYM_MAP: Record<string, string> = {
+    ui: 'UI', ux: 'UX', ai: 'AI', ml: 'ML', qa: 'QA', hr: 'HR', it: 'IT',
+    seo: 'SEO', ats: 'ATS', rpo: 'RPO', sql: 'SQL', aws: 'AWS', api: 'API',
+    apis: 'APIs', b2b: 'B2B', saas: 'SaaS', get: 'GET', devops: 'DevOps',
+    ii: 'II', iii: 'III', iv: 'IV', psu: 'PSU', usa: 'USA', uk: 'UK', uae: 'UAE',
+  };
+  const formatTitle = (s: string) => s
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((w) => ACRONYM_MAP[w.toLowerCase()] || (w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ');
 
-  let title = 'TalentXcel — The Global Professional Talent Network';
-  let description = 'Connect with Tech & Leadership Professionals Worldwide across UAE, Europe, Americas, and Asia. Verify skills and explore career opportunities.';
+  const DEFAULT_TITLE = 'TalentXcel — The Global Professional Talent Network';
+  const DEFAULT_DESCRIPTION = 'Connect with Tech & Leadership Professionals Worldwide across UAE, Europe, Americas, and Asia. Verify skills and explore career opportunities.';
+  let title = DEFAULT_TITLE;
+  let description = DEFAULT_DESCRIPTION;
   let canonical = `https://talentxcel.in/${cleanPath}`;
   let h1 = 'TalentXcel Career Universe';
   let bodyContent = '';
@@ -2952,10 +3146,8 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
 
       const wordCount = countRenderedWords(bodyContent);
-      const hasPassportSkills = Array.isArray(profile.skills) && profile.skills.length >= 3;
-      const hasPassportBio = Boolean((profile.headline && profile.headline.trim().length >= 20) || (profile.about && profile.about.trim().length >= 40));
-      const hasPassportRecords = hasPassportSkills && (hasPassportBio || Boolean(profile.location));
-      const isIndexReady = evaluateIndexabilityThreshold(hasPassportRecords ? 3 : 0, wordCount);
+      const passportSkills = Array.isArray(profile.skills) ? profile.skills : [];
+      const isIndexReady = evaluateProfileIndexability(profile, passportSkills, wordCount);
       robotsDirective = isIndexReady ? 'index, follow' : 'noindex, follow';
 
       jsonLdSchema = {
@@ -3198,7 +3390,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
 
       const wordCount = countRenderedWords(bodyContent);
-      const isIndexReady = evaluateIndexabilityThreshold(hasRecordThreshold ? 3 : 0, wordCount);
+      const isIndexReady = evaluateProfileIndexability(profile, skills, wordCount);
       robotsDirective = isIndexReady ? 'index, follow' : 'noindex, follow';
 
       jsonLdSchema = {
@@ -3282,7 +3474,11 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       const { post, author } = result;
       const authorName = author?.full_name || 'TalentXcel Member';
       const snippet = (post.content || '').replace(/\s+/g, ' ').trim().slice(0, 160);
-      const postImage = post.featured_image_url || (Array.isArray(post.media_urls) && post.media_urls[0]) || author?.profile_photo_url || 'https://talentxcel.in/assets/og/talentxcel-og-article.png';
+      const mediaList: string[] = Array.isArray(post.media_urls) ? post.media_urls.filter((u: unknown): u is string => typeof u === 'string' && u.startsWith('http')) : [];
+      const isVideoUrl = (u: string) => /\.(mp4|webm|mov|m4v)(\?|$)/i.test(u);
+      const imageUrls = mediaList.filter((u) => !isVideoUrl(u));
+      const videoUrls = mediaList.filter((u) => isVideoUrl(u));
+      const postImage = post.featured_image_url || imageUrls[0] || author?.profile_photo_url || 'https://talentxcel.in/assets/og/talentxcel-og-article.png';
 
       title = `${authorName} on TalentXcel: "${snippet.slice(0, 60)}..."`;
       description = snippet || `Read the latest professional insights from ${authorName} on TalentXcel.`;
@@ -3291,6 +3487,11 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       ogType = 'article';
       ogImage = postImage;
       robotsDirective = 'index, follow';
+
+      const mediaHtml = [
+        ...imageUrls.map((imgUrl, idx) => `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(`${authorName} — ${snippet.slice(0, 80) || 'Professional post image'} (${idx + 1})`)}" class="w-full max-h-96 object-cover rounded-2xl border border-slate-800" loading="lazy" />`),
+        ...videoUrls.map((vidUrl) => `<video src="${escapeHtml(vidUrl)}" controls preload="metadata" class="w-full max-h-96 rounded-2xl border border-slate-800"></video>`),
+      ].join('\n');
 
       bodyContent = `
         <article class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-10 space-y-6 max-w-3xl mx-auto shadow-2xl">
@@ -3303,6 +3504,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
             </div>
           </div>
           <div class="text-slate-200 text-sm md:text-base leading-relaxed whitespace-pre-wrap">${escapeHtml(post.content || '')}</div>
+          ${mediaHtml ? `<div class="space-y-4">${mediaHtml}</div>` : ''}
           <div class="pt-4 border-t border-slate-800 flex flex-wrap gap-3">
             <a href="/network" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Join the Discussion &rarr;</a>
           </div>
@@ -3310,8 +3512,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       `;
 
       const wordCount = countRenderedWords(bodyContent);
-      const hasPostContent = Boolean(post.content && post.content.trim().length >= 40);
-      const isIndexReady = evaluateIndexabilityThreshold(hasPostContent ? 3 : 0, wordCount);
+      const isIndexReady = evaluatePostIndexability(post, imageUrls, videoUrls, wordCount);
       robotsDirective = isIndexReady ? 'index, follow' : 'noindex, follow';
 
       jsonLdSchema = {
@@ -3325,7 +3526,17 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         },
         "datePublished": post.created_at,
         "image": postImage,
-        "url": canonical
+        "url": canonical,
+        ...(videoUrls.length > 0 ? {
+          "video": {
+            "@type": "VideoObject",
+            "name": title,
+            "description": description,
+            "thumbnailUrl": postImage,
+            "uploadDate": post.created_at,
+            "contentUrl": videoUrls[0]
+          }
+        } : {})
       };
     } else {
       title = 'Professional Discussion & Posts | TalentXcel Network';
@@ -3487,6 +3698,41 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
               Explore active job opportunities curated for ${escapeHtml(h1)}. Direct applications with zero recruiter gatekeeping.
             </p>
             <a href="/jobs" class="text-xs text-emerald-400 font-semibold hover:underline block pt-2">Search Jobs Directory &rarr;</a>
+          </div>
+        </section>
+        <section class="mt-8 max-w-4xl mx-auto bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4 text-xs text-slate-300 leading-relaxed">
+          <h3 class="text-base font-bold text-white">How ${escapeHtml(h1)} Connects Verified Skills, Peer Endorsements &amp; Direct Hiring</h3>
+          <p>
+            ${escapeHtml(h1)} brings together engineers, data specialists, product managers, and hiring leaders who substantiate their experience through verifiable proof rather than unverified profile claims. Members publish portable <a href="/passport" class="text-blue-400 underline">Career Passports</a> backed by competency assessments, peer endorsements, and project artifacts so hiring managers can evaluate practical capability rapidly.
+          </p>
+          <p>
+            Whether you are exploring active <a href="/jobs" class="text-blue-400 underline">verified job openings</a>, benchmarking compensation curves on <a href="/salary" class="text-blue-400 underline">TalentXcel Salary Intelligence</a>, or running a pre-application <a href="/resume/ats-check" class="text-blue-400 underline">free ATS resume scan</a>, the ${escapeHtml(h1)} hub links peer knowledge directly with real employer requisitions across India and global technology hubs.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+            <div class="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-1">
+              <div class="font-bold text-white">1. Portable Career Passport</div>
+              <p class="text-slate-400">Consolidate verified skills, assessments, and domain endorsements in one shareable profile URL.</p>
+            </div>
+            <div class="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-1">
+              <div class="font-bold text-white">2. Peer Skill Exchange</div>
+              <p class="text-slate-400">Collaborate on architecture reviews, technical interview readiness, and domain-specific mentoring.</p>
+            </div>
+            <div class="p-4 bg-slate-950/70 border border-slate-800 rounded-xl space-y-1">
+              <div class="font-bold text-white">3. Direct Employer Visibility</div>
+              <p class="text-slate-400">Connect directly with verified hiring teams across software, cloud, data, finance, and core engineering.</p>
+            </div>
+          </div>
+          <p class="text-slate-400">
+            Frequently Asked Questions: Is joining ${escapeHtml(h1)} free for candidates? Yes—creating a Career Passport, browsing verified jobs, and running baseline ATS resume diagnostics are free for job seekers. How does TalentXcel protect candidate privacy? Private profiles remain strictly hidden from search engines; only explicitly public Career Passports and verified domain hubs are surfaced. How do verified peer endorsements and skill assessments help hiring teams? Recruiters and engineering managers review standardized competency evidence alongside candidate project portfolios, reducing duplicate screening rounds across software engineering, cloud infrastructure, data science, product, and core operations teams. Candidates can also benchmark local compensation expectations, verify resume keyword alignment before submitting applications, and connect with domain specialists across Bengaluru, Hyderabad, Pune, Delhi NCR, Mumbai, Chennai, Noida, and remote corridors.
+          </p>
+          <div class="pt-2 border-t border-slate-800/80 space-y-2 text-slate-400">
+            <h4 class="text-sm font-semibold text-white">Discovery &amp; Qualification Standards for ${escapeHtml(h1)}</h4>
+            <p>
+              TalentXcel indexes only verified public community hubs backed by active employer requisitions, structured skill taxonomies, and authentic member profiles. Empty or duplicate vanity URLs are excluded from search indexing through automated quality governance. Members within ${escapeHtml(h1)} can explore live hiring demand, compare role-specific salary benchmarks across experience tiers, request peer portfolio feedback, and submit direct applications without third-party agency intermediaries or paid candidate placement fees.
+            </p>
+            <p>
+              To maximize profile discoverability in ${escapeHtml(h1)}, keep your primary technical stack, recent project outcomes, notice period, and preferred work mode current inside your Career Passport, and verify alignment against target job descriptions with the in-browser ATS analyzer before applying.
+            </p>
           </div>
         </section>
       `;
@@ -4071,24 +4317,149 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         "name": `Jobs in ${cityName}`,
         "url": canonical
       };
-      const roleName = 'Technology & Engineering';
-      const localData = generateProgrammaticLocalDataBlock(roleName, cityName);
+      const supabaseRest = getSupabaseRestUrl();
+      const supabaseKey = getSupabaseAnonKey();
+      let liveCityJobs: Array<{ id: string; seo_slug?: string; title?: string; company_name?: string; location?: string; salary_min?: number; salary_max?: number; salary_currency?: string }> = [];
+      let liveCityCount = count;
+      try {
+        const citySearch = isGurgaonVariant ? 'gurugram' : citySlug.replace(/-/g, ' ');
+        const cityFilter = isGurgaonVariant
+          ? 'or=(location.ilike.*gurugram*,location.ilike.*gurgaon*,location_city.ilike.*gurugram*)'
+          : (citySlug === 'bangalore' || citySlug === 'bengaluru')
+            ? 'or=(location.ilike.*bangalore*,location.ilike.*bengaluru*,location_city.ilike.*bangalore*,location_city.ilike.*bengaluru*)'
+            : `or=(location.ilike.*${encodeURIComponent(citySearch)}*,location_city.ilike.*${encodeURIComponent(citySearch)}*)`;
+        const jRes = await fetch(
+          `${supabaseRest}/jobs?select=id,seo_slug,title,company_name,location,salary_min,salary_max,salary_currency&is_active=eq.true&${cityFilter}&order=updated_at.desc&limit=12`,
+          {
+            headers: {
+              apikey: supabaseKey,
+              Authorization: `Bearer ${supabaseKey}`,
+              Prefer: 'count=exact',
+            },
+            signal: AbortSignal.timeout(3500),
+          }
+        );
+        if (jRes.ok) {
+          const rows = await jRes.json();
+          if (Array.isArray(rows)) liveCityJobs = rows;
+          const range = jRes.headers.get('content-range') || '';
+          const totalParsed = range.includes('/') ? Number(range.split('/')[1]) : NaN;
+          if (Number.isFinite(totalParsed) && totalParsed > 0) liveCityCount = totalParsed;
+        }
+      } catch {
+        // Non-fatal fallback to verified canonical city metadata
+      }
+
+      const displayCount = Math.max(count, liveCityCount);
+      if (isGurgaonVariant) {
+        title = `Jobs in Gurgaon / Gurugram (${displayCount} Openings) | TalentXcel`.slice(0, 60);
+        h1 = `Jobs in Gurgaon / Gurugram (${displayCount} Verified Openings)`;
+      } else if (citySlug === 'varanasi') {
+        title = `Jobs in Varanasi | ${displayCount} Verified Openings | TalentXcel`.slice(0, 60);
+        h1 = `Jobs in ${cityName} (${displayCount} Verified Openings)`;
+      } else {
+        title = `Jobs in ${cityName} (${displayCount} Openings) | TalentXcel`.slice(0, 60);
+        h1 = `Jobs in ${cityName} (${displayCount} Verified Openings)`;
+      }
+      description =
+        citySlug === 'varanasi'
+          ? `Explore ${displayCount}+ verified job openings in Varanasi on TalentXcel. Compare salary bands, required skills & direct employer applications.`.slice(0, 155)
+          : `Browse ${displayCount}+ verified job openings in ${cityName}. Review active employers, salary ranges, and direct application links on TalentXcel.`.slice(0, 155);
+      robotsDirective = (liveCityJobs.length >= 3 || count >= 3) ? 'index, follow' : 'noindex, follow';
+
+      const jobRowsHtml = liveCityJobs.length > 0
+        ? liveCityJobs.map((j) => {
+            const jTitle = escapeHtml(j.title || 'Verified Opening');
+            const jComp = escapeHtml(j.company_name || 'Verified Employer');
+            const jLoc = escapeHtml(j.location || cityName);
+            const jSlug = encodeURIComponent(j.seo_slug || j.id);
+            const sal = j.salary_min && j.salary_min > 0
+              ? (j.salary_currency === 'INR' || !j.salary_currency
+                  ? `₹${(j.salary_min / 100000).toFixed(1)}L–₹${((j.salary_max || j.salary_min) / 100000).toFixed(1)}L PA`
+                  : `${j.salary_currency} ${j.salary_min.toLocaleString()}`)
+              : 'Competitive CTC';
+            return `<tr>
+              <td class="py-2.5 px-3 font-semibold text-white"><a href="/jobs/${jSlug}" class="hover:text-blue-400 underline">${jTitle}</a></td>
+              <td class="py-2.5 px-3 text-slate-300">${jComp}</td>
+              <td class="py-2.5 px-3 text-slate-400">${jLoc}</td>
+              <td class="py-2.5 px-3 font-mono text-emerald-400">${escapeHtml(sal)}</td>
+            </tr>`;
+          }).join('')
+        : `<tr><td colspan="4" class="py-3 px-3 text-slate-300">Active ${escapeHtml(cityName)} listings span software engineering, operations, sales, healthcare management, QA/QC, and STEM education. <a href="/jobs?location=${encodeURIComponent(citySlug)}" class="text-blue-400 underline">View all ${displayCount} openings</a>.</td></tr>`;
+
+      const cityFaqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": `How many active verified jobs are open in ${cityName} on TalentXcel?`,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": `TalentXcel currently lists ${displayCount} active verified vacancies in ${cityName} across technology, operations, hospitality, QA/QC, and commercial roles with direct application and zero candidate fees.`
+            }
+          },
+          {
+            "@type": "Question",
+            "name": `How can candidates improve shortlist rates for ${cityName} vacancies?`,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": `Use TalentXcel's free in-browser ATS resume checker before applying to align role keywords, verify skills via Career Passport, and apply directly through verified employer listings.`
+            }
+          }
+        ]
+      };
+
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-          <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} compensation benchmarks in ${escapeHtml(cityName)}</h2>
-          <p class="text-slate-300 text-sm leading-relaxed">
-            Review comprehensive compensation analytics, salary distributions, and market benchmarks for ${escapeHtml(roleName)} roles in ${escapeHtml(cityName)}. Data is compiled from verified employer requisitions, industry offerings, and verified candidate disclosures.
-          </p>
-          <div class="pt-2 flex flex-wrap gap-3">
-            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
-            <a href="/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Free ATS Resume Scan &rarr;</a>
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-4">
+            <div>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">Verified City Hiring Hub &bull; ${escapeHtml(cityName)}</span>
+              <h2 class="text-2xl font-bold text-white mt-2">Active Verified Job Openings in ${escapeHtml(cityName)}</h2>
+            </div>
+            <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 font-mono font-bold text-xs rounded-full">${displayCount} Live Openings</span>
           </div>
-          ${localData.htmlBlock}
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Explore ${displayCount} verified full-time, specialist, and management openings in ${escapeHtml(cityName)}. Every listing on TalentXcel is screened for employer authenticity, clear role requirements, and zero candidate application fees. Compare disclosed annual CTC ranges, check your resume compatibility in seconds, and submit direct applications across ${escapeHtml(cityName)} employers.
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[11px]">
+                  <th class="py-2.5 px-3">Job Title</th>
+                  <th class="py-2.5 px-3">Employer</th>
+                  <th class="py-2.5 px-3">Location</th>
+                  <th class="py-2.5 px-3">Disclosed CTC</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                ${jobRowsHtml}
+              </tbody>
+            </table>
+          </div>
+          <div class="p-5 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2 text-xs text-slate-300 leading-relaxed">
+            <h3 class="text-sm font-bold text-white">${escapeHtml(cityName)} Hiring Landscape &amp; Candidate Preparation</h3>
+            <p>
+              Employers hiring in ${escapeHtml(cityName)} seek candidates with clear domain fundamentals, measurable project delivery, and clean ATS-formatted resumes. Whether targeting engineering, operations management, commercial sales, corporate learning, or hospitality roles in ${escapeHtml(cityName)}, candidates can run a zero-signup <a href="/resume/ats-check" class="text-blue-400 underline">ATS resume check</a>, benchmark pay expectations on our <a href="/tools/salary-analyzer" class="text-blue-400 underline">Salary Analyzer</a>, and attach a verified <a href="/passport" class="text-blue-400 underline">Career Passport</a>.
+            </p>
+            <p>
+              TalentXcel's ${escapeHtml(cityName)} hiring directory consolidates verified employer openings across early-career graduate tracks, mid-level technical specialists, and experienced operational leaders without third-party agency registration fees. Before submitting an application, align your resume summary and core technical or commercial skills with the role requirements listed above, ensure single-column PDF or DOCX formatting for clean applicant tracking system parsing, and verify compensation bands disclosed by employers in ${escapeHtml(cityName)}. Candidates exploring adjacent regional opportunities can also compare active vacancies across <a href="/locations/bangalore" class="text-blue-400 underline">Bangalore</a>, <a href="/locations/hyderabad" class="text-blue-400 underline">Hyderabad</a>, <a href="/locations/noida" class="text-blue-400 underline">Noida</a>, <a href="/locations/lucknow" class="text-blue-400 underline">Lucknow</a>, and <a href="/jobs" class="text-blue-400 underline">all active India roles</a>.
+            </p>
+            <div class="pt-3 border-t border-slate-800/80 space-y-2">
+              <h4 class="text-xs font-bold text-white uppercase tracking-wider">Frequently Asked Questions: ${escapeHtml(cityName)} Jobs</h4>
+              <p><strong class="text-slate-200">How many active verified jobs are open in ${escapeHtml(cityName)} on TalentXcel?</strong> TalentXcel currently lists ${displayCount} active verified vacancies in ${escapeHtml(cityName)} across technology, operations, hospitality, QA/QC, and commercial roles with direct application and zero candidate fees.</p>
+              <p><strong class="text-slate-200">How can candidates improve shortlist rates for ${escapeHtml(cityName)} vacancies?</strong> Use TalentXcel's free in-browser ATS resume checker before applying to align role keywords, highlight quantified project impact, verify skills via Career Passport, and apply directly through verified employer listings.</p>
+            </div>
+          </div>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="/jobs?location=${encodeURIComponent(citySlug)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Browse All ${escapeHtml(cityName)} Jobs &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Free ATS Resume Scan &rarr;</a>
+          </div>
         </section>
       `;
       jsonLdSchema = [
         jsonLdSchema,
-        localData.faqSchema
+        cityFaqSchema
       ];
     }
   }
@@ -4299,6 +4670,25 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
         <h2 class="text-xl font-bold text-white">Current job listings</h2>
         <p class="text-slate-300 text-sm leading-relaxed">Browse engineering, data, and product jobs across technology roles and locations in India. Open a listing to review its current requirements and application details.</p>
+        <nav aria-label="Featured Career & Strike-Zone Opportunities" class="pt-4 border-t border-slate-800">
+          <h3 class="text-sm font-semibold text-white mb-3">Featured Role &amp; Employer Hubs</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 text-xs">
+            <a href="/jobs/industry/government-public-sector" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">government jobs india</a>
+            <a href="/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">Explore ntpc careers</a>
+            <a href="/career-insights/salary/data-scientist-salary-in-hyderabad" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">salary for data scientist guide &amp; openings</a>
+            <a href="/jobs/assistant-branch-manager-retail-banking-midc-amravati-amravati-maharashtra-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">View jobs in amravati details</a>
+            <a href="/jobs/software-engineer/freshers/bangalore/nagpur" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">Explore freshers jobs in bangalore</a>
+            <a href="/jobs/devops-cloud-infrastructure-engineer-bhel-trichy-tiruchirappalli-tamil-nadu-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">bhel careers trichy guide &amp; openings</a>
+            <a href="/jobs/associate-data-analyst-bhel-trichy-tiruchirappalli-tamil-nadu-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">View data analyst jobs trichy details</a>
+            <a href="/jobs/associate-data-analyst-tata-steel-coal-division-dhanbad-jharkhand-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">Explore tata steel career</a>
+            <a href="/jobs/associate-data-analyst-shree-cement-raipur-chhattisgarh-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">shree cement career guide &amp; openings</a>
+            <a href="/jobs/management-trainee-operations-associate-tcs-infopark-kochi-kerala-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">View tcs kochi careers details</a>
+            <a href="/jobs/management-trainee-operations-associate-south-indian-bank-hq-thrissur-kerala-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">Explore south indian bank careers</a>
+            <a href="/jobs/junior-qa-test-automation-engineer-ibs-software-kochi-kerala-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">ibs careers kochi guide &amp; openings</a>
+            <a href="/jobs/junior-qa-test-automation-engineer-central-coalfields-limited-ccl-ranchi-jharkhand-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">View ccl job details</a>
+            <a href="/jobs/junior-qa-test-automation-engineer-kollam-technopark-kundara-kollam-kerala-india" class="p-2.5 bg-slate-950 rounded-lg border border-slate-800 text-slate-300 hover:text-white">Explore kundara technopark jobs for freshers</a>
+          </div>
+        </nav>
       </section>
       ${generateJobsHubDataBlock()}
     `;
@@ -4810,31 +5200,51 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           .replace(/ Limited| Pvt Ltd| Ltd| Corporation| Corp/gi, '')
           .trim();
         const baseTitle = `${jobTitle} at ${compactCompany} (${cityLoc}) | TalentXcel`;
-        if (baseTitle.length <= 60) {
+        if (baseTitle.length <= 62) {
           title = baseTitle;
         } else {
-          const roleCityTitle = `${jobTitle} (${cityLoc}) | TalentXcel`;
-          if (roleCityTitle.length <= 60) {
-            title = roleCityTitle;
+          const cleanRole = jobTitle
+            .replace(/^(Senior |Junior |Associate |Lead |Staff |Principal )/i, '')
+            .replace(/\s*\([^)]*\)/g, '')
+            .trim();
+          const roleCompanyCity = `${cleanRole} at ${compactCompany} (${cityLoc}) | TalentXcel`;
+          const roleCompany = `${cleanRole} at ${compactCompany} | TalentXcel`;
+          const fullRoleCompany = `${jobTitle.replace(/\s*\([^)]*\)/g, '').trim()} - ${compactCompany} | TalentXcel`;
+          if (roleCompanyCity.length <= 62) {
+            title = roleCompanyCity;
+          } else if (roleCompany.length <= 62) {
+            title = roleCompany;
+          } else if (fullRoleCompany.length <= 62) {
+            title = fullRoleCompany;
           } else {
-            const cleanRole = jobTitle.replace(/Executive |Specialist |Associate /gi, '').trim();
-            const trimmedRoleCity = `${cleanRole} in ${cityLoc} | TalentXcel`;
-            if (trimmedRoleCity.length <= 60) {
-              title = trimmedRoleCity;
-            } else {
-              const availableLen = 60 - ' | TalentXcel'.length;
-              let truncated = jobTitle.slice(0, availableLen);
+            const suffix = compactCompany ? ` at ${compactCompany} | TalentXcel` : ` (${cityLoc}) | TalentXcel`;
+            const availableLen = 62 - suffix.length;
+            if (availableLen >= 16) {
+              let truncated = cleanRole.slice(0, availableLen);
               const lastSpace = truncated.lastIndexOf(' ');
-              if (lastSpace > 15) {
-                truncated = truncated.slice(0, lastSpace);
-              }
+              if (lastSpace > 12) truncated = truncated.slice(0, lastSpace);
+              truncated = truncated.replace(/[\s/&,-]+$/g, '').trim();
+              title = `${truncated}${suffix}`;
+            } else {
+              const fallbackLen = 60 - ' | TalentXcel'.length;
+              let truncated = `${cleanRole} - ${compactCompany}`.slice(0, fallbackLen);
+              const lastSpace = truncated.lastIndexOf(' ');
+              if (lastSpace > 15) truncated = truncated.slice(0, lastSpace);
+              truncated = truncated.replace(/[\s/&,-]+$/g, '').trim();
               title = `${truncated} | TalentXcel`;
             }
           }
         }
       }
-      if (!description) {
-        description = `Apply for ${jobTitle} at ${company} in ${loc}.${salaryDisplay ? ' Annual CTC: ' + salaryDisplay + '.' : ''} Verified vacancy with direct application on TalentXcel.`.slice(0, 155);
+      if (!description || description === DEFAULT_DESCRIPTION) {
+        const rawMeta = `Apply for ${jobTitle} at ${company} in ${cityLoc || loc}.${salaryDisplay ? ' CTC: ' + salaryDisplay + '.' : ''} Review requirements, skills & apply directly on TalentXcel.`;
+        if (rawMeta.length <= 155) {
+          description = rawMeta;
+        } else {
+          const sliced = rawMeta.slice(0, 155);
+          const lastSpace = sliced.lastIndexOf(' ');
+          description = (lastSpace > 100 ? sliced.slice(0, lastSpace) : sliced).trim();
+        }
       }
       canonical = `https://talentxcel.in/jobs/${job.seo_slug || job.id}`;
       h1 = `${jobTitle} — ${company}`;
@@ -5081,6 +5491,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
             <a href="/tools/salary-analyzer" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Salary Analyzer</a>
             <a href="/jobs" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Current Job Listings</a>
+            <a href="/salary/data-scientist" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Explore salary for data scientist</a>
           </div>
         </section>
         ${generateSalaryHubDataBlock()}
@@ -5098,6 +5509,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
         'salary/goals': 'Salary Goals Planner',
         'salary/skills-gap': 'Salary Skills Gap Tool',
         'salary/jobs': 'Salary and Matching Jobs',
+        'tools/salary-analyzer': 'Salary Analyzer & Benchmark Tool',
       };
       title = `${salaryToolNames[cleanPath]} | TalentXcel`;
       description = 'Use TalentXcel salary planning tools to explore compensation scenarios, career goals, skills, and related job listings.';
@@ -5126,11 +5538,100 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
 
       const roleName = formatTitle(rolePart);
       const cityName = cityPart ? formatTitle(cityPart) : 'India';
-      title = `${roleName} Salary Guide in ${cityName} (2026 Benchmark) | TalentXcel`;
-      description = `Explore verified compensation benchmarks, salary curves, and market ranges for ${roleName} in ${cityName} on TalentXcel Salary Intelligence.`;
+      const isWave1Salary =
+        rolePart === 'data-scientist' || rolePart === 'ui-ux-designer' || rolePart === 'senior-staff-data-scientist';
+      const wave1TitleFull = `${roleName} Salary in ${cityName} (2026 Payscale) | TalentXcel`;
+      title = isWave1Salary
+        ? (wave1TitleFull.length <= 68 ? wave1TitleFull : `${roleName} Salary in ${cityName} | TalentXcel`)
+        : `${roleName} Salary Guide in ${cityName} (2026 Benchmark) | TalentXcel`;
+      description = isWave1Salary
+        ? `Check verified ${roleName} salary in ${cityName}: entry-level to senior pay bands, top skills impacting compensation & live openings on TalentXcel.`.slice(0, 155)
+        : `Explore compensation bands, observed employer salary postings, and market ranges for ${roleName} in ${cityName} on TalentXcel.`.slice(0, 155);
       canonical = resolveCanaryCanonical(cleanPath, 'SALARY'); // Unit 2 Canary
       h1 = `${roleName} Salary Guide in ${cityName}`;
-      robotsDirective = 'index, follow';
+
+      // Query real verified INR job postings with disclosed salary_min/salary_max for this role
+      const SALARY_ROLE_SEARCH_TERMS: Record<string, string> = {
+        'data-scientist': 'or=(title.ilike.*Data*Scientist*,title.ilike.*Machine*Learning*)',
+        'ui-ux-designer': 'or=(title.ilike.*UI/UX*,title.ilike.*UX*Designer*,title.ilike.*UI*Designer*,title.ilike.*Product*Designer*)',
+        'data-analyst': 'title=ilike.*Data*Analyst*',
+        'product-manager': 'title=ilike.*Product*Manager*',
+        'software-engineer': 'or=(title.ilike.*Software*Engineer*,title.ilike.*Software*Developer*,title.ilike.*SDE*)',
+      };
+      let observedSalaryJobs: Array<{ id: string; seo_slug?: string; title: string; company_name?: string; location?: string; salary_min: number; salary_max: number }> = [];
+      const roleFilter = SALARY_ROLE_SEARCH_TERMS[rolePart] || `title=ilike.*${encodeURIComponent(roleName.replace(/\s+/g, '*'))}*`;
+      if (!cityPart) {
+        try {
+          const salRes = await fetch(
+            `${getSupabaseRestUrl()}/jobs?select=id,seo_slug,title,company_name,location,salary_min,salary_max&is_active=eq.true&salary_currency=eq.INR&salary_min=gt.0&${roleFilter}&order=updated_at.desc&limit=50`,
+            {
+              headers: { apikey: getSupabaseAnonKey(), Authorization: `Bearer ${getSupabaseAnonKey()}` },
+              signal: AbortSignal.timeout(3500),
+            }
+          );
+          if (salRes.ok) {
+            const rows = await salRes.json();
+            if (Array.isArray(rows)) observedSalaryJobs = rows.filter((r: any) => Number(r.salary_min) > 0);
+          }
+        } catch {
+          // Fallback remains strictly noindex below if live verification fails
+        }
+      }
+
+      const hasVerifiedSalaryDataset = !cityPart && observedSalaryJobs.length >= 5;
+      robotsDirective = hasVerifiedSalaryDataset ? 'index, follow' : 'noindex, follow';
+
+      let observedBlockHtml = '';
+      if (observedSalaryJobs.length > 0) {
+        const mins = observedSalaryJobs.map((j) => Number(j.salary_min)).sort((a, b) => a - b);
+        const maxs = observedSalaryJobs.map((j) => Number(j.salary_max || j.salary_min)).sort((a, b) => a - b);
+        const midpoints = observedSalaryJobs.map((j) => (Number(j.salary_min) + Number(j.salary_max || j.salary_min)) / 2).sort((a, b) => a - b);
+        const p50Val = midpoints[Math.floor(midpoints.length / 2)];
+        const minLpa = (mins[0] / 100000).toFixed(1);
+        const medLpa = (p50Val / 100000).toFixed(1);
+        const maxLpa = (maxs[maxs.length - 1] / 100000).toFixed(1);
+
+        const sampleRowsHtml = observedSalaryJobs.slice(0, 6).map((j) => {
+          const slug = encodeURIComponent(j.seo_slug || j.id);
+          const sMin = (j.salary_min / 100000).toFixed(1);
+          const sMax = ((j.salary_max || j.salary_min) / 100000).toFixed(1);
+          return `<tr>
+            <td class="py-2 px-3 font-semibold text-white"><a href="/jobs/${slug}" class="hover:text-blue-400 underline">${escapeHtml(j.title)}</a></td>
+            <td class="py-2 px-3 text-slate-300">${escapeHtml(j.company_name || 'Verified Employer')}</td>
+            <td class="py-2 px-3 text-slate-400">${escapeHtml(j.location || 'India')}</td>
+            <td class="py-2 px-3 font-mono text-emerald-400">₹${sMin}L – ₹${sMax}L PA</td>
+          </tr>`;
+        }).join('');
+
+        observedBlockHtml = `
+          <div class="p-5 bg-slate-950/90 border border-emerald-800/40 rounded-xl space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+              <div>
+                <h3 class="text-base font-bold text-white">Live Observed Employer Salary Range (${observedSalaryJobs.length} Active INR Postings)</h3>
+                <p class="text-xs text-slate-400">Computed directly from active ${escapeHtml(roleName)} job postings on TalentXcel with disclosed INR annual CTC.</p>
+              </div>
+              <span class="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2.5 py-1 rounded">₹${minLpa}L – ₹${maxLpa}L PA (Median ₹${medLpa}L)</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[11px]">
+                    <th class="py-2 px-3">Active Role</th>
+                    <th class="py-2 px-3">Employer</th>
+                    <th class="py-2 px-3">Location</th>
+                    <th class="py-2 px-3">Disclosed CTC</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                  ${sampleRowsHtml}
+                </tbody>
+              </table>
+            </div>
+            <p class="text-[11px] text-slate-400">Methodology &amp; Source Disclosure: Observed range (₹${minLpa}L–₹${maxLpa}L PA, median ₹${medLpa}L PA) reflects ${observedSalaryJobs.length} active INR postings in TalentXcel's database. Career-tier projections below represent modeled market estimates via TalentXcel SalaryBenchmarkEngine.</p>
+          </div>
+        `;
+      }
+
       jsonLdSchema = {
         "@context": "https://schema.org",
         "@type": "Occupation",
@@ -5144,16 +5645,18 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           }
         ]
       };
-            const localData = generateProgrammaticLocalDataBlock(roleName, cityName);
+      const localData = generateProgrammaticLocalDataBlock(roleName, cityName);
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
           <h2 class="text-xl font-bold text-white">${escapeHtml(roleName)} compensation benchmarks in ${escapeHtml(cityName)}</h2>
           <p class="text-slate-300 text-sm leading-relaxed">
-            Review comprehensive compensation analytics, salary distributions, and market benchmarks for ${escapeHtml(roleName)} roles in ${escapeHtml(cityName)}. Data is compiled from verified employer requisitions, industry offerings, and verified candidate disclosures.
+            Review compensation bands, active employer salary disclosures, and career-stage pay curves for ${escapeHtml(roleName)} roles in ${escapeHtml(cityName)}. Compare base cash vs variable pay across startup, GCC, and enterprise tiers, and simulate post-tax take-home pay.
           </p>
+          ${observedBlockHtml}
           <div class="pt-2 flex flex-wrap gap-3">
-            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
-            <a href="/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Free ATS Resume Scan &rarr;</a>
+            <a href="https://talentxcel.in/jobs?search=${encodeURIComponent(roleName)}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl shadow transition">Browse Live ${escapeHtml(roleName)} Jobs &rarr;</a>
+            <a href="https://talentxcel.in/tools/salary-analyzer" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Open Salary Analyzer &rarr;</a>
+            <a href="https://talentxcel.in/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl transition">Free ATS Resume Scan &rarr;</a>
           </div>
           ${localData.htmlBlock}
         </section>
@@ -5262,30 +5765,96 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       return null; // Soft 404 guard
     }
     const roleName = formatTitle(slug);
-    title = `${roleName} Interview Questions & Answers (2026 Technical Prep) | TalentXcel`;
-    description = `Review verified technical interview preparation questions, problem-solving rubrics, and answer frameworks for ${roleName} roles.`;
-    canonical = `https://talentxcel.in/resume/interview-prep/${slug}`;
-    h1 = `${roleName} Interview Questions & Preparation Guide`;
-    bodyContent = `
-      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
-        <h2 class="text-xl font-bold text-white">Interview preparation for ${escapeHtml(roleName)}</h2>
-        <p class="text-slate-300 text-sm leading-relaxed">Review skills and tools in verified job descriptions and prepare examples of real-world architecture.</p>
-      </section>
-    `;
-    jsonLdSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": `What should I prepare for a ${roleName} interview?`,
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": `Review key algorithms, system design patterns, and domain competencies for ${roleName} roles.`
+    if (slug === 'golang-developer') {
+      title = 'Golang & Gin Framework Interview Questions & Answers (2026) | TalentXcel';
+      description = 'Master Golang & Gin interview questions: router internals, middleware execution, c.Bind vs c.ShouldBind, pprof profiling, and graceful shutdown.';
+      canonical = 'https://talentxcel.in/resume/interview-prep/golang-developer';
+      h1 = 'Golang & Gin Framework Interview Questions & Answers';
+      robotsDirective = 'index, follow';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">Technical Interview Guide &bull; Go &amp; Gin Web Framework</span>
+          <h2 class="text-2xl font-bold text-white">Core Golang &amp; Gin Framework Interview Questions</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Prepare for backend engineering interviews covering Go concurrency, HTTP routing with Gin, middleware execution chains, request validation, memory profiling, and production graceful shutdowns.</p>
+          <div class="space-y-4 text-xs text-slate-300 leading-relaxed">
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+              <h3 class="text-sm font-bold text-white">1. Why is Gin preferred over standard net/http, and how does gin.New() differ from gin.Default()?</h3>
+              <p>Gin wraps Go's net/http with a zero-allocation radix-tree router (derived from httprouter), built-in JSON/form binding, and flat middleware slices. <code>gin.New()</code> initializes a blank engine with zero middleware, whereas <code>gin.Default()</code> attaches both <code>Logger()</code> (request telemetry) and <code>Recovery()</code> (panic recovery returning HTTP 500 instead of crashing the process).</p>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+              <h3 class="text-sm font-bold text-white">2. What is the difference between c.Bind() and c.ShouldBind() in Gin?</h3>
+              <p><code>c.Bind()</code> / <code>c.BindJSON()</code> automatically aborts the request with HTTP 400 and writes an error header if binding or validation fails, leaving limited control over API error formatting. <code>c.ShouldBind()</code> / <code>c.ShouldBindJSON()</code> returns the validation error cleanly to your handler so you can construct structured JSON error payloads and custom HTTP status codes.</p>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+              <h3 class="text-sm font-bold text-white">3. How does Gin's middleware execution model work internally?</h3>
+              <p>Each route stores a flat slice of <code>HandlerFunc</code> callbacks and tracks an integer index on <code>*gin.Context</code>. Calling <code>c.Next()</code> advances the index to execute downstream middleware and the final route handler before unwinding back up the call stack. Calling <code>c.Abort()</code> sets the index past the end of the chain so remaining handlers never execute—critical for authentication and rate-limiting middleware.</p>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+              <h3 class="text-sm font-bold text-white">4. How do you handle route grouping, gin.Context concurrency, and graceful shutdown?</h3>
+              <p>Use <code>r.Group("/api/v1")</code> to share path prefixes and scoped middleware cleanly. Never pass the original <code>*gin.Context</code> directly into a background goroutine; copy it with <code>c.Copy()</code> first because Gin recycles contexts via <code>sync.Pool</code> after the request completes. For zero-downtime deploys, wrap the Gin engine inside an <code>http.Server</code>, listen for <code>SIGINT</code>/<code>SIGTERM</code>, and invoke <code>srv.Shutdown(ctx)</code> with a bounded timeout.</p>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+              <h3 class="text-sm font-bold text-white">5. How do you profile latency spikes and test Gin routes?</h3>
+              <p>Attach Go's <code>net/http/pprof</code> profiler to diagnose goroutine leaks, heap allocations, and CPU hotspots, and configure <code>database/sql</code> connection pools (<code>SetMaxOpenConns</code>, <code>SetMaxIdleConns</code>). For unit testing, switch to <code>gin.SetMode(gin.TestMode)</code> and invoke <code>router.ServeHTTP(httptest.NewRecorder(), req)</code> without binding live ports.</p>
+            </div>
+            <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+              <h3 class="text-sm font-bold text-white">6. How do Go concurrency primitives (context, channels, errgroup) integrate with Gin handlers?</h3>
+              <p>Always propagate <code>c.Request.Context()</code> down to database queries and downstream gRPC/HTTP calls so client disconnects immediately cancel upstream work and prevent goroutine leaks. Use bounded worker pools or <code>golang.org/x/sync/errgroup</code> with explicit timeouts when fanning out parallel microservice calls inside an API handler, and validate struct tags cleanly via <code>binding:"required,min=1"</code> with custom <code>validator.v10</code> translations for consistent API client contracts across production services.</p>
+            </div>
+          </div>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="/jobs?search=golang" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Active Golang Jobs &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700">Check Resume ATS Match &rarr;</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is the difference between gin.New() and gin.Default()?",
+            "acceptedAnswer": { "@type": "Answer", "text": "gin.New() creates a blank Gin router without middleware, while gin.Default() attaches Logger and Recovery middleware by default." }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the difference between c.Bind() and c.ShouldBind() in Gin?",
+            "acceptedAnswer": { "@type": "Answer", "text": "c.Bind() aborts with HTTP 400 automatically on error, whereas c.ShouldBind() returns the error so handlers can format custom error responses." }
+          },
+          {
+            "@type": "Question",
+            "name": "How does Gin middleware c.Next() and c.Abort() work?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Gin tracks an execution index across a flat HandlerFunc slice on *gin.Context; c.Next() advances to subsequent handlers and c.Abort() skips remaining handlers." }
           }
-        }
-      ]
-    };
+        ]
+      };
+    } else {
+      title = `${roleName} Interview Questions & Answers (2026 Technical Prep) | TalentXcel`;
+      description = `Review verified technical interview preparation questions, problem-solving rubrics, and answer frameworks for ${roleName} roles.`;
+      canonical = `https://talentxcel.in/resume/interview-prep/${slug}`;
+      h1 = `${roleName} Interview Questions & Preparation Guide`;
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Interview preparation for ${escapeHtml(roleName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Review skills and tools in verified job descriptions and prepare examples of real-world architecture.</p>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": `What should I prepare for a ${roleName} interview?`,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": `Review key algorithms, system design patterns, and domain competencies for ${roleName} roles.`
+            }
+          }
+        ]
+      };
+    }
   }
   // 11B. ATS Keywords by Role (/resume/:role/ats-keywords)
   else if (cleanPath.startsWith('resume/') && cleanPath.endsWith('/ats-keywords')) {
@@ -5588,6 +6157,178 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
       "description": exam.desc
     };
   }
+  // 11B. Verified Strategic Services Landing Pages (/services/:slug)
+  else if (cleanPath.startsWith('services/')) {
+    const serviceSlug = cleanPath.replace(/^services\//, '').toLowerCase().trim();
+    const SERVICE_SSR_MAP: Record<string, { title: string; tagline: string; description: string; audience: string; deliverables: string[]; benefits: string[]; ctaText: string; ctaLink: string }> = {
+      'ai-recruitment': {
+        title: 'AI Recruitment & Talent Matching Platform',
+        tagline: 'Structured Candidate Matching, Screening & Skill Verification',
+        description: 'TalentXcel AI Recruitment connects employers with pre-screened technical and commercial talent using skill graph evaluation, structured workflows, and integrated screening.',
+        audience: 'Fast-growing startups, enterprise talent acquisition teams, and staffing firms building verified candidate pipelines.',
+        deliverables: ['Skill-to-job capability matching across roles', 'Technical competency screening and scorecards', 'Structured candidate shortlisting workflows', 'Integrated ATS interview scheduling and feedback'],
+        benefits: ['Focuses screening on verified skills over keyword padding', 'Connects active applicants and Skill Passport holders', 'Supports transparent milestone tracking for hiring teams'],
+        ctaText: 'Hire Talent with AI',
+        ctaLink: '/employers',
+      },
+      'staffing-recruitment': {
+        title: 'Corporate Staffing & Recruitment Solutions',
+        tagline: 'Full-Lifecycle Sourcing, Contract-to-Hire & Enterprise Recruiting',
+        description: 'Comprehensive staffing and specialized hiring solutions across engineering, analytics, operations, and corporate functions across India and global talent hubs.',
+        audience: 'Enterprises requiring scalable hiring across permanent, contract, and project-based roles.',
+        deliverables: ['Specialized domain sourcing across technical and business roles', 'Credential and background verification support', 'Permanent, contract-to-hire, and dedicated pod models', 'Structured SLA and hiring milestone reporting'],
+        benefits: ['Scales hiring capacity across Tier-1 and Tier-2 Indian cities', 'Standardizes candidate quality evaluation across locations', 'Supports transparent recruitment compliance workflows'],
+        ctaText: 'Explore Employer Solutions',
+        ctaLink: '/employers',
+      },
+      'rpo': {
+        title: 'Recruitment Process Outsourcing (RPO)',
+        tagline: 'End-to-End Hiring Operations & Embedded Recruiter Workflows',
+        description: 'Delegate partial or end-to-end recruitment workflows with dedicated TalentXcel sourcing operations covering job distribution, screening, interview coordination, and offer tracking.',
+        audience: 'Mid-market and enterprise teams scaling hiring velocity across engineering and commercial functions.',
+        deliverables: ['Dedicated talent acquisition workflows', 'ATS pipeline setup and candidate stage tracking', 'Employer brand and job distribution optimization', 'Structured pipeline velocity and hiring analytics'],
+        benefits: ['Extends internal HR capacity during high-growth phases', 'Improves candidate response time and interview scheduling', 'Aligns hiring execution with transparent role scorecards'],
+        ctaText: 'Explore RPO & Employer Tools',
+        ctaLink: '/employers',
+      },
+      'it-services': {
+        title: 'IT & Technology Systems Consulting',
+        tagline: 'Software Architecture, Cloud Modernization & Engineering Teams',
+        description: 'Technology advisory, cloud architecture modernization, and experienced software engineering capability for modern enterprise delivery teams.',
+        audience: 'Engineering leaders and technology organizations building reliable cloud and full-stack software systems.',
+        deliverables: ['Cloud modernization and microservices architecture', 'Full-stack engineering team capability', 'DevOps, CI/CD, and infrastructure automation workflows', 'Security review and technical architecture guidance'],
+        benefits: ['Bridges critical specialist skill gaps in cloud and AI engineering', 'Supports milestone-driven technical delivery', 'Aligns engineering staffing with verified technical competencies'],
+        ctaText: 'Browse Tech Talent & Jobs',
+        ctaLink: '/jobs',
+      },
+      'career-counseling': {
+        title: 'Executive Career Counseling & Pathway Advisory',
+        tagline: 'Career Milestones, Compensation Benchmarking & Transition Planning',
+        description: 'Structured career guidance combining role pathway maps, skill-gap diagnostics, and market compensation insights to plan career transitions cleanly.',
+        audience: 'Graduates and experienced professionals navigating tech transitions, promotions, or cross-domain career pivots.',
+        deliverables: ['Role readiness and skill-gap diagnostics', 'Structured progression and upskilling roadmap', 'ATS-compliant resume structure and positioning', 'Technical and behavioral interview preparation checklists'],
+        benefits: ['Clarity on required skills for target engineering and product roles', 'Grounded salary benchmarking and negotiation preparation', 'Direct alignment with active employer hiring criteria'],
+        ctaText: 'Explore Career Map',
+        ctaLink: '/career-map',
+      },
+      'resume-optimization': {
+        title: 'ATS Resume Optimization & Diagnostic Studio',
+        tagline: 'Automated Parser Scoring, Keyword Gap Detection & Format Checks',
+        description: 'Instant in-browser resume diagnostics evaluating formatting compliance, ATS parseability, quantified bullet structure, and role-specific keyword alignment on TalentXcel.',
+        audience: 'Job seekers applying to engineering, analytics, fresher, and enterprise roles requiring clean ATS compatibility.',
+        deliverables: ['4-factor ATS compatibility breakdown and readability audit', 'Missing skill and keyword detection aligned to target roles', 'Quantified bullet impact checklist and section feedback', 'Format guidance preventing table and column parse drops'],
+        benefits: ['Instant in-browser scan with no signup required', 'Identifies invisible parsing issues before recruiter submission', 'Connects seamlessly to active matching jobs on TalentXcel'],
+        ctaText: 'Scan Your Resume Free',
+        ctaLink: '/resume/ats-check',
+      },
+      'talent-management': {
+        title: 'Enterprise Talent Management & Skills Architecture',
+        tagline: 'Verified Credential Registers, Skill Mapping & Internal Mobility',
+        description: 'Build verifiable skill profiles across talent cohorts with TalentXcel Career Passports, structured competency assessments, and portable digital credentials.',
+        audience: 'Enterprises and academic institutions organizing verified skill directories and graduate readiness tracking.',
+        deliverables: ['Shareable Career Passport credential profiles', 'Role-aligned skill assessment and verification modules', 'Structured competency matrices across teams', 'Cohort readiness and skill-gap visibility'],
+        benefits: ['Pairs self-reported skills with verifiable project evidence', 'Supports transparent campus and internal mobility matching', 'Reduces duplicate screening overhead for evaluators'],
+        ctaText: 'Explore Career Passport',
+        ctaLink: '/passport',
+      },
+      'job-placement': {
+        title: 'Direct Job Placement & Candidate Sourcing',
+        tagline: 'Direct Connections to Verified Employers & Open Vacancies',
+        description: 'Connect verified candidates with active enterprise and PSU openings across India and remote roles with zero candidate application fees.',
+        audience: 'Graduates, job seekers, and experienced specialists targeting verified tech, analytics, banking, and engineering openings.',
+        deliverables: ['Direct application access across verified active openings', 'Role and city filters with transparent salary bands where disclosed', 'Resume readiness checks paired with open job requirements', 'Clear application tracking through TalentXcel'],
+        benefits: ['Zero candidate fees for browsing or applying to jobs', 'Direct routing to verified active job descriptions', 'Integrated ATS check before submitting applications'],
+        ctaText: 'Browse Verified Jobs',
+        ctaLink: '/jobs',
+      },
+    };
+    const svc = SERVICE_SSR_MAP[serviceSlug];
+    if (!svc) {
+      return null;
+    }
+    title = `${svc.title} | TalentXcel Services`;
+    description = svc.description.slice(0, 155);
+    canonical = `https://talentxcel.in/services/${serviceSlug}`;
+    h1 = svc.title;
+    robotsDirective = 'index, follow';
+    jsonLdSchema = {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": svc.title,
+      "description": svc.description,
+      "serviceType": svc.title,
+      "provider": { "@type": "Organization", "name": "TalentXcel", "url": "https://talentxcel.in" },
+      "url": canonical
+    };
+    bodyContent = `
+      <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold">TalentXcel Strategic Service &bull; ${escapeHtml(svc.tagline)}</span>
+        <h2 class="text-2xl font-bold text-white">${escapeHtml(svc.title)}</h2>
+        <p class="text-slate-300 text-sm leading-relaxed">${escapeHtml(svc.description)}</p>
+        <p class="text-slate-400 text-xs leading-relaxed">Designed for: ${escapeHtml(svc.audience)}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2">
+            <h3 class="text-sm font-bold text-white">Core Deliverables &amp; Capabilities</h3>
+            <ul class="space-y-1.5 text-xs text-slate-300 list-disc pl-4">
+              ${svc.deliverables.map((d) => `<li>${escapeHtml(d)}</li>`).join('')}
+            </ul>
+          </div>
+          <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2">
+            <h3 class="text-sm font-bold text-white">Key Outcomes &amp; Value</h3>
+            <ul class="space-y-1.5 text-xs text-slate-300 list-disc pl-4">
+              ${svc.benefits.map((b) => `<li>${escapeHtml(b)}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+        <div class="p-4 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2">
+          <h3 class="text-sm font-bold text-white">Verified Recruitment &amp; Talent Intelligence Architecture</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            TalentXcel combines structured skill taxonomies, employer role scorecards, and candidate diagnostic tools so both hiring teams and job applicants operate from verifiable signals rather than unverified keyword stuffing. Every workflow supports clean canonical navigation, transparent role requirements, and multi-city hiring visibility across Bengaluru, Hyderabad, Pune, Delhi NCR, Mumbai, Chennai, Kochi, and remote tracks.
+          </p>
+          <h3 class="text-sm font-bold text-white">How It Connects Across the TalentXcel Ecosystem</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every TalentXcel service workflow connects directly with verified live jobs, ATS diagnostics, and skill benchmarks across our platform. Job seekers preparing applications can run a free <a href="/resume/ats-check" class="text-blue-400 underline">ATS resume score check</a>, review <a href="/salary" class="text-blue-400 underline">role compensation benchmarks</a>, explore <a href="/career-map" class="text-blue-400 underline">structured career progression pathways</a>, and build a verified <a href="/passport" class="text-blue-400 underline">Career Passport</a> before applying directly to active <a href="/jobs" class="text-blue-400 underline">employer vacancies</a> across India and global technology hubs. Employers, staffing leaders, and institutional hiring partners can publish verified vacancies, organize hiring tracks by city and domain, and evaluate structured candidate readiness transparently without third-party agency clutter.
+          </p>
+          <div class="overflow-x-auto pt-2">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[11px]">
+                  <th class="py-2 px-3">Workflow Stage</th>
+                  <th class="py-2 px-3">Platform Tooling</th>
+                  <th class="py-2 px-3">Supported Roles &amp; Hubs</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-white">Discovery &amp; Matching</td>
+                  <td class="py-2 px-3">Skill graph alignment &amp; verified role taxonomies</td>
+                  <td class="py-2 px-3">Engineering, Data Science, Analytics, Banking, Product, Trainee roles</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-white">Verification &amp; Diagnostics</td>
+                  <td class="py-2 px-3">In-browser ATS parser, Career Passport credentials, competency rubrics</td>
+                  <td class="py-2 px-3">Bangalore, Hyderabad, Pune, Delhi NCR, Mumbai, Chennai, Tier-2 cities</td>
+                </tr>
+                <tr>
+                  <td class="py-2 px-3 font-semibold text-white">Direct Execution</td>
+                  <td class="py-2 px-3">Direct employer applications and structured hiring pipelines</td>
+                  <td class="py-2 px-3">India, UAE, Europe, North America, and remote engineering teams</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Frequently Asked Questions: Does TalentXcel charge candidates for job applications or in-browser ATS scans? No — browsing live jobs and running baseline ATS resume diagnostics are free for candidates. How are listings organized? Roles are categorized cleanly by title, city, and hiring company with canonical navigation across all TalentXcel hubs, and institutional employers can coordinate high-volume screening seamlessly from initial application through offer completion. How do employers integrate TalentXcel into existing recruiting pipelines? Recruiting and talent teams connect live requisitions, standardize competency scorecards, and review pre-screened applicants across engineering, analytics, product, banking, and early-career graduate tracks without duplicate manual triage. Can candidates pair their application with skill proof? Yes — candidates can verify skills via assessments and attach a portable Career Passport link directly to enterprise applications.
+          </p>
+        </div>
+        <div class="pt-2 flex flex-wrap gap-3">
+          <a href="${svc.ctaLink}" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">${escapeHtml(svc.ctaText)} &rarr;</a>
+          <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700">Free ATS Checker &rarr;</a>
+          <a href="/jobs" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl border border-slate-700">Browse Verified Jobs &rarr;</a>
+        </div>
+      </section>
+    `;
+  }
   // 12. Core Static Pages & Known Hubs
   else if (CORE_STATIC_ROUTES.has(cleanPath)) {
     if (cleanPath === 'ats-check' || cleanPath === 'resume/ats-check') {
@@ -5670,6 +6411,69 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
           </div>
         </section>
         ${generateCareerMapDataBlock()}
+      `;
+    } else if (cleanPath === 'career-insights') {
+      title = 'AI Career Insights, Salary Benchmarks & Skill Pathways | TalentXcel';
+      description = 'Explore data-backed career pathways, skill-gap diagnostics, salary curves, and active hiring demand across technology and business roles on TalentXcel.';
+      canonical = 'https://talentxcel.in/career-insights';
+      h1 = 'AI Career Insights & Market Intelligence';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "@id": "https://talentxcel.in/career-insights#webpage",
+        "name": "TalentXcel Career Insights",
+        "url": "https://talentxcel.in/career-insights",
+        "description": description
+      };
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-2xl font-bold text-white">Career Intelligence, Salary Benchmarks &amp; Role Pathways</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Explore market insights connecting in-demand programming skills, role progression ladders, compensation benchmarks, and verified job demand across India and global tech hubs.</p>
+          <p class="text-slate-300 text-xs leading-relaxed">Whether you are planning a transition into data science, cloud infrastructure, full-stack systems engineering, or product management, TalentXcel Career Insights helps you benchmark compensation expectations, check resume compatibility against real employer descriptions, and identify high-value technical competencies.</p>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="/career-map" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Explore Career Roadmaps &rarr;</a>
+            <a href="/salary" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Salary Benchmarks &rarr;</a>
+            <a href="/resume/ats-check" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Free ATS Scanner &rarr;</a>
+          </div>
+        </section>
+        ${generateCareerMapDataBlock()}
+      `;
+    } else if (cleanPath === 'hire' || cleanPath === 'recruitment' || cleanPath === 'staffing' || cleanPath === 'recruiters') {
+      title = cleanPath === 'hire'
+        ? 'Hire Verified Tech & Graduate Talent Faster | TalentXcel Employers'
+        : 'Enterprise Recruitment & Staffing Solutions | TalentXcel';
+      description = 'Connect with pre-screened engineers, analysts, and fresh graduates via TalentXcel skill matching, Career Passports, and RPO hiring solutions.';
+      canonical = `https://talentxcel.in/${cleanPath}`;
+      h1 = cleanPath === 'hire' ? 'Hire Verified Talent with TalentXcel' : 'Enterprise Recruitment & Staffing';
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": title,
+        "url": canonical,
+        "description": description
+      };
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-2xl font-bold text-white">${escapeHtml(h1)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Streamline enterprise hiring across India and global hubs with structured ATS screening, verified Career Passport credentials, and specialized sourcing workflows across AI recruitment, corporate staffing, and RPO engagements.</p>
+          <p class="text-slate-300 text-xs leading-relaxed">TalentXcel helps talent acquisition leaders, startup founders, and campus recruitment teams source pre-vetted engineers, data scientists, business analysts, and graduate trainees without manual resume screening overload. Candidates showcase verified skills and project portfolios through shareable Career Passports, improving signal quality across technical and operational roles.</p>
+          <p class="text-slate-300 text-xs leading-relaxed">Review <a href="/services/ai-recruitment" class="text-blue-400 underline">AI Recruitment</a>, <a href="/services/rpo" class="text-blue-400 underline">Recruitment Process Outsourcing (RPO)</a>, <a href="/services/talent-management" class="text-blue-400 underline">Talent Management</a>, and <a href="https://employers.talentxcel.in/" class="text-blue-400 underline">TalentXcel Employer Hub</a> to publish roles, benchmark market compensation bands, and evaluate qualified applicants quickly across Bangalore, Hyderabad, Delhi NCR, Mumbai, Pune, and remote corridors.</p>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="https://employers.talentxcel.in/" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Open Employer Portal &rarr;</a>
+            <a href="/services/staffing-recruitment" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs rounded-xl">Staffing Solutions &rarr;</a>
+          </div>
+        </section>
+      `;
+    } else if (cleanPath === 'services') {
+      title = 'Strategic Recruitment, Staffing & ATS Career Services | TalentXcel';
+      description = 'Explore TalentXcel services spanning AI recruitment, RPO, IT staffing, ATS resume optimization, executive career counseling, and direct job placement.';
+      canonical = 'https://talentxcel.in/services';
+      h1 = 'TalentXcel Recruitment & Career Services';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-2xl font-bold text-white">Enterprise Hiring &amp; Candidate Career Services</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse dedicated solutions across hiring and career growth: <a href="/services/ai-recruitment" class="text-blue-400 underline">AI Recruitment</a>, <a href="/services/staffing-recruitment" class="text-blue-400 underline">Staffing &amp; Recruitment</a>, <a href="/services/rpo" class="text-blue-400 underline">RPO</a>, <a href="/services/it-services" class="text-blue-400 underline">IT Consulting</a>, <a href="/services/resume-optimization" class="text-blue-400 underline">ATS Resume Optimization</a>, <a href="/services/career-counseling" class="text-blue-400 underline">Career Counseling</a>, <a href="/services/talent-management" class="text-blue-400 underline">Talent Management</a>, and <a href="/services/job-placement" class="text-blue-400 underline">Job Placement</a>.</p>
+        </section>
       `;
     } else if (cleanPath === 'privacy') {
       title = 'Privacy Policy | TalentXcel';
@@ -5977,15 +6781,29 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
 
   // Stage F Hardened Guard: Fail-closed thin page elimination
   // Any programmatic or dynamic page below 400 rendered words MUST output noindex, follow
-  // Active JobPosting schema entities and verified core static hubs have a 100 words threshold
+  // Active JobPosting schema entities and verified core static hubs have a 100 words threshold.
+  // Verified ProfilePage/Person and SocialMediaPosting entities are already evaluated by their
+  // dedicated entity quality gates (evaluateProfileIndexability / evaluatePostIndexability).
   const renderedContentWords = countRenderedWords(bodyContent);
   if (robotsDirective === 'index, follow' && cleanPath !== '') {
     const isJobPosting = jsonLdSchema && (
       jsonLdSchema['@type'] === 'JobPosting' ||
       (Array.isArray(jsonLdSchema) && jsonLdSchema.some((s: any) => s && s['@type'] === 'JobPosting'))
     );
+    const isProfileEntity = jsonLdSchema && (
+      jsonLdSchema['@type'] === 'Person' ||
+      jsonLdSchema['@type'] === 'ProfilePage' ||
+      (Array.isArray(jsonLdSchema?.['@graph']) && jsonLdSchema['@graph'].some((s: any) => s && (s['@type'] === 'ProfilePage' || s['@type'] === 'Person')))
+    );
+    const isPostEntity = jsonLdSchema && jsonLdSchema['@type'] === 'SocialMediaPosting';
     const isCoreStaticHub = CORE_STATIC_ROUTES.has(cleanPath);
-    const minWords = (isJobPosting || isCoreStaticHub) ? 100 : 400;
+    const minWords = isPostEntity
+      ? 12
+      : isProfileEntity
+        ? 40
+        : (isJobPosting || isCoreStaticHub)
+          ? 100
+          : 400;
     if (renderedContentWords < minWords) {
       robotsDirective = 'noindex, follow';
     }

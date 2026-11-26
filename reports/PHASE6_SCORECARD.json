@@ -1,0 +1,677 @@
+{
+  "generatedAt": "2026-11-25T10:04:42.915Z",
+  "durationMs": 6628,
+  "A_technicalRecovery": {
+    "p0Discovered": 3,
+    "p0LocalCodeResolved": 1,
+    "p0ProductionVerifiedAfterDeploy": 0,
+    "liveProbePart3Bot": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 404,
+      "location": null,
+      "title": "Page Not Found (404) | TalentXcel"
+    },
+    "liveProbePart3Std": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport"
+    },
+    "liveProbeCanonicalGolang": {
+      "url": "https://talentxcel.in/resume/interview-prep/golang-developer",
+      "status": 200,
+      "location": null,
+      "title": "Golang Developer Interview Questions &amp; Answers (2026 Technical Prep) | TalentXcel"
+    },
+    "note": "Local api/seo-render.ts already contains the 301 redirect to /resume/interview-prep/golang-developer (200 OK); awaiting approved production deploy to resolve live Googlebot 404."
+  },
+  "B_ctrRecovery": {
+    "candidatesEvaluated": 29,
+    "eligibleForBatch1": 13,
+    "excludedSubdomainOrRetired": 16,
+    "stagedForApproval": 13,
+    "executedInProd": 0,
+    "measurementStartDate": "2026-11-25",
+    "topBatch1Candidates": [
+      {
+        "recommendation_key": "ctr-84bc4cd8302f4d",
+        "page_url": "https://talentxcel.in/locations/varanasi",
+        "primary_query": "job in varanasi",
+        "query_evidence_json": "[{\"query\":\"job in varanasi\",\"impressions\":1042,\"clicks\":19,\"ctr\":0,\"position\":2.39},{\"query\":\"jobs in varanasi\",\"impressions\":758,\"clicks\":25,\"ctr\":0,\"position\":2.09},{\"query\":\"varanasi job vacancy\",\"impressions\":361,\"clicks\":26,\"ctr\":0,\"position\":2.25},{\"query\":\"varanasi job\",\"impressions\":261,\"clicks\":12,\"ctr\":0,\"position\":1.72},{\"query\":\"job varanasi\",\"impressions\":223,\"clicks\":3,\"ctr\":0,\"position\":3.46}]",
+        "page_intent": "job_search",
+        "avg_position": 2.44,
+        "impressions": 3671,
+        "clicks": 118,
+        "actual_ctr": 0.032144,
+        "cohort_expected_ctr": 0.12,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "Job In Varanasi | 68 Verified Openings | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Explore job in varanasi on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "rationale": "Observed CTR 3.21% across 3671 impressions at avg pos 2.4 trails POS_1_3 cohort expectation 12.00%.",
+        "risk_assessment": "MEDIUM",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-6619d212cf80e8",
+        "page_url": "https://salary.talentxcel.in/salary/data-scientist",
+        "primary_query": "salary for data scientist",
+        "query_evidence_json": "[{\"query\":\"salary for data scientist\",\"impressions\":1576,\"clicks\":0,\"ctr\":0,\"position\":6.69},{\"query\":\"bsc cs ai ds salary\",\"impressions\":17,\"clicks\":0,\"ctr\":0,\"position\":59.35},{\"query\":\"data scientist salary\",\"impressions\":15,\"clicks\":0,\"ctr\":0,\"position\":68.87},{\"query\":\"data scientist salary in india\",\"impressions\":9,\"clicks\":0,\"ctr\":0,\"position\":45.22},{\"query\":\"data scientist salary india fresher 2026\",\"impressions\":9,\"clicks\":0,\"ctr\":0,\"position\":66.89}]",
+        "page_intent": "salary_benchmark",
+        "avg_position": 10.02,
+        "impressions": 1685,
+        "clicks": 0,
+        "actual_ctr": 0,
+        "cohort_expected_ctr": 0.019474,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "Salary For Data Scientist (2026 Payscale & Ranges) | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Check verified salary for data scientist compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "rationale": "Observed CTR 0.00% across 1685 impressions at avg pos 10.0 trails POS_7_10 cohort expectation 1.95%.",
+        "risk_assessment": "LOW",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-93d84a252eb47d",
+        "page_url": "https://salary.talentxcel.in/salary/ui-ux-designer",
+        "primary_query": "salary for ux designer",
+        "query_evidence_json": "[{\"query\":\"salary for ux designer\",\"impressions\":1480,\"clicks\":0,\"ctr\":0,\"position\":6.2},{\"query\":\"ux designer salary\",\"impressions\":4,\"clicks\":0,\"ctr\":0,\"position\":5.5},{\"query\":\"ui ux developer salary\",\"impressions\":3,\"clicks\":0,\"ctr\":0,\"position\":66.67},{\"query\":\"salary of ui ux designer in india\",\"impressions\":2,\"clicks\":0,\"ctr\":0,\"position\":5.5},{\"query\":\"ui designer salary\",\"impressions\":2,\"clicks\":0,\"ctr\":0,\"position\":9.5}]",
+        "page_intent": "salary_benchmark",
+        "avg_position": 6.58,
+        "impressions": 1509,
+        "clicks": 0,
+        "actual_ctr": 0,
+        "cohort_expected_ctr": 0.019474,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "Salary For Ux Designer (2026 Payscale & Ranges) | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Check verified salary for ux designer compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "rationale": "Observed CTR 0.00% across 1509 impressions at avg pos 6.6 trails POS_7_10 cohort expectation 1.95%.",
+        "risk_assessment": "LOW",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-8c0e3efdd998ee",
+        "page_url": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad",
+        "primary_query": "salary for data scientist",
+        "query_evidence_json": "[{\"query\":\"salary for data scientist\",\"impressions\":708,\"clicks\":0,\"ctr\":0,\"position\":5.12},{\"query\":\"data scientist salary\",\"impressions\":26,\"clicks\":0,\"ctr\":0,\"position\":34.15},{\"query\":\"data scientist salary in hyderabad\",\"impressions\":4,\"clicks\":0,\"ctr\":0,\"position\":10.75},{\"query\":\"data science jobs salary\",\"impressions\":3,\"clicks\":0,\"ctr\":0,\"position\":52},{\"query\":\"data scientist base salary\",\"impressions\":3,\"clicks\":0,\"ctr\":0,\"position\":86}]",
+        "page_intent": "salary_benchmark",
+        "avg_position": 7.61,
+        "impressions": 765,
+        "clicks": 0,
+        "actual_ctr": 0,
+        "cohort_expected_ctr": 0.019474,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "Salary For Data Scientist (2026 Payscale & Ranges) | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Check verified salary for data scientist compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "rationale": "Observed CTR 0.00% across 765 impressions at avg pos 7.6 trails POS_7_10 cohort expectation 1.95%.",
+        "risk_assessment": "LOW",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-97678a59167c68",
+        "page_url": "https://talentxcel.in/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+        "primary_query": "salary for data scientist",
+        "query_evidence_json": "[{\"query\":\"salary for data scientist\",\"impressions\":372,\"clicks\":0,\"ctr\":0,\"position\":7.17},{\"query\":\"data scientist salary\",\"impressions\":3,\"clicks\":0,\"ctr\":0,\"position\":27.67},{\"query\":\"senior data scientist salary\",\"impressions\":2,\"clicks\":0,\"ctr\":0,\"position\":11},{\"query\":\"senior data scientist pay\",\"impressions\":1,\"clicks\":0,\"ctr\":0,\"position\":7}]",
+        "page_intent": "salary_benchmark",
+        "avg_position": 7.35,
+        "impressions": 378,
+        "clicks": 0,
+        "actual_ctr": 0,
+        "cohort_expected_ctr": 0.019474,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "Salary For Data Scientist (2026 Payscale & Ranges) | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Check verified salary for data scientist compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "rationale": "Observed CTR 0.00% across 378 impressions at avg pos 7.4 trails POS_7_10 cohort expectation 1.95%.",
+        "risk_assessment": "LOW",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-35fb08408ac06b",
+        "page_url": "https://talentxcel.in/jobs/digital-marketing-performance-specialist-south-indian-bank-hq-thrissur-kerala-india",
+        "primary_query": "south indian bank careers",
+        "query_evidence_json": "[{\"query\":\"south indian bank careers\",\"impressions\":181,\"clicks\":0,\"ctr\":0,\"position\":3.62},{\"query\":\"south indian bank careers for freshers\",\"impressions\":7,\"clicks\":0,\"ctr\":0,\"position\":3.57},{\"query\":\"south indian bank job vacancy\",\"impressions\":7,\"clicks\":0,\"ctr\":0,\"position\":3.57},{\"query\":\"south indian bank career portal\",\"impressions\":4,\"clicks\":0,\"ctr\":0,\"position\":4},{\"query\":\"south indian bank careers apply online\",\"impressions\":4,\"clicks\":0,\"ctr\":0,\"position\":4}]",
+        "page_intent": "job_search",
+        "avg_position": 3.75,
+        "impressions": 237,
+        "clicks": 0,
+        "actual_ctr": 0,
+        "cohort_expected_ctr": 0.045,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "South Indian Bank Careers | 1 Verified Openings | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Explore south indian bank careers on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "rationale": "Observed CTR 0.00% across 237 impressions at avg pos 3.7 trails POS_4_6 cohort expectation 4.50%.",
+        "risk_assessment": "LOW",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-e3ae513db6a530",
+        "page_url": "https://talentxcel.in/jobs/devops-cloud-infrastructure-engineer-south-indian-bank-hq-thrissur-kerala-india",
+        "primary_query": "south indian bank careers",
+        "query_evidence_json": "[{\"query\":\"south indian bank careers\",\"impressions\":125,\"clicks\":0,\"ctr\":0,\"position\":3.81},{\"query\":\"south indian bank careers for freshers\",\"impressions\":7,\"clicks\":0,\"ctr\":0,\"position\":3.86},{\"query\":\"south indian bank job vacancy\",\"impressions\":6,\"clicks\":0,\"ctr\":0,\"position\":3},{\"query\":\"indian bank job vacancy\",\"impressions\":4,\"clicks\":0,\"ctr\":0,\"position\":2.75},{\"query\":\"sib career\",\"impressions\":4,\"clicks\":1,\"ctr\":0.25,\"position\":5.25}]",
+        "page_intent": "job_search",
+        "avg_position": 3.88,
+        "impressions": 180,
+        "clicks": 1,
+        "actual_ctr": 0.005556,
+        "cohort_expected_ctr": 0.045,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "South Indian Bank Careers | 1 Verified Openings | TalentXcel",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Explore south indian bank careers on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "rationale": "Observed CTR 0.56% across 180 impressions at avg pos 3.9 trails POS_4_6 cohort expectation 4.50%.",
+        "risk_assessment": "LOW",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "ctr-4fe04ecd78bf7c",
+        "page_url": "https://talentxcel.in/hire",
+        "primary_query": "talentxcel",
+        "query_evidence_json": "[{\"query\":\"talentxcel\",\"impressions\":200,\"clicks\":9,\"ctr\":0.045,\"position\":1.03},{\"query\":\"talent operating system\",\"impressions\":2,\"clicks\":0,\"ctr\":0,\"position\":89.5}]",
+        "page_intent": "job_search",
+        "avg_position": 1.03,
+        "impressions": 200,
+        "clicks": 9,
+        "actual_ctr": 0.045,
+        "cohort_expected_ctr": 0.18,
+        "existing_title": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "suggested_title": "TalentXcel — Verified Jobs, ATS Resume Check, TalentScore & Caree...",
+        "existing_description": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "suggested_description": "Official TalentXcel platform: explore active verified jobs, test your resume ATS match score, earn TalentScore, and build your Career Passport.",
+        "rationale": "Observed CTR 4.50% across 200 impressions at avg pos 1.0 trails POS_1_3 cohort expectation 18.00%.",
+        "risk_assessment": "LOW",
+        "priority_score": 98.49,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      }
+    ]
+  },
+  "C_rankingRecovery": {
+    "pos4To20Total": 146,
+    "eligibleTargets": 27,
+    "topStrikeZoneTargets": [
+      {
+        "attack_key": "atk-553c2b81720438",
+        "page_url": "https://salary.talentxcel.in/salary/data-scientist",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"salary for data scientist\",\"impressions\":1576,\"clicks\":0,\"position\":6.69},{\"query\":\"bsc cs ai ds salary\",\"impressions\":17,\"clicks\":0,\"position\":59.35},{\"query\":\"data scientist salary\",\"impressions\":15,\"clicks\":0,\"position\":68.87},{\"query\":\"data scientist salary in india\",\"impressions\":9,\"clicks\":0,\"position\":45.22},{\"query\":\"data scientist salary india fresher 2026\",\"impressions\":9,\"clicks\":0,\"position\":66.89},{\"query\":\"data science jobs salary\",\"impressions\":6,\"clicks\":0,\"position\":75.5}]",
+        "primary_query": "salary for data scientist",
+        "clicks": 0,
+        "impressions": 1685,
+        "ctr": 0,
+        "avg_position": 10.02,
+        "relevant_inventory": 8,
+        "content_gap": "Expand FAQ & entity coverage for salary for data scientist, bsc cs ai ds salary, data scientist salary",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[\"mail.google.com: Gmail\"]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-2f6f8c40cd281c",
+        "page_url": "https://salary.talentxcel.in/salary/ui-ux-designer",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"salary for ux designer\",\"impressions\":1480,\"clicks\":0,\"position\":6.2},{\"query\":\"ux designer salary\",\"impressions\":4,\"clicks\":0,\"position\":5.5},{\"query\":\"ui ux developer salary\",\"impressions\":3,\"clicks\":0,\"position\":66.67},{\"query\":\"salary of ui ux designer in india\",\"impressions\":2,\"clicks\":0,\"position\":5.5},{\"query\":\"ui designer salary\",\"impressions\":2,\"clicks\":0,\"position\":9.5},{\"query\":\"ui ux design salary\",\"impressions\":2,\"clicks\":0,\"position\":4.5}]",
+        "primary_query": "salary for ux designer",
+        "clicks": 0,
+        "impressions": 1509,
+        "ctr": 0,
+        "avg_position": 6.58,
+        "relevant_inventory": 175,
+        "content_gap": "Expand FAQ & entity coverage for salary for ux designer, ux designer salary, ui ux developer salary",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-6b3d7f8aa844db",
+        "page_url": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"salary for data scientist\",\"impressions\":708,\"clicks\":0,\"position\":5.12},{\"query\":\"data scientist salary\",\"impressions\":26,\"clicks\":0,\"position\":34.15},{\"query\":\"data scientist salary in hyderabad\",\"impressions\":4,\"clicks\":0,\"position\":10.75},{\"query\":\"data science jobs salary\",\"impressions\":3,\"clicks\":0,\"position\":52},{\"query\":\"data scientist base salary\",\"impressions\":3,\"clicks\":0,\"position\":86},{\"query\":\"ai data scientist salary\",\"impressions\":2,\"clicks\":0,\"position\":35.5}]",
+        "primary_query": "salary for data scientist",
+        "clicks": 0,
+        "impressions": 765,
+        "ctr": 0,
+        "avg_position": 7.61,
+        "relevant_inventory": 8,
+        "content_gap": "Expand FAQ & entity coverage for salary for data scientist, data scientist salary, data scientist salary in hyderabad",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[\"bbs.pku.edu.cn: 关于未名BBS暂停服务的通知\"]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-ea297a16f13157",
+        "page_url": "https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"freshers jobs in bangalore\",\"impressions\":66,\"clicks\":3,\"position\":3.92},{\"query\":\"entry level software jobs in bangalore for freshers\",\"impressions\":40,\"clicks\":3,\"position\":3.13},{\"query\":\"sde or sdet or \\\"software engineer\\\" or \\\"test automation engineer\\\" entry level\",\"impressions\":29,\"clicks\":0,\"position\":2.93},{\"query\":\"freshers jobs\",\"impressions\":18,\"clicks\":1,\"position\":6.06},{\"query\":\"jobs for freshers in bangalore\",\"impressions\":17,\"clicks\":0,\"position\":10.29},{\"query\":\"fresher software engineer jobs in bangalore\",\"impressions\":15,\"clicks\":4,\"position\":3.53}]",
+        "primary_query": "freshers jobs in bangalore",
+        "clicks": 27,
+        "impressions": 611,
+        "ctr": 0.04419,
+        "avg_position": 5.91,
+        "relevant_inventory": 2984,
+        "content_gap": "Expand FAQ & entity coverage for freshers jobs in bangalore, entry level software jobs in bangalore for freshers, sde or sdet or \"software engineer\" or \"test automation engineer\" entry level",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[\"freshersworld.com: Freshers Site\",\"naukri.com: Freshers Jobs - 56448 Freshers Job Vacancies In November 2026\",\"in.indeed.com: fresher jobs in Indapur, Maharashtra\"]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-8436eb5224a1e9",
+        "page_url": "https://talentxcel.in/",
+        "position_band": "POS_11_20",
+        "query_cluster_json": "[{\"query\":\"talentxcel\",\"impressions\":402,\"clicks\":85,\"position\":1},{\"query\":\"hirenexa\",\"impressions\":18,\"clicks\":0,\"position\":43.72},{\"query\":\"talentx\",\"impressions\":15,\"clicks\":0,\"position\":6.47},{\"query\":\"ampexcel technologies\",\"impressions\":6,\"clicks\":0,\"position\":41},{\"query\":\"bytexl careers\",\"impressions\":6,\"clicks\":0,\"position\":59.17},{\"query\":\"openxcell mumbai\",\"impressions\":6,\"clicks\":0,\"position\":74.67}]",
+        "primary_query": "talentxcel",
+        "clicks": 85,
+        "impressions": 509,
+        "ctr": 0.166994,
+        "avg_position": 10.94,
+        "relevant_inventory": 4470,
+        "content_gap": "Expand FAQ & entity coverage for talentxcel, hirenexa, talentx",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Deepen on-page query coverage, reinforce internal hub links (+3), and verify schema completeness",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-3a0b032e3189eb",
+        "page_url": "https://talentxcel.in/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"salary for data scientist\",\"impressions\":372,\"clicks\":0,\"position\":7.17},{\"query\":\"data scientist salary\",\"impressions\":3,\"clicks\":0,\"position\":27.67},{\"query\":\"senior data scientist salary\",\"impressions\":2,\"clicks\":0,\"position\":11},{\"query\":\"senior data scientist pay\",\"impressions\":1,\"clicks\":0,\"position\":7}]",
+        "primary_query": "salary for data scientist",
+        "clicks": 0,
+        "impressions": 378,
+        "ctr": 0,
+        "avg_position": 7.35,
+        "relevant_inventory": 8,
+        "content_gap": "Expand FAQ & entity coverage for salary for data scientist, data scientist salary, senior data scientist salary",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-1db2b6b2da7d06",
+        "page_url": "https://employers.talentxcel.in/company/zomato/jobs/ios-developer",
+        "position_band": "POS_11_20",
+        "query_cluster_json": "[{\"query\":\"zomato careers\",\"impressions\":232,\"clicks\":0,\"position\":11.73},{\"query\":\"careers at zomato\",\"impressions\":2,\"clicks\":0,\"position\":27.5},{\"query\":\"zomato caree\",\"impressions\":2,\"clicks\":0,\"position\":9.5},{\"query\":\"zomato careers india\",\"impressions\":2,\"clicks\":0,\"position\":25},{\"query\":\"zomato careers jobs\",\"impressions\":2,\"clicks\":0,\"position\":43},{\"query\":\"zomato careers mumbai\",\"impressions\":2,\"clicks\":0,\"position\":30}]",
+        "primary_query": "zomato careers",
+        "clicks": 0,
+        "impressions": 254,
+        "ctr": 0,
+        "avg_position": 13.57,
+        "relevant_inventory": 175,
+        "content_gap": "Expand FAQ & entity coverage for zomato careers, careers at zomato, zomato caree",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Deepen on-page query coverage, reinforce internal hub links (+3), and verify schema completeness",
+        "priority_score": 95.76,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-f41f37e3fda335",
+        "page_url": "https://talentxcel.in/jobs/digital-marketing-performance-specialist-south-indian-bank-hq-thrissur-kerala-india",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"south indian bank careers\",\"impressions\":181,\"clicks\":0,\"position\":3.62},{\"query\":\"south indian bank careers for freshers\",\"impressions\":7,\"clicks\":0,\"position\":3.57},{\"query\":\"south indian bank job vacancy\",\"impressions\":7,\"clicks\":0,\"position\":3.57},{\"query\":\"south indian bank career portal\",\"impressions\":4,\"clicks\":0,\"position\":4},{\"query\":\"south indian bank careers apply online\",\"impressions\":4,\"clicks\":0,\"position\":4},{\"query\":\"indian bank job vacancy\",\"impressions\":3,\"clicks\":0,\"position\":2.33}]",
+        "primary_query": "south indian bank careers",
+        "clicks": 0,
+        "impressions": 237,
+        "ctr": 0,
+        "avg_position": 3.75,
+        "relevant_inventory": 1,
+        "content_gap": "Expand FAQ & entity coverage for south indian bank careers, south indian bank careers for freshers, south indian bank job vacancy",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 88.04,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-17da33a1ffb536",
+        "page_url": "https://jobs.talentxcel.in/",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"talentxcel\",\"impressions\":179,\"clicks\":13,\"position\":1.01},{\"query\":\"openxcell career\",\"impressions\":4,\"clicks\":0,\"position\":73.25},{\"query\":\"openxcell careers\",\"impressions\":2,\"clicks\":0,\"position\":73},{\"query\":\"alcatel lucent careers\",\"impressions\":1,\"clicks\":0,\"position\":46},{\"query\":\"alcatel lucent jobs\",\"impressions\":1,\"clicks\":0,\"position\":41},{\"query\":\"b.sc computer science\",\"impressions\":1,\"clicks\":0,\"position\":4}]",
+        "primary_query": "talentxcel",
+        "clicks": 13,
+        "impressions": 198,
+        "ctr": 0.065657,
+        "avg_position": 5.35,
+        "relevant_inventory": 4470,
+        "content_gap": "Expand FAQ & entity coverage for talentxcel, openxcell career, openxcell careers",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 99,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "attack_key": "atk-ea501536616ca2",
+        "page_url": "https://talentxcel.in/jobs/devops-cloud-infrastructure-engineer-south-indian-bank-hq-thrissur-kerala-india",
+        "position_band": "POS_4_10",
+        "query_cluster_json": "[{\"query\":\"south indian bank careers\",\"impressions\":125,\"clicks\":0,\"position\":3.81},{\"query\":\"south indian bank careers for freshers\",\"impressions\":7,\"clicks\":0,\"position\":3.86},{\"query\":\"south indian bank job vacancy\",\"impressions\":6,\"clicks\":0,\"position\":3},{\"query\":\"indian bank job vacancy\",\"impressions\":4,\"clicks\":0,\"position\":2.75},{\"query\":\"sib career\",\"impressions\":4,\"clicks\":1,\"position\":5.25},{\"query\":\"south indian bank career portal\",\"impressions\":4,\"clicks\":0,\"position\":4}]",
+        "primary_query": "south indian bank careers",
+        "clicks": 1,
+        "impressions": 180,
+        "ctr": 0.005556,
+        "avg_position": 3.88,
+        "relevant_inventory": 1,
+        "content_gap": "Expand FAQ & entity coverage for south indian bank careers, south indian bank careers for freshers, south indian bank job vacancy",
+        "internal_linking_gap": 3,
+        "competitor_evidence_json": "[]",
+        "suggested_action": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "priority_score": 85.18,
+        "governance_state": "RECOMMENDATION",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      }
+    ]
+  },
+  "D_conversionTelemetry": {
+    "validatedOrganicEvents": {
+      "session_start": 1121,
+      "job_view": 1395,
+      "guest_apply_opened": 513,
+      "ats_score_generated": 431,
+      "apply_cta_clicked": 360,
+      "resume_uploaded": 203,
+      "auth_completed": 175,
+      "application_submitted": 170,
+      "sign_up": 78,
+      "seo_landing_view": 26965
+    },
+    "repairedInCode": [
+      "career_passport_created -> window.gtag",
+      "career_passport_completed -> window.gtag"
+    ],
+    "allChannelTalentScoreEvents": 7,
+    "duplicateRiskFlagged": "seo_landing_view (~24x per organic session)"
+  },
+  "E_internalLinking": {
+    "totalRecommendations": 77,
+    "validatedCleanLinks": 55,
+    "topValidatedLinks": [
+      {
+        "recommendation_key": "lnk-8690647a117738",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/industry/government-public-sector",
+        "anchor_text": "government jobs india",
+        "link_type": "ORPHAN_RESCUE",
+        "priority_score": 99,
+        "reason": "Target page has low inbound links (1 < 3); connect from parent hub /jobs.",
+        "updated_at": "2026-11-25T07:17:48.540Z"
+      },
+      {
+        "recommendation_key": "lnk-b241dd21eaf586",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+        "anchor_text": "Explore ntpc careers",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 4.77, 1576 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-86b0ba8fb7adf1",
+        "source_page_url": "/salary",
+        "target_page_url": "/salary/data-scientist",
+        "anchor_text": "Explore salary for data scientist",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 10.02, 1685 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-dcaa8c3cd44c38",
+        "source_page_url": "/jobs",
+        "target_page_url": "/career-insights/salary/data-scientist-salary-in-hyderabad",
+        "anchor_text": "salary for data scientist guide & openings",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 7.61, 765 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-c030a85ba13bd9",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/assistant-branch-manager-retail-banking-midc-amravati-amravati-maharashtra-india",
+        "anchor_text": "View jobs in amravati details",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 9.88, 129 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-3200e2cc4cc630",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/software-engineer/freshers/bangalore/nagpur",
+        "anchor_text": "Explore freshers jobs in bangalore",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 5.91, 611 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-dabdacc8ac1dad",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/devops-cloud-infrastructure-engineer-bhel-trichy-tiruchirappalli-tamil-nadu-india",
+        "anchor_text": "bhel careers trichy guide & openings",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 4.95, 129 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-5bb2475f60353d",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/associate-data-analyst-bhel-trichy-tiruchirappalli-tamil-nadu-india",
+        "anchor_text": "View data analyst jobs trichy details",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 3.58, 277 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-7360cfb0b38122",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/associate-data-analyst-tata-steel-coal-division-dhanbad-jharkhand-india",
+        "anchor_text": "Explore tata steel career",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 4.85, 159 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      },
+      {
+        "recommendation_key": "lnk-108d9e762fcd23",
+        "source_page_url": "/jobs",
+        "target_page_url": "/jobs/associate-data-analyst-shree-cement-raipur-chhattisgarh-india",
+        "anchor_text": "shree cement career guide & openings",
+        "link_type": "STRIKE_ZONE_SUPPORT",
+        "priority_score": 99,
+        "reason": "Boost POS_4_10 target (pos 5.2, 139 imp) with contextual hub equity.",
+        "updated_at": "2026-11-25T08:48:57.157Z"
+      }
+    ]
+  },
+  "F_jobInventory": {
+    "totalJobsCount": 4470,
+    "activeJobsCount": 4470,
+    "newestJobAt": "2026-11-25T07:21:07.709172+00:00",
+    "distinctEmployers": 417,
+    "missingSalaryCount": 1,
+    "missingLocationCount": 1
+  },
+  "G_cannibalization": {
+    "classificationSummary": [
+      {
+        "classification": "CONSOLIDATION_CANDIDATE",
+        "c": 1
+      },
+      {
+        "classification": "INTENT_OVERLAP",
+        "c": 37
+      },
+      {
+        "classification": "LEGITIMATE_MULTIPLE_RANKING",
+        "c": 73
+      },
+      {
+        "classification": "NEEDS_REVIEW",
+        "c": 63
+      },
+      {
+        "classification": "NO_ACTION",
+        "c": 268
+      },
+      {
+        "classification": "PAGE_DIFFERENTIATION_REQUIRED",
+        "c": 8
+      },
+      {
+        "classification": "TRUE_CANNIBALIZATION",
+        "c": 350
+      }
+    ],
+    "reviewedTopSampleCount": 25,
+    "topTrueSampleQueries": [
+      {
+        "query": "gin interview questions",
+        "dominantUrl": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+        "impressions": 931,
+        "clicks": 0
+      },
+      {
+        "query": "seo jobs in nagpur it software",
+        "dominantUrl": "https://talentxcel.in/jobs/staff-seo-specialist-in-nagpur",
+        "impressions": 392,
+        "clicks": 0
+      },
+      {
+        "query": "graduate engineer trainee",
+        "dominantUrl": "https://jobs.talentxcel.in/jobs/graduate-engineer-trainee-get-kollam-technopark-kundara-kollam-kerala-india",
+        "impressions": 363,
+        "clicks": 30
+      },
+      {
+        "query": "ios app development bareilly",
+        "dominantUrl": "https://talentxcel.in/jobs/ios-developer-in-bareilly",
+        "impressions": 345,
+        "clicks": 0
+      },
+      {
+        "query": "front-end developer jobs in bareilly",
+        "dominantUrl": "https://talentxcel.in/jobs/lead-lead-frontend-developer-in-bareilly",
+        "impressions": 325,
+        "clicks": 0
+      },
+      {
+        "query": "full stack developer jobs in bareilly",
+        "dominantUrl": "https://talentxcel.in/jobs/full-stack-developer-in-bareilly-metro-2",
+        "impressions": 321,
+        "clicks": 0
+      },
+      {
+        "query": "mobile app developer jobs in bareilly",
+        "dominantUrl": "https://talentxcel.in/jobs/staff-android-developer-in-bareilly",
+        "impressions": 296,
+        "clicks": 0
+      },
+      {
+        "query": "data analyst jobs",
+        "dominantUrl": "https://jobs.talentxcel.in/jobs/associate-data-analyst-export-footwear-houses-agra-uttar-pradesh-india",
+        "impressions": 291,
+        "clicks": 28
+      }
+    ]
+  },
+  "H_infrastructure": {
+    "supabaseDbSizeMb": 459,
+    "supabaseQuotaMb": 500,
+    "headroomMb": 41,
+    "largestTables": [
+      {
+        "table": "job_ingestion_queue",
+        "size": "146 MB",
+        "liveTuples": 27925
+      },
+      {
+        "table": "notifications",
+        "size": "59 MB",
+        "liveTuples": 106494
+      },
+      {
+        "table": "jobs",
+        "size": "54 MB",
+        "liveTuples": 4470
+      },
+      {
+        "table": "seo_generated_content",
+        "size": "45 MB",
+        "liveTuples": 0,
+        "note": "Dead-tuple bloat awaiting VACUUM"
+      },
+      {
+        "table": "seo_job_pages",
+        "size": "20 MB",
+        "liveTuples": 17889
+      }
+    ]
+  },
+  "I_growthMeasurement": {
+    "gscWindows": [
+      {
+        "windowDays": 7,
+        "impressions": 20880,
+        "clicks": 460,
+        "ctr": 0.022031,
+        "avgPosition": 16.81
+      },
+      {
+        "windowDays": 28,
+        "impressions": 61328,
+        "clicks": 1272,
+        "ctr": 0.020741,
+        "avgPosition": 25.23
+      },
+      {
+        "windowDays": 90,
+        "impressions": 80949,
+        "clicks": 1513,
+        "ctr": 0.018691,
+        "avgPosition": 28.55
+      }
+    ]
+  }
+}

@@ -1,0 +1,802 @@
+{
+  "generatedAt": "2026-11-25T10:27:40.548Z",
+  "p0ReleaseReadiness": {
+    "localRedirectRulePresent": true,
+    "noRedirectLoop": true,
+    "legacyInSitemaps": false,
+    "canonicalInSitemaps": false,
+    "liveDestGooglebot": {
+      "url": "https://talentxcel.in/resume/interview-prep/golang-developer",
+      "status": 200,
+      "location": null,
+      "canonical": "https://talentxcel.in/resume/interview-prep/golang-developer",
+      "title": "Golang Developer Interview Questions &amp; Answers (2026 Technical Prep) | TalentXcel"
+    },
+    "liveLegacyGooglebot": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 404,
+      "location": null,
+      "canonical": null,
+      "title": "Page Not Found (404) | TalentXcel"
+    },
+    "liveLegacyBingbot": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 404,
+      "location": null,
+      "canonical": null,
+      "title": "Page Not Found (404) | TalentXcel"
+    },
+    "liveLegacyStd": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 200,
+      "location": null,
+      "canonical": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport"
+    },
+    "productionStatus": "AWAITING_AUTHORIZED_DEPLOY"
+  },
+  "phase7B_ctrWavePlan": {
+    "totalEligible": 13,
+    "wave1Count": 5,
+    "wave2Count": 8,
+    "items": [
+      {
+        "wave": "WAVE_1_TOP5",
+        "recommendationKey": "ctr-84bc4cd8302f4d",
+        "url": "https://talentxcel.in/locations/varanasi",
+        "primaryQuery": "job in varanasi",
+        "impressions": 3671,
+        "clicks": 118,
+        "ctr": 0.032144,
+        "position": 2.44,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Job In Varanasi | 68 Verified Openings | TalentXcel",
+        "proposedDescription": "Explore job in varanasi on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_1_TOP5",
+        "recommendationKey": "ctr-6619d212cf80e8",
+        "url": "https://salary.talentxcel.in/salary/data-scientist",
+        "primaryQuery": "salary for data scientist",
+        "impressions": 1685,
+        "clicks": 0,
+        "ctr": 0,
+        "position": 10.02,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Salary For Data Scientist (2026 Payscale & Ranges) | TalentXcel",
+        "proposedDescription": "Check verified salary for data scientist compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_1_TOP5",
+        "recommendationKey": "ctr-93d84a252eb47d",
+        "url": "https://salary.talentxcel.in/salary/ui-ux-designer",
+        "primaryQuery": "salary for ux designer",
+        "impressions": 1509,
+        "clicks": 0,
+        "ctr": 0,
+        "position": 6.58,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Salary For Ux Designer (2026 Payscale & Ranges) | TalentXcel",
+        "proposedDescription": "Check verified salary for ux designer compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_1_TOP5",
+        "recommendationKey": "ctr-8c0e3efdd998ee",
+        "url": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad",
+        "primaryQuery": "salary for data scientist",
+        "impressions": 765,
+        "clicks": 0,
+        "ctr": 0,
+        "position": 7.61,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Salary For Data Scientist (2026 Payscale & Ranges) | TalentXcel",
+        "proposedDescription": "Check verified salary for data scientist compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_1_TOP5",
+        "recommendationKey": "ctr-97678a59167c68",
+        "url": "https://talentxcel.in/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+        "primaryQuery": "salary for data scientist",
+        "impressions": 378,
+        "clicks": 0,
+        "ctr": 0,
+        "position": 7.35,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Salary For Data Scientist (2026 Payscale & Ranges) | TalentXcel",
+        "proposedDescription": "Check verified salary for data scientist compensation ranges, entry-level to senior pay bands, top skills impacting salary, and live job openings on TalentXcel.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-35fb08408ac06b",
+        "url": "https://talentxcel.in/jobs/digital-marketing-performance-specialist-south-indian-bank-hq-thrissur-kerala-india",
+        "primaryQuery": "south indian bank careers",
+        "impressions": 237,
+        "clicks": 0,
+        "ctr": 0,
+        "position": 3.75,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "South Indian Bank Careers | 1 Verified Openings | TalentXcel",
+        "proposedDescription": "Explore south indian bank careers on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-e3ae513db6a530",
+        "url": "https://talentxcel.in/jobs/devops-cloud-infrastructure-engineer-south-indian-bank-hq-thrissur-kerala-india",
+        "primaryQuery": "south indian bank careers",
+        "impressions": 180,
+        "clicks": 1,
+        "ctr": 0.005556,
+        "position": 3.88,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "South Indian Bank Careers | 1 Verified Openings | TalentXcel",
+        "proposedDescription": "Explore south indian bank careers on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-4fe04ecd78bf7c",
+        "url": "https://talentxcel.in/hire",
+        "primaryQuery": "talentxcel",
+        "impressions": 200,
+        "clicks": 9,
+        "ctr": 0.045,
+        "position": 1.03,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "TalentXcel — Verified Jobs, ATS Resume Check, TalentScore & Caree...",
+        "proposedDescription": "Official TalentXcel platform: explore active verified jobs, test your resume ATS match score, earn TalentScore, and build your Career Passport.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-73cb8048813f6b",
+        "url": "https://employers.talentxcel.in/company/zomato/jobs/ios-developer",
+        "primaryQuery": "zomato careers",
+        "impressions": 254,
+        "clicks": 0,
+        "ctr": 0,
+        "position": 13.57,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Zomato Careers | 175 Verified Openings | TalentXcel",
+        "proposedDescription": "Explore zomato careers on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-44444e37f3924b",
+        "url": "https://talentxcel.in/services/resume-optimization",
+        "primaryQuery": "talentxcel",
+        "impressions": 237,
+        "clicks": 13,
+        "ctr": 0.054852,
+        "position": 1.65,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "TalentXcel — Verified Jobs, ATS Resume Check, TalentScore & Caree...",
+        "proposedDescription": "Official TalentXcel platform: explore active verified jobs, test your resume ATS match score, earn TalentScore, and build your Career Passport.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-8aafb955d1fa22",
+        "url": "https://talentxcel.in/skills/c-plus-plus",
+        "primaryQuery": "talentxcel",
+        "impressions": 271,
+        "clicks": 19,
+        "ctr": 0.070111,
+        "position": 1.01,
+        "originalTitle": null,
+        "originalDescription": null,
+        "proposedTitle": "TalentXcel — Verified Jobs, ATS Resume Check, TalentScore & Caree...",
+        "proposedDescription": "Official TalentXcel platform: explore active verified jobs, test your resume ATS match score, earn TalentScore, and build your Career Passport.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": null,
+          "restoreDescription": null
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-9c42ea063c0949",
+        "url": "https://careers.talentxcel.in/",
+        "primaryQuery": "talentxcel",
+        "impressions": 184,
+        "clicks": 12,
+        "ctr": 0.065217,
+        "position": 1.72,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "TalentXcel — Verified Jobs, ATS Resume Check, TalentScore & Caree...",
+        "proposedDescription": "Official TalentXcel platform: explore active verified jobs, test your resume ATS match score, earn TalentScore, and build your Career Passport.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      },
+      {
+        "wave": "WAVE_2_NEXT8",
+        "recommendationKey": "ctr-ef9251f565ee79",
+        "url": "https://talentxcel.in/locations/patiala",
+        "primaryQuery": "jobs in patiala",
+        "impressions": 201,
+        "clicks": 10,
+        "ctr": 0.049751,
+        "position": 1.76,
+        "originalTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+        "originalDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities.",
+        "proposedTitle": "Jobs In Patiala | Verified Live Benchmarks | TalentXcel",
+        "proposedDescription": "Explore jobs in patiala on TalentXcel. Compare verified listings, salary bands, required skills, and check your resume ATS match score instantly.",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL",
+        "verificationStatus": "PENDING_EXECUTION",
+        "rollbackData": {
+          "restoreTitle": "TalentXcel — Global Career Platform, Jobs & Passport",
+          "restoreDescription": "Connect with professionals, specialists, and leaders across all global industries. Verify skills with TalentScore, build your Career Passport, and explore verified opportunities."
+        }
+      }
+    ]
+  },
+  "phase7C_rankingTargets": {
+    "totalEligible": 27,
+    "items": [
+      {
+        "attackKey": "atk-553c2b81720438",
+        "url": "https://salary.talentxcel.in/salary/data-scientist",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "salary for data scientist",
+        "impressions": 1685,
+        "clicks": 0,
+        "position": 10.02,
+        "relevantInventory": 8,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-2f6f8c40cd281c",
+        "url": "https://salary.talentxcel.in/salary/ui-ux-designer",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "salary for ux designer",
+        "impressions": 1509,
+        "clicks": 0,
+        "position": 6.58,
+        "relevantInventory": 175,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-6b3d7f8aa844db",
+        "url": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "salary for data scientist",
+        "impressions": 765,
+        "clicks": 0,
+        "position": 7.61,
+        "relevantInventory": 8,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-ea297a16f13157",
+        "url": "https://talentxcel.in/jobs/software-engineer/freshers/bangalore/nagpur",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "freshers jobs in bangalore",
+        "impressions": 611,
+        "clicks": 27,
+        "position": 5.91,
+        "relevantInventory": 2984,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-8436eb5224a1e9",
+        "url": "https://talentxcel.in/",
+        "positionBand": "POS_11_20",
+        "primaryQuery": "talentxcel",
+        "impressions": 509,
+        "clicks": 85,
+        "position": 10.94,
+        "relevantInventory": 4470,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Deepen on-page query coverage, reinforce internal hub links (+3), and verify schema completeness",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-3a0b032e3189eb",
+        "url": "https://talentxcel.in/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "salary for data scientist",
+        "impressions": 378,
+        "clicks": 0,
+        "position": 7.35,
+        "relevantInventory": 8,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-1db2b6b2da7d06",
+        "url": "https://employers.talentxcel.in/company/zomato/jobs/ios-developer",
+        "positionBand": "POS_11_20",
+        "primaryQuery": "zomato careers",
+        "impressions": 254,
+        "clicks": 0,
+        "position": 13.57,
+        "relevantInventory": 175,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Deepen on-page query coverage, reinforce internal hub links (+3), and verify schema completeness",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-f41f37e3fda335",
+        "url": "https://talentxcel.in/jobs/digital-marketing-performance-specialist-south-indian-bank-hq-thrissur-kerala-india",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "south indian bank careers",
+        "impressions": 237,
+        "clicks": 0,
+        "position": 3.75,
+        "relevantInventory": 1,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-17da33a1ffb536",
+        "url": "https://jobs.talentxcel.in/",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "talentxcel",
+        "impressions": 198,
+        "clicks": 13,
+        "position": 5.35,
+        "relevantInventory": 4470,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-ea501536616ca2",
+        "url": "https://talentxcel.in/jobs/devops-cloud-infrastructure-engineer-south-indian-bank-hq-thrissur-kerala-india",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "south indian bank careers",
+        "impressions": 180,
+        "clicks": 1,
+        "position": 3.88,
+        "relevantInventory": 1,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-4455c2b55232d5",
+        "url": "https://talentxcel.in/courses/mysql-advanced-2-courses-in-vadodara-metro-1",
+        "positionBand": "POS_11_20",
+        "primaryQuery": "mysql course with certification vadodara",
+        "impressions": 126,
+        "clicks": 0,
+        "position": 14.17,
+        "relevantInventory": 394,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Deepen on-page query coverage, reinforce internal hub links (+3), and verify schema completeness",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-17cbf7358f0fb3",
+        "url": "https://talentxcel.in/jobs/sbi-po-recruitment-probationary-officers-state-bank-of-india-sbi-all-india-pan-india-branches",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "state bank of india careers",
+        "impressions": 124,
+        "clicks": 3,
+        "position": 5.28,
+        "relevantInventory": 68,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-c8544c5d249b90",
+        "url": "https://talentxcel.in/jobs/software-development-engineer-ii-full-stack-mrpl-ongc-mangalore-karnataka-india",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "ongc jobs",
+        "impressions": 99,
+        "clicks": 8,
+        "position": 4.06,
+        "relevantInventory": 68,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-fd18054bcfdee1",
+        "url": "https://talentxcel.in/jobs/embedded-systems-engineer/mid-level/bangalore/entry-level",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "entry level jobs",
+        "impressions": 86,
+        "clicks": 0,
+        "position": 3.94,
+        "relevantInventory": 2984,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-1123d0c96ef4e5",
+        "url": "https://talentxcel.in/jobs/producer/noida/experienced",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "talentxcel",
+        "impressions": 76,
+        "clicks": 1,
+        "position": 3.75,
+        "relevantInventory": 157,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-2f01e3f7fc2f24",
+        "url": "https://talentxcel.in/career-insights/salary/product-manager-salary-in-bangalore",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "salary for product manager",
+        "impressions": 75,
+        "clicks": 0,
+        "position": 10,
+        "relevantInventory": 35,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-b1edd4a68ba8c1",
+        "url": "https://talentxcel.in/jobs/graduate-engineer-trainee-get-tcs-bhubaneswar-odisha-india",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "graduate engineer trainee",
+        "impressions": 70,
+        "clicks": 0,
+        "position": 3.63,
+        "relevantInventory": 2984,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-70b0600ac7b6d2",
+        "url": "https://talentxcel.in/jobs/biomedical-engineer/chennai/bangalore",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "biomedical engineer vacancy",
+        "impressions": 69,
+        "clicks": 2,
+        "position": 10,
+        "relevantInventory": 2984,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-08fbf36db4ad9d",
+        "url": "https://talentxcel.in/colleges/cbit-college-of-pharmacy-health-sciences-hyderabad-2",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "cbit pharmacy college",
+        "impressions": 69,
+        "clicks": 1,
+        "position": 9.46,
+        "relevantInventory": 30,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-0d0bfd8a56cc75",
+        "url": "https://talentxcel.in/jobs/junior-software-engineer-react-frontend-jindal-steel-works-salem-tamil-nadu-india-1",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "jindal steel recruitment",
+        "impressions": 61,
+        "clicks": 1,
+        "position": 9.84,
+        "relevantInventory": 68,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-b938776e46a729",
+        "url": "https://talentxcel.in/colleges/govindammal-aditanar-engineering-college-chennai-2",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "govindammal engineering college",
+        "impressions": 48,
+        "clicks": 1,
+        "position": 8.73,
+        "relevantInventory": 30,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-03b71e2455357b",
+        "url": "https://talentxcel.in/jobs/deputy-director-secure-network-warfare-quantum-encryption-defence-research-and-development-organisat",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "drdo hyderabad recruitment",
+        "impressions": 46,
+        "clicks": 1,
+        "position": 3.96,
+        "relevantInventory": 83,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-f6f1b98dcdff79",
+        "url": "https://talentxcel.in/colleges/jayam-institute-of-technology-science-coimbatore-2",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "jayam institute coimbatore",
+        "impressions": 44,
+        "clicks": 0,
+        "position": 10.05,
+        "relevantInventory": 10250,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-7fe3073d49523c",
+        "url": "https://careers.talentxcel.in/companies",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "talentxcel",
+        "impressions": 33,
+        "clicks": 2,
+        "position": 8.12,
+        "relevantInventory": 72,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-ecd527d030de59",
+        "url": "https://talentxcel.in/jobs/junior-backend-developer-node-python-timken-india-jamshedpur-jharkhand-india",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "timken india careers",
+        "impressions": 32,
+        "clicks": 1,
+        "position": 3.97,
+        "relevantInventory": 175,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-ac3dc8d8944158",
+        "url": "https://talentxcel.in/colleges/sree-ayyappa-college-of-pharmacy-health-sciences-chennai-2",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "ayyappa college of pharmacy",
+        "impressions": 26,
+        "clicks": 0,
+        "position": 10.15,
+        "relevantInventory": 30,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "attackKey": "atk-6030ad1de9aad7",
+        "url": "https://talentxcel.in/jobs/mobile-application-developer-flutter-react-native-talentxcel-services-client-partner-mumbai-maharash-2",
+        "positionBand": "POS_4_10",
+        "primaryQuery": "flutter developer jobs in mumbai",
+        "impressions": 25,
+        "clicks": 2,
+        "position": 9.24,
+        "relevantInventory": 264,
+        "internalLinkingGap": 3,
+        "suggestedAction": "Refine title/meta CTR + add 3 contextual internal links from high-authority hub pages",
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      }
+    ]
+  },
+  "phase7D_internalLinkBatch1": {
+    "totalValidated": 77,
+    "batch1Count": 15,
+    "items": [
+      {
+        "recommendationKey": "lnk-8690647a117738",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/industry/government-public-sector",
+        "anchorText": "government jobs india",
+        "linkType": "ORPHAN_RESCUE",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-b241dd21eaf586",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+        "anchorText": "Explore ntpc careers",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-86b0ba8fb7adf1",
+        "sourceUrl": "/salary",
+        "destinationUrl": "/salary/data-scientist",
+        "anchorText": "Explore salary for data scientist",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-dcaa8c3cd44c38",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/career-insights/salary/data-scientist-salary-in-hyderabad",
+        "anchorText": "salary for data scientist guide & openings",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-c030a85ba13bd9",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/assistant-branch-manager-retail-banking-midc-amravati-amravati-maharashtra-india",
+        "anchorText": "View jobs in amravati details",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-3200e2cc4cc630",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/software-engineer/freshers/bangalore/nagpur",
+        "anchorText": "Explore freshers jobs in bangalore",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-dabdacc8ac1dad",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/devops-cloud-infrastructure-engineer-bhel-trichy-tiruchirappalli-tamil-nadu-india",
+        "anchorText": "bhel careers trichy guide & openings",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-5bb2475f60353d",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/associate-data-analyst-bhel-trichy-tiruchirappalli-tamil-nadu-india",
+        "anchorText": "View data analyst jobs trichy details",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-7360cfb0b38122",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/associate-data-analyst-tata-steel-coal-division-dhanbad-jharkhand-india",
+        "anchorText": "Explore tata steel career",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-108d9e762fcd23",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/associate-data-analyst-shree-cement-raipur-chhattisgarh-india",
+        "anchorText": "shree cement career guide & openings",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-dfc6b7569239f3",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/management-trainee-operations-associate-tcs-infopark-kochi-kerala-india",
+        "anchorText": "View tcs kochi careers details",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-69086285a81635",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/management-trainee-operations-associate-south-indian-bank-hq-thrissur-kerala-india",
+        "anchorText": "Explore south indian bank careers",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-5303dd98d82c1c",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/junior-qa-test-automation-engineer-ibs-software-kochi-kerala-india",
+        "anchorText": "ibs careers kochi guide & openings",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-21e593424f8689",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/junior-qa-test-automation-engineer-central-coalfields-limited-ccl-ranchi-jharkhand-india",
+        "anchorText": "View ccl job details",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      },
+      {
+        "recommendationKey": "lnk-77d87fedf399eb",
+        "sourceUrl": "/jobs",
+        "destinationUrl": "/jobs/junior-qa-test-automation-engineer-kollam-technopark-kundara-kollam-kerala-india",
+        "anchorText": "Explore kundara technopark jobs for freshers",
+        "linkType": "STRIKE_ZONE_SUPPORT",
+        "priorityScore": 99,
+        "approvalStatus": "AWAITING_EXPLICIT_APPROVAL"
+      }
+    ]
+  }
+}

@@ -479,3 +479,82 @@
 - **Fix Applied**: Updated `middleware.ts` matcher from `'/talent-score*'` to `'/talent-score/:path*'`, which correctly compiles and matches both `/talent-score` and nested paths.
 - **Verification**: Evaluated all 13 `middleware.ts` routes through `path-to-regexp@6.1.0` -> 100% PASS. Tested full local build (`npm run build`) -> Exit code 0, 7,316 modules bundled, 14,244 static documents rendered. Verified `npx tsx scripts/test-seo-render-entities.ts` -> 10/10 PASS.
 
+
+---
+
+# Feature: TalentXcel Universal Search — Phase 2 Live Qualification & Forensic Validation
+## Status: COMPLETED & FULLY AUDITED ACROSS ALL 10 PHASES (2026-11-25)
+
+### 1. Qualification & Forensic Audit Discoveries
+- **Live Database Evaluation (`dthlgsnakhoftinssokm.supabase.co`)**:
+  - Live script executed (`src/services/search/universal/scripts/qualifySearch.ts`) with exit code 0.
+  - 25 natural-language query matrix evaluated against live production Supabase instance in read-only anon mode.
+  - Zero crashes, zero runtime errors across all test passes.
+  - Average max-provider response latency: **234ms**.
+  - `Promise.allSettled` failure isolation verified: simulated provider failure isolated without degrading other providers.
+- **Provider Status Classification**:
+  - **Jobs**: PASS (877 active jobs, 150ms avg response time, RPC working).
+  - **People**: PARTIAL (705 public profiles in `public_profiles` view with zero PII; view schema mismatch in `types.ts` handled via runtime cast; base table has 1 PII row exposed to anon).
+  - **Talent**: PARTIAL (`unified_candidates` table exists; code guards recruiter access; anon RLS allows 1 row).
+  - **Posts**: PASS (2,511 published discussions, 150-390ms latency).
+  - **Connections**: PARTIAL (2,963 connections; scoped to authenticated user in code; anon RLS allows 1 row).
+  - **Companies**: PASS (72 companies, 120ms avg response time).
+  - **Communities**: PARTIAL (1 group exists, 0 `goal_communities`; queries execute cleanly but data is sparse).
+  - **Courses**: PASS (47 live courses confirmed; "Data Science" query returns 3 real matches in 75ms).
+  - **Articles**: PARTIAL (`content_hub` table exists, 0 published records, clean query execution).
+  - **Reels**: PARTIAL (`reels` table exists, 0 published records, clean query execution).
+  - **Colleges**: PARTIAL (`colleges` table exists, 0 records, clean query execution).
+  - **Messages**: PASS (isolated from global searches, strict user scoping, anon receives 0 rows).
+- **Security Audit Findings Identified (Database-Level RLS)**:
+  1. `profiles` base table: 1 row with email/phone returned to anon (P0: apply `REVOKE SELECT ON public.profiles FROM anon`).
+  2. `unified_candidates`: 1 row returned to anon (P0: enforce RLS policy `USING (auth.uid() IS NOT NULL)`).
+  3. `connections`: 1 row returned to anon (P1: enforce RLS policy `USING (auth.uid() IS NOT NULL)`).
+- **Deliverables**:
+  - Artifact created: `universal-search-qualification-report.md` with complete 10-phase qualification tables.
+  - Preserved script: `src/services/search/universal/scripts/qualifySearch.ts`.
+
+---
+
+# Feature: TalentXcel GSC Interception & Organic Search Recovery — Phase 12
+## Status: COMPLETED & VERIFIED (2026-11-25)
+
+### 1. Forensic Audit & Root Cause Discoveries
+- **GA4 Conversion Telemetry (`properties/499367883`)**:
+  - `GET /keyEvents` returned only 3 legacy boilerplate events (`purchase`, `close_convert_lead`, `qualify_lead` created `2025-08-02`).
+  - Genuine Organic Search conversions (`sign_up`: 77 events / 73 users / 73 sessions in 28d; `application_submitted`: 170 events / 109 users / 113 sessions in 28d) were arriving cleanly in GA4 via `G-CMYNTTNT56` Consent Mode v2, but were never marked as Key Events.
+  - `POST /keyEvents` via service account initially returned `403 PERMISSION_DENIED`; after upgrading `antigravity-search@talentxcel-login.iam.gserviceaccount.com` to **Editor**, registered and verified `sign_up` (`keyEvents/16418181505`, `ONCE_PER_SESSION`) and `application_submitted` (`keyEvents/16417952474`, `ONCE_PER_EVENT`) on GA4 property `499367883`.
+  - `seo_landing_view` duplicate-firing bug (`26,958` events / `218` users, `123.7x`) isolated to `SEOHead.tsx` re-renders and unhandled `sessionStorage` exceptions in nested/iframe contexts.
+- **Sitemaps Forensic Remediation**:
+  - `sitemap-rankings.xml`: `scripts/generate-sitemap.ts` pruned it for `<10` URLs (contained 8), but `gsc-submit-todays-updates.ts` still submitted it, and `vercel.json` fell through to `index.html` with XML content-type (GSC `errors: 1`).
+  - Executed authorized `GSC DELETE https://talentxcel.in/sitemap-rankings.xml` -> HTTP 204.
+  - `sitemap-network.xml`: Contained 559 URLs, but many hit `noindex, follow` due to sub-400-word body content or unverified Tier-3 city/profile slugs.
+- **SSR / Client Indexation Drift**:
+  - `JobLocationPage.tsx` hardcoded `robots="index, follow"`.
+  - `isNoindexPath()` blocked `/locations/varanasi` and `/salary/ui-ux-designer`.
+  - `/locations/bangalore` missed the `bengaluru`/`bangalore` OR-filter in live Supabase queries.
+
+### 2. Code Implementations & Governance Alignment
+- **`src/components/seo/SEOHead.tsx`**: Added in-memory `Set<string>` dedupe guard (`trackedSeoPathsInMemory`) to guarantee `seo_landing_view` fires at most once per path per session.
+- **`src/config/seo.ts`**: Exported `QUALIFIED_LOCATION_SLUGS` (25 verified cities) & `QUALIFIED_SALARY_ROLES`, added `/^\/career-insights\/salary\/.+$/i` to `NOINDEX_PATH_PATTERNS`, and aligned `isNoindexPath()` with SSR qualification rules.
+- **`src/pages/seo/JobLocationPage.tsx`**: Dynamic robots tag `effectiveCount >= 3 && !isNoindexPath(...) ? 'index, follow' : 'noindex, follow'`.
+- **`vercel.json` & `scripts/gsc-submit-todays-updates.ts`**: Explicit rewrite for `/sitemap-rankings.xml` before SPA catchall; removed obsolete sitemap from GSC submission script.
+- **`api/seo-render.ts`**:
+  - Returned explicit HTTP `410 Gone` (`text/plain`, `noindex, nofollow`) for `/sitemap-rankings.xml`.
+  - Implemented strictly scoped `301` redirects from legacy Golang interview-prep variants (`-part-3`, `-part-85`, `-part-9`, `lead-...`) to `/resume/interview-prep/golang-developer`, keeping unrelated paths at `404`.
+  - Enriched `/resume/interview-prep/golang-developer` with 6 Go/Gin Q&As and `FAQPage` JSON-LD (`540` words).
+  - Recovered `/locations/varanasi` (`603` words, 17 live jobs) and `/locations/bangalore` (`509` words, 762 jobs, `bengaluru`/`bangalore` alias query).
+  - Recovered `/salary/data-scientist` (`635` words, 70 live INR jobs) and `/salary/ui-ux-designer` (`625` words, 12 live INR jobs) with live statistics and methodology disclosures.
+- **`scripts/generate-sitemap.ts`**: Filtered `sitemap-network.xml` strictly to `INDEXABLE_GEO_CITIES` and excluded thin `/u/*` profiles (`55` URLs, 0 issues).
+- **`src/lib/seo/demandIntelligence/`**: Added `Phase12RegressionAlert` and `detectPhase12Regressions()` to detect parity mismatches, unexpected noindex, sitemap failures, and redirect loops.
+
+### 3. Verification & Compliance
+- `verify_phase12.ts`: 0 Phase 12 regression alerts across 15 SSR/CSR parity probes.
+- `phase12_sitemap_gsc_remediation.ts --audit-only`: GSC sitemaps count = 19 (0 errors); `sitemap-network.xml` 41/41 sample URLs verified `200 index, follow` (0 issues).
+- `npx tsc --noEmit`: 0 TypeScript errors.
+- `npm run build`: Exited 0 (`vite build` in 7m 4s; 6,397 sitemap URLs; 14,244 static pre-rendered HTML docs).
+- `test-search-demand-intelligence.ts`: 14/14 tests PASSED.
+- `test-seo-render-entities.ts`: 12/12 core entity destinations PASSED (100%).
+- `securityAndCostAudit.ts`: PASS (DB size: 457 MB, SQLite: 2760.15 MB).
+- `seo-ci-gate.ts`: 4,332/4,339 passed (0 critical errors, exit code 0).
+- Deliverable: `reports/PHASE12_SEARCH_RECOVERY_AND_INDEXATION_PARITY_REPORT.md` (15 comprehensive sections).
+

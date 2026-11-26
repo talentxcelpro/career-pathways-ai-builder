@@ -122,7 +122,6 @@ async function main() {
     'https://talentxcel.in/sitemap-companies.xml',
     'https://talentxcel.in/sitemap-global-programs.xml',
     'https://talentxcel.in/sitemap-scholarships.xml',
-    'https://talentxcel.in/sitemap-rankings.xml',
     'https://talentxcel.in/sitemap-services.xml',
     'https://talentxcel.in/sitemap-learning.xml',
     'https://talentxcel.in/sitemap-jobs.xml',

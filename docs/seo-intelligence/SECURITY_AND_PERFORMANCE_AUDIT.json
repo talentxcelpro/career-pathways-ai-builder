@@ -1,0 +1,46 @@
+{
+  "auditedAt": "2026-11-25T10:40:43.440Z",
+  "databaseSize": {
+    "db_size_bytes": 481455251,
+    "db_size_pretty": "459 MB"
+  },
+  "sqliteWarehouseSizeMb": 2760.15,
+  "activePgCronJobs": [
+    {
+      "active": true,
+      "jobname": "expire-old-jobs",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "active": true,
+      "jobname": "clean-cron-logs",
+      "schedule": "0 3 * * *"
+    }
+  ],
+  "insecureWritePoliciesDetected": 0,
+  "insecurePolicies": [],
+  "cloudflareGatewayProtectedAll9Tables": true,
+  "missingFromGateway": [],
+  "frontendViolationsCount": 0,
+  "frontendViolations": [],
+  "legacyServerEnvReferencesCount": 4,
+  "legacyServerEnvReferences": [
+    {
+      "file": "C:\\Users\\Arshid.Wani\\talentxcel-local\\src\\agents\\si\\engines\\CustomerAcquisitionEngine.ts",
+      "lineSnippet": "Server-guarded process.env SERVICE_ROLE_KEY reference outside client components"
+    },
+    {
+      "file": "C:\\Users\\Arshid.Wani\\talentxcel-local\\src\\lib\\discovery\\connectors\\GSCConnector.ts",
+      "lineSnippet": "Server-guarded process.env SERVICE_ROLE_KEY reference outside client components"
+    },
+    {
+      "file": "C:\\Users\\Arshid.Wani\\talentxcel-local\\src\\lib\\discovery\\discoveryVitePlugin.ts",
+      "lineSnippet": "Server-guarded process.env SERVICE_ROLE_KEY reference outside client components"
+    },
+    {
+      "file": "C:\\Users\\Arshid.Wani\\talentxcel-local\\src\\lib\\discovery\\talentxcelClient.ts",
+      "lineSnippet": "Server-guarded process.env SERVICE_ROLE_KEY reference outside client components"
+    }
+  ],
+  "passed": true
+}

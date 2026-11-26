@@ -1,0 +1,168 @@
+{
+  "generatedAt": "2026-11-25T09:39:14.406Z",
+  "totalConsolidated": 370,
+  "priorityTierCounts": {
+    "P0": 3,
+    "P1": 70,
+    "P2": 285,
+    "P3": 0,
+    "P4": 12
+  },
+  "batchCounts": {
+    "BATCH_1_CRITICAL_AND_CTR": 39,
+    "BATCH_2_RANKING_AND_INVENTORY": 152,
+    "BATCH_3_CANNIBALIZATION_AND_CANONICAL": 179
+  },
+  "topP0AndP1Batch1": [
+    {
+      "actionId": "exec-tech-tech-33364b628031e6",
+      "priorityTier": "P0",
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "actionCategory": "TECHNICAL_SEO",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 579.2,
+      "rationale": "Critical production SEO/rendering/404 defect backed by high confidence."
+    },
+    {
+      "actionId": "exec-tech-tech-46eb569944715e",
+      "priorityTier": "P0",
+      "url": "https://talentxcel.in/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+      "actionCategory": "TECHNICAL_SEO",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 579.2,
+      "rationale": "Critical production SEO/rendering/404 defect backed by high confidence."
+    },
+    {
+      "actionId": "exec-tech-tech-393654d48231e9",
+      "priorityTier": "P0",
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-9",
+      "actionCategory": "TECHNICAL_SEO",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 579.2,
+      "rationale": "Critical production SEO/rendering/404 defect backed by high confidence."
+    },
+    {
+      "actionId": "exec-ctr-ctr-84bc4cd8302f4d",
+      "priorityTier": "P1",
+      "url": "https://talentxcel.in/locations/varanasi",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 3671 impressions at pos 2.4."
+    },
+    {
+      "actionId": "exec-ctr-ctr-6619d212cf80e8",
+      "priorityTier": "P1",
+      "url": "https://salary.talentxcel.in/salary/data-scientist",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 1685 impressions at pos 10.0."
+    },
+    {
+      "actionId": "exec-ctr-ctr-7ac4f62f2f3e65",
+      "priorityTier": "P1",
+      "url": "https://jobs.talentxcel.in/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 1576 impressions at pos 4.8."
+    },
+    {
+      "actionId": "exec-ctr-ctr-93d84a252eb47d",
+      "priorityTier": "P1",
+      "url": "https://salary.talentxcel.in/salary/ui-ux-designer",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 1509 impressions at pos 6.6."
+    },
+    {
+      "actionId": "exec-ctr-ctr-8c0e3efdd998ee",
+      "priorityTier": "P1",
+      "url": "https://talentxcel.in/career-insights/salary/data-scientist-salary-in-hyderabad",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 765 impressions at pos 7.6."
+    },
+    {
+      "actionId": "exec-ctr-ctr-60c5da5dc4f3c2",
+      "priorityTier": "P1",
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 460 impressions at pos 5.0."
+    },
+    {
+      "actionId": "exec-ctr-ctr-97678a59167c68",
+      "priorityTier": "P1",
+      "url": "https://talentxcel.in/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 378 impressions at pos 7.3."
+    },
+    {
+      "actionId": "exec-ctr-ctr-b227e3704b2785",
+      "priorityTier": "P1",
+      "url": "https://jobs.talentxcel.in/jobs/devops-cloud-infrastructure-engineer-south-indian-bank-hq-thrissur-kerala-india",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 329 impressions at pos 3.9."
+    },
+    {
+      "actionId": "exec-ctr-ctr-395a9eb2532129",
+      "priorityTier": "P1",
+      "url": "https://talentxcel.in/resume/interview-prep/golang-developer-interview-questions-and-answers-part-85",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 253 impressions at pos 5.3."
+    },
+    {
+      "actionId": "exec-ctr-ctr-35fb08408ac06b",
+      "priorityTier": "P1",
+      "url": "https://talentxcel.in/jobs/digital-marketing-performance-specialist-south-indian-bank-hq-thrissur-kerala-india",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 237 impressions at pos 3.8."
+    },
+    {
+      "actionId": "exec-ctr-ctr-559da0a0d96f89",
+      "priorityTier": "P1",
+      "url": "https://jobs.talentxcel.in/jobs/assistant-branch-manager-retail-banking-ul-cyberpark-calicut-kerala-india",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 224 impressions at pos 3.1."
+    },
+    {
+      "actionId": "exec-ctr-ctr-ae9a5e51da54af",
+      "priorityTier": "P1",
+      "url": "https://jobs.talentxcel.in/jobs/digital-marketing-performance-specialist-bhel-haridwar-haridwar-uttarakhand-india",
+      "actionCategory": "CTR_RECOVERY",
+      "executionTier": "TIER_B_APPROVAL",
+      "actionStatus": "RECOMMENDATION",
+      "compositePriority": 484.15,
+      "rationale": "High-confidence (85%) recovery with 222 impressions at pos 6.4."
+    }
+  ]
+}

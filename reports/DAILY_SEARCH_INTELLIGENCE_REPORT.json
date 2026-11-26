@@ -1,0 +1,400 @@
+{
+  "generatedAt": "2026-11-25T07:17:49.473Z",
+  "warehouseCorpusKeywords": 1008169,
+  "liveInventory": {
+    "totalActiveJobs": 4469,
+    "remoteJobsCount": 1167,
+    "fresherJobsCount": 1033,
+    "internshipJobsCount": 43,
+    "govtJobsCount": 0,
+    "publicProfilesCount": 705,
+    "companiesCount": 72,
+    "coursesCount": 3004,
+    "communityGroupsCount": 1,
+    "institutionsCatalogCount": 10250
+  },
+  "gscTelemetrySummary": {
+    "observedGrainRows": 17394,
+    "total28dImpressions": 61552,
+    "total28dClicks": 1276
+  },
+  "qualificationBreakdown": {
+    "RECOMMENDED": 94,
+    "QUALIFIED_FOR_INDEX": 19,
+    "REJECTED_THIN": 97,
+    "NOINDEX_MONITOR": 24
+  },
+  "topGscActions": [
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/jobs/location/india",
+      "priority": "P0",
+      "opportunity_score": 98,
+      "recommended_action": "Rewrite <title> and meta description on / targeting \"talentxcel\" (pos 1.2, CTR 7.34% vs expected 28.0%)."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/learning/ats-optimization",
+      "priority": "P0",
+      "opportunity_score": 98,
+      "recommended_action": "Rewrite <title> and meta description on /resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3 targeting \"gin interview questions\" (pos 5.0, CTR 0.00% vs expected 7.5%)."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/salary/data-scientist",
+      "priority": "P0",
+      "opportunity_score": 98,
+      "recommended_action": "Rewrite <title> and meta description on /salary/data-scientist targeting \"salary for data scientist\" (pos 6.3, CTR 0.00% vs expected 3.2%)."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/salary/ui-ux-designer",
+      "priority": "P0",
+      "opportunity_score": 98,
+      "recommended_action": "Rewrite <title> and meta description on /salary/ui-ux-designer targeting \"salary for ux designer\" (pos 6.2, CTR 0.00% vs expected 3.2%)."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/jobs/location/india",
+      "priority": "P0",
+      "opportunity_score": 98,
+      "recommended_action": "Rewrite <title> and meta description on /jobs/software-development-engineer-ii-full-stack-tata-steel-bhubaneswar-odisha-india targeting \"tata steel career\" (pos 5.8, CTR 1.47% vs expected 3.2%)."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/jobs/industry/government-public-sector",
+      "priority": "P0",
+      "opportunity_score": 98,
+      "recommended_action": "Rewrite <title> and meta description on /jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india targeting \"ntpc careers\" (pos 3.5, CTR 0.18% vs expected 7.5%)."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/jobs/location/india",
+      "priority": "P0",
+      "opportunity_score": 97,
+      "recommended_action": "Rewrite <title> and meta description on /jobs/digital-marketing-performance-specialist-south-indian-bank-hq-thrissur-kerala-india targeting \"south indian bank careers\" (pos 3.6, CTR 0.41% vs expected 7.5%)."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/jobs/data-analyst/india",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /jobs/associate-data-analyst-export-footwear-houses-agra-uttar-pradesh-india to move \"data analyst jobs\" from pos 5.2 to top 3."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/learning/ats-optimization",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3 to move \"gin interview questions\" from pos 5.0 to top 3."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/jobs/industry/information-technology",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /jobs/graduate-engineer-trainee-get-bajaj-auto-aurangabad-maharashtra-india to move \"graduate engineer trainee\" from pos 4.1 to top 3."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/salary/data-scientist",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /salary/data-scientist to move \"salary for data scientist\" from pos 6.3 to top 3."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/salary/ui-ux-designer",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /salary/ui-ux-designer to move \"salary for ux designer\" from pos 6.2 to top 3."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/jobs/location/india",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /jobs/software-development-engineer-ii-full-stack-tata-steel-bhubaneswar-odisha-india to move \"tata steel career\" from pos 5.8 to top 3."
+    },
+    {
+      "gsc_opportunity_code": "A",
+      "opportunity_type": "HIGH_IMPRESSIONS_LOW_CTR",
+      "recommended_destination": "/jobs/industry/government-public-sector",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Rewrite <title> and meta description on /jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india targeting \"ntpc job\" (pos 4.9, CTR 0.00% vs expected 7.5%)."
+    },
+    {
+      "gsc_opportunity_code": "B",
+      "opportunity_type": "STRIKE_ZONE_POSITION_4_TO_20",
+      "recommended_destination": "/jobs/industry/government-public-sector",
+      "priority": "P0",
+      "opportunity_score": 95,
+      "recommended_action": "Boost internal links, add FAQ & structured data, and deepen entity copy on /jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india to move \"ntpc job\" from pos 4.9 to top 3."
+    }
+  ],
+  "topScoredDestinations": [
+    {
+      "pageUrl": "/jobs/industry/government-public-sector",
+      "primaryKeyword": "government careers in pune",
+      "opportunityType": "industry-job",
+      "score": 89.09,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 79,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 1685,
+      "clicks": 4
+    },
+    {
+      "pageUrl": "/learning/ats-optimization",
+      "primaryKeyword": "resume optimization for ai in pune",
+      "opportunityType": "learning-path",
+      "score": 85.93,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 79,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 945,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/jobs/industry/human-resources-recruitment",
+      "primaryKeyword": "recruiter jobs in pune",
+      "opportunityType": "industry-job",
+      "score": 83.7,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 79,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 340,
+      "clicks": 14
+    },
+    {
+      "pageUrl": "/jobs/industry/information-technology",
+      "primaryKeyword": "cloud jobs in pune",
+      "opportunityType": "industry-job",
+      "score": 83.09,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 79,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 291,
+      "clicks": 14
+    },
+    {
+      "pageUrl": "/jobs/fresher",
+      "primaryKeyword": "fresher jobs in india",
+      "opportunityType": "fresher-role-job",
+      "score": 82.65,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 1033,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 413,
+      "clicks": 23
+    },
+    {
+      "pageUrl": "/jobs/location/india",
+      "primaryKeyword": "cad jobs in doha",
+      "opportunityType": "role-country-job",
+      "score": 80.5,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 4469,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 8729,
+      "clicks": 352
+    },
+    {
+      "pageUrl": "/jobs/skill/digital-marketing",
+      "primaryKeyword": "seo jobs in pune",
+      "opportunityType": "skill-job",
+      "score": 79.04,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 79,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 407,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/learning/java",
+      "primaryKeyword": "marketer with java skills",
+      "opportunityType": "learning-path",
+      "score": 78.44,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 266,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 495,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/jobs/software-engineer/india",
+      "primaryKeyword": "developer jobs in pune",
+      "opportunityType": "role-city-job",
+      "score": 78.08,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 4,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 532,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/learning/aws",
+      "primaryKeyword": "marketer with aws skills",
+      "opportunityType": "learning-path",
+      "score": 74.21,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 277,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 175,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/learning/python",
+      "primaryKeyword": "marketer with python skills",
+      "opportunityType": "learning-path",
+      "score": 73.77,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 455,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 157,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/jobs/location/kochi",
+      "primaryKeyword": "cad jobs in kochi",
+      "opportunityType": "city-employment-hub",
+      "score": 72.86,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 46,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 123,
+      "clicks": 7
+    },
+    {
+      "pageUrl": "/colleges",
+      "primaryKeyword": "colleges placement india",
+      "opportunityType": "college-placement",
+      "score": 72.84,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 10250,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 223,
+      "clicks": 1
+    },
+    {
+      "pageUrl": "/learning/data-analytics",
+      "primaryKeyword": "marketer with excel skills",
+      "opportunityType": "learning-path",
+      "score": 72.75,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 2,
+      "status": "RECOMMENDED",
+      "impressions": 967,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/learning/docker",
+      "primaryKeyword": "marketer with docker skills",
+      "opportunityType": "learning-path",
+      "score": 72.43,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 288,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 113,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/jobs/location/pune",
+      "primaryKeyword": "cad jobs in pune",
+      "opportunityType": "city-employment-hub",
+      "score": 72.41,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 79,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 18,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/jobs/data-analyst/india",
+      "primaryKeyword": "data analyst jobs in india",
+      "opportunityType": "role-country-job",
+      "score": 70.28,
+      "confidence": 0.65,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 0,
+      "status": "REJECTED_THIN",
+      "impressions": 287,
+      "clicks": 50
+    },
+    {
+      "pageUrl": "/learning/artificial-intelligence",
+      "primaryKeyword": "marketer with ai skills",
+      "opportunityType": "learning-path",
+      "score": 70.04,
+      "confidence": 0.65,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 0,
+      "status": "NOINDEX_MONITOR",
+      "impressions": 1741,
+      "clicks": 0
+    },
+    {
+      "pageUrl": "/jobs/marketing-manager/india",
+      "primaryKeyword": "marketing jobs in pune",
+      "opportunityType": "role-city-job",
+      "score": 69.76,
+      "confidence": 0.65,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 0,
+      "status": "REJECTED_THIN",
+      "impressions": 150,
+      "clicks": 29
+    },
+    {
+      "pageUrl": "/learning/react",
+      "primaryKeyword": "marketer with react skills",
+      "opportunityType": "learning-path",
+      "score": 68.73,
+      "confidence": 0.85,
+      "demandStatus": "VERIFIED",
+      "inventoryCount": 264,
+      "status": "QUALIFIED_FOR_INDEX",
+      "impressions": 45,
+      "clicks": 0
+    }
+  ],
+  "thinOrBlockedCount": 121,
+  "internalLinksRecommended": 53,
+  "contentBriefsGenerated": 50,
+  "supabaseSync": {
+    "qualificationsSynced": 234,
+    "internalLinksSynced": 53,
+    "contentBriefsSynced": 50,
+    "errors": []
+  }
+}

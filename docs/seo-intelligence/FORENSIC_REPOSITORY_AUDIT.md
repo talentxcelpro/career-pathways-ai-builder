@@ -1,0 +1,68 @@
+# TALENTXCEL — PHASE 1 FORENSIC REPOSITORY & INFRASTRUCTURE AUDIT
+
+**Audit Date:** 2026-11-25  
+**Primary Domain:** `https://talentxcel.in`  
+**Supabase Production Project:** `dthlgsnakhoftinssokm`  
+**Audit Scope:** Complete repository inspection (20-point forensic checklist), live database metadata, Google Search Console & GA4 API connectivity, Cloudflare edge gateway, Vercel routing/SSR, and 1-million-keyword CSV discovery corpus (`TalentXcel_1M_SEO_Keyword_Universe.csv`).
+
+---
+
+## 1. Executive Summary
+
+TalentXcel already possesses substantial SEO, pSEO, GSC telemetry, Supabase, Cloudflare, and Vercel infrastructure. However, forensic inspection shows **architectural fragmentation across multiple partial systems** (Search Universe, Global Search Graph, Demand Data Lake, UDX v4, GDI-OS, Growth Engine, and legacy static scripts), **unverified synthetic counts**, **unconnected empty graph tables**, **GSC ingestion blind spots**, **several permissive RLS policies**, and an uningested **1,000,000-row candidate CSV corpus** whose coarse suggested paths (`/career/` on 582,351 rows) conflict with TalentXcel's live canonical routes.
+
+Instead of building a duplicate parallel SEO stack, the Global Search Demand Intelligence & Opportunity Engine **unifies, hardens, and extends** the existing architecture under strict governance and Supabase quota safeguards.
+
+---
+
+## 2. 20-Point Repository & System Audit
+
+| # | Audited Area | Current Implementation Found | Strengths | Gaps / Risks Discovered |
+|---|---|---|---|---|
+| 1–2 | **SEO Architecture** | Multi-universe SPA (`src/App.tsx`), bot SSR gateway (`api/seo-render.ts`), apex canonical consolidation (`src/config/domainArchitecture.ts`, `src/lib/seo/canonicalUrls.ts`), JSON registries (`src/config/seo.ts`, `publicIA.ts`). | Clear canonical consolidation onto `https://talentxcel.in` (plus canary `https://salary.talentxcel.in` & subdomain roots). | Fragmented modules across `searchUniverse/`, `globalSearchGraph/`, `demandDataLake/`, `udx/`, `acquisition/`, and `universalGraph/`. |
+| 3 | **pSEO Generation Systems** | `src/pages/seo/jobs/*`, `scripts/generate-1m-keyword-engine.ts`, `scripts/build-keyword-taxonomy.ts`, `scripts/audit-phase13-universal-graph.ts`. | Existing role/location/industry/salary/interview page templates and taxonomies (`CANONICAL_20_INDUSTRIES`, `JOB_ROLES`, `INDIAN_INSTITUTIONS_CATALOG`). | `generate-1m-keyword-engine.ts` only wrote static summary JSONs; `build-keyword-taxonomy.ts` references missing table `seo_keyword_hubs`; CSV `/career/` routes don't match live `src/App.tsx` routes. |
+| 4 | **Sitemap Generation** | Dual pipelines: `scripts/generate-sitemap.ts`, `api/sitemaps.ts`, `supabase/functions/generate-sitemap/index.ts`, `api/sitemap-passport.ts`. | Static generator (`generate-sitemap.ts`) segments sitemaps and applies quality/hub gates. | `api/sitemaps.ts` dynamically synthesizes up to 2,050,000 URLs (`/jobs/senior-staff-...-metro-1`) independent of real DB inventory, diverging from `generate-sitemap.ts` and indexation governors. |
+| 5 | **Indexing Qualification** | `src/lib/seo/governor/seoPageGovernor.ts` (`SEOPageGovernor`), `src/lib/udx/seo/ContentGovernor.ts`, `src/lib/seo/discoveryPageGovernor.ts`, `src/config/jobs/indexability.ts`, `src/lib/seo/globalSearchGraph/globalIndexationGovernor.ts`. | Strong `SEOPageGovernor` 4-gate scoring & Jaccard cannibalization concepts; `seo_hub_state` tracks 64 hubs in live DB. | Not connected to a single persistent page qualification table covering non-job surfaces (`ATS-Check`, `TalentScore`, `Passport`, `Skills`, `Industries`, `Colleges`); empty-location risk if `api/sitemaps.ts` bypasses governor. |
+| 6 | **Search-Related APIs** | `api/discovery/data.ts`, `save-gsc.ts`, `trigger-sync.ts`, `knowledge-graph.ts`, `api/seo-render.ts`. | Server-side GSC trigger & discovery telemetry endpoints exist. | `api/discovery/trigger-sync.ts` contains embedded base64 fallback credentials for GSC SA and `TALENTXCEL_SERVICE_ROLE_KEY`; `trigger-sync.ts` hardcodes single property `https://talentxcel.in/`. |
+| 7 | **Google Search Console** | `scripts/seo/sync-real-gsc-to-lake.ts`, `scripts/run-live-gsc-sync.ts`, `scripts/gdi-os/modules/gscExtractor.cjs`. Authenticated via `gsc-service-account.json`. | Live OAuth 200 OK verified; 13 GSC properties accessible (10 TalentXcel + 3 Chatr). | `sync-real-gsc-to-lake.ts` only pulls `https://talentxcel.in/` with a single `rowLimit: 25000` (no `startRow` pagination, misses subdomain properties). `run-live-gsc-sync.ts` truncates to 100 rows and collides on `(tenant_id, normalized_query, country)` across devices/pages. |
+| 8 | **Google Analytics (GA4)** | `@google-analytics/data` installed; `scripts/gdi-os/modules/ga4Tracker.cjs` configured for property `499367883`. | Live GA4 API probe returns HTTP 200 OK with service account. | GA4 landing-page conversions/sessions are not joined into a unified keyword/page opportunity scoring ledger. |
+| 9 | **Job Ingestion Systems** | `scripts/ingest-ats-jobs.ts`, `.github/workflows/ats-ingestion-and-indexing.yml`, `external_ats_sources`, `job_ingestion_queue`, `jobs` (`4,469` live rows). | Structured ATS ingestion & job expiration workflows (`expire-old-jobs` cron at `02:00 UTC`). | `job_ingestion_queue` currently consumes `146.28 MB` (~37.7% of total DB size) despite `4,469` jobs—must avoid adding queue bloat. |
+| 10 | **Supabase Schema, Views & Edge Functions** | **387.61 MB** total across **615 public tables**. Key tables verified live: `jobs` (4,469), `public_profiles` (705), `companies` (72), `aggregated_courses` (3,004), `posts`, `groups`, `seo_intents` (250), `seo_entities` (98), `seo_destinations` (50), `seo_hub_state` (64), `growth_geo_cities` (1,196), `growth_inventory_readiness` (34), `udx_demand_entities` (6,617), `udx_opportunities` (5,171). Empty tables: `seo_edges` (0), `search_demand_sources` (0), `location_edges` (0), `udx_demand_clusters` (0). Missing table: `seo_keyword_hubs`. | Rich foundational tables (`seo_*`, `udx_*`, `growth_*`, `canonical_cities` 191, `canonical_roles` 152). Edge functions include `generate-sitemap`, `si-orchestrator`. | Legacy quota incidents (`20260929`, `20261120`, `20261121`) forbid `supabase_realtime` CDC on SEO/queue tables and forbid frequent `pg_cron` HTTP loops. Empty `seo_generated_content` occupies `44.82 MB` dead toast/table bloat. Critical RLS vulnerability: `seo_intents`, `seo_entities`, `seo_destinations`, `location_entities`, `location_aliases` have `FOR ALL USING (true)` on `{public}`! |
+| 11 | **Cloudflare Infrastructure** | `cloudflare-workers/supabase-edge-gateway/src/index.ts` & `types.ts`. | Strict allowlist (`PUBLIC_CACHEABLE_ENTITIES`) + private denylist (`SENSITIVE_PRIVATE_ENTITIES`). | New intelligence tables (`keyword_*`, `seo_opportunities`, `seo_page_qualification`, `udx_*`) must be added to `SENSITIVE_PRIVATE_ENTITIES` to guarantee zero accidental edge exposure/caching. |
+| 12 | **SEO Rendering Pipelines** | `vercel.json` UA rewrite routes Googlebot/AI bots to `/api/seo-render?path=$1`; `scripts/prerender-static-seo.ts`. | Pre-renders core HTML shells and serves SSR metadata/structured data to bots. | `api/seo-render.ts` L4657–4664 contains hardcoded `fallbackJobs` salary objects on 410 expired job paths (flagged for cleanup/audit). |
+| 13 | **Canonical URL Logic** | `formatCanonicalUrl()` (`src/config/domainArchitecture.ts`) & `src/lib/seo/canonicalUrls.ts`. | Enforces lowercase normalized slugs, apex `https://talentxcel.in` ownership for jobs/career/tools/company/network, `https://salary.talentxcel.in` canary. | 1M CSV maps 582,351 rows to `/career/`, which does not resolve to an indexed canonical SPA route (`App.tsx` uses `/career-map`, `/career-insights`, `/resume/ats-check`, `/talent-score`, `/passport`, `/salary/...`). |
+| 14 | **SEO Page Templates** | `src/pages/seo/jobs/JobsByRoleCity.tsx`, `SalaryGuidePage.tsx`, `InterviewQuestionsPage.tsx`, etc. | Clean React templates consuming structured SEO props. **UI Change Policy: Zero UI changes applied.** | Templates exist and remain untouched; backend qualification must feed only templates backed by verified inventory or utility functionality. |
+| 15 | **robots.txt & Sitemaps** | `public/robots.txt` (347 lines) declares explicit disallow rules (`/auth/`, `/dashboard/`, `/api/`) and AI bot allowances + `Sitemap:` pointers. | Solid crawl protection for authenticated/app routes and explicit sitemap index declaration. | Needs ongoing alignment so only `QUALIFIED_FOR_INDEX` / `PUBLISHED` destinations enter XML sitemaps. |
+| 16 | **Crawl Budgets & Indexing Controls** | `seo-ci-gate.ts`, `seo-production-audit.ts`, `seo_hub_state`, `indexing_outbox`, `.github/workflows/google-indexing-outbox-dispatcher.yml` (45 URLs / 6h). | Google Indexing API outbox is properly rate-capped (`--limit=45` every 6 hours). | Ensure newly scored opportunities never directly push unqualified URLs into `indexing_outbox`. |
+| 17 | **SEO Audits & CI Gates** | `scripts/seo-production-audit.ts`, `scripts/seo-ci-gate.ts`, `scripts/test-seo-graph-governor.ts`, `scripts/test-seo-intelligence.ts`. | Existing CI quality verification exists. | Existing SEO tests need to continue passing alongside new Search Intelligence Engine verification. |
+| 18 | **Content Factory & Governor** | `20260905_ai_content_factory.sql` (`seo_generated_content`), `src/lib/udx/seo/ContentGovernor.ts`, `SEODecisionEngine.ts`. | Word count & quality gate abstractions exist (`ContentGovernor.validateProposedSurface`). | Must enforce evidence-grounded briefs (`NEEDS_DATA_COLLECTION` for unverified stats) rather than ungrounded LLM copy generation. |
+| 19 | **Network Discovery Infrastructure** | `20261124220000_talentxcel_global_growth_network_engine.sql` (`growth_geo_cities` 1,196 rows, `growth_inventory_readiness` 34), `/network`, `/passport`, `public_profiles` (705 rows). | Consented `public_profiles` view separates public directory fields from private `profiles` PII. | Candidate SEO matching must ONLY query anonymized aggregate counts or `public_profiles` where `is_profile_public = true` — never `profiles`. |
+| 20 | **External Market & Taxonomy Configs** | `src/config/jobs/*` (`roles.ts`, `industries.ts`, `industryTaxonomy.ts`, `countriesData.ts`, `locations.ts`), `src/data/indianInstitutionsCatalog.ts`, `src/lib/seo/searchUniverse/*`. | Extensive role/industry/institution catalogs already present in repo. | Missing industries vs 30-industry target (e.g., dedicated normalized subcategories for Nonprofit, Travel, Agriculture, Pharmaceuticals/Biotech aliases) and formal LinkedIn/Naukri/Indeed-inspired attribution separation. |
+
+---
+
+## 3. Baseline Quantitative Metrics (Observed Prior to Phase 2/3 Changes)
+
+- **Supabase Production Database (`dthlgsnakhoftinssokm`):** `387.61 MB` across `615` public tables; `2` active `pg_cron` jobs (`expire-old-jobs`, `clean-cron-logs`).
+- **Existing SEO & Inventory Row Counts (Live Query):**
+  - `jobs`: `4,469` | `public_profiles`: `705` | `companies`: `72` | `aggregated_courses`: `3,004` | `groups`: `1`
+  - `canonical_cities`: `191` | `canonical_roles`: `152` | `seo_hub_state`: `64` | `growth_geo_cities`: `1,196` | `growth_inventory_readiness`: `34`
+  - `seo_intents`: `250` | `seo_entities`: `98` | `seo_destinations`: `50` | `seo_edges`: `0` | `search_demand_sources`: `0`
+  - `udx_demand_entities`: `6,617` | `udx_demand_clusters`: `0` | `udx_opportunities`: `5,171`
+- **Supplied 1M Keyword Corpus (`C:\Users\Arshid.Wani\Downloads\TalentXcel_1M_SEO_Keyword_Universe.csv`):**
+  - Size: `153,688,619` bytes (`146.6 MB`), `1,000,000` non-header rows, `0` blank rows, `1,000,000` unique lowercase strings.
+  - Columns: `Keyword`, `Cluster`, `Search intent`, `Generation source`, `Suggested page`, `Search volume status`.
+  - Coarseness Findings: Only `3` intents (`transactional`: 301,288, `commercial`: 2,016, `mixed`: 696,696), `13` coarse cluster names, `2` coarse suggested routes (`/jobs/`: 417,649; `/career/`: 582,351 — `/career/` non-canonical), and **100% marked `"Generated candidate; volume not verified"`**.
+
+---
+
+## 4. Security & Quota Risks Identified in Audit
+
+1. **Critical — Permissive Write RLS Policies (`{public}` `ALL` `qual: true`):**  
+   In live PostgreSQL (`pg_policies`), `seo_intents`, `seo_entities`, `seo_destinations`, `location_entities`, and `location_aliases` have `"Service manage for ..."` granted to `{public}` rather than `{service_role}`. Phase 3 migration MUST remediate these five tables to `{service_role}` immediately. (Also flagged separately for application review: `aggregated_courses` `"Public Ingest Courses"` and legacy `jobs`/`posts` `"Own records update"` policies.)
+2. **High — Embedded Fallback Keys in `api/discovery/trigger-sync.ts`:**  
+   Base64 fallback constants exist in server handler source; tracked in Security Audit for removal in favor of strict environment variables.
+3. **High — Supabase Storage & Disk I/O Protection:**  
+   At `387.61 MB`, blindly inserting 1,000,000 CSV candidate rows + indexes directly into Supabase Postgres would add ~450–700 MB, exhausting Free/Pro storage limits and recreating the Nov 2026 Disk I/O budget breach. **Solution:** Hybrid Two-Tier Storage (full 1M+ corpus in Node 25 built-in `node:sqlite` WAL warehouse; bounded, high-signal cluster centroids, verified GSC/GA4 telemetry, prioritized opportunities, and page qualifications in Supabase).
+4. **High — Zero UI Changes & Zero Unbounded Sitemap Sprawl:**  
+   No frontend UI JSX/CSS/nav changes. No automatic sitemap indexing without live `SEOPageGovernor` qualification and real inventory validation.

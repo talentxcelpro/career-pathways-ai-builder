@@ -108,7 +108,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           id: `job-${title}`,
           text: title,
           type: 'job',
-          count: Math.floor(Math.random() * 500) + 50,
           icon: <Building className="h-4 w-4 text-blue-600" />
         });
       });
@@ -122,7 +121,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           id: `skill-${skill}`,
           text: skill,
           type: 'skill',
-          count: Math.floor(Math.random() * 300) + 25,
           icon: <Code className="h-4 w-4 text-green-600" />
         });
       });
@@ -136,7 +134,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           id: `company-${company}`,
           text: company,
           type: 'company',
-          count: Math.floor(Math.random() * 100) + 10,
           icon: <Building className="h-4 w-4 text-purple-600" />
         });
       });
@@ -150,7 +147,6 @@ export const GlobalSearch: React.FC<GlobalSearchProps> = ({
           id: `location-${location}`,
           text: location,
           type: 'location',
-          count: Math.floor(Math.random() * 200) + 30,
           icon: <MapPin className="h-4 w-4 text-orange-600" />
         });
       });

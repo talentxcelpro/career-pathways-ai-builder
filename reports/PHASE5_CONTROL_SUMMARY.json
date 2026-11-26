@@ -1,0 +1,142 @@
+{
+  "executedAt": "2026-11-25T09:39:14.406Z",
+  "durationMs": 9680,
+  "baselineVerified": true,
+  "ga4OrganicFunnel": {
+    "sessionStart": 1121,
+    "jobView": 1395,
+    "atsScoreGenerated": 431,
+    "resumeUploaded": 203,
+    "authCompleted": 175,
+    "signUp": 78,
+    "guestApplyOpened": 513,
+    "applyCtaClicked": 360,
+    "applicationSubmitted": 170,
+    "talentScoreEventsAllChannels": 7,
+    "careerPassportGa4Events": 0,
+    "seoLandingViewDuplicateRisk": 26963,
+    "byCountryTop": [
+      {
+        "country": "India",
+        "sessions": 1077,
+        "engagedSessions": 873,
+        "keyEvents": 0
+      },
+      {
+        "country": "United States",
+        "sessions": 18,
+        "engagedSessions": 15,
+        "keyEvents": 0
+      },
+      {
+        "country": "France",
+        "sessions": 4,
+        "engagedSessions": 1,
+        "keyEvents": 0
+      },
+      {
+        "country": "Germany",
+        "sessions": 3,
+        "engagedSessions": 3,
+        "keyEvents": 0
+      },
+      {
+        "country": "Philippines",
+        "sessions": 3,
+        "engagedSessions": 1,
+        "keyEvents": 0
+      },
+      {
+        "country": "Canada",
+        "sessions": 2,
+        "engagedSessions": 1,
+        "keyEvents": 0
+      },
+      {
+        "country": "Japan",
+        "sessions": 2,
+        "engagedSessions": 1,
+        "keyEvents": 0
+      },
+      {
+        "country": "Kuwait",
+        "sessions": 2,
+        "engagedSessions": 2,
+        "keyEvents": 0
+      }
+    ],
+    "byDevice": [
+      {
+        "device": "mobile",
+        "sessions": 642,
+        "engagedSessions": 506,
+        "keyEvents": 0
+      },
+      {
+        "device": "desktop",
+        "sessions": 500,
+        "engagedSessions": 421,
+        "keyEvents": 0
+      },
+      {
+        "device": "tablet",
+        "sessions": 2,
+        "engagedSessions": 1,
+        "keyEvents": 0
+      }
+    ]
+  },
+  "technicalDefectRevalidation": {
+    "probe404Std": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 200,
+      "location": null,
+      "title": "TalentXcel — Global Career Platform, Jobs & Passport"
+    },
+    "probe404Bot": {
+      "url": "https://talentxcel.in/resume/interview-prep/executive-golang-developer-interview-questions-and-answers-part-3",
+      "status": 404,
+      "location": null,
+      "title": "Page Not Found (404) | TalentXcel"
+    },
+    "probe308Sub": {
+      "url": "https://jobs.talentxcel.in/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+      "status": 308,
+      "location": "https://talentxcel.in/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+      "title": null
+    },
+    "probe308Dest": {
+      "url": "https://talentxcel.in/jobs/devops-cloud-infrastructure-engineer-ntpc-sipat-bilaspur-chhattisgarh-india",
+      "status": 200,
+      "location": null,
+      "title": "NTPC Careers: DevOps &amp; Vacancies (14 Live) | TalentXcel"
+    },
+    "ntpcCanonicalInSitemap": true,
+    "ntpcSubdomainInSitemap": false
+  },
+  "refinedCannibalizationCounts": {
+    "TRUE_CANNIBALIZATION": 350,
+    "NEEDS_REVIEW": 63,
+    "NO_ACTION": 268,
+    "PAGE_DIFFERENTIATION_REQUIRED": 8,
+    "INTENT_OVERLAP": 37,
+    "LEGITIMATE_MULTIPLE_RANKING": 73,
+    "CONSOLIDATION_CANDIDATE": 1
+  },
+  "priorityTierCounts": {
+    "P0": 3,
+    "P1": 70,
+    "P2": 285,
+    "P3": 0,
+    "P4": 12
+  },
+  "batchCounts": {
+    "BATCH_1_CRITICAL_AND_CTR": 39,
+    "BATCH_2_RANKING_AND_INVENTORY": 152,
+    "BATCH_3_CANNIBALIZATION_AND_CANONICAL": 179
+  },
+  "supabaseSyncStats": {
+    "seo_cannibalization_audits": 250,
+    "seo_growth_execution_queue": 1
+  }
+}

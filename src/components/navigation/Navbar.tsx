@@ -41,6 +41,7 @@ import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { useMobileDetection } from '@/hooks/useMobileDetection';
 import { TalentXcelLogo } from '@/components/common/TalentXcelLogo';
+import { UniversalSearch } from '@/components/navigation/UniversalSearch';
 import { getCurrentUniverse } from '@/config/domainArchitecture';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -300,8 +301,11 @@ export const Navbar = () => {
                 </DropdownMenu>
               </div>
 
-              {/* Top Right: Workspace Mode + Notifications + User Avatar */}
+              {/* Top Right: Universal Search + Workspace Mode + Notifications + User Avatar */}
               <div className="flex items-center space-x-2 sm:space-x-3">
+                <div className="hidden xl:block">
+                  <UniversalSearch />
+                </div>
                 
                 {/* Dynamic Role / Workspace Switcher Pill */}
                 {activeWorkspace === 'employer' ? (

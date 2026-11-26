@@ -3,6 +3,7 @@
 // Enables multi-location employer job acquisition, currency normalization, and geographic telemetry
 
 import type { CountryMetadata } from './globalLocationsSchema';
+export type { CountryMetadata };
 
 export const GLOBAL_COUNTRIES: CountryMetadata[] = [
   // --- Tier 1: Primary Global Employment & Tech Centers ---

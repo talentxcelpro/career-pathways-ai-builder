@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { UniversalSearch } from "@/components/navigation/UniversalSearch";
 import { AdvertisingSidebar } from "@/components/network/AdvertisingSidebar";
 import { NetworkAnalytics } from "@/components/network/NetworkAnalytics";
 import { EnhancedSmartConnectAI } from "@/components/network/EnhancedSmartConnectAI";
@@ -76,6 +77,7 @@ const Network: React.FC = () => {
     }, { replace: true });
   };
 
+  const [universalSearchOpen, setUniversalSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [postFilter, setPostFilter] = useState<'all' | 'latest' | 'trending' | 'following'>('all');
   const queryClient = useQueryClient();
@@ -300,13 +302,36 @@ const Network: React.FC = () => {
                     id="mobile-network-search-input"
                     placeholder="Search posts, people, companies, jobs, hashtags..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setSearchTerm(val);
+                      if (val.trim().length > 0 && !universalSearchOpen) {
+                        setUniversalSearchOpen(true);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        setUniversalSearchOpen(true);
+                      }
+                    }}
                     className="border-0 bg-transparent text-xs font-medium placeholder:text-muted-foreground focus-visible:ring-0 h-6 p-0"
                   />
-                  <Button variant="ghost" size="sm" className="rounded-full h-6 w-6 p-0 text-muted-foreground hover:text-foreground shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setUniversalSearchOpen(true)}
+                    aria-label="Open Universal Search"
+                    className="rounded-full h-6 w-6 p-0 text-muted-foreground hover:text-foreground shrink-0"
+                  >
                     <SlidersHorizontal className="h-3 w-3" />
                   </Button>
                 </div>
+                <UniversalSearch
+                  open={universalSearchOpen}
+                  onOpenChange={setUniversalSearchOpen}
+                  externalQuery={searchTerm}
+                />
 
                 {/* Enhanced Create Post Card */}
                 <EnhancedCreatePost />

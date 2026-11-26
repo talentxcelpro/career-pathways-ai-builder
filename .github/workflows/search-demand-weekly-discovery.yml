@@ -1,0 +1,53 @@
+name: Search Demand Weekly Discovery & Strategy Refresh
+
+on:
+  schedule:
+    # Weekly on Sundays at 02:37 UTC
+    - cron: '37 2 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: search-demand-weekly-discovery
+  cancel-in-progress: false
+
+jobs:
+  weekly-discovery:
+    name: Expand Compliant Taxonomies & Refresh Briefs
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24+
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline
+
+      - name: Run Compliant Keyword Discovery Engine
+        env:
+          TX_SUPABASE_URL: ${{ secrets.TX_SUPABASE_URL }}
+          TALENTXCEL_SERVICE_ROLE_KEY: ${{ secrets.TALENTXCEL_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/search-intelligence/discover-keywords.ts
+
+      - name: Run Scoring, Qualification & Content Brief Refresh
+        env:
+          TX_SUPABASE_URL: ${{ secrets.TX_SUPABASE_URL }}
+          TALENTXCEL_SERVICE_ROLE_KEY: ${{ secrets.TALENTXCEL_SERVICE_ROLE_KEY }}
+        run: npx tsx scripts/search-intelligence/run-intelligence-cycle.ts
+
+      - name: Run Phase 3+4 Weekly Closed-Loop & Scorecard Refresh
+        env:
+          TX_SUPABASE_URL: ${{ secrets.TX_SUPABASE_URL }}
+          TALENTXCEL_SERVICE_ROLE_KEY: ${{ secrets.TALENTXCEL_SERVICE_ROLE_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_EMAIL: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}
+          GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY }}
+        run: |
+          npx tsx scripts/search-intelligence/sync-gsc-multiwindow.ts
+          npx tsx scripts/search-intelligence/run-phase3-closed-loop.ts
+          npx tsx scripts/search-intelligence/run-phase4-autonomous-growth.ts --mode=weekly

@@ -1,0 +1,6 @@
+# Keep raw public open datasets & large SQLite warehouse files out of git history
+datasets/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.sqlite*

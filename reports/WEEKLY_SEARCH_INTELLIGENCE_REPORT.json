@@ -1,0 +1,423 @@
+{
+  "generatedAt": "2026-11-25T07:17:49.473Z",
+  "topClusters": [
+    {
+      "cluster_key": "job_search|role:software-engineer|in",
+      "cluster_name": "role software-engineer — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "developer jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/software-engineer/india",
+      "member_count": 35792,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|surface:jobs|in",
+      "cluster_name": "surface jobs — job search (IN)",
+      "cluster_type": "ECOSYSTEM_FUNNEL_CLUSTER",
+      "primary_keyword": "cad jobs in doha",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/location/india",
+      "member_count": 34284,
+      "opportunity_score": 35.32
+    },
+    {
+      "cluster_key": "job_search|skill:data-analytics|in",
+      "cluster_name": "skill data-analytics — job search (IN)",
+      "cluster_type": "SKILL_INTENT_CLUSTER",
+      "primary_keyword": "excel jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/skill/data-analytics",
+      "member_count": 23958,
+      "opportunity_score": 40.5
+    },
+    {
+      "cluster_key": "job_search|role:recruiter|in",
+      "cluster_name": "role recruiter — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "hr jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/recruiter/india",
+      "member_count": 22126,
+      "opportunity_score": 41.44
+    },
+    {
+      "cluster_key": "job_search|industry:human-resources-recruitment|in",
+      "cluster_name": "industry human-resources-recruitment — job search (IN)",
+      "cluster_type": "INDUSTRY_CLUSTER",
+      "primary_keyword": "recruiter jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/industry/human-resources-recruitment",
+      "member_count": 19004,
+      "opportunity_score": 38.77
+    },
+    {
+      "cluster_key": "job_search|role:data-analyst|in",
+      "cluster_name": "role data-analyst — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "data analyst jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/data-analyst/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:data-scientist|in",
+      "cluster_name": "role data-scientist — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "data scientist jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/data-scientist/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:business-analyst|in",
+      "cluster_name": "role business-analyst — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "business analyst jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/business-analyst/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:product-manager|in",
+      "cluster_name": "role product-manager — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "product manager jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/product-manager/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:nurse|in",
+      "cluster_name": "role nurse — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "nurse jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/nurse/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:teacher|in",
+      "cluster_name": "role teacher — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "teacher jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/teacher/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:ui-ux-designer|in",
+      "cluster_name": "role ui-ux-designer — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "designer jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/ui-ux-designer/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|role:business-development-executive|in",
+      "cluster_name": "role business-development-executive — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "sales executive jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/business-development-executive/india",
+      "member_count": 17896,
+      "opportunity_score": 41.41
+    },
+    {
+      "cluster_key": "job_search|industry:accounting-finance|in",
+      "cluster_name": "industry accounting-finance — job search (IN)",
+      "cluster_type": "INDUSTRY_CLUSTER",
+      "primary_keyword": "accountant jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/industry/accounting-finance",
+      "member_count": 16084,
+      "opportunity_score": 38.77
+    },
+    {
+      "cluster_key": "job_search|skill:salesforce|in",
+      "cluster_name": "skill salesforce — job search (IN)",
+      "cluster_type": "SKILL_INTENT_CLUSTER",
+      "primary_keyword": "sap jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/skill/salesforce",
+      "member_count": 15972,
+      "opportunity_score": 40.5
+    },
+    {
+      "cluster_key": "job_search|skill:docker|in",
+      "cluster_name": "skill docker — job search (IN)",
+      "cluster_type": "SKILL_INTENT_CLUSTER",
+      "primary_keyword": "docker jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/skill/docker",
+      "member_count": 15972,
+      "opportunity_score": 40.5
+    },
+    {
+      "cluster_key": "job_search|industry:information-technology|in",
+      "cluster_name": "industry information-technology — job search (IN)",
+      "cluster_type": "INDUSTRY_CLUSTER",
+      "primary_keyword": "cloud jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/industry/information-technology",
+      "member_count": 14964,
+      "opportunity_score": 38.77
+    },
+    {
+      "cluster_key": "community_network|role:software-engineer|in",
+      "cluster_name": "role software-engineer — community network (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "mentorship for developer in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "community_network",
+      "recommended_hub_url": "/network/locations/india",
+      "member_count": 14770,
+      "opportunity_score": 40.15
+    },
+    {
+      "cluster_key": "job_search|role:cybersecurity-analyst|in",
+      "cluster_name": "role cybersecurity-analyst — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "cybersecurity jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/cybersecurity-analyst/india",
+      "member_count": 13319,
+      "opportunity_score": 42.5
+    },
+    {
+      "cluster_key": "job_search|role:marketing-manager|in",
+      "cluster_name": "role marketing-manager — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "marketing jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/marketing-manager/india",
+      "member_count": 13319,
+      "opportunity_score": 41.06
+    },
+    {
+      "cluster_key": "job_search|role:sales-executive|in",
+      "cluster_name": "role sales-executive — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "sales jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/sales-executive/india",
+      "member_count": 13319,
+      "opportunity_score": 41.06
+    },
+    {
+      "cluster_key": "job_search|industry:consulting|in",
+      "cluster_name": "industry consulting — job search (IN)",
+      "cluster_type": "INDUSTRY_CLUSTER",
+      "primary_keyword": "consultant jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/industry/consulting",
+      "member_count": 9675,
+      "opportunity_score": 38.76
+    },
+    {
+      "cluster_key": "job_search|industry:bpo-call-centres|in",
+      "cluster_name": "industry bpo-call-centres — job search (IN)",
+      "cluster_type": "INDUSTRY_CLUSTER",
+      "primary_keyword": "customer support jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/industry/bpo-call-centres",
+      "member_count": 9675,
+      "opportunity_score": 38.76
+    },
+    {
+      "cluster_key": "job_search|role:devops-engineer|in",
+      "cluster_name": "role devops-engineer — job search (IN)",
+      "cluster_type": "ROLE_INTENT_CLUSTER",
+      "primary_keyword": "devops jobs in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/devops-engineer/india",
+      "member_count": 9204,
+      "opportunity_score": 40.81
+    },
+    {
+      "cluster_key": "job_search|industry:marketing-advertising|in",
+      "cluster_name": "industry marketing-advertising — job search (IN)",
+      "cluster_type": "INDUSTRY_CLUSTER",
+      "primary_keyword": "career growth for cad in pune",
+      "country_code": "IN",
+      "language": "en",
+      "intent": "job_search",
+      "recommended_hub_url": "/jobs/industry/marketing-advertising",
+      "member_count": 8620,
+      "opportunity_score": 38.77
+    }
+  ],
+  "gscOpportunitiesByCode": {
+    "A": 13,
+    "B": 17
+  },
+  "internalLinkRescueCount": 15,
+  "funnelLinkCount": 19,
+  "topContentBriefs": [
+    {
+      "briefKey": "brief-4ca49bf9488605",
+      "targetUrl": "/jobs/industry/government-public-sector",
+      "opportunityType": "industry-job",
+      "primaryKeyword": "government careers in pune",
+      "estimatedImpactScore": 89.09
+    },
+    {
+      "briefKey": "brief-04f612c712a5cc",
+      "targetUrl": "/learning/ats-optimization",
+      "opportunityType": "learning-path",
+      "primaryKeyword": "resume optimization for ai in pune",
+      "estimatedImpactScore": 85.93
+    },
+    {
+      "briefKey": "brief-fc6048041b1375",
+      "targetUrl": "/jobs/industry/human-resources-recruitment",
+      "opportunityType": "industry-job",
+      "primaryKeyword": "recruiter jobs in pune",
+      "estimatedImpactScore": 83.7
+    },
+    {
+      "briefKey": "brief-12bb6fdb927a67",
+      "targetUrl": "/jobs/industry/information-technology",
+      "opportunityType": "industry-job",
+      "primaryKeyword": "cloud jobs in pune",
+      "estimatedImpactScore": 83.09
+    },
+    {
+      "briefKey": "brief-dcee5695a9d7d9",
+      "targetUrl": "/jobs/fresher",
+      "opportunityType": "fresher-role-job",
+      "primaryKeyword": "fresher jobs in india",
+      "estimatedImpactScore": 82.65
+    },
+    {
+      "briefKey": "brief-67005aa7a09cd9",
+      "targetUrl": "/jobs/location/india",
+      "opportunityType": "role-country-job",
+      "primaryKeyword": "cad jobs in doha",
+      "estimatedImpactScore": 80.5
+    },
+    {
+      "briefKey": "brief-45b4f2927a84ff",
+      "targetUrl": "/jobs/skill/digital-marketing",
+      "opportunityType": "skill-job",
+      "primaryKeyword": "seo jobs in pune",
+      "estimatedImpactScore": 79.04
+    },
+    {
+      "briefKey": "brief-851f39967a11e2",
+      "targetUrl": "/learning/java",
+      "opportunityType": "learning-path",
+      "primaryKeyword": "marketer with java skills",
+      "estimatedImpactScore": 78.44
+    },
+    {
+      "briefKey": "brief-75af68cd946403",
+      "targetUrl": "/jobs/software-engineer/india",
+      "opportunityType": "role-city-job",
+      "primaryKeyword": "developer jobs in pune",
+      "estimatedImpactScore": 78.08
+    },
+    {
+      "briefKey": "brief-f9375eecb5d0c1",
+      "targetUrl": "/learning/aws",
+      "opportunityType": "learning-path",
+      "primaryKeyword": "marketer with aws skills",
+      "estimatedImpactScore": 74.21
+    },
+    {
+      "briefKey": "brief-30fa3b3ee7fe66",
+      "targetUrl": "/learning/python",
+      "opportunityType": "learning-path",
+      "primaryKeyword": "marketer with python skills",
+      "estimatedImpactScore": 73.77
+    },
+    {
+      "briefKey": "brief-72d0b9249479d2",
+      "targetUrl": "/jobs/location/kochi",
+      "opportunityType": "city-employment-hub",
+      "primaryKeyword": "cad jobs in kochi",
+      "estimatedImpactScore": 72.86
+    },
+    {
+      "briefKey": "brief-20e8bde6dec466",
+      "targetUrl": "/colleges",
+      "opportunityType": "college-placement",
+      "primaryKeyword": "colleges placement india",
+      "estimatedImpactScore": 72.84
+    },
+    {
+      "briefKey": "brief-d011edb41d61f2",
+      "targetUrl": "/learning/data-analytics",
+      "opportunityType": "learning-path",
+      "primaryKeyword": "marketer with excel skills",
+      "estimatedImpactScore": 72.75
+    },
+    {
+      "briefKey": "brief-c3c9d67a2283dc",
+      "targetUrl": "/learning/docker",
+      "opportunityType": "learning-path",
+      "primaryKeyword": "marketer with docker skills",
+      "estimatedImpactScore": 72.43
+    }
+  ],
+  "thinPagePreventionStats": {
+    "rejectedThin": 97,
+    "noindexMonitor": 24,
+    "qualifiedForIndex": 19
+  }
+}

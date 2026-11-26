@@ -109,11 +109,11 @@
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800"
+          "value": "public, max-age=300, s-maxage=3600, stale-while-revalidate=3600"
         },
         {
           "key": "CDN-Cache-Control",
-          "value": "max-age=86400, stale-while-revalidate=604800"
+          "value": "max-age=3600, stale-while-revalidate=3600"
         }
       ]
     },
@@ -2070,6 +2070,10 @@
     {
       "source": "/sitemap-passport.xml",
       "destination": "/api/sitemap-passport"
+    },
+    {
+      "source": "/sitemap-rankings.xml",
+      "destination": "/api/seo-render?path=sitemap-rankings.xml"
     },
     {
       "source": "/(sitemap[^/]*\\.xml)",

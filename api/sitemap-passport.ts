@@ -2,18 +2,127 @@
 // Dynamic Supabase-Driven Sitemap & Sitemap Index for all qualifying Career Passports (isIndexReady === true)
 // Serves real-time XML with zero static build steps or GitHub commits.
 // Fully compliant with Google & Schema sitemap protocol:
-// - Strictly includes profiles with active affirmative consent and index completeness
-// - Accurate lastmod timestamps from updated_at / created_at
-// - Canonical URLs strictly on https://talentxcel.in/u/:username
-// - XML escaped and supports pagination (?page=1)
-// - Exposes sitemapindex if total profiles exceed segment capacity or when view=index is requested
-// - Guarantees every qualifying profile appears in exactly one segment (shard)
+// - Strictly includes profiles with active affirmative consent (via public_profiles view) and structured completeness
+// - Paginated PostgREST batch fetching (1,000 rows per batch) so inventory > 1,000 is never truncated
+// - Deduplicated canonical URLs strictly on https://talentxcel.in/u/:username
+// - Accurate lastmod timestamps from created_at
+// - XML escaped and supports shard pagination (?page=1)
 
 export const config = {
   runtime: 'edge',
 };
 
-const PAGE_SIZE = 10_000; // Strict sitemap shard limit (well within Google's 50,000 URL / 50MB limit)
+export const PAGE_SIZE = 10_000; // Sitemap shard limit (well within Google's 50,000 URL / 50MB limit)
+export const POSTGREST_BATCH_SIZE = 1_000; // Supabase PostgREST max-rows per HTTP request
+
+const PLACEHOLDER_REGEX = /^(test|fresher|n\/a|na|none|null|undefined|student|seeking opportunities|looking for job)$/i;
+
+export interface PassportSitemapRecord {
+  username?: string | null;
+  full_name?: string | null;
+  skills?: string[] | null;
+  headline?: string | null;
+  about?: string | null;
+  title?: string | null;
+  location?: string | null;
+  experience_years?: number | null;
+  current_company?: string | null;
+  is_profile_public?: boolean | null;
+  profile_visibility?: string | null;
+  is_deleted?: boolean | null;
+  is_suspended?: boolean | null;
+  created_at?: string | null;
+}
+
+/**
+ * Targeted profile sitemap eligibility gate (Phase 5.4 / 5.5.1).
+ * 100% aligned with evaluateProfileIndexability in api/seo-render.ts:
+ * requires explicit opt-in (`is_profile_public === true`), valid full_name,
+ * non-whitespace username, zero deletions/suspensions, and >= 2 structured signals.
+ */
+export function isPassportProfileSitemapEligible(p: PassportSitemapRecord): boolean {
+  if (!p || typeof p.username !== 'string') return false;
+  const cleanUsername = p.username.trim();
+  if (cleanUsername.length < 2 || /\s/.test(cleanUsername)) return false;
+
+  // Fail-closed: missing or undefined opt-in must not default to public
+  if (p.is_profile_public !== true) return false;
+  if (p.profile_visibility && p.profile_visibility !== 'public') return false;
+  if (p.is_deleted === true || p.is_suspended === true) return false;
+
+  const fullName = (p.full_name || '').trim();
+  if (fullName.length < 2 || PLACEHOLDER_REGEX.test(fullName)) return false;
+
+  const skills = Array.isArray(p.skills) ? p.skills.filter((s) => typeof s === 'string' && s.trim().length > 0) : [];
+  const bio = (p.about || p.headline || p.title || '').trim();
+  const hasMeaningfulBioOrTitle = !PLACEHOLDER_REGEX.test(bio) && bio.length >= 15;
+  const hasSkills = skills.length >= 2;
+  const hasWorkOrExp =
+    (p.experience_years !== null && p.experience_years !== undefined && Number(p.experience_years) > 0) ||
+    Boolean(p.current_company && p.current_company.trim().length >= 2);
+  const hasLocation = Boolean(p.location && p.location.trim().length >= 2);
+
+  const signalCount = [hasMeaningfulBioOrTitle, hasSkills, hasWorkOrExp, hasLocation].filter(Boolean).length;
+  return signalCount >= 2;
+}
+
+export function escapeXml(unsafe: string): string {
+  return (unsafe || '').replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '&': return '&amp;';
+      case '\'': return '&apos;';
+      case '"': return '&quot;';
+      default: return c;
+    }
+  });
+}
+
+export function formatDateIso(dateStr?: string | null): string {
+  if (!dateStr) return new Date().toISOString().split('T')[0];
+  try {
+    const d = new Date(dateStr);
+    if (!isNaN(d.getTime())) {
+      return d.toISOString().split('T')[0];
+    }
+  } catch {
+    // fallback
+  }
+  return new Date().toISOString().split('T')[0];
+}
+
+export function buildPassportUrlsetXml(profiles: PassportSitemapRecord[], includeHubs: boolean = false): string {
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+  if (includeHubs) {
+    const today = new Date().toISOString().split('T')[0];
+    xml += `  <url>\n    <loc>https://talentxcel.in/passport</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>https://talentxcel.in/talent-score</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
+    xml += `  <url>\n    <loc>https://talentxcel.in/talent</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
+  }
+
+  const seenUrls = new Set<string>();
+  for (const p of profiles) {
+    if (!isPassportProfileSitemapEligible(p)) continue;
+    const cleanUsername = p.username!.trim();
+    const loc = `https://talentxcel.in/u/${encodeURIComponent(cleanUsername)}`;
+    if (seenUrls.has(loc)) continue;
+    seenUrls.add(loc);
+
+    const lastmod = formatDateIso(p.created_at);
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(loc)}</loc>\n`;
+    xml += `    <lastmod>${lastmod}</lastmod>\n`;
+    xml += `    <changefreq>weekly</changefreq>\n`;
+    xml += `    <priority>0.7</priority>\n`;
+    xml += `  </url>\n`;
+  }
+
+  xml += '</urlset>';
+  return xml;
+}
 
 function getSupabaseAnonKey(): string {
   return (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_PUBLISHABLE_KEY) || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
@@ -31,46 +140,19 @@ function getSupabaseRestUrl(): string {
   return `${base.replace(/\/$/, '')}/rest/v1`;
 }
 
-function escapeXml(unsafe: string): string {
-  return (unsafe || '').replace(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
-      case '\'': return '&apos;';
-      case '"': return '&quot;';
-      default: return c;
-    }
-  });
-}
-
-function formatDateIso(dateStr?: string | null): string {
-  if (!dateStr) return new Date().toISOString().split('T')[0];
-  try {
-    const d = new Date(dateStr);
-    if (!isNaN(d.getTime())) {
-      return d.toISOString().split('T')[0];
-    }
-  } catch {
-    // fallback
-  }
-  return new Date().toISOString().split('T')[0];
-}
-
 export default async function handler(req: Request): Promise<Response> {
   const reqUrl = new URL(req.url);
   const viewParam = reqUrl.searchParams.get('view');
   const hasExplicitPage = reqUrl.searchParams.has('page');
   const pageParam = parseInt(reqUrl.searchParams.get('page') || '1', 10);
   const page = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
-  const offset = (page - 1) * PAGE_SIZE;
+  const shardOffset = (page - 1) * PAGE_SIZE;
 
   const authHeaders = {
     'apikey': getSupabaseAnonKey(),
     'Authorization': `Bearer ${getSupabaseAnonKey()}`,
   };
 
-  // If view=index is requested or no page is provided, check total count to decide if an index is required
   let totalCount = 0;
   try {
     const countRes = await fetch(`${getSupabaseRestUrl()}/public_profiles?select=id`, {
@@ -119,56 +201,27 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  // Otherwise serve the URL set for the requested page
-  // Query public_profiles view (automatically enforces affirmative consent security barrier)
-  const url = `${getSupabaseRestUrl()}/public_profiles?select=username,skills,headline,about,title,experience_years,current_company,created_at&order=created_at.desc&limit=${PAGE_SIZE}&offset=${offset}`;
+  // Paginated fetch in 1,000-row batches so PostgREST row caps never drop profiles
+  const allShardProfiles: PassportSitemapRecord[] = [];
+  for (let batchOffset = 0; batchOffset < PAGE_SIZE; batchOffset += POSTGREST_BATCH_SIZE) {
+    const remaining = PAGE_SIZE - batchOffset;
+    const batchLimit = Math.min(POSTGREST_BATCH_SIZE, remaining);
+    const currentOffset = shardOffset + batchOffset;
+    const url = `${getSupabaseRestUrl()}/public_profiles?select=username,full_name,skills,headline,about,title,location,experience_years,current_company,is_profile_public,profile_visibility,created_at&order=created_at.desc&limit=${batchLimit}&offset=${currentOffset}`;
 
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-  xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-
-  if (page === 1) {
-    const today = new Date().toISOString().split('T')[0];
-    xml += `  <url>\n    <loc>https://talentxcel.in/passport</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n`;
-    xml += `  <url>\n    <loc>https://talentxcel.in/talent-score</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.95</priority>\n  </url>\n`;
-    xml += `  <url>\n    <loc>https://talentxcel.in/talent</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.85</priority>\n  </url>\n`;
-  }
-
-  try {
-    const res = await fetch(url, { headers: authHeaders });
-
-    if (res.ok) {
-      const profiles = await res.json();
-      if (Array.isArray(profiles)) {
-        for (const p of profiles) {
-          if (!p.username) continue;
-
-          const skills = Array.isArray(p.skills) ? p.skills.filter(Boolean) : [];
-          const bio = (p.headline || p.about || p.title || '').trim();
-          const isPlaceholder = /^(test|fresher|n\/a|na|none|null|undefined|student|seeking opportunities|looking for job)$/i.test(bio);
-
-          const hasEnoughSkills = skills.length >= 3;
-          const hasRich = (!isPlaceholder && bio.length >= 40) ||
-                          (p.experience_years && Number(p.experience_years) > 0) ||
-                          Boolean(p.current_company && p.current_company.trim().length > 0);
-
-          if (hasEnoughSkills && hasRich) {
-            const loc = `https://talentxcel.in/u/${encodeURIComponent(p.username)}`;
-            const lastmod = formatDateIso(p.created_at);
-            xml += `  <url>\n`;
-            xml += `    <loc>${escapeXml(loc)}</loc>\n`;
-            xml += `    <lastmod>${lastmod}</lastmod>\n`;
-            xml += `    <changefreq>weekly</changefreq>\n`;
-            xml += `    <priority>0.7</priority>\n`;
-            xml += `  </url>\n`;
-          }
-        }
-      }
+    try {
+      const res = await fetch(url, { headers: authHeaders });
+      if (!res.ok) break;
+      const batch = await res.json();
+      if (!Array.isArray(batch) || batch.length === 0) break;
+      allShardProfiles.push(...batch);
+      if (batch.length < batchLimit) break; // Reached final record in DB
+    } catch {
+      break;
     }
-  } catch {
-    // Non-fatal edge fallback
   }
 
-  xml += '</urlset>';
+  const xml = buildPassportUrlsetXml(allShardProfiles, page === 1);
 
   return new Response(xml, {
     status: 200,
