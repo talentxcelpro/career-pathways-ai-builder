@@ -848,17 +848,33 @@ function notFoundResponse(cleanPath: string, isDebug: boolean = false, isProfile
   });
 }
 
+class TransientOriginError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TransientOriginError';
+  }
+}
+
+async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs: number = 3500): Promise<Response> {
+  return fetch(url, {
+    ...init,
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+}
+
 async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
     const filter = isUuid ? `id=eq.${encodeURIComponent(slugOrId)}` : `seo_slug=eq.${encodeURIComponent(slugOrId)}`;
     const url = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,company_website,organization_logo_url,organization_website&${filter}&limit=1`;
-    const res = await fetch(url, {
-      headers: {
-        'apikey': getSupabaseAnonKey(),
-        'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-      },
-    });
+    const authHeaders = {
+      'apikey': getSupabaseAnonKey(),
+      'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+    };
+    const res = await fetchWithTimeout(url, { headers: authHeaders }, 3000);
+    if (res.status >= 500) {
+      throw new TransientOriginError(`Supabase jobs query returned HTTP ${res.status}`);
+    }
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
@@ -869,12 +885,10 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
     // Fallback 1: If slug has no trailing suffix, check with '-1' suffix (reconciles GSC indexed ranking slugs)
     if (!isUuid && !/-\d+$/.test(slugOrId)) {
       const fallbackUrl1 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,company_website,organization_logo_url,organization_website&seo_slug=eq.${encodeURIComponent(slugOrId + '-1')}&limit=1`;
-      const fbRes1 = await fetch(fallbackUrl1, {
-        headers: {
-          'apikey': getSupabaseAnonKey(),
-          'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-        },
-      });
+      const fbRes1 = await fetchWithTimeout(fallbackUrl1, { headers: authHeaders }, 2500);
+      if (fbRes1.status >= 500) {
+        throw new TransientOriginError(`Supabase jobs fallback1 returned HTTP ${fbRes1.status}`);
+      }
       if (fbRes1.ok) {
         const fbData1 = await fbRes1.json();
         if (Array.isArray(fbData1) && fbData1.length > 0) {
@@ -887,12 +901,10 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
     if (!isUuid && /-\d+$/.test(slugOrId)) {
       const stripped = slugOrId.replace(/-\d+$/, '');
       const fallbackUrl2 = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,company_website,organization_logo_url,organization_website&seo_slug=eq.${encodeURIComponent(stripped)}&limit=1`;
-      const fbRes2 = await fetch(fallbackUrl2, {
-        headers: {
-          'apikey': getSupabaseAnonKey(),
-          'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-        },
-      });
+      const fbRes2 = await fetchWithTimeout(fallbackUrl2, { headers: authHeaders }, 2500);
+      if (fbRes2.status >= 500) {
+        throw new TransientOriginError(`Supabase jobs fallback2 returned HTTP ${fbRes2.status}`);
+      }
       if (fbRes2.ok) {
         const fbData2 = await fbRes2.json();
         if (Array.isArray(fbData2) && fbData2.length > 0) {
@@ -902,7 +914,10 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
     }
 
     return null;
-  } catch {
+  } catch (err: any) {
+    if (err instanceof TransientOriginError || err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+      throw new TransientOriginError(err?.message || 'Supabase job lookup timed out');
+    }
     return null;
   }
 }
@@ -919,13 +934,15 @@ async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
       filter = `username=ilike.${encodeURIComponent(cleaned)}`;
     }
     const selectCols = 'id,full_name,headline,title,location,profile_picture_url,profile_photo_url,username,skills,about,experience_years,current_company,industry,linkedin_url,github_url,portfolio_url,website,verification_status,is_profile_public,created_at';
+    const authHeaders = {
+      'apikey': getSupabaseAnonKey(),
+      'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+    };
     const url = `${getSupabaseRestUrl()}/public_profiles?select=${selectCols}&${filter}&limit=1`;
-    const res = await fetch(url, {
-      headers: {
-        'apikey': getSupabaseAnonKey(),
-        'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-      },
-    });
+    const res = await fetchWithTimeout(url, { headers: authHeaders }, 3000);
+    if (res.status >= 500) {
+      throw new TransientOriginError(`Supabase profile query returned HTTP ${res.status}`);
+    }
     if (!res.ok) return null;
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) {
@@ -935,19 +952,17 @@ async function lookupProfileInSupabase(slugOrId: string): Promise<any | null> {
     if (!isUuid && (cleaned.includes('-') || cleaned.includes('_'))) {
       const altSlug = cleaned.includes('-') ? cleaned.replace(/-/g, '_') : cleaned.replace(/_/g, '-');
       const urlAlt = `${getSupabaseRestUrl()}/public_profiles?select=${selectCols}&username=ilike.${encodeURIComponent(altSlug)}&limit=1`;
-      const resAlt = await fetch(urlAlt, {
-        headers: {
-          'apikey': getSupabaseAnonKey(),
-          'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-        },
-      });
+      const resAlt = await fetchWithTimeout(urlAlt, { headers: authHeaders }, 2500);
       if (resAlt.ok) {
         const dataAlt = await resAlt.json();
         if (Array.isArray(dataAlt) && dataAlt.length > 0) return dataAlt[0];
       }
     }
     return null;
-  } catch {
+  } catch (err: any) {
+    if (err instanceof TransientOriginError || err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+      throw new TransientOriginError(err?.message || 'Supabase profile lookup timed out');
+    }
     return null;
   }
 }
@@ -977,10 +992,10 @@ async function lookupProfileEnrichment(profileId: string, skills: string[] = [],
     if (!isUuid) return result;
 
     const [endorsementsRes, atsRes, careerSkillsRes, jobsRes] = await Promise.allSettled([
-      fetch(`${getSupabaseRestUrl()}/peer_endorsements?select=id,endorser_name,skill_name,feedback,created_at&target_user_id=eq.${encodeURIComponent(profileId)}&status=eq.approved&limit=5`, { headers }),
-      fetch(`${getSupabaseRestUrl()}/ats_public_scans?select=id,ats_score,created_at&user_id=eq.${encodeURIComponent(profileId)}&order=created_at.desc&limit=1`, { headers }),
-      fetch(`${getSupabaseRestUrl()}/career_skills?select=skill_name&user_id=eq.${encodeURIComponent(profileId)}&limit=15`, { headers }),
-      fetch(`${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,salary_min,salary_max,salary_currency,employment_type,skills_required&is_active=eq.true&order=created_at.desc&limit=4`, { headers }),
+      fetchWithTimeout(`${getSupabaseRestUrl()}/peer_endorsements?select=id,endorser_name,skill_name,feedback,created_at&target_user_id=eq.${encodeURIComponent(profileId)}&status=eq.approved&limit=5`, { headers }, 2500),
+      fetchWithTimeout(`${getSupabaseRestUrl()}/ats_public_scans?select=id,ats_score,created_at&user_id=eq.${encodeURIComponent(profileId)}&order=created_at.desc&limit=1`, { headers }, 2500),
+      fetchWithTimeout(`${getSupabaseRestUrl()}/career_skills?select=skill_name&user_id=eq.${encodeURIComponent(profileId)}&limit=15`, { headers }, 2500),
+      fetchWithTimeout(`${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,salary_min,salary_max,salary_currency,employment_type,skills_required&is_active=eq.true&order=created_at.desc&limit=4`, { headers }, 2500),
     ]);
 
     if (endorsementsRes.status === 'fulfilled' && endorsementsRes.value.ok) {
@@ -1018,12 +1033,15 @@ async function lookupPostInSupabase(postId: string): Promise<{ post: any; author
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(postId);
     if (!isUuid) return null;
     const url = `${getSupabaseRestUrl()}/posts?select=id,content,headline,media_urls,featured_image_url,created_at,author_id,user_id,visibility,is_public,is_deleted&id=eq.${encodeURIComponent(postId)}&is_deleted=neq.true&limit=1`;
-    const res = await fetch(url, {
+    const res = await fetchWithTimeout(url, {
       headers: {
         'apikey': getSupabaseAnonKey(),
         'Authorization': `Bearer ${getSupabaseAnonKey()}`,
       },
-    });
+    }, 3000);
+    if (res.status >= 500) {
+      throw new TransientOriginError(`Supabase posts query returned HTTP ${res.status}`);
+    }
     if (!res.ok) return null;
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) return null;
@@ -1031,10 +1049,18 @@ async function lookupPostInSupabase(postId: string): Promise<{ post: any; author
     const authorId = post.author_id || post.user_id;
     let author: any = null;
     if (authorId) {
-      author = await lookupProfileInSupabase(authorId);
+      try {
+        author = await lookupProfileInSupabase(authorId);
+      } catch {
+        // Non-fatal: still render the verified post if author enrichment times out
+        author = null;
+      }
     }
     return { post, author };
-  } catch {
+  } catch (err: any) {
+    if (err instanceof TransientOriginError || err?.name === 'TimeoutError' || err?.name === 'AbortError') {
+      throw new TransientOriginError(err?.message || 'Supabase post lookup timed out');
+    }
     return null;
   }
 }
@@ -1159,38 +1185,61 @@ export default async function handler(req: Request) {
 
   const isCandidateRoute = isCandidateProfileRoute(cleanPath);
   const isJobRoute = cleanPath.startsWith('jobs/');
-  const result = await generateDynamicSeoHtml(cleanPath, cleanHost);
-  if (!result || result.status === 404) {
-    return notFoundResponse(cleanPath, isDebug, isCandidateRoute);
-  }
-
-  const responseHeaders: Record<string, string> = {
-    'Content-Type': 'text/html; charset=utf-8',
-    'Cache-Control': result.cacheControl || 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
-    'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
-    'X-Robots-Tag': result.robotsDirective,
-    ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
-  };
-
-  if (isCandidateRoute && (!result.status || result.status === 200)) {
-    if (result.cacheTag) {
-      responseHeaders['Vercel-Cache-Tag'] = result.cacheTag;
-      responseHeaders['Cache-Tag'] = result.cacheTag;
-      responseHeaders['Surrogate-Key'] = result.cacheTag;
+  try {
+    const result = await generateDynamicSeoHtml(cleanPath, cleanHost);
+    if (!result || result.status === 404) {
+      return notFoundResponse(cleanPath, isDebug, isCandidateRoute);
     }
-  }
 
-  if (isCandidateRoute && (result.status as number) === 404) {
-    responseHeaders['CDN-Cache-Control'] = 'no-store';
-    responseHeaders['Vercel-CDN-Cache-Control'] = 'no-store';
-    responseHeaders['Pragma'] = 'no-cache';
-    responseHeaders['Surrogate-Control'] = 'no-store';
-  }
+    const responseHeaders: Record<string, string> = {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': result.cacheControl || 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800',
+      'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
+      'X-Robots-Tag': result.robotsDirective,
+      ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
+    };
 
-  return new Response(result.html, {
-    status: result.status || 200,
-    headers: responseHeaders,
-  });
+    if (isCandidateRoute && (!result.status || result.status === 200)) {
+      if (result.cacheTag) {
+        responseHeaders['Vercel-Cache-Tag'] = result.cacheTag;
+        responseHeaders['Cache-Tag'] = result.cacheTag;
+        responseHeaders['Surrogate-Key'] = result.cacheTag;
+      }
+    }
+
+    if (isCandidateRoute && (result.status as number) === 404) {
+      responseHeaders['CDN-Cache-Control'] = 'no-store';
+      responseHeaders['Vercel-CDN-Cache-Control'] = 'no-store';
+      responseHeaders['Pragma'] = 'no-cache';
+      responseHeaders['Surrogate-Control'] = 'no-store';
+    }
+
+    return new Response(result.html, {
+      status: result.status || 200,
+      headers: responseHeaders,
+    });
+  } catch (err: any) {
+    // Graceful non-cached 503 on transient upstream timeouts or unexpected SSR exceptions:
+    // prevents unhandled 500 crashes, prevents CDN error caching, and avoids false 404 deindexation.
+    const msg = err instanceof Error ? err.message : 'Temporary origin error';
+    return new Response(
+      `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><title>Temporarily Unavailable | TalentXcel</title></head><body><h1>Temporarily Unavailable</h1><p>Please retry shortly.</p></body></html>`,
+      {
+        status: 503,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Retry-After': '300',
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          'CDN-Cache-Control': 'no-store',
+          'Vercel-CDN-Cache-Control': 'no-store',
+          'Surrogate-Control': 'no-store',
+          'X-Render-Engine': 'TalentXcel-Edge-SSR-Hydrator',
+          'X-Robots-Tag': 'noindex, nofollow',
+          ...(isDebug ? { 'X-SEO-Error': msg.slice(0, 120) } : {}),
+        },
+      }
+    );
+  }
 }
 
 function escapeHtml(str: string): string {
@@ -3500,7 +3549,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
             <div>
               <h2 class="text-base font-bold text-white">${escapeHtml(authorName)}</h2>
               ${author?.headline ? `<p class="text-xs text-slate-400 line-clamp-1">${escapeHtml(author.headline)}</p>` : ''}
-              <time class="text-[11px] text-slate-500">${new Date(post.created_at).toLocaleDateString()}</time>
+              <time class="text-[11px] text-slate-500">${post.created_at && !isNaN(new Date(post.created_at).getTime()) ? new Date(post.created_at).toLocaleDateString() : ''}</time>
             </div>
           </div>
           <div class="text-slate-200 text-sm md:text-base leading-relaxed whitespace-pre-wrap">${escapeHtml(post.content || '')}</div>
@@ -5312,7 +5361,7 @@ async function generateDynamicSeoHtml(cleanPath: string, cleanHost: string = '')
 
       robotsDirective = 'index, follow';
 
-      const resolvedDatePosted = (job.posted_at || job.date_posted || job.created_at || '2026-10-01').split('T')[0];
+      const resolvedDatePosted = String(job.posted_at || job.date_posted || job.created_at || '2026-10-01').split('T')[0];
       const hasExternalUrl = !!(job.external_url && job.external_url.trim().length > 0);
       const isDirectApply = !hasExternalUrl;
 
