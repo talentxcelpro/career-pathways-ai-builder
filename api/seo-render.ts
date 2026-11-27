@@ -2170,7 +2170,18 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       } else {
         const compactCompany = company.replace(/ Limited| Pvt Ltd| Ltd/gi, '').trim();
         const baseTitle = `${jobTitle} at ${compactCompany} (${cityLoc}) | TalentXcel`;
-        title = baseTitle.length <= 60 ? baseTitle : `${jobTitle} at ${compactCompany} | TalentXcel`.slice(0, 60);
+        const suffix = ' | TalentXcel';
+        const fullNoLoc = `${jobTitle} at ${compactCompany}${suffix}`;
+        if (baseTitle.length <= 60) {
+          title = baseTitle;
+        } else if (fullNoLoc.length <= 60) {
+          title = fullNoLoc;
+        } else {
+          const maxBody = 60 - suffix.length;
+          const rawBody = `${jobTitle} at ${compactCompany}`.slice(0, maxBody);
+          const cleanBody = rawBody.replace(/\s+\S*$/, '').replace(/[\s&\-/,]+$/, '').trim();
+          title = `${cleanBody || rawBody.trim()}${suffix}`;
+        }
       }
       description = `Apply for ${jobTitle} at ${company} in ${loc}.${salaryDisplay ? ' Annual CTC: ' + salaryDisplay + '.' : ''} Verified vacancy with direct application on TalentXcel.`;
       canonical = `https://talentxcel.in/jobs/${job.seo_slug || job.id}`;

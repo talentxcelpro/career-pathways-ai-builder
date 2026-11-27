@@ -1326,6 +1326,16 @@
   ],
   "redirects": [
     {
+      "source": "/career-insights/salary/data-scientist-salary-in-hyderabad",
+      "destination": "https://salary.talentxcel.in/salary/data-scientist",
+      "permanent": true
+    },
+    {
+      "source": "/career-insights/salary/senior-staff-data-scientist-salary-in-hyderabad",
+      "destination": "https://salary.talentxcel.in/salary/data-scientist",
+      "permanent": true
+    },
+    {
       "source": "/jobs/:slug+",
       "has": [
         {

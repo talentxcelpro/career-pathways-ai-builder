@@ -203,7 +203,7 @@ export async function generateProductionSitemaps() {
         if (!slug || slug === 'senior-devops-architect-acme-corp-bengaluru' || slug.includes('acme')) return;
         
         // Quality Gate: Exclude closed or expired jobs from XML sitemap
-        if (j.job_status === 'closed' || j.job_status === 'expired') return;
+        if (j.job_status === 'closed' || j.job_status === 'expired' || j.status === 'closed' || j.status === 'expired') return;
         if (j.expires_at && !isNaN(new Date(j.expires_at).getTime()) && new Date(j.expires_at) < new Date()) {
           return;
         }
