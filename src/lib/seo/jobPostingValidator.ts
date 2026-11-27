@@ -2,6 +2,8 @@
 // Google Search Console & Schema.org JobPosting Fail-Closed Validator
 // Ensures 100% compliance with Google Jobs Structured Data Specifications
 
+import { isJobLive } from './isJobLive.js';
+
 export interface RawJobData {
   id: string;
   title?: string;
@@ -143,33 +145,20 @@ export function validateJobPosting(job: RawJobData): JobValidationResult {
     errors.push('Missing valid application method (application_email, external_url, or portal apply)');
   }
 
-  // 6. Active & Lifecycle Check
-  const isActive = job.is_active !== false && job.job_status !== 'closed' && job.job_status !== 'expired';
-  if (!isActive) {
+  // 6. Active & Lifecycle Check (authoritative isJobLive helper; expiry_date excluded)
+  if (!isJobLive(job)) {
     errors.push('Job is inactive, closed, or expired');
   }
 
-  // 7. validThrough / Expiration Date (SEO-006 Mandate: Zero Rolling Fabrication)
-  // Use actual vacancy deadlines and verified closure dates only.
-  // Never generate arbitrary rolling 30/45/60/90-day expiration dates.
-  // When no reliable expiry date exists, omit validThrough (null) per Google JobPosting spec.
+  // 7. validThrough / Expiration Date (never emit a past validThrough; fall back to expires_at or omit)
   let resolvedValidThrough: string | null = null;
-  const rawExpiry = job.expires_at || job.expiry_date;
+  const rawExpiry = job.expires_at || job.application_deadline;
   if (rawExpiry) {
     const expDate = new Date(rawExpiry);
-    if (!isNaN(expDate.getTime())) {
-      if (expDate <= new Date()) {
-        if (!isActive) {
-          errors.push('Job has expired (expires_at is in the past)');
-        }
-        // If past deadline, omit validThrough rather than fabricating a future date
-      } else {
-        // Genuine, verified future deadline
-        resolvedValidThrough = expDate.toISOString();
-      }
+    if (!isNaN(expDate.getTime()) && expDate.getTime() > Date.now()) {
+      resolvedValidThrough = expDate.toISOString();
     }
   }
-  // When no reliable rawExpiry exists, resolvedValidThrough remains null.
 
   // 8. Location Quality (Warnings vs Errors)
   if (job.is_remote) {
