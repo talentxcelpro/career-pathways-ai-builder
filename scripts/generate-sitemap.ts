@@ -173,6 +173,7 @@ export async function generateProductionSitemaps() {
     { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/jobs', changefreq: 'daily', priority: '1.0' },
   ];
+  const liveJobsForHubGate: any[] = [];
   try {
     // Fetch redirect source slugs so old/deduped slugs are excluded from sitemap
     const redirectFromSlugs = new Set<string>();
@@ -231,7 +232,6 @@ export async function generateProductionSitemaps() {
     }
 
     const seenFingerprints = new Set<string>();
-    const liveJobsForHubGate: any[] = [];
 
     if (allDbJobs.length > 0) {
       allDbJobs.forEach(j => {
@@ -360,7 +360,7 @@ export async function generateProductionSitemaps() {
     'chatr-chat', 'savantis-solutions'
   ];
   const companyEntries = deduplicate(
-    CANDATE_COMPANY_SLUGS
+    CANDIDATE_COMPANY_SLUGS
       .filter((slug) => countLiveJobsForCompanyHub(slug, liveJobsForHubGate) >= COMPANY_HUB_INDEX_THRESHOLD)
       .map((slug) => ({
         path: `/company/${slug}`,
