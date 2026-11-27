@@ -219,7 +219,10 @@ export async function generateProductionSitemaps() {
         error = retry.error;
       }
 
-      if (error || !chunk || chunk.length === 0) {
+      if (error) {
+        throw new Error(`Supabase jobs query failed during sitemap generation: ${error.message}`);
+      }
+      if (!chunk || chunk.length === 0) {
         hasMore = false;
       } else {
         allDbJobs.push(...chunk);
@@ -278,6 +281,7 @@ export async function generateProductionSitemaps() {
     console.log(`✓ Fetched ${allDbJobs.length} active DB rows -> ${liveJobsForHubGate.length} live unique-fingerprint jobs for sitemap-jobs.xml`);
   } catch (e) {
     console.error('Error fetching active jobs for sitemap:', e);
+    throw e;
   }
   const activeJobEntries = deduplicate(activeJobEntriesList);
 
