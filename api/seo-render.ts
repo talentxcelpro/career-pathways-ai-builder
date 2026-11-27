@@ -1,4 +1,6 @@
 
+import { isJobLive } from '../src/lib/seo/isJobLive.js';
+
 const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string; country: string; countryCode: string; flag: string; currency: string; metaTitle: string; metaDescription: string; canonicalUrl: string; visaNote: string }> = {
   'data-analyst-dubai-uae': {
     roleTitle: 'Data Analyst & Analytics Engineer',
@@ -693,7 +695,7 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
     const filter = isUuid ? `id=eq.${encodeURIComponent(slugOrId)}` : `seo_slug=eq.${encodeURIComponent(slugOrId)}`;
-    const url = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,seo_slug,posted_at,date_posted,created_at,expires_at,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&${filter}&limit=1`;
+    const url = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,job_status,status,seo_slug,posted_at,date_posted,created_at,expires_at,expiry_date,application_deadline,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&${filter}&limit=1`;
     const res = await fetch(url, {
       headers: {
         'apikey': getSupabaseAnonKey(),
@@ -2019,20 +2021,23 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
         return null; // Genuine 404 for non-existent job posting (Soft-404 eliminated!)
       }
 
-      // Check if job is closed or expired
-      const isPastExpiry = job.expires_at && !isNaN(new Date(job.expires_at).getTime()) && new Date(job.expires_at) < new Date();
-      const isInactive = job.is_active === false || isPastExpiry;
+      const closedJobTitle = (job.title || formatTitle(secondary)).trim();
+      const closedCompany = (job.company_name || 'Verified Employer').trim();
+      const closedLoc = (job.location || 'India').trim();
+      const closedCityLoc = closedLoc.split(',')[0].trim() || 'India';
+
+      // Check if job is closed or expired using shared authoritative isJobLive()
+      const isInactive = !isJobLive(job);
 
       if (isInactive) {
-        // High-Value Soft Expiry Guard: 6 Active Verified Similar Jobs + In-Browser ATS + Salary Tools
-        // Eliminates Soft 404s by providing immediate high-relevance search equity to crawlers and users
+        const companySlug = closedCompany.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const citySlug = closedCityLoc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        // 200 "closed" page with similar-jobs links, noindex,follow, NO JobPosting schema
         const fallbackJobs = [
-          { title: `${jobTitle} (Active Opening)`, company: 'Verified Technology Partner', loc: loc, slug: 'jobs/software-engineer-remote-us', salary: '₹12.0L–₹24.0L PA' },
-          { title: `Senior ${jobTitle}`, company: 'Enterprise GCC Partner', loc: cityLoc, slug: 'jobs/data-analyst-remote-usa', salary: '₹18.0L–₹32.0L PA' },
-          { title: `Lead ${jobTitle}`, company: 'Cloud Infrastructure Lab', loc: 'Bangalore, India', slug: 'jobs/cloud-engineer-riyadh-saudi-arabia', salary: '₹22.0L–₹40.0L PA' },
-          { title: `${jobTitle} — Global Remote`, company: 'Distributed Systems Corp', loc: 'Remote', slug: 'jobs/software-engineer-abu-dhabi-uae', salary: '₹15.0L–₹28.0L PA' },
-          { title: `Associate ${jobTitle}`, company: 'Technology Innovation Center', loc: cityLoc, slug: 'jobs/data-analyst-dubai-uae', salary: '₹9.0L–₹16.0L PA' },
-          { title: `Staff ${jobTitle}`, company: 'FinTech Platform Group', loc: 'Mumbai, India', slug: 'jobs', salary: '₹25.0L–₹45.0L PA' }
+          { title: `Browse All Active ${closedJobTitle} Roles`, company: 'TalentXcel Jobs', loc: closedLoc, href: 'https://talentxcel.in/jobs' },
+          { title: `Active Openings at ${closedCompany}`, company: closedCompany, loc: closedCityLoc, href: `https://talentxcel.in/company/${companySlug}` },
+          { title: `Live Jobs in ${closedCityLoc}`, company: 'Verified Employers', loc: closedCityLoc, href: `https://talentxcel.in/locations/${citySlug}` },
+          { title: 'Explore All Verified Companies', company: 'Company Hubs', loc: 'India', href: 'https://talentxcel.in/companies' },
         ];
 
         return {
@@ -2057,38 +2062,18 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       </div>
       <h1 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">This Position Has Closed</h1>
       <p class="text-slate-300 text-sm leading-relaxed mb-6">
-        The vacancy for <strong class="text-white">${escapeHtml(jobTitle)}</strong> at <strong class="text-white">${escapeHtml(company)}</strong> is no longer accepting submissions. Explore 6 active, verified opportunities with matching skill profiles and compensation terms below:
+        The vacancy for <strong class="text-white">${escapeHtml(closedJobTitle)}</strong> at <strong class="text-white">${escapeHtml(closedCompany)}</strong> is no longer accepting submissions. Explore active, verified opportunities below:
       </p>
 
-      <!-- 6 Active Similar Opportunities Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         ${fallbackJobs.map(fj => `
           <div class="p-4 bg-slate-950 border border-slate-800 rounded-xl hover:border-blue-500/50 transition">
             <div class="text-xs text-blue-400 font-semibold mb-1">${escapeHtml(fj.company)}</div>
             <div class="text-sm font-bold text-white mb-1">${escapeHtml(fj.title)}</div>
-            <div class="text-xs text-slate-400 mb-3 flex items-center justify-between">
-              <span>📍 ${escapeHtml(fj.loc)}</span>
-              <span class="text-emerald-400 font-mono font-semibold">${escapeHtml(fj.salary)}</span>
-            </div>
-            <a href="https://talentxcel.in/${fj.slug}" class="block text-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">Apply on TalentXcel &rarr;</a>
+            <div class="text-xs text-slate-400 mb-3">${escapeHtml(fj.loc)}</div>
+            <a href="${fj.href}" class="block text-center px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">Explore Active Roles &rarr;</a>
           </div>
         `).join('')}
-      </div>
-
-      <!-- Action Banners -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 mt-6 border-t border-slate-800">
-        <div class="p-4 bg-slate-950/60 border border-slate-800/80 rounded-xl">
-          <div class="text-xs font-bold text-emerald-400 mb-1">FREE ATS RESUME CHECK</div>
-          <div class="text-sm font-semibold text-white mb-1">Check Your Score for Similar Roles</div>
-          <p class="text-xs text-slate-400 mb-3">Instant keyword scan against active enterprise applicant tracking systems.</p>
-          <a href="https://talentxcel.in/ats-check" class="text-xs font-bold text-blue-400 hover:text-blue-300">Run In-Browser ATS Scan &rarr;</a>
-        </div>
-        <div class="p-4 bg-slate-950/60 border border-slate-800/80 rounded-xl">
-          <div class="text-xs font-bold text-blue-400 mb-1">SALARY INTELLIGENCE</div>
-          <div class="text-sm font-semibold text-white mb-1">2026 Compensation Benchmarks</div>
-          <p class="text-xs text-slate-400 mb-3">Explore percentile compensation distributions and peer salary curves.</p>
-          <a href="https://talentxcel.in/salary" class="text-xs font-bold text-blue-400 hover:text-blue-300">Explore Salary Curves &rarr;</a>
-        </div>
       </div>
     </div>
   </div>

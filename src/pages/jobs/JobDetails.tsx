@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { isJobLive } from '@/lib/seo/isJobLive';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -487,13 +488,7 @@ export default function JobDetails() {
   const rawCity = (job.location_city || job.location?.split(',')[0] || '').trim();
   const citySlug = rawCity.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-  const isExpired = Boolean(
-    job.is_active === false ||
-    job.job_status === 'closed' ||
-    job.job_status === 'expired' ||
-    (job.expires_at && new Date(job.expires_at).getTime() < Date.now()) ||
-    (job.application_deadline && new Date(job.application_deadline).getTime() < Date.now())
-  );
+  const isExpired = !isJobLive(job);
 
   return (
     <>
