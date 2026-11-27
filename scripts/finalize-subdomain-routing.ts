@@ -13,7 +13,6 @@ const REQUIRED_SITEMAPS = [
   'sitemap-learning.xml',
   'sitemap-colleges.xml',
   'sitemap-government.xml',
-  'sitemap-employers.xml',
   'sitemap-passport.xml',
   'sitemap-root.xml',
 ];
