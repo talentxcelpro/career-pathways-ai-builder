@@ -1326,6 +1326,11 @@
   ],
   "redirects": [
     {
+      "source": "/jobs/remote-us",
+      "destination": "https://talentxcel.in/jobs/software-engineer-remote-us",
+      "permanent": true
+    },
+    {
       "source": "/career-insights/salary/data-scientist-salary-in-hyderabad",
       "destination": "https://salary.talentxcel.in/salary/data-scientist",
       "permanent": true
