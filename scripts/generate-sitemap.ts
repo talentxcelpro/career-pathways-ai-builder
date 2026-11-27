@@ -170,7 +170,6 @@ export async function generateProductionSitemaps() {
   const baseEntries = deduplicate(BASE_PAGES);
 
   let activeJobEntriesList: SitemapEntry[] = [
-    { path: '/', changefreq: 'daily', priority: '1.0' },
     { path: '/jobs', changefreq: 'daily', priority: '1.0' },
   ];
   const liveJobsForHubGate: any[] = [];
@@ -195,7 +194,7 @@ export async function generateProductionSitemaps() {
     let page = 0;
     const pageSize = 1000;
     let hasMore = true;
-    const selectColsWithContentUpdated = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, job_status, status, posted_at, created_at, expires_at, application_deadline, content_updated_at';
+    const selectColsWithContentUpdated = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, is_test, job_status, status, posted_at, created_at, expires_at, application_deadline, content_updated_at';
     const selectColsFallback = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, job_status, status, posted_at, created_at, expires_at, application_deadline';
     let useFallbackCols = false;
 

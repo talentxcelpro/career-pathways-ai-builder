@@ -4,6 +4,7 @@
  */
 export interface JobLiveCandidate {
   is_active?: boolean | null;
+  is_test?: boolean | null;
   job_status?: string | null;
   status?: string | null;
   expires_at?: string | null;
@@ -13,6 +14,7 @@ export interface JobLiveCandidate {
 export function isJobLive(job: JobLiveCandidate | null | undefined, nowMs: number = Date.now()): boolean {
   if (!job) return false;
   if (job.is_active !== true) return false;
+  if (job.is_test === true) return false;
 
   const jobStatus = (job.job_status ?? '').trim().toLowerCase();
   if (jobStatus === 'closed' || jobStatus === 'expired') return false;

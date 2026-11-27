@@ -11,6 +11,7 @@ import {
   RawJobPayload,
 } from './ingest-ats-jobs.js';
 import { createClient } from '@supabase/supabase-js';
+import { STATIC_JOB_SLUG_REDIRECTS } from '../src/lib/seo/staticJobSlugRedirects.js';
 import { TOP_50_INDIAN_HUBS } from '../src/data/tier2LocationsData.js';
 import { buildJobPostingSchema } from '../src/lib/seo/jobPostingSchema.js';
 import { isIndexablePublicEntity } from '../src/lib/seo/indexabilityEngine.js';
@@ -4404,6 +4405,70 @@ async function runSeoCiGate() {
     );
   } catch (err: any) {
     record('Sitemap_Jobs_Quality', 'sitemap-jobs.xml live-quality check', false, 'Error: ' + err.message, { severity: 'CRITICAL' });
+  }
+
+  // --- Placeholder/Test Company Guard on jobs_live ---
+  try {
+    const blockedCompanies = new Set(['your company', 'acme', 'acme corp', 'example', 'test company']);
+    const badRows: any[] = [];
+    let lPage = 0;
+    while (true) {
+      const { data: lChunk, error: lErr } = await supabase
+        .from('jobs_live')
+        .select('id, seo_slug, company_name')
+        .range(lPage * 1000, lPage * 1000 + 999);
+      if (lErr) throw new Error(lErr.message);
+      if (!lChunk || lChunk.length === 0) break;
+      for (const row of lChunk) {
+        if (blockedCompanies.has((row.company_name || '').trim().toLowerCase())) {
+          badRows.push(row);
+        }
+      }
+      if (lChunk.length < 1000) break;
+      lPage++;
+    }
+    record(
+      'Live_Test_Company_Guard',
+      'No placeholder/test companies in jobs_live',
+      badRows.length === 0,
+      badRows.length === 0
+        ? '0 placeholder/test company rows in jobs_live'
+        : `Found ${badRows.length} placeholder rows in jobs_live: ${badRows.map((r) => r.seo_slug).join(', ')}`,
+      { severity: 'CRITICAL' }
+    );
+  } catch (err: any) {
+    record('Live_Test_Company_Guard', 'No placeholder/test companies in jobs_live', false, 'Error: ' + err.message, { severity: 'CRITICAL' });
+  }
+
+  // --- Static Redirect Map Parity vs public.job_slug_redirects ---
+  try {
+    const dbRedirs: Array<{ from_slug: string; to_slug: string }> = [];
+    let rPage = 0;
+    while (true) {
+      const { data: rChunk, error: rErr } = await supabase
+        .from('job_slug_redirects')
+        .select('from_slug, to_slug')
+        .range(rPage * 1000, rPage * 1000 + 999);
+      if (rErr) throw new Error(rErr.message);
+      if (!rChunk || rChunk.length === 0) break;
+      dbRedirs.push(...rChunk);
+      if (rChunk.length < 1000) break;
+      rPage++;
+    }
+    const staticEntries = Object.entries(STATIC_JOB_SLUG_REDIRECTS);
+    const mismatches = dbRedirs.filter((r) => STATIC_JOB_SLUG_REDIRECTS[r.from_slug] !== r.to_slug);
+    const parityOk = dbRedirs.length === staticEntries.length && mismatches.length === 0;
+    record(
+      'Static_Redirect_Map_Parity',
+      'STATIC_JOB_SLUG_REDIRECTS matches public.job_slug_redirects',
+      parityOk,
+      parityOk
+        ? `Exact match: ${dbRedirs.length} redirects in DB and static module`
+        : `Drift detected: db=${dbRedirs.length}, static=${staticEntries.length}, mismatches=${mismatches.length}`,
+      { severity: 'CRITICAL' }
+    );
+  } catch (err: any) {
+    record('Static_Redirect_Map_Parity', 'STATIC_JOB_SLUG_REDIRECTS matches public.job_slug_redirects', false, 'Error: ' + err.message, { severity: 'CRITICAL' });
   }
 
   // --- Dynamic Summary & Invariant Report ---

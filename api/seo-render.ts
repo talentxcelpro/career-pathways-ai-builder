@@ -3,6 +3,7 @@ import { isJobLive } from '../src/lib/seo/isJobLive.js';
 import { getPublicCompanyUrl, normalizeSlug } from '../src/lib/seo/canonicalUrls.js';
 import { COMPANY_HUB_INDEX_THRESHOLD, matchesCompanyHubAlias } from '../src/lib/seo/companyHubAliases.js';
 import { resolveLegacyJobSlugDisposition } from '../src/lib/seo/legacySlugDisposition.js';
+import { STATIC_JOB_SLUG_REDIRECTS } from '../src/lib/seo/staticJobSlugRedirects.js';
 
 const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string; country: string; countryCode: string; flag: string; currency: string; metaTitle: string; metaDescription: string; canonicalUrl: string; visaNote: string }> = {
   'data-analyst-dubai-uae': {
@@ -846,8 +847,9 @@ export default async function handler(req: Request) {
       const isJobsSubdomain = reqHost === 'jobs.talentxcel.in';
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
 
-      // 1. Check job_slug_redirects before 404 / lookup
-      const redirectedSlug = await lookupJobSlugRedirect(slugOrId);
+      // 1. Check static redirect map first, then DB job_slug_redirects as last-resort fallback
+      const staticRedirect = STATIC_JOB_SLUG_REDIRECTS[slugOrId.toLowerCase()];
+      const redirectedSlug = staticRedirect || (await lookupJobSlugRedirect(slugOrId));
       if (redirectedSlug && redirectedSlug !== slugOrId) {
         return new Response(null, {
           status: 301,
