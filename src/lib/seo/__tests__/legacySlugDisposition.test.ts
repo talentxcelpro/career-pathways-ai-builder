@@ -14,14 +14,14 @@ const KEEP_200_SLUGS = [
   'marketing-manager', 'hr-manager', 'financial-analyst', 'operations-manager',
   'content-writer', 'risk-analyst',
   'delhi', 'bangalore', 'pune', 'mumbai', 'hyderabad', 'chennai', 'noida',
-  'alerts', 'saved', 'applied',
+  'remote', 'alerts', 'saved', 'applied',
 ];
 
-describe('All 171 unmatched legacy slugs disposition (28 pass-through 200, 45 301, 98 410)', () => {
+describe('All 171 unmatched legacy slugs disposition (29 pass-through 200, 42 301, 100 410)', () => {
   it('partition sums to exactly 171 unique slugs with zero overlap', () => {
-    assert.equal(KEEP_200_SLUGS.length, 28);
-    assert.equal(Object.keys(UNMATCHED_301_JOB_SLUGS).length, 45);
-    assert.equal(DEAD_410_JOB_SLUGS.size, 98);
+    assert.equal(KEEP_200_SLUGS.length, 29);
+    assert.equal(Object.keys(UNMATCHED_301_JOB_SLUGS).length, 42);
+    assert.equal(DEAD_410_JOB_SLUGS.size, 100);
     const all = new Set([
       ...KEEP_200_SLUGS,
       ...Object.keys(UNMATCHED_301_JOB_SLUGS),
@@ -30,9 +30,20 @@ describe('All 171 unmatched legacy slugs disposition (28 pass-through 200, 45 30
     assert.equal(all.size, 171);
   });
 
-  it('keeps all 28 live role/city/app slugs untouched (returns null pass-through)', () => {
+  it('keeps all 29 live role/city/app slugs untouched (returns null pass-through)', () => {
     for (const slug of KEEP_200_SLUGS) {
       assert.equal(resolveLegacyJobSlugDisposition(slug), null, `Expected pass-through for ${slug}`);
+    }
+  });
+
+  it('has zero 301 loops or 2-hop chains into UNMATCHED_301 or DEAD_410', () => {
+    for (const [slug, target] of Object.entries(UNMATCHED_301_JOB_SLUGS)) {
+      const m = target.match(/^\/jobs\/([^/]+)$/);
+      if (m) {
+        const targetSlug = m[1];
+        assert.equal(UNMATCHED_301_JOB_SLUGS[targetSlug], undefined, `2-hop/loop detected: ${slug} -> ${target}`);
+        assert.equal(DEAD_410_JOB_SLUGS.has(targetSlug), false, `301 into 410 detected: ${slug} -> ${target}`);
+      }
     }
   });
 

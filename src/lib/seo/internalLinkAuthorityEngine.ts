@@ -306,6 +306,6 @@ export const SAMPLE_PAGE_AUTHORITY_MAP: PageLinkAuthority[] = [
     topical_cluster: 'it-companies-india',
     link_gap_opportunities: ['https://talentxcel.in/jobs', 'https://talentxcel.in/roles/software-engineer'],
     authority_score: computeAuthorityScore(1, 2, true),
-    recommended_linking_sources: ['https://talentxcel.in/jobs/infosys', 'https://talentxcel.in/colleges/nit'],
+    recommended_linking_sources: ['https://talentxcel.in/jobs/software-engineer', 'https://talentxcel.in/colleges/nit'],
   },
 ];

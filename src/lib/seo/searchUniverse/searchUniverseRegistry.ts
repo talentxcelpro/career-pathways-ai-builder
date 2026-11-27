@@ -111,7 +111,7 @@ export const SEARCH_UNIVERSES_CATALOG: Record<SearchUniverseId, SearchUniverseDe
     id: 'INTERNSHIPS',
     name: 'Tech & Professional Internships',
     productGroup: 'FIND_A_JOB',
-    baseRoute: '/jobs/internship',
+    baseRoute: '/jobs/freshers',
     potentialIntentsScale: '20K - 500K+',
     conversionFunnelCta: 'Apply for Internship',
     sampleIntentQueries: ['software engineer internship bangalore', 'python developer intern remote', 'paid tech internships 2026'],
