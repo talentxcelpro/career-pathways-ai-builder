@@ -192,7 +192,7 @@ export const SAMPLE_PAGE_AUTHORITY_MAP: PageLinkAuthority[] = [
     recommended_linking_sources: ['https://talentxcel.in/jobs/software-engineer', 'https://talentxcel.in/jobs/bangalore'],
   },
   {
-    canonical_url: 'https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    canonical_url: 'https://talentxcel.in/jobs/content-writer',
     surface: 'JOBS',
     inbound_internal_links: 3,
     outbound_internal_links: 8,

@@ -21,6 +21,18 @@ export const generateJobSlug = (title: string, location?: string, id?: string, e
   return `${roleSlug}-${experience}-${locationSlug}${shortId ? `-${shortId}` : ''}`;
 };
 
+export const resolveCollisionFreeJobSlug = (
+  baseSlug: string,
+  jobId: string,
+  existingSlugs: ReadonlySet<string>
+): string => {
+  const cleanBase = baseSlug.slice(0, 100);
+  if (!existingSlugs.has(cleanBase)) return cleanBase;
+  const shortId = (jobId || '').replace(/[^a-f0-9]/gi, '').slice(0, 8).toLowerCase();
+  const suffix = shortId ? `-${shortId}` : '';
+  return `${cleanBase.slice(0, 100 - suffix.length)}${suffix}`;
+};
+
 export const parseJobSlug = (slug: string): { titleSlug: string; locationSlug: string; id: string } => {
   const parts = slug.split('-');
   

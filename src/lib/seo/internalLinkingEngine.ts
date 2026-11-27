@@ -97,22 +97,22 @@ export function resolveInternalLinkGraph(routePath: string, parentTopicSlug?: st
   // 5. Compute Relevant Active Jobs
   const relatedJobs: InternalLinkItem[] = [
     {
-      anchorText: 'Content Writer - Chatr (char.chat)',
-      url: `${BASE_PRODUCTION_ORIGIN}/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1`,
+      anchorText: 'Content Writer Jobs',
+      url: `${BASE_PRODUCTION_ORIGIN}/jobs/content-writer`,
       relationship: 'RELATED_JOB',
-      entityName: 'TalentXcel Services',
+      entityName: 'TalentXcel',
     },
     {
-      anchorText: 'Marketing Executive - Chatr (char.chat)',
-      url: `${BASE_PRODUCTION_ORIGIN}/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1`,
+      anchorText: 'Marketing Manager Jobs',
+      url: `${BASE_PRODUCTION_ORIGIN}/jobs/marketing-manager`,
       relationship: 'RELATED_JOB',
-      entityName: 'TalentXcel Services',
+      entityName: 'TalentXcel',
     },
     {
-      anchorText: 'B2B Sales Executive - Chatr (char.chat)',
-      url: `${BASE_PRODUCTION_ORIGIN}/jobs/b2b-sales-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1`,
+      anchorText: 'Live Job Openings',
+      url: `${BASE_PRODUCTION_ORIGIN}/jobs`,
       relationship: 'RELATED_JOB',
-      entityName: 'TalentXcel Services',
+      entityName: 'TalentXcel',
     },
   ];
 

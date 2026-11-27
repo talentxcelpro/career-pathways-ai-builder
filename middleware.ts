@@ -7,6 +7,8 @@
 // 4. For college facet subtabs (/colleges/:slug/*), enforces canonical pointing to the primary institution dossier.
 // 5. Real human users pass through untouched at static CDN speed.
 
+import { resolveLegacyJobSlugDisposition } from './src/lib/seo/legacySlugDisposition.js';
+
 const BOT_UA = /facebookexternalhit|WhatsApp|Twitterbot|LinkedInBot|Slackbot|TelegramBot|Discordbot|Googlebot|Applebot|redditbot|Pinterest|bingbot|Baiduspider/i;
 
 const DEFAULT_SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
@@ -57,6 +59,30 @@ export default async function middleware(req: Request) {
     const cleanUrl = new URL(req.url);
     cleanUrl.pathname = url.pathname.replace(/\/+$/, '');
     return Response.redirect(cleanUrl.toString(), 301);
+  }
+
+  // 1a. Universal (all UAs) single-hop 410 / 301 disposition for legacy job slugs & job_slug_redirects
+  if (url.pathname.startsWith('/jobs/')) {
+    const slug = url.pathname.slice('/jobs/'.length).replace(/\/+$/, '');
+    if (slug && !slug.includes('/')) {
+      const legacyDisposition = resolveLegacyJobSlugDisposition(slug);
+      if (legacyDisposition?.type === '410') {
+        return new Response('410 Gone', {
+          status: 410,
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+      if (legacyDisposition?.type === '301') {
+        return Response.redirect(legacyDisposition.location, 301);
+      }
+      const redirectedSlug = await lookupJobSlugRedirectEdge(slug);
+      if (redirectedSlug && redirectedSlug !== slug) {
+        return Response.redirect(`https://talentxcel.in/jobs/${encodeURIComponent(redirectedSlug)}`, 301);
+      }
+    }
   }
 
   // 1b. Single-hop permanent redirect for jobs.talentxcel.in/jobs/<slug> -> talentxcel.in/jobs/<canonical-slug>
@@ -123,6 +149,27 @@ export default async function middleware(req: Request) {
   // /api/seo-render serves 100% complete semantic pre-rendered HTML with H1, JSON-LD schema,
   // rich content, and strictly unified apex canonicals (https://talentxcel.in/...).
   return;
+}
+
+async function lookupJobSlugRedirectEdge(slug: string): Promise<string | null> {
+  const SUPABASE_URL = process.env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/job_slug_redirects?from_slug=eq.${encodeURIComponent(slug)}&select=to_slug&limit=1`,
+      {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      }
+    );
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows?.[0]?.to_slug || null;
+  } catch {
+    return null;
+  }
 }
 
 async function fetchJobForMeta(slug: string) {

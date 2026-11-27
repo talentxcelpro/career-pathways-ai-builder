@@ -2,6 +2,7 @@
 import { isJobLive } from '../src/lib/seo/isJobLive.js';
 import { getPublicCompanyUrl, normalizeSlug } from '../src/lib/seo/canonicalUrls.js';
 import { COMPANY_HUB_INDEX_THRESHOLD, matchesCompanyHubAlias } from '../src/lib/seo/companyHubAliases.js';
+import { resolveLegacyJobSlugDisposition } from '../src/lib/seo/legacySlugDisposition.js';
 
 const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string; country: string; countryCode: string; flag: string; currency: string; metaTitle: string; metaDescription: string; canonicalUrl: string; visaNote: string }> = {
   'data-analyst-dubai-uae': {
@@ -852,6 +853,27 @@ export default async function handler(req: Request) {
           status: 301,
           headers: {
             'Location': `https://talentxcel.in/jobs/${redirectedSlug}`,
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+
+      // 1b. Check explicit 410 / 301 disposition for unmatched legacy slugs
+      const legacyDisposition = resolveLegacyJobSlugDisposition(slugOrId);
+      if (legacyDisposition?.type === '410') {
+        return new Response('410 Gone', {
+          status: 410,
+          headers: {
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+      if (legacyDisposition?.type === '301') {
+        return new Response(null, {
+          status: 301,
+          headers: {
+            'Location': legacyDisposition.location,
             'Cache-Control': 'public, max-age=86400, s-maxage=86400',
           },
         });

@@ -182,7 +182,7 @@ export function scoreOpportunityV2(data: {
 export const SAMPLE_OPPORTUNITY_QUEUE: RankingOpportunityV2[] = [
   scoreOpportunityV2({
     query: 'content writer jobs noida',
-    canonical_url: 'https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    canonical_url: 'https://talentxcel.in/jobs/content-writer',
     surface: 'JOBS',
     gsc_average_position: 6.4,
     serp_observed_position: null,
@@ -200,7 +200,7 @@ export const SAMPLE_OPPORTUNITY_QUEUE: RankingOpportunityV2[] = [
   }),
   scoreOpportunityV2({
     query: 'marketing executive jobs noida',
-    canonical_url: 'https://talentxcel.in/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    canonical_url: 'https://talentxcel.in/jobs/marketing-manager',
     surface: 'JOBS',
     gsc_average_position: 7.2,
     serp_observed_position: null,

@@ -164,11 +164,11 @@ export function buildPageLinkCluster(routePath: string, index: number = 0): Inte
     ],
     activeJobs: [
       {
-        url: `${BASE_PRODUCTION_ORIGIN}/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1`,
+        url: `${BASE_PRODUCTION_ORIGIN}/jobs/content-writer`,
         anchor: 'Content Writer - Chatr (char.chat)',
       },
       {
-        url: `${BASE_PRODUCTION_ORIGIN}/jobs/marketing-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1`,
+        url: `${BASE_PRODUCTION_ORIGIN}/jobs/marketing-manager`,
         anchor: 'Marketing Executive - Chatr (char.chat)',
       },
     ],

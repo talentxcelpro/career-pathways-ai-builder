@@ -78,7 +78,7 @@ export function evaluateExperiment(exp: SeoExperiment): SeoExperiment {
 export const SAMPLE_EXPERIMENTS: SeoExperiment[] = [
   evaluateExperiment({
     experiment_id: 'exp_manual_01',
-    canonical_url: 'https://talentxcel.in/jobs/content-writer-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india-1',
+    canonical_url: 'https://talentxcel.in/jobs/content-writer',
     query_cluster: ['content writer jobs noida', 'content writer vacancy noida'],
     change_type: 'TITLE',
     baseline_title: 'Content Writer Jobs at TalentXcel - Noida',
