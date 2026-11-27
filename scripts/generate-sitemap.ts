@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
 import { formatCanonicalUrl } from '../src/config/domainArchitecture';
 import { isJobLive } from '../src/lib/seo/isJobLive';
+import { COMPANY_HUB_INDEX_THRESHOLD, countLiveJobsForCompanyHub } from '../src/lib/seo/companyHubAliases';
 import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
 import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
@@ -350,19 +351,22 @@ export async function generateProductionSitemaps() {
   }
   const postEntries = deduplicate(postEntriesList);
 
-  // 7. Verified Company Profiles (All 15 Verified Platform Enterprises)
-  const VERIFIED_COMPANY_SLUGS = [
-    'hdfc-bank', 'tata-steel', 'ntpc', 'steel-authority-of-india',
-    'jindal-steel-power', 'bajaj-auto', 'hcl-technologies', 'bharat-coking-coal-limited',
-    'raymond', 'zomato', 'ibs-software', 'talentxcel', 'talentxcel-services',
+  // 7. Verified Company Profiles (Indexed ONLY when live jobs >= 10 in jobs_live)
+  const CANDIDATE_COMPANY_SLUGS = [
+    'hdfc-bank', 'tata-steel', 'ntpc', 'hal', 'jindal-steel', 'l-and-t', 'bhel',
+    'steel-authority-of-india', 'jindal-steel-power', 'bajaj-auto', 'hcl-technologies',
+    'south-indian-bank', 'zomato', 'bharat-coking-coal-limited', 'tata-power',
+    'raymond', 'karnataka-bank', 'ibs-software', 'talentxcel', 'talentxcel-services',
     'chatr-chat', 'savantis-solutions'
   ];
   const companyEntries = deduplicate(
-    VERIFIED_COMPANY_SLUGS.map((slug) => ({
-      path: `/company/${slug}`,
-      changefreq: 'daily' as const,
-      priority: '1.0',
-    }))
+    CANDATE_COMPANY_SLUGS
+      .filter((slug) => countLiveJobsForCompanyHub(slug, liveJobsForHubGate) >= COMPANY_HUB_INDEX_THRESHOLD)
+      .map((slug) => ({
+        path: `/company/${slug}`,
+        changefreq: 'daily' as const,
+        priority: '1.0',
+      }))
   );
 
   // 7B. Verified Location Hubs (Only 60 Indian Cities with >= 10 unexpired jobs)

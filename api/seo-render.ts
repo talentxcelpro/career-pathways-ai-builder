@@ -1,5 +1,7 @@
 
 import { isJobLive } from '../src/lib/seo/isJobLive.js';
+import { getPublicCompanyUrl, normalizeSlug } from '../src/lib/seo/canonicalUrls.js';
+import { COMPANY_HUB_INDEX_THRESHOLD, matchesCompanyHubAlias } from '../src/lib/seo/companyHubAliases.js';
 
 const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string; country: string; countryCode: string; flag: string; currency: string; metaTitle: string; metaDescription: string; canonicalUrl: string; visaNote: string }> = {
   'data-analyst-dubai-uae': {
@@ -689,6 +691,24 @@ function notFoundResponse(cleanPath: string, isDebug: boolean = false, isProfile
     status: 404,
     headers,
   });
+}
+
+async function fetchLiveCompanyJobCount(compSlug: string): Promise<number> {
+  try {
+    const url = `${getSupabaseRestUrl()}/jobs_live?select=company_name&limit=5000`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': getSupabaseAnonKey(),
+        'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+      },
+    });
+    if (!res.ok) return 0;
+    const rows = await res.json();
+    if (!Array.isArray(rows)) return 0;
+    return rows.filter((r: any) => matchesCompanyHubAlias(compSlug, r.company_name)).length;
+  } catch {
+    return 0;
+  }
 }
 
 async function lookupJobSlugRedirect(slug: string): Promise<string | null> {
@@ -1748,11 +1768,12 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
     }
     // Standard Parent Company Hub: /company/:slug
     else {
+      const liveCompanyJobs = await fetchLiveCompanyJobCount(compSlug);
       title = compData.title.slice(0, 60);
       description = compData.description;
-      canonical = `https://talentxcel.in/company/${compSlug}`;
+      canonical = getPublicCompanyUrl(compSlug);
       h1 = compData.h1;
-      robotsDirective = 'index, follow';
+      robotsDirective = liveCompanyJobs >= COMPANY_HUB_INDEX_THRESHOLD ? 'index, follow' : 'noindex, follow';
       ogType = 'website';
       bodyContent = `
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
@@ -2095,8 +2116,8 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
       const isInactive = !isJobLive(job);
 
       if (isInactive) {
-        const companySlug = closedCompany.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-        const citySlug = closedCityLoc.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const companySlug = normalizeSlug(closedCompany) || 'talentxcel';
+        const citySlug = normalizeSlug(closedCityLoc) || 'india';
         // 200 "closed" page with similar-jobs links, noindex,follow, NO JobPosting schema
         const fallbackJobs = [
           { title: `Browse All Active ${closedJobTitle} Roles`, company: 'TalentXcel Jobs', loc: closedLoc, href: 'https://talentxcel.in/jobs' },
