@@ -79,17 +79,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ─────────────────────────────────────────────────────────────
     // 1. VALIDATE JOB AGAINST DATABASE (Authoritative, Server-Side)
     // ─────────────────────────────────────────────────────────────
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(jobId).trim());
+    const matchCol = isUuid ? 'id' : 'seo_slug';
+    const matchVal = String(jobId).trim();
+
     let { data: jobRecord, error: jobErr } = await supabase
       .from('jobs_live')
       .select('id, title, company_name, category, location, description, is_active, source_id, source, listing_verified, apply_url, external_url')
-      .or(`id.eq.${jobId},seo_slug.eq.${jobId}`)
+      .eq(matchCol, matchVal)
       .maybeSingle();
 
     if (jobErr && (jobErr.code === '42703' || /listing_verified/i.test(jobErr.message || ''))) {
       const fallback = await supabase
         .from('jobs_live')
         .select('id, title, company_name, category, location, description, is_active, source_id, source, apply_url, external_url')
-        .or(`id.eq.${jobId},seo_slug.eq.${jobId}`)
+        .eq(matchCol, matchVal)
         .maybeSingle();
       jobRecord = fallback.data as any;
       jobErr = fallback.error;
