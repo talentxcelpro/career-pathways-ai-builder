@@ -939,7 +939,7 @@ export default async function handler(req: Request) {
     ...(isDebug ? { 'X-SEO-Units': getUnitsDiagnosticHeader() } : {}),
   };
 
-  if (isCandidateRoute && result.status === 404) {
+  if (isCandidateRoute && Number(result.status) === 404) {
     responseHeaders['CDN-Cache-Control'] = 'no-store';
     responseHeaders['Vercel-CDN-Cache-Control'] = 'no-store';
     responseHeaders['Pragma'] = 'no-cache';
