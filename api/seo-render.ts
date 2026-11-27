@@ -108,8 +108,8 @@ export function resolveOgImageForRoute(cleanPath: string): string {
 // Unit 2: SALARY_CANARY_CANONICAL (SEO-004 & SEO-001) - Independent topical authority for salary.talentxcel.in
 // Unit 3: CTR_METADATA_OPTIMIZATION (SEO-007) - Data-grounded search titles and descriptions
 
-import collegeSlugsList from './_college-slugs.json' with { type: 'json' };
-import collegeTierASlugsList from './_college-tier-a-slugs.json' with { type: 'json' };
+import collegeSlugsList from './_college-slugs.json';
+import collegeTierASlugsList from './_college-tier-a-slugs.json';
 
 export const config = {
   runtime: 'edge',
