@@ -1341,17 +1341,6 @@
       "permanent": true
     },
     {
-      "source": "/jobs/:slug+",
-      "has": [
-        {
-          "type": "host",
-          "value": "jobs.talentxcel.in"
-        }
-      ],
-      "destination": "https://talentxcel.in/jobs/:slug+",
-      "permanent": true
-    },
-    {
       "source": "/job/:slug+",
       "has": [
         {

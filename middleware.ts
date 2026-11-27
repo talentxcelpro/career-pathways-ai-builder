@@ -59,6 +59,17 @@ export default async function middleware(req: Request) {
     return Response.redirect(cleanUrl.toString(), 301);
   }
 
+  // 1b. Single-hop permanent redirect for jobs.talentxcel.in/jobs/<slug> -> talentxcel.in/jobs/<canonical-slug>
+  if (url.hostname === 'jobs.talentxcel.in' && url.pathname.startsWith('/jobs/')) {
+    const slug = url.pathname.slice('/jobs/'.length).replace(/\/+$/, '');
+    if (slug && !slug.includes('/')) {
+      const job = await fetchJobForMeta(slug);
+      const targetSlug = job?.seo_slug || slug;
+      return Response.redirect(`https://talentxcel.in/jobs/${encodeURIComponent(targetSlug)}`, 301);
+    }
+    return Response.redirect(`https://talentxcel.in${url.pathname}`, 301);
+  }
+
   // 2. Human vs Bot Traffic Gate
   // Human traffic passes through untouched to Vite React SPA at edge speed
   const ua = req.headers.get('user-agent') || '';

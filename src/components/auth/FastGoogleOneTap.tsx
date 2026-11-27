@@ -141,7 +141,19 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
 
   const initializeGoogleOneTap = useCallback(async () => {
     const isDismissedInSession = typeof window !== 'undefined' && sessionStorage.getItem('tx_onetap_dismissed');
-    if (disabled || user || hasActiveAuthSession() || initializedRef.current || isDismissedInSession) {
+    let isDismissedCooldown = false;
+    if (typeof window !== 'undefined') {
+      try {
+        const dismissedAt = Number(localStorage.getItem('tx_onetap_dismissed_at') || '0');
+        if (dismissedAt && Date.now() - dismissedAt < 7 * 24 * 60 * 60 * 1000) {
+          isDismissedCooldown = true;
+        }
+      } catch (_) {}
+    }
+    const pathname = typeof window !== 'undefined' ? window.location.pathname.toLowerCase() : '';
+    const isGuestFlowRoute = pathname.startsWith('/jobs/') || pathname === '/usa' || pathname.startsWith('/resume/ats-check');
+    const hasPostActionTrigger = typeof window !== 'undefined' && sessionStorage.getItem('tx_post_action_auth') === '1';
+    if (disabled || user || hasActiveAuthSession() || initializedRef.current || isDismissedInSession || isDismissedCooldown || (isGuestFlowRoute && !hasPostActionTrigger)) {
       if (user && window.google?.accounts?.id?.cancel) {
         window.google.accounts.id.cancel();
       }
@@ -198,7 +210,10 @@ export const FastGoogleOneTap: React.FC<FastGoogleOneTapProps> = ({
           trackOneTapDismissed(reason);
         } else if (notification.isDismissedMoment()) {
           console.log('[GoogleOneTap] Prompt dismissed by user');
-          try { sessionStorage.setItem('tx_onetap_dismissed', 'dismissed'); } catch (_) {}
+          try {
+            sessionStorage.setItem('tx_onetap_dismissed', 'dismissed');
+            localStorage.setItem('tx_onetap_dismissed_at', String(Date.now()));
+          } catch (_) {}
           trackOneTapDismissed('dismissed');
         } else if (notification.isDisplayed()) {
           console.log('🚀 [GoogleOneTap] Prompt displayed to user');
