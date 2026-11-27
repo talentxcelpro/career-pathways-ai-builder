@@ -862,6 +862,10 @@ async function prerender() {
   }
 
   // 4. Pre-render Database Jobs with GSC Valid JobPosting Schema
+  // Database /jobs/<slug> pages are rendered dynamically via api/seo-render.ts (s-maxage=3600, stale-while-revalidate=86400)
+  // so expired/closed jobs never serve stale static HTML with JobPosting schema.
+  console.log('Skipping static /jobs/<slug> prerender (handled dynamically by api/seo-render.ts)...');
+  if (false) {
   console.log('Pre-rendering Database Jobs...');
   try {
     const { data: dbJobs } = await supabase
@@ -923,6 +927,7 @@ async function prerender() {
     }
   } catch (err) {
     console.warn('Jobs prerender warning:', err);
+  }
   }
 
   // ─────────────────────────────────────────────────────────────────────────

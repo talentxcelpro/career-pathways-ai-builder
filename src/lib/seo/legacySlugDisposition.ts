@@ -102,6 +102,12 @@ export const DEAD_410_JOB_SLUGS: ReadonlySet<string> = new Set([
   'immediate-joining',
   'mobile-developer',
   'digital-marketer',
+  'government',
+  'public-sector',
+  'ssc',
+  'upsc',
+  'google',
+  'infosys',
 ]);
 
 export const UNMATCHED_301_JOB_SLUGS: Readonly<Record<string, string>> = {
@@ -136,12 +142,6 @@ export const UNMATCHED_301_JOB_SLUGS: Readonly<Record<string, string>> = {
   'hospitality': '/jobs',
   'python': '/jobs/python-developer',
   'react': '/jobs/react-developer',
-  'google': '/jobs/software-engineer',
-  'infosys': '/jobs/software-engineer',
-  'government': '/jobs/freshers',
-  'public-sector': '/jobs/freshers',
-  'ssc': '/jobs/freshers',
-  'upsc': '/jobs/freshers',
   'banking': '/jobs/banking-associate',
   'startup': '/jobs',
   'international': '/jobs',

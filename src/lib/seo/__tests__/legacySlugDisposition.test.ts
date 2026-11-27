@@ -17,11 +17,11 @@ const KEEP_200_SLUGS = [
   'remote', 'alerts', 'saved', 'applied',
 ];
 
-describe('All 171 unmatched legacy slugs disposition (29 pass-through 200, 42 301, 100 410)', () => {
+describe('All 171 unmatched legacy slugs disposition (29 pass-through 200, 36 301, 106 410)', () => {
   it('partition sums to exactly 171 unique slugs with zero overlap', () => {
     assert.equal(KEEP_200_SLUGS.length, 29);
-    assert.equal(Object.keys(UNMATCHED_301_JOB_SLUGS).length, 42);
-    assert.equal(DEAD_410_JOB_SLUGS.size, 100);
+    assert.equal(Object.keys(UNMATCHED_301_JOB_SLUGS).length, 36);
+    assert.equal(DEAD_410_JOB_SLUGS.size, 106);
     const all = new Set([
       ...KEEP_200_SLUGS,
       ...Object.keys(UNMATCHED_301_JOB_SLUGS),
