@@ -204,7 +204,7 @@ export default async function handler(req: Request) {
   const host = (url.hostname || DEFAULT_HOST).toLowerCase().trim();
   const startIndex = (shardNum - 1) * DEFAULT_PAGE_SIZE;
   const endIndex = Math.min(startIndex + DEFAULT_PAGE_SIZE, TOTAL_INVENTORY_COUNT);
-  const lastmod = new Date().toISOString().split('T')[0];
+  const lastmod = process.env.SITEMAP_SHARD_LASTMOD || '2026-11-27';
 
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';

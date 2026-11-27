@@ -97,6 +97,7 @@ import {
   setEmergencyKillSwitch
 } from '../src/lib/admin/emergencyControls.js';
 import { validateJobPosting, hasValidApplicationMethod } from '../src/lib/seo/jobPostingValidator.js';
+import { isJobLive } from '../src/lib/seo/isJobLive.js';
 import { runJobPostingJsonLdTests } from './test-jobposting-jsonld.js';
 import { JOB_LOCATIONS, INDIAN_LOCATIONS_COUNT } from '../src/config/jobs/locations.js';
 import { JOB_ROLES, TOTAL_ROLES_COUNT } from '../src/config/jobs/roles.js';
@@ -4362,6 +4363,47 @@ async function runSeoCiGate() {
     );
   } catch (err: any) {
     record('Sprint4_Indexing_Dispatcher', 'Sprint 4 Dispatcher Invariants', false, "Error: " + err.message, { severity: 'CRITICAL' });
+  }
+
+  // 32. Sitemap Jobs Live-Quality Gate (fail if > 5% of sitemap-jobs.xml entries are not live or missing from DB)
+  try {
+    const sitemapJobsPath = resolve(process.cwd(), 'public', 'sitemap-jobs.xml');
+    const sitemapXml = readFileSync(sitemapJobsPath, 'utf-8');
+    const jobSlugs = [...sitemapXml.matchAll(/<loc>https?:\/\/[^<]+\/jobs\/([^<]+)<\/loc>/g)].map(m => m[1]);
+
+    const dbJobsBySlug = new Map<string, any>();
+    let jPage = 0;
+    while (true) {
+      const { data: jChunk, error: jErr } = await supabase
+        .from('jobs')
+        .select('id, seo_slug, is_active, job_status, status, expires_at, application_deadline')
+        .range(jPage * 1000, jPage * 1000 + 999);
+      if (jErr || !jChunk || jChunk.length === 0) break;
+      for (const row of jChunk) {
+        if (row.seo_slug) dbJobsBySlug.set(row.seo_slug, row);
+        dbJobsBySlug.set(row.id, row);
+      }
+      if (jChunk.length < 1000) break;
+      jPage++;
+    }
+
+    let invalidOrMissing = 0;
+    for (const slug of jobSlugs) {
+      const row = dbJobsBySlug.get(slug);
+      if (!row || !isJobLive(row)) {
+        invalidOrMissing++;
+      }
+    }
+    const invalidPct = jobSlugs.length > 0 ? (invalidOrMissing / jobSlugs.length) * 100 : 0;
+    record(
+      'Sitemap_Jobs_Quality',
+      'sitemap-jobs.xml <= 5% non-live or missing entries',
+      jobSlugs.length > 0 && invalidPct <= 5,
+      `Checked ${jobSlugs.length} job URLs: ${invalidOrMissing} (${invalidPct.toFixed(2)}%) non-live or missing`,
+      { severity: 'CRITICAL' }
+    );
+  } catch (err: any) {
+    record('Sitemap_Jobs_Quality', 'sitemap-jobs.xml live-quality check', false, 'Error: ' + err.message, { severity: 'CRITICAL' });
   }
 
   // --- Dynamic Summary & Invariant Report ---

@@ -1,8 +1,10 @@
 import { writeFileSync, readFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from 'fs';
 import { resolve } from 'path';
+import { createHash } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { PRODUCTION_ORIGIN } from '../src/config/seo';
 import { formatCanonicalUrl } from '../src/config/domainArchitecture';
+import { isJobLive } from '../src/lib/seo/isJobLive';
 import { CANDIDATE_SERVICES, EMPLOYER_SERVICES, INDUSTRY_HUBS, RESOURCE_HUBS } from '../src/config/publicIA';
 import { coursesDatabase } from '../src/data/coursesData';
 import { CONTENT_DATA } from './contentRegistryData';
@@ -11,8 +13,8 @@ import { SEED_PROGRAMS, SEED_SCHOLARSHIPS } from '../src/services/globalEducatio
 import { CANONICAL_ROLES, CANONICAL_CITIES } from '../src/lib/seo/pseoTaxonomy';
 import { CAREER_TRANSITIONS_CATALOG } from '../src/data/careerPathwaysCatalog';
 
-const SUPABASE_URL = 'https://dthlgsnakhoftinssokm.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
+const SUPABASE_URL = process.env.TX_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
+const SUPABASE_KEY = process.env.TX_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc';
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 interface SitemapEntry {
@@ -171,19 +173,49 @@ export async function generateProductionSitemaps() {
     { path: '/jobs', changefreq: 'daily', priority: '1.0' },
   ];
   try {
+    // Fetch redirect source slugs so old/deduped slugs are excluded from sitemap
+    const redirectFromSlugs = new Set<string>();
+    try {
+      let rPage = 0;
+      while (true) {
+        const { data: rChunk, error: rErr } = await supabase
+          .from('job_slug_redirects')
+          .select('from_slug')
+          .range(rPage * 1000, rPage * 1000 + 999);
+        if (rErr || !rChunk || rChunk.length === 0) break;
+        rChunk.forEach((r: any) => r.from_slug && redirectFromSlugs.add(r.from_slug));
+        if (rChunk.length < 1000) break;
+        rPage++;
+      }
+    } catch {}
+
     let allDbJobs: any[] = [];
     let page = 0;
     const pageSize = 1000;
     let hasMore = true;
+    const selectColsWithContentUpdated = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, job_status, status, posted_at, created_at, expires_at, application_deadline, content_updated_at';
+    const selectColsFallback = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, job_status, status, posted_at, created_at, expires_at, application_deadline';
+    let useFallbackCols = false;
 
     while (hasMore) {
       const from = page * pageSize;
       const to = from + pageSize - 1;
-      const { data: chunk, error } = await supabase
+      let { data: chunk, error } = await supabase
         .from('jobs')
-        .select('id, seo_slug, created_at, posted_at, expires_at, job_status')
+        .select(useFallbackCols ? selectColsFallback : selectColsWithContentUpdated)
         .eq('is_active', true)
         .range(from, to);
+
+      if (error && !useFallbackCols && error.message?.includes('content_updated_at')) {
+        useFallbackCols = true;
+        const retry = await supabase
+          .from('jobs')
+          .select(selectColsFallback)
+          .eq('is_active', true)
+          .range(from, to);
+        chunk = retry.data;
+        error = retry.error;
+      }
 
       if (error || !chunk || chunk.length === 0) {
         hasMore = false;
@@ -197,44 +229,52 @@ export async function generateProductionSitemaps() {
       }
     }
 
+    const seenFingerprints = new Set<string>();
+    const liveJobsForHubGate: any[] = [];
+
     if (allDbJobs.length > 0) {
       allDbJobs.forEach(j => {
         const slug = j.seo_slug || j.id;
         if (!slug || slug === 'senior-devops-architect-acme-corp-bengaluru' || slug.includes('acme')) return;
-        
-        // Quality Gate: Exclude closed or expired jobs from XML sitemap
-        if (j.job_status === 'closed' || j.job_status === 'expired' || j.status === 'closed' || j.status === 'expired') return;
-        if (j.expires_at && !isNaN(new Date(j.expires_at).getTime()) && new Date(j.expires_at) < new Date()) {
-          return;
-        }
+        if (redirectFromSlugs.has(slug)) return;
+        if (!isJobLive(j)) return;
 
+        const fp = createHash('md5')
+          .update(`${(j.title || '').toLowerCase()}|${(j.company_name || '').toLowerCase()}|${(j.location || '').toLowerCase()}|${j.external_url || j.apply_url || ''}`)
+          .digest('hex');
+        if (seenFingerprints.has(fp)) return;
+        seenFingerprints.add(fp);
+
+        liveJobsForHubGate.push(j);
         activeJobEntriesList.push({
           path: `/jobs/${slug}`,
           changefreq: 'daily',
           priority: '0.95',
-          lastmod: (j.posted_at || j.created_at || '').split('T')[0] || undefined
+          lastmod: (j.content_updated_at || j.posted_at || j.created_at || '').split('T')[0] || undefined
         });
       });
     }
-    // Add 5 Verified International Landing Page Hubs
-    const internationalHubSlugs = [
-      'data-analyst-dubai-uae',
-      'software-engineer-abu-dhabi-uae',
-      'cloud-engineer-riyadh-saudi-arabia',
-      'data-analyst-remote-usa',
-      'software-engineer-remote-us'
+
+    // International hub URLs are only included when >= 10 live jobs match their location
+    const internationalHubChecks: { slug: string; cityToken: string }[] = [
+      { slug: 'data-analyst-dubai-uae', cityToken: 'dubai' },
+      { slug: 'software-engineer-abu-dhabi-uae', cityToken: 'abu dhabi' },
+      { slug: 'cloud-engineer-riyadh-saudi-arabia', cityToken: 'riyadh' },
+      { slug: 'data-analyst-remote-usa', cityToken: 'united states' },
+      { slug: 'software-engineer-remote-us', cityToken: 'united states' },
     ];
-    internationalHubSlugs.forEach(slug => {
-      activeJobEntriesList.push({
-        path: `/jobs/${slug}`,
-        changefreq: 'daily',
-        priority: '0.9',
-        lastmod: new Date().toISOString().split('T')[0]
-      });
+    internationalHubChecks.forEach(({ slug, cityToken }) => {
+      const matchingLive = liveJobsForHubGate.filter(j => (j.location || '').toLowerCase().includes(cityToken)).length;
+      if (matchingLive >= 10) {
+        activeJobEntriesList.push({
+          path: `/jobs/${slug}`,
+          changefreq: 'daily',
+          priority: '0.9'
+        });
+      }
     });
 
-
-    console.log(`✓ Fetched ${allDbJobs.length} active jobs from database for sitemap-jobs.xml`);
+    console.log(`✓ Fetched ${allDbJobs.length} active DB rows -> ${liveJobsForHubGate.length} live unique-fingerprint jobs for sitemap-jobs.xml`);
   } catch (e) {
     console.error('Error fetching active jobs for sitemap:', e);
   }
