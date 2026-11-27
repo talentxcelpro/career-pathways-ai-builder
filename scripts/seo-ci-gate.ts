@@ -4375,10 +4375,18 @@ async function runSeoCiGate() {
     const dbJobsBySlug = new Map<string, any>();
     let jPage = 0;
     while (true) {
-      const { data: jChunk, error: jErr } = await supabase
+      let { data: jChunk, error: jErr } = await supabase
         .from('jobs')
         .select('id, seo_slug, is_active, is_test, listing_verified, job_status, status, expires_at, application_deadline')
         .range(jPage * 1000, jPage * 1000 + 999);
+      if (jErr && jErr.message?.includes('listing_verified')) {
+        const retry = await supabase
+          .from('jobs')
+          .select('id, seo_slug, is_active, job_status, status, expires_at, application_deadline')
+          .range(jPage * 1000, jPage * 1000 + 999);
+        jChunk = retry.data as any;
+        jErr = retry.error;
+      }
       if (jErr || !jChunk || jChunk.length === 0) break;
       for (const row of jChunk) {
         if (row.seo_slug) dbJobsBySlug.set(row.seo_slug, row);
