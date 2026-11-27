@@ -691,6 +691,26 @@ function notFoundResponse(cleanPath: string, isDebug: boolean = false, isProfile
   });
 }
 
+async function lookupJobSlugRedirect(slug: string): Promise<string | null> {
+  try {
+    const url = `${getSupabaseRestUrl()}/job_slug_redirects?select=to_slug&from_slug=eq.${encodeURIComponent(slug)}&limit=1`;
+    const res = await fetch(url, {
+      headers: {
+        'apikey': getSupabaseAnonKey(),
+        'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+      },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0 && data[0].to_slug) {
+      return data[0].to_slug;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
@@ -777,9 +797,10 @@ export default async function handler(req: Request) {
 
   if (isPrivateRoute(cleanPath)) return privateRouteResponse();
 
-  // 301 Redirect for legacy multi-slash ranking URLs from GSC
-  if (cleanPath.startsWith('jobs/')) {
-    const parts = cleanPath.split('/');
+  // 301 Redirect for legacy multi-slash ranking URLs, job_slug_redirects, UUIDs, and jobs.talentxcel.in -> apex (single hop)
+  if (cleanPath.startsWith('jobs/') || cleanPath.startsWith('job/')) {
+    const normalizedJobPath = cleanPath.replace(/^job\//, 'jobs/');
+    const parts = normalizedJobPath.split('/');
     if (parts.length >= 4) {
       let targetPath = '';
       if (parts[2] === 'freshers') {
@@ -791,7 +812,51 @@ export default async function handler(req: Request) {
         return new Response(null, {
           status: 301,
           headers: {
-            'Location': targetPath,
+            'Location': `https://talentxcel.in${targetPath}`,
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+    }
+
+    if (parts.length === 2 && parts[1]) {
+      const slugOrId = parts[1];
+      const reqHost = (req?.headers?.get('x-forwarded-host') || req?.headers?.get('host') || new URL(req.url).hostname || '').toLowerCase();
+      const isJobsSubdomain = reqHost === 'jobs.talentxcel.in';
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
+
+      // 1. Check job_slug_redirects before 404 / lookup
+      const redirectedSlug = await lookupJobSlugRedirect(slugOrId);
+      if (redirectedSlug && redirectedSlug !== slugOrId) {
+        return new Response(null, {
+          status: 301,
+          headers: {
+            'Location': `https://talentxcel.in/jobs/${redirectedSlug}`,
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+
+      // 2. Resolve UUID -> seo_slug in a single 301 hop (including from jobs.talentxcel.in)
+      if (isUuid) {
+        const jobByUuid = await lookupJobInSupabase(slugOrId);
+        if (jobByUuid?.seo_slug) {
+          return new Response(null, {
+            status: 301,
+            headers: {
+              'Location': `https://talentxcel.in/jobs/${jobByUuid.seo_slug}`,
+              'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+            },
+          });
+        }
+      }
+
+      // 3. Single-hop subdomain -> apex canonical redirect for jobs.talentxcel.in/jobs/:slug
+      if (isJobsSubdomain || cleanPath.startsWith('job/')) {
+        return new Response(null, {
+          status: 301,
+          headers: {
+            'Location': `https://talentxcel.in/jobs/${redirectedSlug || slugOrId}`,
             'Cache-Control': 'public, max-age=86400, s-maxage=86400',
           },
         });

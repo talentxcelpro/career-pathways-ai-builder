@@ -1341,28 +1341,6 @@
       "permanent": true
     },
     {
-      "source": "/job/:slug+",
-      "has": [
-        {
-          "type": "host",
-          "value": "jobs.talentxcel.in"
-        }
-      ],
-      "destination": "https://talentxcel.in/jobs/:slug+",
-      "permanent": true
-    },
-    {
-      "source": "/jobs",
-      "has": [
-        {
-          "type": "host",
-          "value": "jobs.talentxcel.in"
-        }
-      ],
-      "destination": "/",
-      "permanent": true
-    },
-    {
       "source": "/salary",
       "has": [
         {
@@ -1928,6 +1906,26 @@
     {
       "source": "/oauth/token",
       "destination": "/api/oauth/token"
+    },
+    {
+      "source": "/jobs/:slug+",
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
+      "destination": "/api/seo-render?path=jobs/:slug+"
+    },
+    {
+      "source": "/job/:slug+",
+      "has": [
+        {
+          "type": "host",
+          "value": "jobs.talentxcel.in"
+        }
+      ],
+      "destination": "/api/seo-render?path=job/:slug+"
     },
     {
       "source": "/((?!api|_next|static|favicon.ico|manifest.json|robots.txt|sitemap|sitemaps).*)",
