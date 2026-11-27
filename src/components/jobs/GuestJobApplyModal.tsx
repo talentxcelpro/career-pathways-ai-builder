@@ -43,6 +43,7 @@ interface GuestJobApplyModalProps {
     location?: string;
     companies?: { name: string } | null;
     external_url?: string;
+    apply_url?: string;
   };
   onSuccess?: () => void;
 }
@@ -391,10 +392,60 @@ export const GuestJobApplyModal: React.FC<GuestJobApplyModalProps> = ({
     }
   };
 
+  const externalApplyUrl = (job.apply_url || job.external_url || '').trim();
+  const isExternalRedirect = /^https?:\/\//i.test(externalApplyUrl);
+
   return (
     <Dialog open={isModalOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-xl max-h-[92vh] overflow-y-auto bg-slate-950 border border-slate-800 text-white p-6 md:p-8">
-        {!submittedResult ? (
+        {isExternalRedirect ? (
+          <div className="space-y-5 py-2">
+            <DialogHeader className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 uppercase tracking-wider">
+                <ExternalLink className="w-3.5 h-3.5" />
+                Direct Employer Application
+              </div>
+              <DialogTitle className="text-xl md:text-2xl font-bold text-white">
+                Apply to {job.title}
+              </DialogTitle>
+              <DialogDescription className="text-slate-400 text-sm flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-slate-500" />
+                <span>{companyName}</span>
+                <span>•</span>
+                <span>External ATS / Employer Portal</span>
+              </DialogDescription>
+            </DialogHeader>
+            <p className="text-sm text-slate-300 leading-relaxed">
+              This role is hosted directly by <strong className="text-white">{companyName}</strong>. No resume upload on TalentXcel is required — continue to the employer&apos;s official application page.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <a
+                href={externalApplyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  GrowthFunnelTracker.track('apply_click_out', {
+                    job_id: job.id,
+                    job_title: job.title,
+                    apply_url: externalApplyUrl,
+                  });
+                }}
+                className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-6 rounded-xl font-bold bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+              >
+                Continue to Employer Application
+                <ExternalLink className="w-4 h-4" />
+              </a>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleOpenChange(false)}
+                className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : !submittedResult ? (
           <>
             <DialogHeader className="space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 uppercase tracking-wider">

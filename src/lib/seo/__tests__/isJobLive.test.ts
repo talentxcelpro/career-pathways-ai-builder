@@ -22,6 +22,8 @@ describe('isJobLive() table-driven tests', () => {
     { name: 'past application_deadline', job: { is_active: true, job_status: 'open', status: 'published', expires_at: FUTURE, application_deadline: PAST }, expected: false },
     { name: 'past expiry_date is EXCLUDED (stays live)', job: { is_active: true, job_status: 'open', status: 'published', expires_at: FUTURE, expiry_date: PAST }, expected: true },
     { name: 'is_test true is excluded', job: { is_active: true, is_test: true, job_status: 'open', status: 'published', expires_at: FUTURE }, expected: false },
+    { name: 'listing_verified false is excluded', job: { is_active: true, listing_verified: false, job_status: 'open', status: 'published', expires_at: FUTURE }, expected: false },
+    { name: 'listing_verified true is live', job: { is_active: true, listing_verified: true, job_status: 'open', status: 'published', expires_at: FUTURE }, expected: true },
   ];
 
   for (const c of cases) {

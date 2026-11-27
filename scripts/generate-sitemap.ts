@@ -194,7 +194,7 @@ export async function generateProductionSitemaps() {
     let page = 0;
     const pageSize = 1000;
     let hasMore = true;
-    const selectColsWithContentUpdated = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, is_test, job_status, status, posted_at, created_at, expires_at, application_deadline, content_updated_at';
+    const selectColsWithContentUpdated = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, is_test, listing_verified, job_status, status, posted_at, created_at, expires_at, application_deadline, content_updated_at';
     const selectColsFallback = 'id, seo_slug, title, company_name, location, external_url, apply_url, is_active, job_status, status, posted_at, created_at, expires_at, application_deadline';
     let useFallbackCols = false;
 
@@ -207,7 +207,7 @@ export async function generateProductionSitemaps() {
         .eq('is_active', true)
         .range(from, to);
 
-      if (error && !useFallbackCols && error.message?.includes('content_updated_at')) {
+      if (error && !useFallbackCols && (error.message?.includes('content_updated_at') || error.message?.includes('listing_verified'))) {
         useFallbackCols = true;
         const retry = await supabase
           .from('jobs')

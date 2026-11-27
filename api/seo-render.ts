@@ -740,13 +740,16 @@ async function lookupJobInSupabase(slugOrId: string): Promise<any | null> {
   try {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId);
     const filter = isUuid ? `id=eq.${encodeURIComponent(slugOrId)}` : `seo_slug=eq.${encodeURIComponent(slugOrId)}`;
-    const url = `${getSupabaseRestUrl()}/jobs?select=id,title,company_name,location,description,is_active,job_status,status,seo_slug,posted_at,date_posted,created_at,expires_at,expiry_date,application_deadline,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url&${filter}&limit=1`;
-    const res = await fetch(url, {
-      headers: {
-        'apikey': getSupabaseAnonKey(),
-        'Authorization': `Bearer ${getSupabaseAnonKey()}`,
-      },
-    });
+    const colsFull = 'id,title,company_name,location,description,is_active,is_test,listing_verified,job_status,status,seo_slug,posted_at,date_posted,created_at,expires_at,expiry_date,application_deadline,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url,apply_url';
+    const colsFallback = 'id,title,company_name,location,description,is_active,job_status,status,seo_slug,posted_at,date_posted,created_at,expires_at,expiry_date,application_deadline,employment_type,salary_min,salary_max,salary_currency,is_remote,external_url';
+    const headers = {
+      'apikey': getSupabaseAnonKey(),
+      'Authorization': `Bearer ${getSupabaseAnonKey()}`,
+    };
+    let res = await fetch(`${getSupabaseRestUrl()}/jobs?select=${colsFull}&${filter}&limit=1`, { headers });
+    if (res.status === 400) {
+      res = await fetch(`${getSupabaseRestUrl()}/jobs?select=${colsFallback}&${filter}&limit=1`, { headers });
+    }
     if (!res.ok) return null;
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) {

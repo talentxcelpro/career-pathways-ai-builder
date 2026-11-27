@@ -4377,7 +4377,7 @@ async function runSeoCiGate() {
     while (true) {
       const { data: jChunk, error: jErr } = await supabase
         .from('jobs')
-        .select('id, seo_slug, is_active, job_status, status, expires_at, application_deadline')
+        .select('id, seo_slug, is_active, is_test, listing_verified, job_status, status, expires_at, application_deadline')
         .range(jPage * 1000, jPage * 1000 + 999);
       if (jErr || !jChunk || jChunk.length === 0) break;
       for (const row of jChunk) {

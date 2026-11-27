@@ -40,6 +40,8 @@ export interface RawJobData {
   postal_code?: string | null;
   country?: string | null;
   is_active?: boolean | null;
+  is_test?: boolean | null;
+  listing_verified?: boolean | null;
   job_status?: string | null;
   companies?: {
     name?: string;

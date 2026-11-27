@@ -1,6 +1,8 @@
 // Auto-generated disposition map for legacy unmatched historical sitemap slugs (171 total: 28 live 200s, 45 301s, 98 410s)
 // Rule: 0 impressions AND 0 inbound internal links => 410 Gone; otherwise 301 to verified 200 target (or keep 200 if live hub).
 
+import { SNAPSHOT_410_JOB_SLUGS } from './dead410SnapshotSlugs.js';
+
 export const DEAD_410_JOB_SLUGS: ReadonlySet<string> = new Set([
   'customer-service-executive-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india',
   'marketing-manager-chatr-charchat-talentxcel-services-noida-uttar-pradesh-india',
@@ -189,7 +191,7 @@ export type LegacySlugDisposition =
 export function resolveLegacyJobSlugDisposition(slug: string): LegacySlugDisposition | null {
   const clean = (slug || '').trim().toLowerCase();
   if (!clean) return null;
-  if (DEAD_410_JOB_SLUGS.has(clean)) {
+  if (DEAD_410_JOB_SLUGS.has(clean) || SNAPSHOT_410_JOB_SLUGS.has(clean)) {
     return { type: '410' };
   }
   const target = UNMATCHED_301_JOB_SLUGS[clean];
