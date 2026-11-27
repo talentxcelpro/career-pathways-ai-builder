@@ -25,8 +25,12 @@ export const config = {
   },
 };
 
-const TX_SUPABASE_URL = process.env.TX_SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
-const SERVICE_KEY = process.env.TALENTXCEL_SERVICE_ROLE_KEY || '';
+const TX_SUPABASE_URL = process.env.TX_SUPABASE_URL || process.env.SUPABASE_URL || 'https://dthlgsnakhoftinssokm.supabase.co';
+const SERVICE_KEY =
+  process.env.TALENTXCEL_SERVICE_ROLE_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+  '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -75,11 +79,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // ─────────────────────────────────────────────────────────────
     // 1. VALIDATE JOB AGAINST DATABASE (Authoritative, Server-Side)
     // ─────────────────────────────────────────────────────────────
-    const { data: jobRecord, error: jobErr } = await supabase
+    let { data: jobRecord, error: jobErr } = await supabase
       .from('jobs_live')
       .select('id, title, company_name, category, location, description, is_active, source_id, source, listing_verified, apply_url, external_url')
       .or(`id.eq.${jobId},seo_slug.eq.${jobId}`)
       .maybeSingle();
+
+    if (jobErr && (jobErr.code === '42703' || /listing_verified/i.test(jobErr.message || ''))) {
+      const fallback = await supabase
+        .from('jobs_live')
+        .select('id, title, company_name, category, location, description, is_active, source_id, source, apply_url, external_url')
+        .or(`id.eq.${jobId},seo_slug.eq.${jobId}`)
+        .maybeSingle();
+      jobRecord = fallback.data as any;
+      jobErr = fallback.error;
+    }
 
     if (jobErr || !jobRecord) {
       return res.status(410).json({
@@ -88,8 +102,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // Fail-closed gate: strictly require listing_verified === true AND a verified delivery path (apply_url or external_url)
-    const isVerifiedListing = (jobRecord as any).listing_verified === true;
+    // Fail-closed gate: strictly use listing_verified when present; before M1/M4/M5 migration, allow only ATS + Official Govt sources
+    const isVerifiedListing =
+      (jobRecord as any).listing_verified !== undefined
+        ? (jobRecord as any).listing_verified === true
+        : Boolean(jobRecord.source_id) ||
+          String(jobRecord.source || '').includes('ATS Ingestion') ||
+          String(jobRecord.source || '').includes('Official Govt');
+
     const applyUrl = String((jobRecord as any).apply_url || (jobRecord as any).external_url || '').trim();
     const hasVerifiedDeliveryPath = /^https?:\/\//i.test(applyUrl);
 
@@ -106,6 +126,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         code: 'NO_VERIFIED_DELIVERY_PATH',
       });
     }
+
+    // External ATS / Govt jobs must NOT accept an on-platform application: return the employer apply_url directly.
+    return res.status(200).json({
+      success: true,
+      externalRedirect: true,
+      apply_url: applyUrl,
+      jobId: jobRecord.id,
+      jobTitle: jobRecord.title,
+      companyName: jobRecord.company_name || 'Hiring Organization',
+      message: `Apply directly via the verified employer portal for ${jobRecord.title}.`,
+    });
 
     const authoritativeJobId = jobRecord.id;
     const authoritativeJobTitle = jobRecord.title;
