@@ -14,9 +14,14 @@ const DEFAULT_SUPABASE_URL = "https://dthlgsnakhoftinssokm.supabase.co";
 const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR0aGxnc25ha2hvZnRpbnNzb2ttIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA4NTMyODksImV4cCI6MjA2NjQyOTI4OX0.PLs-kisnVaPMd6NvO-jL15Qwi0jpheplnCAuFnVYarc";
 
 const VALID_STATIC_JOB_ROUTES = new Set([
-  'post', 'manage', 'saved', 'applied', 'alerts',
+  'post', 'manage', 'saved', 'applied', 'alerts', 'remote',
   'it-jobs', 'engineering-jobs', 'marketing-jobs',
-  'bangalore', 'mumbai', 'delhi', 'hyderabad', 'chennai', 'pune', 'varanasi', 'noida', 'lucknow'
+  'bangalore', 'mumbai', 'delhi', 'hyderabad', 'chennai', 'pune', 'varanasi', 'noida', 'lucknow',
+  'data-analyst', 'software-engineer', 'data-scientist', 'product-manager',
+  'devops-engineer', 'ui-ux-designer', 'full-stack-developer', 'frontend-developer',
+  'backend-developer', 'machine-learning-engineer', 'business-analyst', 'project-manager',
+  'marketing-manager', 'hr-manager', 'financial-analyst', 'operations-manager',
+  'content-writer', 'risk-analyst',
 ]);
 
 export const config = {
@@ -233,6 +238,15 @@ function resolveBrowserRouteMeta(pathname: string, hostname: string): EdgeMeta |
     if (entry) {
       return { title: entry.title, description: entry.desc, canonical: entry.canon, robots: 'index, follow' };
     }
+  }
+
+  if (clean === '/salary' || clean === '/salaries') {
+    return {
+      title: 'Technology Salary Guides & Compensation Benchmarks (2026) | TalentXcel',
+      description: 'Explore verified technology salary guides, compensation curves, and employer-provided compensation details on TalentXcel Salary Intelligence.',
+      canonical: 'https://salary.talentxcel.in/salary',
+      robots: 'index, follow',
+    };
   }
 
   if (clean.startsWith('/salary/')) {

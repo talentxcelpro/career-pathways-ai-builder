@@ -149,6 +149,39 @@ export const UNMATCHED_301_JOB_SLUGS: Readonly<Record<string, string>> = {
   'trending': '/jobs',
 };
 
+export const KEEP_200_JOB_ROLE_SLUGS: readonly string[] = [
+  'data-analyst', 'software-engineer', 'data-scientist', 'product-manager',
+  'devops-engineer', 'ui-ux-designer', 'full-stack-developer', 'frontend-developer',
+  'backend-developer', 'machine-learning-engineer', 'business-analyst', 'project-manager',
+  'marketing-manager', 'hr-manager', 'financial-analyst', 'operations-manager',
+  'content-writer', 'risk-analyst',
+];
+
+export const KEEP_200_JOB_CITY_SLUGS: readonly string[] = [
+  'delhi', 'bangalore', 'pune', 'mumbai', 'hyderabad', 'chennai', 'noida',
+];
+
+export const KEEP_200_JOB_NOINDEX_APP_SLUGS: ReadonlySet<string> = new Set([
+  'alerts', 'saved', 'applied',
+]);
+
+export const KEEP_200_JOB_SLUGS: readonly string[] = [
+  ...KEEP_200_JOB_ROLE_SLUGS,
+  ...KEEP_200_JOB_CITY_SLUGS,
+  'remote',
+  ...KEEP_200_JOB_NOINDEX_APP_SLUGS,
+];
+
+export const FLAGSHIP_ROUTES: readonly string[] = [
+  '/resume/ats-check',
+  '/salary/data-scientist',
+  '/salary/ui-ux-designer',
+  '/locations/varanasi',
+  '/talent-score',
+  '/career-map',
+  '/resume/interview-prep/golang-developer',
+];
+
 export type LegacySlugDisposition =
   | { type: '410' }
   | { type: '301'; location: string };

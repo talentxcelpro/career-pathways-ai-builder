@@ -2,7 +2,7 @@
 import { isJobLive } from '../src/lib/seo/isJobLive.js';
 import { getPublicCompanyUrl, normalizeSlug } from '../src/lib/seo/canonicalUrls.js';
 import { COMPANY_HUB_INDEX_THRESHOLD, matchesCompanyHubAlias } from '../src/lib/seo/companyHubAliases.js';
-import { resolveLegacyJobSlugDisposition } from '../src/lib/seo/legacySlugDisposition.js';
+import { resolveLegacyJobSlugDisposition, KEEP_200_JOB_NOINDEX_APP_SLUGS } from '../src/lib/seo/legacySlugDisposition.js';
 import { STATIC_JOB_SLUG_REDIRECTS } from '../src/lib/seo/staticJobSlugRedirects.js';
 
 const INTERNATIONAL_HUB_SLUGS: Record<string, { roleTitle: string; city: string; country: string; countryCode: string; flag: string; currency: string; metaTitle: string; metaDescription: string; canonicalUrl: string; visaNote: string }> = {
@@ -157,6 +157,9 @@ export const DEPLOYMENT_UNITS = {
 };
 
 export function resolveCanaryCanonical(cleanPath: string, targetUniverse: string): string {
+  if (targetUniverse === 'SALARY') {
+    return `https://salary.talentxcel.in${cleanPath ? '/' + cleanPath : ''}`;
+  }
   return `https://talentxcel.in${cleanPath ? '/' + cleanPath : ''}`;
 }
 
@@ -521,7 +524,7 @@ const CORE_STATIC_ROUTES = new Set([
   'salary/scenarios', 'salary/negotiation', 'salary/goals', 'salary/skills-gap', 'salary/jobs',
   'colleges/global-programs', 'colleges/scholarships', 'colleges/career-pathway',
   'network/verified', 'network/connections', 'network/skill-swap', 'network/articles', 'network/requests',
-  'saved-jobs', 'profile/analytics'
+  'saved-jobs', 'profile/analytics', 'talent-score'
 ]);
 
 const PRIVATE_ROUTE_PREFIXES = [
@@ -2122,6 +2125,77 @@ async function generateDynamicSeoHtml(cleanPath: string): Promise<SeoRenderResul
           }
         },
         "description": hub.metaDescription
+      };
+    }
+    // 5E-3: Keep-200 App/Account job routes (200 + noindex, nofollow for bots)
+    else if (KEEP_200_JOB_NOINDEX_APP_SLUGS.has(secondary)) {
+      const label = formatTitle(secondary);
+      title = `${label} Jobs | TalentXcel`;
+      description = `Manage your ${secondary} jobs on TalentXcel.`;
+      canonical = `https://talentxcel.in/jobs/${secondary}`;
+      h1 = `${label} Jobs`;
+      robotsDirective = 'noindex, nofollow';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold text-white">${escapeHtml(label)} Jobs</h2>
+          <p class="text-slate-300 text-sm">Sign in to view and manage your ${escapeHtml(secondary)} job preferences on TalentXcel.</p>
+          <div class="pt-2 flex flex-wrap gap-3">
+            <a href="/jobs" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs rounded-xl">Browse Active Jobs &rarr;</a>
+          </div>
+        </section>
+      `;
+    }
+    // 5E-4: Remote Jobs Hub (/jobs/remote)
+    else if (secondary === 'remote') {
+      title = 'Remote Jobs & Work-From-Anywhere Openings (2026) | TalentXcel';
+      description = 'Explore verified remote jobs and work-from-anywhere technology, product, and operations openings on TalentXcel.';
+      canonical = 'https://talentxcel.in/jobs/remote';
+      h1 = 'Remote Jobs & Work-From-Anywhere Openings';
+      robotsDirective = 'index, follow';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Verified Remote Opportunities</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Browse remote engineering, data, product, and operations roles from verified employers.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/jobs/software-engineer" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer Jobs</a>
+            <a href="/jobs/data-analyst" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Analyst Jobs</a>
+            <a href="/jobs/product-manager" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Product Manager Jobs</a>
+            <a href="/jobs" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">All Live Jobs</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Remote Jobs",
+        "url": canonical,
+      };
+    }
+    // 5E-5: City Job Hubs (/jobs/delhi, /jobs/bangalore, etc.)
+    else if (CANONICAL_CITIES_SET.has(secondary)) {
+      const cityName = formatTitle(secondary);
+      title = `Jobs in ${cityName} (2026 Verified Openings) | TalentXcel`;
+      description = `Browse verified job openings in ${cityName} across engineering, data, product, and corporate roles on TalentXcel.`;
+      canonical = `https://talentxcel.in/jobs/${secondary}`;
+      h1 = `Jobs in ${cityName}`;
+      robotsDirective = 'index, follow';
+      bodyContent = `
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 md:p-8 space-y-6">
+          <h2 class="text-xl font-bold text-white">Verified Openings in ${escapeHtml(cityName)}</h2>
+          <p class="text-slate-300 text-sm leading-relaxed">Explore active job opportunities in ${escapeHtml(cityName)} across technology, analytics, and management roles.</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-800 text-xs">
+            <a href="/jobs/software-engineer/${encodeURIComponent(secondary)}" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Software Engineer in ${escapeHtml(cityName)}</a>
+            <a href="/jobs/data-analyst/${encodeURIComponent(secondary)}" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">Data Analyst in ${escapeHtml(cityName)}</a>
+            <a href="/locations/${encodeURIComponent(secondary)}" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">${escapeHtml(cityName)} Career Hub</a>
+            <a href="/jobs" class="p-3 bg-slate-950 rounded-xl hover:border-blue-500 border border-slate-800 block text-slate-200 hover:text-white">All Live Jobs</a>
+          </div>
+        </section>
+      `;
+      jsonLdSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": `Jobs in ${cityName}`,
+        "url": canonical,
       };
     }
     // 5F: Single job posting lookup

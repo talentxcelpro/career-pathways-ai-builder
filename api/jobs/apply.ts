@@ -76,13 +76,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // 1. VALIDATE JOB AGAINST DATABASE (Authoritative, Server-Side)
     // ─────────────────────────────────────────────────────────────
     const { data: jobRecord, error: jobErr } = await supabase
-      .from('jobs')
-      .select('id, title, company_name, category, location, description, is_active')
+      .from('jobs_live')
+      .select('id, title, company_name, category, location, description, is_active, source_id, source, listing_verified, apply_url, external_url')
       .or(`id.eq.${jobId},seo_slug.eq.${jobId}`)
       .maybeSingle();
 
     if (jobErr || !jobRecord) {
-      return res.status(404).json({ error: 'Job position not found or is inactive.' });
+      return res.status(410).json({
+        error: 'This job listing is inactive, expired, or no longer verified for applications.',
+        code: 'JOB_NOT_LIVE',
+      });
+    }
+
+    // Fail-closed gate: strictly require listing_verified === true AND a verified delivery path (apply_url or external_url)
+    const isVerifiedListing = (jobRecord as any).listing_verified === true;
+    const applyUrl = String((jobRecord as any).apply_url || (jobRecord as any).external_url || '').trim();
+    const hasVerifiedDeliveryPath = /^https?:\/\//i.test(applyUrl);
+
+    if (!isVerifiedListing) {
+      return res.status(410).json({
+        error: 'This listing is not verified for on-platform application delivery and is no longer accepting applications.',
+        code: 'LISTING_UNVERIFIED',
+      });
+    }
+
+    if (!hasVerifiedDeliveryPath) {
+      return res.status(410).json({
+        error: 'This listing does not have a verified application delivery path.',
+        code: 'NO_VERIFIED_DELIVERY_PATH',
+      });
     }
 
     const authoritativeJobId = jobRecord.id;
@@ -364,6 +386,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       candidateId,
       email: cleanEmail,
       resumeUrl,
+      apply_url: applyUrl,
       atsFeedback,
       relatedJobs,
       magicLoginUrl,
