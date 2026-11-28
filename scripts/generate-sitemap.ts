@@ -263,8 +263,6 @@ export async function generateProductionSitemaps() {
       { slug: 'data-analyst-dubai-uae', cityToken: 'dubai' },
       { slug: 'software-engineer-abu-dhabi-uae', cityToken: 'abu dhabi' },
       { slug: 'cloud-engineer-riyadh-saudi-arabia', cityToken: 'riyadh' },
-      { slug: 'data-analyst-remote-usa', cityToken: 'united states' },
-      { slug: 'software-engineer-remote-us', cityToken: 'united states' },
     ];
     internationalHubChecks.forEach(({ slug, cityToken }) => {
       const matchingLive = liveJobsForHubGate.filter(j => (j.location || '').toLowerCase().includes(cityToken)).length;

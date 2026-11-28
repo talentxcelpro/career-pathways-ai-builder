@@ -343,7 +343,7 @@ export const NetworkPostCard: React.FC<NetworkPostCardProps> = ({
         is_public: true,
         status: 'published',
         origin: 'feed',
-        post_type: 'text',
+        post_type: 'reshare',
         likes_count: 0,
         comments_count: 0,
         shares_count: 0,
