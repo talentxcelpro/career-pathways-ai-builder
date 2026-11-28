@@ -16,6 +16,26 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://talentxcel.in/company/hal</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/company/jindal-steel</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/company/l-and-t</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://talentxcel.in/company/bhel</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://talentxcel.in/company/steel-authority-of-india</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -36,17 +56,17 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://talentxcel.in/company/zomato</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
     <loc>https://talentxcel.in/company/bharat-coking-coal-limited</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://talentxcel.in/company/raymond</loc>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://talentxcel.in/company/zomato</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>

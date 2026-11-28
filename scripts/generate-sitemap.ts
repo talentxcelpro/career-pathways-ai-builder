@@ -352,7 +352,13 @@ export async function generateProductionSitemaps() {
   }
   const postEntries = deduplicate(postEntriesList);
 
-  // 7. Verified Company Profiles (Indexed ONLY when live jobs >= 10 in jobs_live)
+  // 7. Verified Company Profiles (All 15 verified enterprises + other candidate companies with live jobs >= 10)
+  const VERIFIED_ENTERPRISE_SLUGS = new Set([
+    'ntpc', 'hdfc-bank', 'tata-steel', 'steel-authority-of-india',
+    'jindal-steel-power', 'bajaj-auto', 'hcl-technologies', 'bharat-coking-coal-limited',
+    'raymond', 'zomato', 'ibs-software', 'talentxcel', 'talentxcel-services',
+    'chatr-chat', 'savantis-solutions'
+  ]);
   const CANDIDATE_COMPANY_SLUGS = [
     'hdfc-bank', 'tata-steel', 'ntpc', 'hal', 'jindal-steel', 'l-and-t', 'bhel',
     'steel-authority-of-india', 'jindal-steel-power', 'bajaj-auto', 'hcl-technologies',
@@ -362,7 +368,7 @@ export async function generateProductionSitemaps() {
   ];
   const companyEntries = deduplicate(
     CANDIDATE_COMPANY_SLUGS
-      .filter((slug) => countLiveJobsForCompanyHub(slug, liveJobsForHubGate) >= COMPANY_HUB_INDEX_THRESHOLD)
+      .filter((slug) => VERIFIED_ENTERPRISE_SLUGS.has(slug) || countLiveJobsForCompanyHub(slug, liveJobsForHubGate) >= COMPANY_HUB_INDEX_THRESHOLD)
       .map((slug) => ({
         path: `/company/${slug}`,
         changefreq: 'daily' as const,
@@ -605,8 +611,10 @@ export async function generateProductionSitemaps() {
       return;
     }
 
-    // Google Search Console Quality Gate: Prune thin sitemaps with fewer than 10 URLs (e.g. sitemap-blog, sitemap-news)
-    if (uniqueEntries.length < 10) {
+    // Google Search Console Quality Gate: Prune thin sitemaps with fewer than 10 URLs (e.g. sitemap-combos, sitemap-rankings)
+    // EXCEPTION: sitemap-blog.xml and sitemap-news.xml are quarantined single-hub collections required by Blog_News_Separation invariant
+    const THIN_SITEMAP_ALLOWLIST = new Set(['sitemap-blog.xml', 'sitemap-news.xml']);
+    if (uniqueEntries.length < 10 && !THIN_SITEMAP_ALLOWLIST.has(filename)) {
       console.log(`↷ Pruned thin sitemap ${filename}: contains only ${uniqueEntries.length} URLs (< 10 quality threshold)`);
       const existingFile = resolve(publicDir, filename);
       if (existsSync(existingFile)) {

@@ -34,6 +34,12 @@
     <loc>https://talentxcel.in/sitemap-posts.xml</loc>
   </sitemap>
   <sitemap>
+    <loc>https://talentxcel.in/sitemap-blog.xml</loc>
+  </sitemap>
+  <sitemap>
+    <loc>https://talentxcel.in/sitemap-news.xml</loc>
+  </sitemap>
+  <sitemap>
     <loc>https://talentxcel.in/sitemap-companies.xml</loc>
   </sitemap>
   <sitemap>
