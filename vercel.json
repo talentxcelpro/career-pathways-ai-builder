@@ -1341,17 +1341,6 @@
       "permanent": true
     },
     {
-      "source": "/salary",
-      "has": [
-        {
-          "type": "host",
-          "value": "salary.talentxcel.in"
-        }
-      ],
-      "destination": "/",
-      "permanent": true
-    },
-    {
       "source": "/careers",
       "has": [
         {
